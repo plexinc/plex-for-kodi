@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.plex"
+       name="Plex"
+       version="0.0.1"
+       provider-name="Plex">
+    <requires>
+        <import addon="xbmc.python" version="2.1.0"/>
+        <import addon="script.module.requests" version="2.3.0"/>
+    </requires>
+    <extension point="xbmc.python.script" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en">Plex Media Player for Kodi</summary>
+        <description lang="en">Plex Media Player for Kodi</description>
+        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+        <forum></forum>
+        <website>https://www.plex.com</website>
+        <source></source>
+        <platform>all</platform>
+    </extension>
+</addon>

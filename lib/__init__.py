@@ -1,1 +1,2 @@
+import compat
 import _included_packages

@@ -1,9 +1,11 @@
 import plex
-from windows import background, userselect
+from windows import background, userselect, home
 import backgroundthread
+import util
 
 
 def main():
+    util.DEBUG_LOG('STARTED: {0}'.format(util.ADDON.getAddonInfo('version')))
     back = background.BackgroundWindow.create()
     background.setSplash()
 
@@ -17,10 +19,12 @@ def main():
                 background.setBusy()
                 plex.switchUser(user, pin)
 
-            print plex.PLEX
+            home.HomeWindow.open()
     finally:
         backgroundthread.BGThreader.shutdown()
         background.setBusy(False)
         background.setSplash(False)
         back.doClose()
         del back
+
+    util.DEBUG_LOG('FINISHED')

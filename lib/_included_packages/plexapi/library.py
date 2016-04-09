@@ -55,7 +55,7 @@ class Library(object):
 
     def getByKey(self, key):
         return utils.findKey(self.server, key)
-        
+
     def search(self, title, libtype=None, **kwargs):
         """ Searching within a library section is much more powerful. It seems certain attributes on the media
             objects can be targeted to filter this search down a bit, but I havent found the documentation for
@@ -70,7 +70,7 @@ class Library(object):
             args[attr] = value
         query = '/library/all%s' % utils.joinArgs(args)
         return utils.listItems(self.server, query)
-    
+
     def cleanBundles(self):
         self.server.query('/library/clean/bundles')
 
@@ -102,17 +102,17 @@ class LibrarySection(object):
     def __repr__(self):
         title = self.title.replace(' ','.')[0:20]
         return '<%s:%s>' % (self.__class__.__name__, title.encode('utf8'))
-    
+
     def get(self, title):
         path = '/library/sections/%s/all' % self.key
         return utils.findItem(self.server, path, title)
 
     def all(self):
         return utils.listItems(self.server, '/library/sections/%s/all' % self.key)
-        
+
     def onDeck(self):
         return utils.listItems(self.server, '/library/sections/%s/onDeck' % self.key)
-        
+
     def analyze(self):
         self.server.query('/library/sections/%s/analyze' % self.key)
 
@@ -121,7 +121,7 @@ class LibrarySection(object):
 
     def refresh(self):
         self.server.query('/library/sections/%s/refresh' % self.key)
-        
+
     def listChoices(self, category, libtype=None, **kwargs):
         """ List choices for the specified filter category. kwargs can be any of the same
             kwargs in self.search() to help narrow down the choices to only those that
@@ -203,9 +203,9 @@ class LibrarySection(object):
             if matches: map(result.add, matches); continue
             # nothing matched; use raw item value
             log.warning('Filter value not listed, using raw item value: %s' % item)
-            result.add(item)    
+            result.add(item)
         return ','.join(result)
-                
+
     def _cleanSearchSort(self, sort):
         sort = '%s:asc' % sort if ':' not in sort else sort
         scol, sdir = sort.lower().split(':')
@@ -241,13 +241,13 @@ class MusicSection(LibrarySection):
     ALLOWED_FILTERS = ('genre', 'country', 'collection')
     ALLOWED_SORT = ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort')
     TYPE = 'artist'
-    
+
     def searchShows(self, **kwargs):
         return self.search(libtype='artist', **kwargs)
 
     def searchEpisodes(self, **kwargs):
         return self.search(libtype='album', **kwargs)
-        
+
     def searchTracks(self, **kwargs):
         return self.search(libtype='track', **kwargs)
 
@@ -262,6 +262,7 @@ class FilterChoice(object):
         self.fastKey = data.attrib.get('fastKey')
         self.key = data.attrib.get('key')
         self.thumb = data.attrib.get('thumb')
+        self.art = data.attrib.get('art')
         self.title = data.attrib.get('title')
         self.type = data.attrib.get('type')
 

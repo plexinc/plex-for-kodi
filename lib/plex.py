@@ -3,24 +3,29 @@ from plexapi import myplex
 import util
 
 PLEX = None
+BASE = None
+
+USER = None
 
 
 def init():
     global PLEX
+    global USER
 
     token_user = getToken()
 
     if not token_user:
         return False
 
-    token, user = token_user
+    token, USER = token_user
     print repr(token)
-    user = user or myplex.MyPlexUser.tokenSignin(token)
-    if not user:
+    USER = USER or myplex.MyPlexUser.tokenSignin(token)
+    if not USER:
         util.DEBUG_LOG('SIGN IN: Failed to sign in')
         return False
 
-    PLEX = user.getFirstServer(owned=True).connect()
+    PLEX = USER.getFirstServer(owned=True).connect()
+    _setBase(PLEX)
 
     if not PLEX:
         util.DEBUG_LOG('SIGN IN: Failed to connect to server')
@@ -28,6 +33,11 @@ def init():
 
     util.DEBUG_LOG('SIGN IN: Connected to server')
     return True
+
+
+def _setBase(server):
+    global BASE
+    BASE = server
 
 
 def getToken():
@@ -99,8 +109,19 @@ def authorize():
         del back
 
 
-def switchUser(user, pin):
+def servers():
+    return [s for s in BASE.account().resources() if s.provides == 'server']
+
+
+def switchUser(new_user, pin):
+    global PLEX
+    global USER
+
+    USER = myplex.MyPlexUser.switch(new_user, pin)
+    PLEX = USER.getFirstServer().connect()
+
+
+def changeServer(server):
     global PLEX
 
-    user = myplex.MyPlexUser.switch(user, pin)
-    PLEX = user.getFirstServer().connect()
+    PLEX = server.connect()

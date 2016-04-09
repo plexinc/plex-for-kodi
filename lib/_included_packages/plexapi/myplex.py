@@ -198,9 +198,11 @@ class MyPlexResource(object):
         self.lastSeenAt = toDatetime(data.attrib.get('lastSeenAt'))
         self.provides = data.attrib.get('provides')
         self.owned = cast(bool, data.attrib.get('owned'))
+        self.owner = data.attrib.get('sourceTitle')
         self.home = cast(bool, data.attrib.get('home'))
         self.synced = cast(bool, data.attrib.get('synced'))
         self.presence = cast(bool, data.attrib.get('presence'))
+        self.sameNetwork = cast(bool, data.attrib.get('publicAddressMatches'))
         self.connections = [ResourceConnection(elem) for elem in data if elem.tag == 'Connection']
 
     def __repr__(self):

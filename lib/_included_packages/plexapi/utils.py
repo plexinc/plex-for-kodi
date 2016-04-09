@@ -21,7 +21,7 @@ def register_libtype(cls):
     return cls
 
 # This used to be a simple variable equal to '__NA__'. However, there has been need to
-# compare NA against None in some use cases. This object allows the internals of PlexAPI 
+# compare NA against None in some use cases. This object allows the internals of PlexAPI
 # to distinguish between unfetched values and fetched, but non-existent values.
 # (NA == None results to True; NA is None results to False)
 class _NA(object):
@@ -41,7 +41,7 @@ class PlexPartialObject(object):
         self.server = server
         self.initpath = initpath
         self._loadData(data)
-        
+
     def __eq__(self, other):
         return other is not None and self.type == other.type and self.key == other.key
 
@@ -61,7 +61,11 @@ class PlexPartialObject(object):
     @property
     def thumbUrl(self):
         return self.server.url(self.thumb)
-        
+
+    @property
+    def artUrl(self):
+        return self.server.url(self.art)
+
     def _getStreamURL(self, **params):
         if self.TYPE not in ('movie', 'episode', 'track'):
             raise Unsupported('Fetching stream URL for %s is unsupported.' % self.TYPE)
@@ -93,7 +97,7 @@ class PlexPartialObject(object):
             from plexapi.client import Client
             return Client(self.server, elem)
         return None
-        
+
     def _findStreams(self, streamtype):
         streams = []
         for media in self.media:
@@ -125,7 +129,7 @@ class PlexPartialObject(object):
 
     def isPartialObject(self):
         return not self.isFullObject()
-        
+
     def iterParts(self):
         for item in self.media:
             for part in item.parts:
@@ -183,7 +187,7 @@ def findItem(server, path, title):
 
 
 def isInt(string):
-    try: 
+    try:
         int(string)
         return True
     except ValueError:
@@ -214,7 +218,7 @@ def listItems(server, path, libtype=None, watched=None, bytag=False):
         except UnknownType:
             pass
     return items
-    
+
 
 def rget(obj, attrstr, default=None, delim='.'):
     try:
@@ -229,7 +233,7 @@ def rget(obj, attrstr, default=None, delim='.'):
         return value
     except:
         return default
-    
+
 
 def searchType(libtype):
     SEARCHTYPESSTRS = [str(k) for k in SEARCHTYPES.keys()]

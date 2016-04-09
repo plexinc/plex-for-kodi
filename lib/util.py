@@ -318,3 +318,9 @@ class Cron(threading.Thread):
     def cancelReceiver(self, receiver):
         if receiver in self._receivers:
             self._receivers.pop(self._receivers.index(receiver))
+
+
+def getProgressImage(obj):
+    pct = int((obj.viewOffset/float(obj.duration))*100)
+    pct = pct - pct % 2  # Round to even number - we have even numbered progress only
+    return 'script.plex/progress/{0}.png'.format(pct)

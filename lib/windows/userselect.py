@@ -44,14 +44,16 @@ class UserSelectWindow(kodigui.BaseWindow):
     def onAction(self, action):
         try:
             ID = action.getId()
-            if 57 < ID < 68 or ID in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_BACKSPACE):
+            if 57 < ID < 68:
+                if not xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
+                    item = self.userList.getSelectedItem()
+                    if not item.dataSource.protected:
+                        return
+                    self.setFocusId(400)
+                self.pinEntryClicked(ID + 142)
+            elif ID in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_BACKSPACE):
                 if xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
-                    if ID == 58:
-                        self.pinEntryClicked(210)
-                    elif ID in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_BACKSPACE):
-                        self.pinEntryClicked(211)
-                    else:
-                        self.pinEntryClicked(ID + 142)
+                    self.pinEntryClicked(211)
         except:
             util.ERROR()
 

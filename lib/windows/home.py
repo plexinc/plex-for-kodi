@@ -29,6 +29,9 @@ class HomeWindow(kodigui.BaseWindow):
     RA_MOVIES1_LIST_ID = 404
     RA_MOVIES2_LIST_ID = 405
 
+    PANEL_1WIDE_WIDTH = 251
+    PANEL_2WIDE_WIDTH = 479
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
 
@@ -112,8 +115,14 @@ class HomeWindow(kodigui.BaseWindow):
         self.sectionList.addItems(items)
 
     def showLibrary(self):
+        self.clearOnDeck()
+        self.clearRecentlyAdded()
         self.showOnDeck()
         self.showRecentlyAdded()
+
+    def clearOnDeck(self):
+        self.onDeck1List.reset()
+        self.onDeck2List.reset()
 
     def showOnDeck(self):
         ondeck = plex.PLEX.library.onDeck()
@@ -143,10 +152,8 @@ class HomeWindow(kodigui.BaseWindow):
 
         episodes = [e for e in ondeck if e.type == 'episode']
 
-        self.onDeck1List.reset()
-        self.onDeck2List.reset()
-
         if episodes:
+            episodes = episodes * 5
             eitems = []
             for ep in episodes[:5]:
                 mli = kodigui.ManagedListItem(thumbnailImage=ep.thumbUrl, data_source=ep)
@@ -158,15 +165,16 @@ class HomeWindow(kodigui.BaseWindow):
             self.onDeck1List.addItems(eitems[0:1])
             self.onDeck2List.addItems(eitems[1:5])
 
-            if len(eitems) < 2:
-                self.onDeck1List.setWidth(494)
-                self.onDeck2List.setWidth(501)
-            elif len(eitems) < 4:
-                self.onDeck2List.setWidth(272)
-                self.onDeck1List.setWidth(451)
+            if len(eitems) < 4:
+                self.onDeck2List.setWidth(self.PANEL_1WIDE_WIDTH)
             else:
-                self.onDeck2List.setWidth(501)
-                self.onDeck1List.setWidth(451)
+                self.onDeck2List.setWidth(self.PANEL_2WIDE_WIDTH)
+
+    def clearRecentlyAdded(self):
+        self.raTV1List.reset()
+        self.raTV2List.reset()
+        self.raMovies1List.reset()
+        self.raMovies2List.reset()
 
     def showRecentlyAdded(self):
         ra = plex.PLEX.library.recentlyAdded()
@@ -177,11 +185,6 @@ class HomeWindow(kodigui.BaseWindow):
 
         seasons = [s for s in ra if s.type == 'season']
         movies = [m for m in ra if m.type == 'movie']
-
-        self.raTV1List.reset()
-        self.raTV2List.reset()
-        self.raMovies1List.reset()
-        self.raMovies2List.reset()
 
         if seasons:
             sitems = []
@@ -202,15 +205,10 @@ class HomeWindow(kodigui.BaseWindow):
             self.raTV1List.addItems(sitems[0:1])
             self.raTV2List.addItems(sitems[1:5])
 
-            if len(sitems) < 2:
-                self.raTV1List.setWidth(494)
-                self.raTV2List.setWidth(501)
-            elif len(sitems) < 4:
-                self.raTV2List.setWidth(272)
-                self.raTV1List.setWidth(451)
+            if len(sitems) < 4:
+                self.raTV2List.setWidth(self.PANEL_1WIDE_WIDTH)
             else:
-                self.raTV2List.setWidth(501)
-                self.raTV1List.setWidth(451)
+                self.raTV2List.setWidth(self.PANEL_2WIDE_WIDTH)
 
         if movies:
             mitems = []
@@ -224,15 +222,10 @@ class HomeWindow(kodigui.BaseWindow):
             self.raMovies1List.addItems(mitems[0:1])
             self.raMovies2List.addItems(mitems[1:5])
 
-            if len(mitems) < 2:
-                self.raMovies1List.setWidth(494)
-                self.raMovies2List.setWidth(501)
-            elif len(mitems) < 4:
-                self.raMovies2List.setWidth(272)
-                self.raMovies1List.setWidth(952)
+            if len(mitems) < 4:
+                self.raMovies2List.setWidth(self.PANEL_1WIDE_WIDTH)
             else:
-                self.raMovies2List.setWidth(501)
-                self.raMovies1List.setWidth(952)
+                self.raMovies2List.setWidth(self.PANEL_2WIDE_WIDTH)
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()

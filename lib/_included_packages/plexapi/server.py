@@ -19,6 +19,31 @@ TOTAL_QUERIES = 0
 DEFAULT_BASEURI = 'http://localhost:32400'
 
 
+class Hub(object):
+
+    def __init__(self, server, data):
+        self.server = server
+        self._loadData(data)
+
+    def __repr__(self):
+        return '<%s:%s>' % (self.__class__.__name__, self.hubIdentifier)
+
+    def _loadData(self, data):
+        self.hubKey = data.attrib.get('hubKey')
+        self.type = data.attrib.get('type')
+        self.hubIdentifier = data.attrib.get('hubIdentifier')
+        self.size = int(data.attrib.get('size', 0))
+        self.title = data.attrib.get('title')
+        self.more = utils.cast(bool, data.attrib.get('more'))
+
+        self.items = []
+        for elem in data:
+            try:
+                self.items.append(utils.buildItem(self.server, elem, '/hubs'))
+            except UnknownType:
+                pass
+
+
 class PlexServer(object):
 
     def __init__(self, baseuri=None, token=None, session=None):
@@ -87,6 +112,12 @@ class PlexServer(object):
             if item.title == title:
                 return item
         raise NotFound('Invalid playlist title: %s' % title)
+
+    def hubs(self):
+        hubs = []
+        for elem in self.query('/hubs'):
+            hubs.append(Hub(self, elem))
+        return hubs
 
     def query(self, path, method=None, **kwargs):
         global TOTAL_QUERIES

@@ -18,18 +18,25 @@ def init():
         return False
 
     token, USER = token_user
-    print repr(token)
+
     USER = USER or myplex.MyPlexUser.tokenSignin(token)
     if not USER:
         util.DEBUG_LOG('SIGN IN: Failed to sign in')
         return False
 
-    PLEX = USER.getFirstServer(owned=True).connect()
+    serverResource = USER.getFirstServer(owned=True)
+    name = serverResource.name
+
+    PLEX = serverResource.connect()
     _setBase(PLEX)
 
     if not PLEX:
         util.DEBUG_LOG('SIGN IN: Failed to connect to server')
         return False
+
+    lastName = util.getSetting('last.server')
+    if lastName and lastName != name:
+        PLEX = getServer(USER, name)
 
     util.DEBUG_LOG('SIGN IN: Connected to server')
     return True
@@ -110,7 +117,23 @@ def authorize():
 
 
 def servers():
-    return [s for s in BASE.account().resources() if s.provides == 'server']
+    return [s for s in USER.resources() if s.provides == 'server']
+
+
+def getServer(user, name=None, owned=False):
+    serverResource = None
+    if name:
+        try:
+            serverResource = user.getResource(name)
+        except:
+            util.ERROR()
+
+    if not serverResource:
+        serverResource = user.getFirstServer(owned=owned)
+        name = serverResource.name
+        util.setSetting('last.server', name)
+
+    return serverResource and serverResource.connect()
 
 
 def switchUser(new_user, pin):
@@ -118,10 +141,14 @@ def switchUser(new_user, pin):
     global USER
 
     USER = myplex.MyPlexUser.switch(new_user, pin)
-    PLEX = USER.getFirstServer().connect()
+    name = util.getSetting('last.server')
+
+    PLEX = getServer(USER, name)
 
 
 def changeServer(server):
     global PLEX
+
+    util.setSetting('last.server', server.name)
 
     PLEX = server.connect()

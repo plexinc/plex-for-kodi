@@ -3,7 +3,7 @@ import xbmcgui
 import kodigui
 from lib import util
 from lib import plex
-from lib import compat
+import busy
 
 
 class HomeWindow(kodigui.BaseWindow):
@@ -20,14 +20,27 @@ class HomeWindow(kodigui.BaseWindow):
 
     CONTINUE_WATCHING_LIST_ID = 300
 
+    ONDECK_GROUP_ID = 500
     ONDECK1_LIST_ID = 400
     ONDECK2_LIST_ID = 401
 
+    ONDECK_MORE_BUTTON_GROUP_ID = 481
+
+    RA_TV_GROUP_ID = 501
     RA_TV1_LIST_ID = 402
     RA_TV2_LIST_ID = 403
 
+    RA_TV_MORE_BUTTON_GROUP_ID = 483
+
+    RA_MOVIES_GROUP_ID = 502
     RA_MOVIES1_LIST_ID = 404
     RA_MOVIES2_LIST_ID = 405
+
+    RA_MOVIES_MORE_BUTTON_GROUP_ID = 485
+
+    GROUP_1WIDE_WIDTH = 495
+    GROUP_2WIDE_WIDTH = 723
+    GROUP_3WIDE_WIDTH = 951
 
     PANEL_1WIDE_WIDTH = 251
     PANEL_2WIDE_WIDTH = 479
@@ -38,6 +51,15 @@ class HomeWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.sectionList = kodigui.ManagedControlList(self, self.SECTION_LIST_ID, 7)
         self.continueWatchingList = kodigui.ManagedControlList(self, self.CONTINUE_WATCHING_LIST_ID, 3)
+
+        self.onDeckGroup = self.getControl(self.ONDECK_GROUP_ID)
+        self.raTVGroup = self.getControl(self.RA_TV_GROUP_ID)
+        self.raMoviesGroup = self.getControl(self.RA_MOVIES_GROUP_ID)
+
+        self.onDeckMoreButtonGroup = self.getControl(self.ONDECK_MORE_BUTTON_GROUP_ID)
+        self.raTVMoreButtonGroup = self.getControl(self.RA_TV_MORE_BUTTON_GROUP_ID)
+        self.raMoviesMoreButtonGroup = self.getControl(self.RA_MOVIES_MORE_BUTTON_GROUP_ID)
+
         self.onDeck1List = kodigui.ManagedControlList(self, self.ONDECK1_LIST_ID, 1)
         self.onDeck2List = kodigui.ManagedControlList(self, self.ONDECK2_LIST_ID, 4)
         self.raTV1List = kodigui.ManagedControlList(self, self.RA_TV1_LIST_ID, 1)
@@ -75,14 +97,11 @@ class HomeWindow(kodigui.BaseWindow):
         elif xbmc.getCondVisibility('ControlGroup(100).HasFocus(0)'):
             self.setProperty('on.library', '')
 
+    @busy.dialog()
     def serverRefresh(self):
-        self.setProperty('busy', '1')
-        try:
-            self.displayServerAndUser()
-            self.showSections()
-            self.showLibrary()
-        finally:
-            self.setProperty('busy', '')
+        self.displayServerAndUser()
+        self.showSections()
+        self.showHubs()
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
@@ -114,61 +133,119 @@ class HomeWindow(kodigui.BaseWindow):
         self.sectionList.reset()
         self.sectionList.addItems(items)
 
-    def showLibrary(self):
+    def showHubs(self):
         self.clearOnDeck()
         self.clearRecentlyAdded()
-        self.showOnDeck()
-        self.showRecentlyAdded()
+        hubs = plex.PLEX.hubs()
+        for hub in hubs:
+            if hub.hubIdentifier == 'home.continue':
+                self.showContinue(hub)
+            elif hub.hubIdentifier == 'home.ondeck':
+                self.showOnDeck(hub)
+            elif hub.hubIdentifier == 'home.television.recent':
+                self.showTVRecent(hub)
+            elif hub.hubIdentifier == 'home.movies.recent':
+                self.showMoviesRecent(hub)
+
+    def createEpisodeListItem(self, ep):
+        footer = u'S{0} \u2022 E{1}'.format(ep.parentIndex, ep.index)
+        # Set descriptive Label for Kodi Screen Reader - not dislayed
+        label = u'Show: {0} Episode: {1} - {2}'.format(ep.grandparentTitle, footer, ep.title)
+        mli = kodigui.ManagedListItem(label, footer, thumbnailImage=ep.thumbUrl, data_source=ep)
+        mli.setProperty('footer1', ep.grandparentTitle)
+        mli.setProperty(
+            'footer2', '{0} / {1} / {2}'.format(
+                ep.title,
+                ep.originallyAvailableAt.strftime('%B %d, %Y').replace(' 0', ' '),  # Cheap day leading zero remove
+                util.durationToShortText(ep.duration)
+            )
+        )
+        prog = util.getProgressImage(ep)
+        if prog:
+            mli.setProperty('progress', prog)
+        elif not ep.isWatched:
+            mli.setProperty('unwatched', '1')
+
+        return mli
+
+    def createSeasonListItem(self, season):
+        mli = kodigui.ManagedListItem(thumbnailImage=season.thumbUrl, data_source=season)
+        mli.setProperty('footer1', season.parentTitle)
+        mli.setProperty('footer2', season.title)
+        mli.setProperty('leaf.count', str(season.leafCount))
+        return mli
+
+    def createMovieListItem(self, movie):
+        mli = kodigui.ManagedListItem(thumbnailImage=movie.thumbUrl, data_source=movie)
+        mli.setProperty('footer1', movie.title)
+        mli.setProperty('footer2', '{0} / {1}'.format(movie.year, util.durationToShortText(movie.duration)))
+        if not movie.isWatched:
+            mli.setProperty('unwatched', '1')
+        return mli
+
+    def createShowListItem(self, show):
+        mli = kodigui.ManagedListItem(thumbnailImage=show.thumbUrl, data_source=show)
+        mli.setProperty('footer1', show.title)
+        mli.setProperty('footer2', util.durationToShortText(show.duration))
+        mli.setProperty('leaf.count', str(show.leafCount))
+        return mli
+
+    def createListItem(self, obj):
+        if obj.type == 'episode':
+            return self.createEpisodeListItem(obj)
+        elif obj.type == 'season':
+            return self.createSeasonListItem(obj)
+        elif obj.type == 'movie':
+            return self.createMovieListItem(obj)
+        elif obj.type == 'show':
+            return self.createShowListItem(obj)
+        else:
+            util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
 
     def clearOnDeck(self):
+        self.continueWatchingList.reset()
         self.onDeck1List.reset()
         self.onDeck2List.reset()
 
-    def showOnDeck(self):
-        ondeck = plex.PLEX.library.onDeck()
-        if not ondeck:
+    def showContinue(self, hub):
+        if not hub.items:
             return
 
-        now = compat.datetime.datetime.now()
+        mitems = []
+        for movie in hub.items[:3]:
+            mli = kodigui.ManagedListItem(movie.title, thumbnailImage=movie.artUrl, data_source=movie)
+            mli.setProperty('progress', util.getProgressImage(movie))
+            mli.setProperty('footer1', movie.title)
+            mli.setProperty('footer2', '{0} / {1}'.format(movie.year, util.durationToShortText(movie.duration)))
+            mitems.append(mli)
 
-        movies = [
-            m for m in ondeck if m.type == 'movie' and (hasattr(m, 'lastViewedAt') and compat.timedelta_total_seconds(now - m.lastViewedAt) <= 604800)
-        ]
+        self.continueWatchingList.addItems(mitems)
 
-        self.continueWatchingList.reset()
+    def showOnDeck(self, hub):
+        if not hub.items:
+            return
 
-        if movies:
-            mitems = []
-            for movie in movies[:3]:
-                mli = kodigui.ManagedListItem(movie.title, thumbnailImage=movie.artUrl, data_source=movie)
-                mli.setProperty('progress', util.getProgressImage(movie))
-                print mli.getProperty('progress')
-                mitems.append(mli)
+        self.onDeckMoreButtonGroup.setVisible(hub.more)
 
-            if mitems:
-                mitems[0].setProperty('header', 'CONTINUE WATCHING')
+        items = []
+        for obj in hub.items[:5]:
+            mli = self.createListItem(obj)
+            if mli:
+                items.append(mli)
 
-            self.continueWatchingList.addItems(mitems)
+        # if eitems:
+        #     eitems[0].setProperty('header', 'ON DECK')
 
-        episodes = [e for e in ondeck if e.type == 'episode']
-
-        if episodes:
-            episodes = episodes * 5
-            eitems = []
-            for ep in episodes[:5]:
-                mli = kodigui.ManagedListItem(thumbnailImage=ep.thumbUrl, data_source=ep)
-                eitems.append(mli)
-
-            if eitems:
-                eitems[0].setProperty('header', 'ON DECK')
-
-            self.onDeck1List.addItems(eitems[0:1])
-            self.onDeck2List.addItems(eitems[1:5])
-
-            if len(eitems) < 4:
-                self.onDeck2List.setWidth(self.PANEL_1WIDE_WIDTH)
-            else:
-                self.onDeck2List.setWidth(self.PANEL_2WIDE_WIDTH)
+        self.onDeck1List.addItems(items[0:1])
+        self.onDeck2List.addItems(items[1:5])
+        if len(items) < 2:
+            self.onDeckGroup.setWidth(self.GROUP_1WIDE_WIDTH)
+        elif len(items) < 4:
+            self.onDeckGroup.setWidth(self.GROUP_2WIDE_WIDTH)
+            self.onDeck2List.setWidth(self.PANEL_1WIDE_WIDTH)
+        else:
+            self.onDeckGroup.setWidth(self.GROUP_3WIDE_WIDTH)
+            self.onDeck2List.setWidth(self.PANEL_2WIDE_WIDTH)
 
     def clearRecentlyAdded(self):
         self.raTV1List.reset()
@@ -176,67 +253,60 @@ class HomeWindow(kodigui.BaseWindow):
         self.raMovies1List.reset()
         self.raMovies2List.reset()
 
-    def showRecentlyAdded(self):
-        ra = plex.PLEX.library.recentlyAdded()
-        if not ra:
+    def showTVRecent(self, hub):
+        if not hub.items:
             return
 
-        IDs = {}
+        self.raTVMoreButtonGroup.setVisible(hub.more)
 
-        seasons = [s for s in ra if s.type == 'season']
-        movies = [m for m in ra if m.type == 'movie']
+        items = []
+        for obj in hub.items[:5]:
+            mli = self.createListItem(obj)
+            if mli:
+                items.append(mli)
 
-        if seasons:
-            sitems = []
-            for i, season in enumerate(seasons):
-                if i > 4:
-                    break
-                show = season.show()
-                ID = show.guid
-                if ID not in IDs:
-                    IDs[ID] = 1
-                    mli = kodigui.ManagedListItem(thumbnailImage=show.thumbUrl, data_source=season)
-                    sitems.append(mli)
-                    i += 1
+        self.raTV1List.addItems(items[0:1])
+        self.raTV2List.addItems(items[1:5])
 
-            if sitems:
-                sitems[0].setProperty('header', 'RECENTLY ADDED TELEVISION')
+        if len(items) < 2:
+            self.raTVGroup.setWidth(self.GROUP_1WIDE_WIDTH)
+        elif len(items) < 4:
+            self.raTVGroup.setWidth(self.GROUP_2WIDE_WIDTH)
+            self.raTV2List.setWidth(self.PANEL_1WIDE_WIDTH)
+        else:
+            self.raTVGroup.setWidth(self.GROUP_3WIDE_WIDTH)
+            self.raTV2List.setWidth(self.PANEL_2WIDE_WIDTH)
 
-            self.raTV1List.addItems(sitems[0:1])
-            self.raTV2List.addItems(sitems[1:5])
+    def showMoviesRecent(self, hub):
+        if not hub.items:
+            return
 
-            if len(sitems) < 4:
-                self.raTV2List.setWidth(self.PANEL_1WIDE_WIDTH)
-            else:
-                self.raTV2List.setWidth(self.PANEL_2WIDE_WIDTH)
+        self.raMoviesMoreButtonGroup.setVisible(hub.more and True or False)
 
-        if movies:
-            mitems = []
-            for movie in movies[0:5]:
-                mli = kodigui.ManagedListItem(thumbnailImage=movie.thumbUrl, data_source=movie)
-                mitems.append(mli)
+        items = []
+        for obj in hub.items[0:5]:
+            mli = self.createListItem(obj)
+            if mli:
+                items.append(mli)
 
-            if mitems:
-                mitems[0].setProperty('header', 'RECENTLY ADDED MOVIES')
+        self.raMovies1List.addItems(items[0:1])
+        self.raMovies2List.addItems(items[1:5])
 
-            self.raMovies1List.addItems(mitems[0:1])
-            self.raMovies2List.addItems(mitems[1:5])
-
-            if len(mitems) < 4:
-                self.raMovies2List.setWidth(self.PANEL_1WIDE_WIDTH)
-            else:
-                self.raMovies2List.setWidth(self.PANEL_2WIDE_WIDTH)
+        if len(items) < 2:
+            self.raMoviesGroup.setWidth(self.GROUP_1WIDE_WIDTH)
+        elif len(items) < 4:
+            self.raMoviesGroup.setWidth(self.GROUP_2WIDE_WIDTH)
+            self.raMovies2List.setWidth(self.PANEL_1WIDE_WIDTH)
+        else:
+            self.raMoviesGroup.setWidth(self.GROUP_3WIDE_WIDTH)
+            self.raMovies2List.setWidth(self.PANEL_2WIDE_WIDTH)
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()
         print item.dataSource
 
     def selectServer(self):
-        self.setProperty('busy', '1')
-        try:
-            servers = plex.servers()
-        finally:
-            self.setProperty('busy', '')
+        servers = busy.widthDialog(plex.servers, None)
 
         display = [s.name for s in servers]
         idx = xbmcgui.Dialog().select('Select Server', display)

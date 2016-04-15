@@ -87,15 +87,15 @@ class Movie(Video):
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
-    
+
     @property
     def actors(self):
         return self.roles
-    
+
     @property
     def isWatched(self):
         return bool(self.viewCount > 0)
-        
+
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)
 
@@ -127,7 +127,7 @@ class Show(Video):
     @property
     def actors(self):
         return self.roles
-        
+
     @property
     def isWatched(self):
         return bool(self.viewedLeafCount == self.leafCount)
@@ -170,8 +170,11 @@ class Season(Video):
         self.leafCount = utils.cast(int, data.attrib.get('leafCount', NA))
         self.parentKey = data.attrib.get('parentKey', NA)
         self.parentRatingKey = data.attrib.get('parentRatingKey', NA)
+        self.parentTitle = data.attrib.get('parentTitle', NA)
+        self.parentThumb = data.attrib.get('parentThumb', NA)
+        self.index = data.attrib.get('index', NA)
         self.viewedLeafCount = utils.cast(int, data.attrib.get('viewedLeafCount', NA))
-        
+
     @property
     def isWatched(self):
         return bool(self.viewedLeafCount == self.leafCount)
@@ -215,6 +218,7 @@ class Episode(Video):
         self.grandparentTitle = data.attrib.get('grandparentTitle', NA)
         self.guid = data.attrib.get('guid', NA)
         self.originallyAvailableAt = utils.toDatetime(data.attrib.get('originallyAvailableAt', NA), '%Y-%m-%d')
+        self.index = data.attrib.get('index', NA)
         self.parentIndex = data.attrib.get('parentIndex', NA)
         self.parentKey = data.attrib.get('parentKey', NA)
         self.parentRatingKey = data.attrib.get('parentRatingKey', NA)
@@ -242,7 +246,7 @@ class Episode(Video):
     @property
     def thumbUrl(self):
         return self.server.url(self.grandparentThumb)
-        
+
     def getStreamURL(self, **params):
         return self._getStreamURL(videoResolution='800x600', **params)
 

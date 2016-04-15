@@ -130,6 +130,7 @@ class UserSelectWindow(kodigui.BaseWindow):
             item.setProperty('editing.pin', '')
 
     def userSelected(self, user, pin=None):
+        xbmc.sleep(500)
         self.user = user
         self.pin = pin
         self.doClose()

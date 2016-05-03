@@ -121,17 +121,17 @@ def durationToText(seconds):
     Converts seconds to a short user friendly string
     Example: 143 -> 2m 23s
     """
-    days = int(seconds/86400000)
+    days = int(seconds / 86400000)
     if days:
         return '{0} day{1}'.format(days, days > 1 and 's' or '')
     left = seconds % 86400000
-    hours = int(left/3600000)
+    hours = int(left / 3600000)
     if hours:
         hours = '{0} hr{1} '.format(hours, hours > 1 and 's' or '')
     else:
         hours = ''
     left = left % 3600000
-    mins = int(left/60000)
+    mins = int(left / 60000)
     if mins:
         return hours + '{0} min{1}'.format(mins, mins > 1 and 's' or '')
     secs = int(left % 60000)
@@ -145,17 +145,17 @@ def durationToShortText(seconds):
     Converts seconds to a short user friendly string
     Example: 143 -> 2m 23s
     """
-    days = int(seconds/86400000)
+    days = int(seconds / 86400000)
     if days:
         return '{0} day'.format(days)
     left = seconds % 86400000
-    hours = int(left/3600000)
+    hours = int(left / 3600000)
     if hours:
         hours = '{0} hr '.format(hours)
     else:
         hours = ''
     left = left % 3600000
-    mins = int(left/60000)
+    mins = int(left / 60000)
     if mins:
         return hours + '{0} min'.format(mins)
     elif hours:
@@ -178,7 +178,7 @@ def simpleSize(size):
     if size > 0:
         i = int(math.floor(math.log(size, 1024)))
         p = math.pow(1024, i)
-        s = round(size/p, 2)
+        s = round(size / p, 2)
     if (s > 0):
         return '%s %s' % (s, SIZE_NAMES[i])
     else:
@@ -217,11 +217,14 @@ CRON = None
 
 
 class CronReceiver():
-    def tick(self): pass
+    def tick(self):
+        pass
 
-    def halfHour(self): pass
+    def halfHour(self):
+        pass
 
-    def day(self): pass
+    def day(self):
+        pass
 
 
 class Cron(threading.Thread):
@@ -325,6 +328,6 @@ class Cron(threading.Thread):
 def getProgressImage(obj):
     if not obj.viewOffset:
         return ''
-    pct = int((obj.viewOffset/float(obj.duration))*100)
+    pct = int((obj.viewOffset / float(obj.duration)) * 100)
     pct = pct - pct % 2  # Round to even number - we have even numbered progress only
     return 'script.plex/progress/{0}.png'.format(pct)

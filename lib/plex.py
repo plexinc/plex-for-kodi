@@ -25,6 +25,8 @@ def init():
         return False
 
     serverResource = USER.getFirstServer(owned=True)
+    if not serverResource:
+        serverResource - USER.getFirstServer()
     name = serverResource.name
 
     PLEX = serverResource.connect()

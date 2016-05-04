@@ -9,7 +9,7 @@ from plexapi import log, utils
 from plexapi import audio, video, playlist  # noqa; required
 from plexapi.compat import quote
 from plexapi.client import Client
-from plexapi.exceptions import BadRequest, NotFound
+from plexapi.exceptions import BadRequest, NotFound, UnknownType
 from plexapi.library import Library
 from plexapi.myplex import MyPlexAccount
 from plexapi.playqueue import PlayQueue
@@ -113,9 +113,14 @@ class PlexServer(object):
                 return item
         raise NotFound('Invalid playlist title: %s' % title)
 
-    def hubs(self):
+    def hubs(self, section=None):
         hubs = []
-        for elem in self.query('/hubs'):
+
+        q = '/hubs'
+        if section:
+            q = '/hubs/sections/%s' % section
+
+        for elem in self.query(q):
             hubs.append(Hub(self, elem))
         return hubs
 

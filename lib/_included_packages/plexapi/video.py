@@ -245,7 +245,10 @@ class Episode(Video):
 
     @property
     def thumbUrl(self):
-        return self.server.url(self.grandparentThumb)
+        try:
+            return self.server.url(self.grandparentThumb)
+        except KeyError:
+            return self.server.url(self.parentThumb)
 
     def getStreamURL(self, **params):
         return self._getStreamURL(videoResolution='800x600', **params)

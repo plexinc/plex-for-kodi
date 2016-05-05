@@ -1,3 +1,5 @@
+import threading
+
 import xbmc
 import xbmcgui
 
@@ -12,15 +14,38 @@ class SectionHubsTask(backgroundthread.Task):
     def setup(self, sections, callback):
         self.sections = sections
         self.callback = callback
+        self.lock = threading.Lock()
         return self
 
+    def moveUpSection(self, section):
+        if section not in self.sections:
+            return
+
+        self.lock.acquire()
+        try:
+            self.sections.pop(self.sections.index(section))
+            self.sections.insert(0, section)
+        finally:
+            self.lock.release()
+
     def run(self):
-        for section in [None] + self.sections:
+        while self.sections:
+            self.lock.acquire()
+            try:
+                section = self.sections.pop(0)
+            finally:
+                self.lock.release()
+
             if self.isCanceled():
                 return
 
-            hubs = plex.PLEX.hubs(section and section.key or None)
+            hubs = plex.PLEX.hubs(section.key)
             self.callback(section, hubs)
+
+
+class HomeSection(object):
+    key = None
+    title = 'Home'
 
 
 class HomeWindow(kodigui.BaseWindow):
@@ -37,10 +62,13 @@ class HomeWindow(kodigui.BaseWindow):
 
     CONTINUE_WATCHING_LIST_ID = 400
     ONDECK_LIST_ID = 401
-    RA_TV_LIST_ID = 402
-    RA_MOVIES_LIST_ID = 403
-    RA_MUSIC_LIST_ID = 404
-    RA_VIDEOS_LIST_ID = 405
+    RAIRED_TV_LIST_ID = 402
+    RA_TV_LIST_ID = 403
+    RA_MOVIES_LIST_ID = 404
+    RA_MUSIC_LIST_ID = 405
+    RA_VIDEOS_LIST_ID = 406
+    CONTINUE_WATCHING_TV_LIST_ID = 407
+    START_WATCHING_TV_LIST_ID = 408
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -53,10 +81,15 @@ class HomeWindow(kodigui.BaseWindow):
         self.continueWatchingList = kodigui.ManagedControlList(self, self.CONTINUE_WATCHING_LIST_ID, 5)
 
         self.onDeckList = kodigui.ManagedControlList(self, self.ONDECK_LIST_ID, 5)
+        self.rAiredTVList = kodigui.ManagedControlList(self, self.RAIRED_TV_LIST_ID, 5)
         self.raTVList = kodigui.ManagedControlList(self, self.RA_TV_LIST_ID, 5)
         self.raMoviesList = kodigui.ManagedControlList(self, self.RA_MOVIES_LIST_ID, 5)
         self.raMusicList = kodigui.ManagedControlList(self, self.RA_MUSIC_LIST_ID, 5)
         self.raVideosList = kodigui.ManagedControlList(self, self.RA_VIDEOS_LIST_ID, 5)
+
+        self.cwTVList = kodigui.ManagedControlList(self, self.CONTINUE_WATCHING_TV_LIST_ID, 5)
+
+        self.swTVList = kodigui.ManagedControlList(self, self.START_WATCHING_TV_LIST_ID, 5)
 
         self.bottomItem = 0
         self.serverRefresh()
@@ -64,7 +97,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def onAction(self, action):
         try:
-            if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT):
+            if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
                 self.checkSectionItem()
         except:
             util.ERROR()
@@ -80,8 +113,6 @@ class HomeWindow(kodigui.BaseWindow):
             self.userOptions()
 
     def onFocus(self, controlID):
-        print controlID
-
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID + 100))
 
@@ -97,7 +128,7 @@ class HomeWindow(kodigui.BaseWindow):
     def serverRefresh(self):
         self.displayServerAndUser()
         self.showSections()
-        self.showHubs()
+        self.showHubs(HomeSection)
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
@@ -117,30 +148,26 @@ class HomeWindow(kodigui.BaseWindow):
 
     def sectionChanged(self, section):
         self.setProperty('hub.focus', '')
-        if section:
-            util.DEBUG_LOG('Section chaged: {0}'.format(repr(section.title)))
-            self.showHubs(section=section.key)
-        else:
-            util.DEBUG_LOG('Section chaged: Home')
-            self.showHubs()
+        util.DEBUG_LOG('Section chaged: {0}'.format(repr(section.title)))
+        self.showHubs(section)
 
     def sectionHubsCallback(self, section, hubs):
-        self.sectionHubs[section and section.key or None] = hubs
+        self.sectionHubs[section.key] = hubs
         if self.lastSection == section:
-            self.showHubs(section and section.key or None)
+            self.showHubs(section)
 
     def showSections(self):
         self.sectionHubs = {}
         items = []
 
-        homemli = kodigui.ManagedListItem('Home')
+        homemli = kodigui.ManagedListItem('Home', data_source=HomeSection)
         homemli.setProperty('is.home', '1')
         homemli.setProperty('item', '1')
         items.append(homemli)
 
         sections = plex.PLEX.library.sections()
 
-        self.task = SectionHubsTask().setup(sections, self.sectionHubsCallback)
+        self.task = SectionHubsTask().setup([HomeSection] + sections, self.sectionHubsCallback)
         backgroundthread.BGThreader.addTask(self.task)
 
         for section in sections:
@@ -158,10 +185,13 @@ class HomeWindow(kodigui.BaseWindow):
         self.sectionList.addItems(items)
 
     def showHubs(self, section=None):
-        self.clearOnDeck()
-        self.clearRecentlyAdded()
+        self.clearHubs()
 
-        hubs = self.sectionHubs.get(section, [])
+        hubs = self.sectionHubs.get(section.key)
+        if not hubs:
+            if self.task:
+                self.task.moveUpSection(section)
+            return
 
         for hub in hubs:
             util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
@@ -177,6 +207,12 @@ class HomeWindow(kodigui.BaseWindow):
                 self.showMusicRecent(hub)
             elif hub.hubIdentifier in ('home.videos.recent', 'video.recent'):
                 self.showVideosRecent(hub)
+            elif hub.hubIdentifier in ('tv.recentlyaired',):
+                self.showTVRecentAired(hub)
+            elif hub.hubIdentifier in ('tv.inprogress',):
+                self.showTVContinue(hub)
+            elif hub.hubIdentifier in ('tv.startwatching',):
+                self.showTVStartWatching(hub)
 
     def createEpisodeListItem(self, ep):
         mli = kodigui.ManagedListItem(ep.grandparentTitle, thumbnailImage=ep.thumbUrl, data_source=ep)
@@ -216,9 +252,28 @@ class HomeWindow(kodigui.BaseWindow):
         else:
             util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
 
-    def clearOnDeck(self):
+    def clearHubs(self):
         self.continueWatchingList.reset()
         self.onDeckList.reset()
+        self.rAiredTVList.reset()
+        self.raTVList.reset()
+        self.raMoviesList.reset()
+        self.raMusicList.reset()
+        self.raVideosList.reset()
+        self.cwTVList.reset()
+        self.swTVList.reset()
+
+    def showHub(self, control, hub):
+        if not hub.items:
+            return
+
+        items = []
+        for obj in hub.items:
+            mli = self.createListItem(obj)
+            if mli:
+                items.append(mli)
+
+        control.addItems(items)
 
     def showContinue(self, hub):
         if not hub.items:
@@ -232,71 +287,38 @@ class HomeWindow(kodigui.BaseWindow):
 
         self.continueWatchingList.addItems(mitems)
 
-    def showOnDeck(self, hub):
+    def showTVContinue(self, hub):
         if not hub.items:
             return
 
-        items = []
-        for obj in hub.items:
-            mli = self.createListItem(obj)
-            if mli:
-                items.append(mli)
+        sitems = []
+        for show in hub.items:
+            mli = kodigui.ManagedListItem(show.title, thumbnailImage=show.thumbUrl, data_source=show)
+            mli.setProperty('progress', util.getProgressImage(show))
+            sitems.append(mli)
 
-        self.onDeckList.addItems(items)
+        self.cwTVList.addItems(sitems)
 
-    def clearRecentlyAdded(self):
-        self.raTVList.reset()
-        self.raMoviesList.reset()
-        self.raMusicList.reset()
-        self.raVideosList.reset()
+    def showOnDeck(self, hub):
+        self.showHub(self.onDeckList, hub)
+
+    def showTVRecentAired(self, hub):
+        return self.showHub(self.rAiredTVList, hub)
 
     def showTVRecent(self, hub):
-        if not hub.items:
-            return
-
-        items = []
-        for obj in hub.items:
-            mli = self.createListItem(obj)
-            if mli:
-                items.append(mli)
-
-        self.raTVList.addItems(items)
+        return self.showHub(self.raTVList, hub)
 
     def showMoviesRecent(self, hub):
-        if not hub.items:
-            return
-
-        items = []
-        for obj in hub.items:
-            mli = self.createListItem(obj)
-            if mli:
-                items.append(mli)
-
-        self.raMoviesList.addItems(items)
+        return self.showHub(self.raMoviesList, hub)
 
     def showMusicRecent(self, hub):
-        if not hub.items:
-            return
-
-        items = []
-        for obj in hub.items:
-            mli = self.createListItem(obj)
-            if mli:
-                items.append(mli)
-
-        self.raMusicList.addItems(items)
+        return self.showHub(self.raMusicList, hub)
 
     def showVideosRecent(self, hub):
-        if not hub.items:
-            return
+        self.showHub(self.raVideosList, hub)
 
-        items = []
-        for obj in hub.items:
-            mli = self.createListItem(obj)
-            if mli:
-                items.append(mli)
-
-        self.raVideosList.addItems(items)
+    def showTVStartWatching(self, hub):
+        return self.showHub(self.swTVList, hub)
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()

@@ -33,7 +33,7 @@ class Artist(Audio):
         self.art = data.attrib.get('art', NA)
         self.guid = data.attrib.get('guid', NA)
         self.key = self.key.replace('/children', '')  # plex bug? http://bit.ly/1Sc2J3V
-        self.location = self._findLocation(data)  
+        self.location = self._findLocation(data)
         if self.isFullObject():
             self.countries = [media.Country(self.server, e) for e in data if e.tag == media.Country.TYPE]
             self.genres = [media.Genre(self.server, e) for e in data if e.tag == media.Genre.TYPE]
@@ -57,7 +57,7 @@ class Artist(Audio):
 
     def get(self, title):
         return self.track(title)
-        
+
     def isFullObject(self):
         # plex bug? http://bit.ly/1Sc2J3V
         fixed_key = self.key.replace('/children', '')
@@ -74,7 +74,7 @@ class Album(Audio):
     def _loadData(self, data):
         super(Album, self)._loadData(data)
         self.art = data.attrib.get('art', NA)
-        self.key = self.key.replace('/children', '')  # plex bug? http://bit.ly/1Sc2J3V
+        # self.key = self.key.replace('/children', '')  # plex bug? http://bit.ly/1Sc2J3V
         self.originallyAvailableAt = utils.toDatetime(data.attrib.get('originallyAvailableAt', NA), '%Y-%m-%d')
         self.parentKey = data.attrib.get('parentKey', NA)
         self.parentRatingKey = data.attrib.get('parentRatingKey', NA)
@@ -95,7 +95,7 @@ class Album(Audio):
 
     def get(self, title):
         return self.track(title)
-        
+
     def isFullObject(self):
         # plex bug? http://bit.ly/1Sc2J3V
         fixed_key = self.key.replace('/children', '')
@@ -154,6 +154,6 @@ class Track(Audio):
 
     def artist(self):
         return utils.listItems(self.server, self.grandparentKey)[0]
-        
+
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)

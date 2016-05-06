@@ -41,7 +41,7 @@ class Hub(object):
             try:
                 self.items.append(utils.buildItem(self.server, elem, '/hubs'))
             except UnknownType:
-                pass
+                print 'Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type'))
 
 
 class PlexServer(object):
@@ -53,8 +53,8 @@ class PlexServer(object):
         data = self._connect()
         self.friendlyName = data.attrib.get('friendlyName')
         self.machineIdentifier = data.attrib.get('machineIdentifier')
-        self.myPlex = bool(data.attrib.get('myPlex'))
-        self.multiuser = bool(data.attrib.get('multiuser'))
+        self.myPlex = bool(data.attrib.get('myPlex') == '1')
+        self.multiuser = bool(data.attrib.get('multiuser') == '1')
         self.myPlexMappingState = data.attrib.get('myPlexMappingState')
         self.myPlexSigninState = data.attrib.get('myPlexSigninState')
         self.myPlexSubscription = data.attrib.get('myPlexSubscription')
@@ -64,6 +64,7 @@ class PlexServer(object):
         self.transcoderActiveVideoSessions = int(data.attrib.get('transcoderActiveVideoSessions', 0))
         self.updatedAt = int(data.attrib.get('updatedAt', 0))
         self.version = data.attrib.get('version')
+        self.isSecure = self.baseuri.startswith('https://')
 
     def __repr__(self):
         return '<%s:%s>' % (self.__class__.__name__, self.baseuri)
@@ -77,7 +78,10 @@ class PlexServer(object):
 
     @property
     def library(self):
-        return Library(self, self.query('/library/'))
+        if self.platform == 'cloudsync':
+            return Library(self, None)
+        else:
+            return Library(self, self.query('/library/'))
 
     def account(self):
         data = self.query('/myplex/account')
@@ -113,14 +117,18 @@ class PlexServer(object):
                 return item
         raise NotFound('Invalid playlist title: %s' % title)
 
-    def hubs(self, section=None):
+    def hubs(self, section=None, count=None):
         hubs = []
 
         q = '/hubs'
+        params = {}
         if section:
             q = '/hubs/sections/%s' % section
 
-        for elem in self.query(q):
+        if count is not None:
+            params = {'count': count}
+
+        for elem in self.query(q, params=params):
             hubs.append(Hub(self, elem))
         return hubs
 
@@ -128,6 +136,7 @@ class PlexServer(object):
         global TOTAL_QUERIES
         TOTAL_QUERIES += 1
         url = self.url(path)
+        print url
         method = method or self.session.get
         log.info('%s %s', method.__name__.upper(), url)
         response = method(url, headers=self.headers(), timeout=TIMEOUT, **kwargs)
@@ -135,6 +144,7 @@ class PlexServer(object):
             codename = codes.get(response.status_code)[0]
             raise BadRequest('(%s) %s' % (response.status_code, codename))
         data = response.text.encode('utf8')
+
         return ElementTree.fromstring(data) if data else None
 
     def search(self, query, mediatype=None):

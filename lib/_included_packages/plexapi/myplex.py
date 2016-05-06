@@ -104,6 +104,12 @@ class MyPlexUser(object):
         """
         return _findResource(self.resources(), search, port)
 
+    def getResourceByID(self, ID):
+        """ Searches by server.clientIdentifier
+            from the list of available for this PlexUser.
+        """
+        return _findResourceByID(self.resources(), ID)
+
     def getFirstServer(self, owned=False):
         for resource in self.resources():
             if resource.provides == 'server' and (not owned or resource.owned):
@@ -180,6 +186,12 @@ class MyPlexAccount(object):
         """
         return _findResource(self.resources(), search, port)
 
+    def getResourceByID(self, ID):
+        """ Searches by server.clientIdentifier
+            from the list of available for this PlexAccount.
+        """
+        return _findResourceByID(self.resources(), ID)
+
 
 class MyPlexResource(object):
     RESOURCES = 'https://plex.tv/api/resources?includeHttps=1'
@@ -210,7 +222,7 @@ class MyPlexResource(object):
 
     def connect(self, ssl=None):
         # Only check non-local connections unless we own the resource
-        connections = sorted(self.connections, key=lambda c:c.local, reverse=True)
+        connections = sorted(self.connections, key=lambda c: c.local, reverse=True)
         if not self.owned:
             connections = [c for c in connections if c.local is False]
         # Try connecting to all known resource connections in parellel, but
@@ -410,3 +422,14 @@ def _findResource(resources, search, port=32400):
             return server
     log.info('Unable to find server: %s', search)
     raise NotFound('Unable to find server: %s' % search)
+
+
+def _findResourceByID(resources, ID):
+    """ Searches server.clientIdentifier """
+    log.info('Looking for server by ID: %s', ID)
+    for server in resources:
+        if ID == server.clientIdentifier:
+            log.info('Server found by ID: %s', server)
+            return server
+    log.info('Unable to find server by ID: %s', ID)
+    raise NotFound('Unable to find server by ID: %s' % ID)

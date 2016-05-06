@@ -23,6 +23,8 @@ class SectionHubsTask(backgroundthread.Task):
 
         self.lock.acquire()
         try:
+            if section not in self.sections:  # In case it was removed before the lock was acquired
+                return
             self.sections.pop(self.sections.index(section))
             self.sections.insert(0, section)
         finally:
@@ -39,7 +41,7 @@ class SectionHubsTask(backgroundthread.Task):
             if self.isCanceled():
                 return
 
-            hubs = plex.PLEX.hubs(section.key)
+            hubs = plex.PLEX.hubs(section.key, count=10)
             self.callback(section, hubs)
 
 
@@ -72,8 +74,9 @@ class HomeWindow(kodigui.BaseWindow):
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
-        self.lastSection = None
+        self.lastSection = HomeSection
         self.task = None
+        self.closeOption = None
         self.sectionHubs = {}
 
     def onFirstInit(self):
@@ -132,6 +135,9 @@ class HomeWindow(kodigui.BaseWindow):
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
+        if not item:
+            return
+
         if item.getProperty('item'):
             if item.dataSource != self.lastSection:
                 self.lastSection = item.dataSource
@@ -142,7 +148,7 @@ class HomeWindow(kodigui.BaseWindow):
     def displayServerAndUser(self):
         self.setProperty('server.name', plex.PLEX.friendlyName)
         self.setProperty('server.icon', 'script.plex/home/device/plex.png')  # TODO: Set dynamically to whatever it should be if that's how it even works :)
-        self.setProperty('server.iconmod', 'script.plex/home/device/lock.png')
+        self.setProperty('server.iconmod', plex.PLEX.isSecure and 'script.plex/home/device/lock.png' or '')
         self.setProperty('user.name', plex.USER.title)
         self.setProperty('user.avatar', plex.USER.thumb)
 
@@ -181,8 +187,11 @@ class HomeWindow(kodigui.BaseWindow):
             mli = kodigui.ManagedListItem()
             items.append(mli)
 
+        self.lastSection = HomeSection
         self.sectionList.reset()
         self.sectionList.addItems(items)
+
+        self.setFocusId(self.SECTION_LIST_ID)
 
     def showHubs(self, section=None):
         self.clearHubs()
@@ -248,6 +257,8 @@ class HomeWindow(kodigui.BaseWindow):
         elif obj.type == 'show':
             return self.createShowListItem(obj)
         elif obj.type == 'album':
+            return self.createSeasonListItem(obj)
+        elif obj.type == 'track':
             return self.createSeasonListItem(obj)
         else:
             util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
@@ -336,7 +347,17 @@ class HomeWindow(kodigui.BaseWindow):
         self.serverRefresh()
 
     def userOptions(self):
-        pass
+        options = []
+        if plex.BASE.multiuser and plex.OWNED:
+            options.append(('switch', 'Switch User...'))
+        options.append(('signout', 'Sign Out'))
+
+        idx = xbmcgui.Dialog().select('User Options', [o[1] for o in options])
+        if idx < 0:
+            return
+
+        self.closeOption = options[idx][0]
+        self.doClose()
 
     def finished(self):
         if self.task:

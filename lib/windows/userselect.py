@@ -83,7 +83,7 @@ class UserSelectWindow(kodigui.BaseWindow):
     def start(self):
         self.setProperty('busy', '1')
         try:
-            users = plex.PLEX.account().users()
+            users = plex.BASE.account().users()
 
             items = []
             for user in users:

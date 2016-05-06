@@ -4,13 +4,14 @@ import util
 
 PLEX = None
 BASE = None
+OWNED = False
 
 USER = None
 
 
 def init():
-    global PLEX
-    global USER
+    util.DEBUG_LOG('Initializing...')
+    global PLEX, OWNED, USER
 
     token_user = getToken()
 
@@ -25,9 +26,10 @@ def init():
         return False
 
     serverResource = USER.getFirstServer(owned=True)
-    if not serverResource:
-        serverResource - USER.getFirstServer()
-    name = serverResource.name
+    if serverResource:
+        OWNED = True
+    else:
+        serverResource = USER.getFirstServer()
 
     PLEX = serverResource.connect()
     _setBase(PLEX)
@@ -36,12 +38,15 @@ def init():
         util.DEBUG_LOG('SIGN IN: Failed to connect to server')
         return False
 
-    lastName = util.getSetting('last.server')
-    if lastName and lastName != name:
-        PLEX = getServer(USER, name)
-
     util.DEBUG_LOG('SIGN IN: Connected to server')
     return True
+
+
+def initSingleUser():
+    global PLEX
+    lastID = util.getSetting('last.server.{0}'.format(USER.id))
+    if lastID and lastID != PLEX.machineIdentifier:
+        PLEX = getServer(USER, lastID)
 
 
 def _setBase(server):
@@ -122,35 +127,45 @@ def servers():
     return [s for s in USER.resources() if s.provides == 'server']
 
 
-def getServer(user, name=None, owned=False):
+def getServer(user, ID=None, owned=False):
     serverResource = None
-    if name:
+    if ID:
         try:
-            serverResource = user.getResource(name)
+            serverResource = user.getResourceByID(ID)
         except:
             util.ERROR()
 
     if not serverResource:
         serverResource = user.getFirstServer(owned=owned)
-        name = serverResource.name
-        util.setSetting('last.server', name)
+        ID = serverResource.clientIdentifier
+
+    util.setSetting('last.server.{0}'.format(user.id), ID)
 
     return serverResource and serverResource.connect()
 
 
 def switchUser(new_user, pin):
-    global PLEX
-    global USER
+    global PLEX, USER
 
     USER = myplex.MyPlexUser.switch(new_user, pin)
-    name = util.getSetting('last.server')
+    ID = util.getSetting('last.server.{0}'.format(USER.id))
 
-    PLEX = getServer(USER, name)
+    PLEX = getServer(USER, ID)
 
 
 def changeServer(server):
     global PLEX
 
-    util.setSetting('last.server', server.name)
+    util.setSetting('last.server.{0}'.format(USER.id), server.clientIdentifier)
 
     PLEX = server.connect()
+
+
+def signOut():
+    util.DEBUG_LOG('Signing out')
+    global PLEX, BASE, USER, OWNED
+    util.setSetting('auth.token', '')
+    PLEX = None
+    BASE = None
+    USER = None
+    OWNED = False

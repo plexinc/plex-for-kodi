@@ -60,7 +60,10 @@ class PlexPartialObject(object):
 
     @property
     def thumbUrl(self):
-        return self.server.url(self.thumb)
+        try:
+            return self.server.url(self.thumb)
+        except KeyError:
+            return ''
 
     @property
     def artUrl(self):

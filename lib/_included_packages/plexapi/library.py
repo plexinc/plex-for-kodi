@@ -12,10 +12,11 @@ class Library(object):
 
     def __init__(self, server, data):
         self.server = server
-        self.identifier = data.attrib.get('identifier')
-        self.mediaTagVersion = data.attrib.get('mediaTagVersion')
-        self.title1 = data.attrib.get('title1')
-        self.title2 = data.attrib.get('title2')
+        if data:
+            self.identifier = data.attrib.get('identifier')
+            self.mediaTagVersion = data.attrib.get('mediaTagVersion')
+            self.title1 = data.attrib.get('title1')
+            self.title2 = data.attrib.get('title2')
 
     def __repr__(self):
         return '<Library:%s>' % self.title1.encode('utf8')
@@ -26,6 +27,7 @@ class Library(object):
             MovieSection.TYPE: MovieSection,
             ShowSection.TYPE: ShowSection,
             MusicSection.TYPE: MusicSection,
+            PhotoSection.TYPE: PhotoSection
         }
         path = '/library/sections'
         for elem in self.server.query(path):
@@ -250,6 +252,12 @@ class MusicSection(LibrarySection):
 
     def searchTracks(self, **kwargs):
         return self.search(libtype='track', **kwargs)
+
+
+class PhotoSection(LibrarySection):
+    ALLOWED_FILTERS = ()
+    ALLOWED_SORT = ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort')
+    TYPE = 'photo'
 
 
 @utils.register_libtype

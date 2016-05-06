@@ -14,6 +14,7 @@ class Video(utils.PlexPartialObject):
         self.key = data.attrib.get('key', NA)
         self.lastViewedAt = utils.toDatetime(data.attrib.get('lastViewedAt', NA))
         self.librarySectionID = data.attrib.get('librarySectionID', NA)
+        self.ratingCount = utils.cast(int, data.attrib.get('ratingCount', NA))
         self.ratingKey = data.attrib.get('ratingKey', NA)
         self.summary = data.attrib.get('summary', NA)
         self.thumb = data.attrib.get('thumb', NA)
@@ -258,3 +259,25 @@ class Episode(Video):
 
     def show(self):
         return utils.listItems(self.server, self.grandparentKey)[0]
+
+
+@utils.register_libtype
+class Clip(Video):
+    TYPE = 'clip'
+
+    def _loadData(self, data):
+        super(Clip, self)._loadData(data)
+        self.grandparentTitle = data.attrib.get('grandparentTitle', NA)
+        self.itemID = data.attrib.get('itemID', NA)
+        self.art = data.attrib.get('art', NA)
+        self.index = data.attrib.get('index', NA)
+        self.year = utils.cast(int, data.attrib.get('year', NA))
+        self.originallyAvailableAt = utils.toDatetime(data.attrib.get('originallyAvailableAt', NA), '%Y-%m-%d')
+        self.extraType = data.attrib.get('extraType', NA)
+
+    @property
+    def isWatched(self):
+        return bool(self.viewCount > 0)
+
+    def getStreamURL(self, **params):
+        return self._getStreamURL(videoResolution='800x600', **params)

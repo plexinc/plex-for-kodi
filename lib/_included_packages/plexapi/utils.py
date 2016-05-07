@@ -52,7 +52,7 @@ class PlexPartialObject(object):
     def __getattr__(self, attr):
         if self.isPartialObject():
             self.reload()
-        return self.__dict__[attr]
+        return self.__dict__.get(attr)  # TODO: Evaluate how to handle this - changed to get() because too many unexpected missing attributes
 
     def __setattr__(self, attr, value):
         if value != NA:

@@ -71,6 +71,7 @@ class HomeWindow(kodigui.BaseWindow):
     RA_VIDEOS_LIST_ID = 406
     CONTINUE_WATCHING_TV_LIST_ID = 407
     START_WATCHING_TV_LIST_ID = 408
+    RA_PHOTOS_LIST_ID = 409
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -89,6 +90,7 @@ class HomeWindow(kodigui.BaseWindow):
         self.raMoviesList = kodigui.ManagedControlList(self, self.RA_MOVIES_LIST_ID, 5)
         self.raMusicList = kodigui.ManagedControlList(self, self.RA_MUSIC_LIST_ID, 5)
         self.raVideosList = kodigui.ManagedControlList(self, self.RA_VIDEOS_LIST_ID, 5)
+        self.raPhotosList = kodigui.ManagedControlList(self, self.RA_PHOTOS_LIST_ID, 5)
 
         self.cwTVList = kodigui.ManagedControlList(self, self.CONTINUE_WATCHING_TV_LIST_ID, 5)
 
@@ -222,6 +224,8 @@ class HomeWindow(kodigui.BaseWindow):
                 self.showTVContinue(hub)
             elif hub.hubIdentifier in ('tv.startwatching',):
                 self.showTVStartWatching(hub)
+            elif hub.hubIdentifier in ('photo.recent',):
+                self.showPhotosRecent(hub)
 
     def createEpisodeListItem(self, ep):
         mli = kodigui.ManagedListItem(ep.grandparentTitle, thumbnailImage=ep.thumbUrl, data_source=ep)
@@ -260,6 +264,8 @@ class HomeWindow(kodigui.BaseWindow):
             return self.createSeasonListItem(obj)
         elif obj.type == 'track':
             return self.createSeasonListItem(obj)
+        elif obj.type == 'photo':
+            return self.createShowListItem(obj)
         else:
             util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
 
@@ -271,6 +277,7 @@ class HomeWindow(kodigui.BaseWindow):
         self.raMoviesList.reset()
         self.raMusicList.reset()
         self.raVideosList.reset()
+        self.raPhotosList.reset()
         self.cwTVList.reset()
         self.swTVList.reset()
 
@@ -327,6 +334,9 @@ class HomeWindow(kodigui.BaseWindow):
 
     def showVideosRecent(self, hub):
         self.showHub(self.raVideosList, hub)
+
+    def showPhotosRecent(self, hub):
+        self.showHub(self.raPhotosList, hub)
 
     def showTVStartWatching(self, hub):
         return self.showHub(self.swTVList, hub)

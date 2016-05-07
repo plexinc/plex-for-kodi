@@ -6,7 +6,7 @@ import requests
 from requests.status_codes import _codes as codes
 from plexapi import BASE_HEADERS, TIMEOUT
 from plexapi import log, utils
-from plexapi import audio, video, playlist  # noqa; required
+from plexapi import audio, video, photo, playlist  # noqa; required
 from plexapi.compat import quote
 from plexapi.client import Client
 from plexapi.exceptions import BadRequest, NotFound, UnknownType
@@ -136,7 +136,6 @@ class PlexServer(object):
         global TOTAL_QUERIES
         TOTAL_QUERIES += 1
         url = self.url(path)
-        print url
         method = method or self.session.get
         log.info('%s %s', method.__name__.upper(), url)
         response = method(url, headers=self.headers(), timeout=TIMEOUT, **kwargs)

@@ -282,6 +282,25 @@ class Clip(Video):
         self.extraType = data.attrib.get('extraType', NA)
 
     @property
+    def thumbUrl(self):
+        try:
+            url = self.server.url(self.thumb)
+        except KeyError:
+            return ''
+
+        # TODO: Remove this?
+        try:
+            r = self.server.session.head(url)
+            rurl = r.headers.get('location')
+            parsedURL = rurl.split('url=', 1)[-1]
+            import urllib
+            return urllib.unquote(parsedURL)
+        except:
+            import traceback
+            traceback.print_exc()
+            return url
+
+    @property
     def isWatched(self):
         return bool(self.viewCount > 0)
 

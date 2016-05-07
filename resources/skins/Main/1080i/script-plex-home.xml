@@ -64,12 +64,37 @@
                 <effect type="slide" end="0,-520" time="200" tween="quadratic" easing="out"/>
             </animation>
 
+            <!-- 510 Focus animation -->
+            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),509) + Control.IsVisible(509)" reversible="true">
+                <effect type="slide" end="0,-520" time="200" tween="quadratic" easing="out"/>
+            </animation>
+
+            <!-- 511 Focus animation -->
+            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),510) + Control.IsVisible(510)" reversible="true">
+                <effect type="slide" end="0,-520" time="200" tween="quadratic" easing="out"/>
+            </animation>
+
+            <!-- 512 Focus animation -->
+            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),511) + Control.IsVisible(511)" reversible="true">
+                <effect type="slide" end="0,-520" time="200" tween="quadratic" easing="out"/>
+            </animation>
+
+            <!-- 513 Focus animation -->
+            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),512) + Control.IsVisible(512)" reversible="true">
+                <effect type="slide" end="0,-520" time="200" tween="quadratic" easing="out"/>
+            </animation>
+
+            <!-- 514 Focus animation -->
+            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),513) + Control.IsVisible(513)" reversible="true">
+                <effect type="slide" end="0,-520" time="200" tween="quadratic" easing="out"/>
+            </animation>
+
 
             <defaultcontrol always="true">101</defaultcontrol>
             <posx>0</posx>
             <posy>96</posy>
             <width>2130</width>
-            <height>4320</height>
+            <height>5540</height>
             <onup>151</onup>
             <itemgap>20</itemgap>
             <orientation>vertical</orientation>
@@ -287,7 +312,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -517,7 +542,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -745,7 +770,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -970,7 +995,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -1195,7 +1220,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -1420,7 +1445,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -1644,7 +1669,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -1874,7 +1899,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -2099,7 +2124,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -2324,7 +2349,7 @@
                 <control type="label">
                     <posx>30</posx>
                     <posy>0</posy>
-                    <width>427</width>
+                    <width>1000</width>
                     <height>87</height>
                     <font>font12</font>
                     <align>left</align>
@@ -2338,7 +2363,7 @@
                     <width>1920</width>
                     <height>520</height>
                     <onup>408</onup>
-                    <ondown>409</ondown>
+                    <ondown>410</ondown>
                     <scrolltime>200</scrolltime>
                     <orientation>horizontal</orientation>
                     <preloaditems>4</preloaditems>
@@ -2533,6 +2558,1141 @@
                 </control>
             </control>
 
+            <control type="group" id="510">
+                <visible>IntegerGreaterThan(Container(410).NumItems,0)</visible>
+                <defaultcontrol>410</defaultcontrol>
+                <width>1920</width>
+                <height>520</height>
+                <control type="image">
+                    <posx>20</posx>
+                    <posy>12</posy>
+                    <width>1880</width>
+                    <height>2</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>0</posy>
+                    <width>1000</width>
+                    <height>87</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.410)][/UPPERCASE]</label>
+                </control>
+                <control type="list" id="410">
+                    <posx>0</posx>
+                    <posy>29</posy>
+                    <width>1920</width>
+                    <height>520</height>
+                    <onup>409</onup>
+                    <ondown>411</ondown>
+                    <scrolltime>200</scrolltime>
+                    <orientation>horizontal</orientation>
+                    <preloaditems>4</preloaditems>
+                    <!-- ITEM LAYOUT ########################################## -->
+                    <itemlayout width="415">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <posx>36.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>361</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>361</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>361</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>366</posy>
+                                    <width>361</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </itemlayout>
+
+                    <!-- FOCUSED LAYOUT ####################################### -->
+                    <focusedlayout width="415">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <animation effect="zoom" start="86" end="100" time="100" center="217.5,217.5" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="100" end="86" time="100" center="217.5,217.5" reversible="false">UnFocus</animation>
+                                <visible>Control.HasFocus(410)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <control type="image">
+                                    <posx>-40</posx>
+                                    <posy>-40</posy>
+                                    <width>515</width>
+                                    <height>515</height>
+                                    <texture border="42">script.plex/drop-shadow.png</texture>
+                                </control>
+                                <control type="group">
+                                    <posx>5</posx>
+                                    <posy>5</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>425</width>
+                                        <height>425</height>
+                                        <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>425</width>
+                                        <height>425</height>
+                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <posx>0</posx>
+                                        <posy>415</posy>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>425</width>
+                                            <height>10</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>C0000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>1</posy>
+                                            <width>425</width>
+                                            <height>8</height>
+                                            <texture>$INFO[ListItem.Property(progress)]</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                    </control>
+                                    <control type="textbox">
+                                        <posx>0</posx>
+                                        <posy>430</posy>
+                                        <width>425</width>
+                                        <height>30</height>
+                                        <font>font12</font>
+                                        <align>center</align>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>435</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
+                            </control>
+
+                            <control type="group">
+                                <visible>!Control.HasFocus(410)</visible>
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>361</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>361</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>361</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>366</posy>
+                                    <width>361</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+            </control>
+
+            <control type="group" id="511">
+                <defaultcontrol>411</defaultcontrol>
+                <visible>IntegerGreaterThan(Container(411).NumItems,0)</visible>
+                <width>1920</width>
+                <height>520</height>
+                <control type="image">
+                    <posx>20</posx>
+                    <posy>12</posy>
+                    <width>1880</width>
+                    <height>2</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>0</posy>
+                    <width>1000</width>
+                    <height>87</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.411)][/UPPERCASE]</label>
+                </control>
+                <control type="list" id="411">
+                    <posx>0</posx>
+                    <posy>29</posy>
+                    <width>1920</width>
+                    <height>520</height>
+                    <onup>410</onup>
+                    <ondown>412</ondown>
+                    <scrolltime>200</scrolltime>
+                    <orientation>horizontal</orientation>
+                    <preloaditems>4</preloaditems>
+                    <!-- ITEM LAYOUT ########################################## -->
+                    <itemlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </itemlayout>
+
+                    <!-- FOCUSED LAYOUT ####################################### -->
+                    <focusedlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <animation effect="zoom" start="86" end="100" time="100" center="148.5,217.5" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="100" end="86" time="100" center="148.5,217.5" reversible="false">UnFocus</animation>
+                                <visible>Control.HasFocus(411)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <control type="image">
+                                    <posx>-40</posx>
+                                    <posy>-40</posy>
+                                    <width>377</width>
+                                    <height>515</height>
+                                    <texture border="42">script.plex/drop-shadow.png</texture>
+                                </control>
+                                <control type="group">
+                                    <posx>5</posx>
+                                    <posy>5</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <posx>0</posx>
+                                        <posy>415</posy>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>287</width>
+                                            <height>10</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>C0000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>1</posy>
+                                            <width>287</width>
+                                            <height>8</height>
+                                            <texture>$INFO[ListItem.Property(progress)]</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                    </control>
+                                    <control type="textbox">
+                                        <posx>0</posx>
+                                        <posy>427</posy>
+                                        <width>287</width>
+                                        <height>30</height>
+                                        <font>font12</font>
+                                        <align>center</align>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
+                            </control>
+
+                            <control type="group">
+                                <visible>!Control.HasFocus(411)</visible>
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+            </control>
+
+            <control type="group" id="512">
+                <defaultcontrol>412</defaultcontrol>
+                <visible>IntegerGreaterThan(Container(412).NumItems,0)</visible>
+                <width>1920</width>
+                <height>520</height>
+                <control type="image">
+                    <posx>20</posx>
+                    <posy>12</posy>
+                    <width>1880</width>
+                    <height>2</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>0</posy>
+                    <width>1000</width>
+                    <height>87</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.412)][/UPPERCASE]</label>
+                </control>
+                <control type="list" id="412">
+                    <posx>0</posx>
+                    <posy>29</posy>
+                    <width>1920</width>
+                    <height>520</height>
+                    <onup>411</onup>
+                    <ondown>413</ondown>
+                    <scrolltime>200</scrolltime>
+                    <orientation>horizontal</orientation>
+                    <preloaditems>4</preloaditems>
+                    <!-- ITEM LAYOUT ########################################## -->
+                    <itemlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </itemlayout>
+
+                    <!-- FOCUSED LAYOUT ####################################### -->
+                    <focusedlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <animation effect="zoom" start="86" end="100" time="100" center="148.5,217.5" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="100" end="86" time="100" center="148.5,217.5" reversible="false">UnFocus</animation>
+                                <visible>Control.HasFocus(412)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <control type="image">
+                                    <posx>-40</posx>
+                                    <posy>-40</posy>
+                                    <width>377</width>
+                                    <height>515</height>
+                                    <texture border="42">script.plex/drop-shadow.png</texture>
+                                </control>
+                                <control type="group">
+                                    <posx>5</posx>
+                                    <posy>5</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <posx>0</posx>
+                                        <posy>415</posy>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>287</width>
+                                            <height>10</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>C0000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>1</posy>
+                                            <width>287</width>
+                                            <height>8</height>
+                                            <texture>$INFO[ListItem.Property(progress)]</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                    </control>
+                                    <control type="textbox">
+                                        <posx>0</posx>
+                                        <posy>427</posy>
+                                        <width>287</width>
+                                        <height>30</height>
+                                        <font>font12</font>
+                                        <align>center</align>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
+                            </control>
+
+                            <control type="group">
+                                <visible>!Control.HasFocus(412)</visible>
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+            </control>
+
+            <control type="group" id="513">
+                <defaultcontrol>413</defaultcontrol>
+                <visible>IntegerGreaterThan(Container(413).NumItems,0)</visible>
+                <width>1920</width>
+                <height>520</height>
+                <control type="image">
+                    <posx>20</posx>
+                    <posy>12</posy>
+                    <width>1880</width>
+                    <height>2</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>0</posy>
+                    <width>1000</width>
+                    <height>87</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.413)][/UPPERCASE]</label>
+                </control>
+                <control type="list" id="413">
+                    <posx>0</posx>
+                    <posy>29</posy>
+                    <width>1920</width>
+                    <height>520</height>
+                    <onup>412</onup>
+                    <ondown>414</ondown>
+                    <scrolltime>200</scrolltime>
+                    <orientation>horizontal</orientation>
+                    <preloaditems>4</preloaditems>
+                    <!-- ITEM LAYOUT ########################################## -->
+                    <itemlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </itemlayout>
+
+                    <!-- FOCUSED LAYOUT ####################################### -->
+                    <focusedlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <animation effect="zoom" start="86" end="100" time="100" center="148.5,217.5" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="100" end="86" time="100" center="148.5,217.5" reversible="false">UnFocus</animation>
+                                <visible>Control.HasFocus(413)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <control type="image">
+                                    <posx>-40</posx>
+                                    <posy>-40</posy>
+                                    <width>377</width>
+                                    <height>515</height>
+                                    <texture border="42">script.plex/drop-shadow.png</texture>
+                                </control>
+                                <control type="group">
+                                    <posx>5</posx>
+                                    <posy>5</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <posx>0</posx>
+                                        <posy>415</posy>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>287</width>
+                                            <height>10</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>C0000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>1</posy>
+                                            <width>287</width>
+                                            <height>8</height>
+                                            <texture>$INFO[ListItem.Property(progress)]</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                    </control>
+                                    <control type="textbox">
+                                        <posx>0</posx>
+                                        <posy>427</posy>
+                                        <width>287</width>
+                                        <height>30</height>
+                                        <font>font12</font>
+                                        <align>center</align>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
+                            </control>
+
+                            <control type="group">
+                                <visible>!Control.HasFocus(413)</visible>
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+            </control>
+
+            <control type="group" id="514">
+                <defaultcontrol>414</defaultcontrol>
+                <visible>IntegerGreaterThan(Container(414).NumItems,0)</visible>
+                <width>1920</width>
+                <height>520</height>
+                <control type="image">
+                    <posx>20</posx>
+                    <posy>12</posy>
+                    <width>1880</width>
+                    <height>2</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
+                </control>
+                <control type="label">
+                    <posx>30</posx>
+                    <posy>0</posy>
+                    <width>1000</width>
+                    <height>87</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.414)][/UPPERCASE]</label>
+                </control>
+                <control type="list" id="414">
+                    <posx>0</posx>
+                    <posy>29</posy>
+                    <width>1920</width>
+                    <height>520</height>
+                    <onup>413</onup>
+                    <ondown>414</ondown>
+                    <scrolltime>200</scrolltime>
+                    <orientation>horizontal</orientation>
+                    <preloaditems>4</preloaditems>
+                    <!-- ITEM LAYOUT ########################################## -->
+                    <itemlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </itemlayout>
+
+                    <!-- FOCUSED LAYOUT ####################################### -->
+                    <focusedlayout width="287">
+                        <control type="group">
+                            <posx>15</posx>
+                            <posy>40</posy>
+                            <control type="group">
+                                <animation effect="zoom" start="86" end="100" time="100" center="148.5,217.5" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="100" end="86" time="100" center="148.5,217.5" reversible="false">UnFocus</animation>
+                                <visible>Control.HasFocus(414)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <control type="image">
+                                    <posx>-40</posx>
+                                    <posy>-40</posy>
+                                    <width>377</width>
+                                    <height>515</height>
+                                    <texture border="42">script.plex/drop-shadow.png</texture>
+                                </control>
+                                <control type="group">
+                                    <posx>5</posx>
+                                    <posy>5</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>287</width>
+                                        <height>425</height>
+                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <posx>0</posx>
+                                        <posy>415</posy>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>287</width>
+                                            <height>10</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>C0000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>1</posy>
+                                            <width>287</width>
+                                            <height>8</height>
+                                            <texture>$INFO[ListItem.Property(progress)]</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                    </control>
+                                    <control type="textbox">
+                                        <posx>0</posx>
+                                        <posy>427</posy>
+                                        <width>287</width>
+                                        <height>30</height>
+                                        <font>font12</font>
+                                        <align>center</align>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
+                            </control>
+
+                            <control type="group">
+                                <visible>!Control.HasFocus(414)</visible>
+                                <posx>26.5</posx>
+                                <posy>37</posy>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>244</width>
+                                    <height>361</height>
+                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <posx>0</posx>
+                                    <posy>351</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>10</height>
+                                        <texture>script.plex/white-square.png</texture>
+                                        <colordiffuse>C0000000</colordiffuse>
+                                    </control>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>1</posy>
+                                        <width>244</width>
+                                        <height>8</height>
+                                        <texture>$INFO[ListItem.Property(progress)]</texture>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="textbox">
+                                    <posx>0</posx>
+                                    <posy>361</posy>
+                                    <width>244</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </focusedlayout>
+                </control>
+            </control>
+
+            <control type="label">
+                <!-- DUMMY -->
+                <width>1920</width>
+                <height>100</height>
+                <font>font12</font>
+                <align>left</align>
+                <aligny>center</aligny>
+                <textcolor>00FFFFFF</textcolor>
+                <label> </label>
+            </control>
         </control>
 
 
@@ -2551,7 +3711,7 @@
                 <width>1920</width>
                 <height>135</height>
                 <texture>script.plex/white-square.png</texture>
-                <colordiffuse>A0000000</colordiffuse>
+                <colordiffuse>C0000000</colordiffuse>
             </control>
             <control type="button" id="203">
                 <posx>60</posx>

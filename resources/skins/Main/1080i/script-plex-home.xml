@@ -293,7 +293,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]CONTINUE WATCHING[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.400)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="400">
                     <posx>0</posx>
@@ -437,13 +437,6 @@
                                     <height>438</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>629</width>
-                                    <height>358</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -495,6 +488,13 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                 </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>629</width>
+                                    <height>358</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
                             </control>
                         </control>
                     </focusedlayout>
@@ -523,7 +523,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]ON DECK[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.401)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="401">
                     <posx>0</posx>
@@ -612,13 +612,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -669,6 +662,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -751,7 +751,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]RECENTLY AIRED TELEVISION[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.402)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="402">
                     <posx>0</posx>
@@ -839,13 +839,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -895,6 +888,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -976,7 +976,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]RECENTLY ADDED TELEVISION[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.403)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="403">
                     <posx>0</posx>
@@ -1064,13 +1064,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -1120,6 +1113,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -1201,7 +1201,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]RECENTLY ADDED MOVIES[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.404)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="404">
                     <posx>0</posx>
@@ -1289,13 +1289,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -1345,6 +1338,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -1426,7 +1426,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]RECENTLY ADDED MUSIC[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.405)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="405">
                     <posx>0</posx>
@@ -1514,13 +1514,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>435</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -1570,6 +1563,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>435</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -1650,7 +1650,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]RECENTLY ADDED HOME MOVIES[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.406)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="406">
                     <posx>0</posx>
@@ -1794,13 +1794,6 @@
                                     <height>438</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>629</width>
-                                    <height>358</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -1852,6 +1845,13 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                 </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>629</width>
+                                    <height>358</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
+                                </control>
                             </control>
                         </control>
                     </focusedlayout>
@@ -1880,7 +1880,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]CONTINUE WATCHING[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.407)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="407">
                     <posx>0</posx>
@@ -1968,13 +1968,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -2024,6 +2017,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -2105,7 +2105,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]START WATCHING[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.408)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="408">
                     <posx>0</posx>
@@ -2193,13 +2193,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -2249,6 +2242,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>297</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 
@@ -2330,7 +2330,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]RECENTLY ADDED PHOTOS[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$INFO[Window.Property(hub.409)][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="409">
                     <posx>0</posx>
@@ -2418,13 +2418,6 @@
                                     <height>515</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>435</width>
-                                    <height>435</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
@@ -2474,6 +2467,13 @@
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+                                </control>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>435</width>
+                                    <height>435</height>
+                                    <texture border="10">script.plex/home/selected.png</texture>
                                 </control>
                             </control>
 

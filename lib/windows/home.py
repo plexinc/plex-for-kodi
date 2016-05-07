@@ -297,6 +297,8 @@ class HomeWindow(kodigui.BaseWindow):
         if not hub.items:
             return
 
+        self.setProperty('hub.400', hub.title)
+
         mitems = []
         for movie in hub.items:
             mli = kodigui.ManagedListItem(movie.title, thumbnailImage=movie.artUrl, data_source=movie)
@@ -309,6 +311,8 @@ class HomeWindow(kodigui.BaseWindow):
         if not hub.items:
             return
 
+        self.setProperty('hub.407', hub.title)
+
         sitems = []
         for show in hub.items:
             mli = kodigui.ManagedListItem(show.title, thumbnailImage=show.thumbUrl, data_source=show)
@@ -318,27 +322,35 @@ class HomeWindow(kodigui.BaseWindow):
         self.cwTVList.addItems(sitems)
 
     def showOnDeck(self, hub):
+        self.setProperty('hub.401', hub.title)
         self.showHub(self.onDeckList, hub)
 
     def showTVRecentAired(self, hub):
+        self.setProperty('hub.402', hub.title)
         return self.showHub(self.rAiredTVList, hub)
 
     def showTVRecent(self, hub):
+        self.setProperty('hub.403', hub.title)
         return self.showHub(self.raTVList, hub)
 
     def showMoviesRecent(self, hub):
+        self.setProperty('hub.404', hub.title)
         return self.showHub(self.raMoviesList, hub)
 
     def showMusicRecent(self, hub):
+        self.setProperty('hub.405', hub.title)
         return self.showHub(self.raMusicList, hub)
 
     def showVideosRecent(self, hub):
+        self.setProperty('hub.406', hub.title)
         self.showHub(self.raVideosList, hub)
 
     def showPhotosRecent(self, hub):
+        self.setProperty('hub.409', hub.title)
         self.showHub(self.raPhotosList, hub)
 
     def showTVStartWatching(self, hub):
+        self.setProperty('hub.408', hub.title)
         return self.showHub(self.swTVList, hub)
 
     def sectionClicked(self):

@@ -161,7 +161,7 @@
                                     <posy>23.5</posy>
                                     <width>70</width>
                                     <height>70</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <texture>$INFO[ListItem.Thumb]</texture>
                                     <aspectratio>keep</aspectratio>
                                 </control>
                                 <control type="image">
@@ -236,7 +236,7 @@
                                         <posy>27</posy>
                                         <width>80</width>
                                         <height>80</height>
-                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                        <texture>$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
                                 </control>
@@ -283,7 +283,7 @@
                                     <posy>23.5</posy>
                                     <width>70</width>
                                     <height>70</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                    <texture>$INFO[ListItem.Thumb]</texture>
                                     <aspectratio>keep</aspectratio>
                                 </control>
                                 <control type="image">

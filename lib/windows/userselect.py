@@ -49,11 +49,12 @@ class UserSelectWindow(kodigui.BaseWindow):
                     item = self.userList.getSelectedItem()
                     if not item.dataSource.protected:
                         return
-                    self.setFocusId(400)
+                    self.setFocusId(self.PIN_ENTRY_GROUP_ID)
                 self.pinEntryClicked(ID + 142)
             elif ID in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_BACKSPACE):
                 if xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
                     self.pinEntryClicked(211)
+                    return
         except:
             util.ERROR()
 

@@ -280,16 +280,18 @@ class HomeWindow(kodigui.BaseWindow):
             else:
                 util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
 
-    def createGrandparentedListItem(self, ep):
-        mli = kodigui.ManagedListItem(ep.grandparentTitle, thumbnailImage=ep.thumbUrl, data_source=ep)
+    def createGrandparentedListItem(self, obj):
+        title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.thumbUrl, data_source=obj)
         return mli
 
-    def createParentedListItem(self, season):
-        mli = kodigui.ManagedListItem(season.parentTitle, thumbnailImage=season.thumbUrl, data_source=season)
+    def createParentedListItem(self, obj):
+        title = obj.parentTitle or obj.title or ''
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.thumbUrl, data_source=obj)
         return mli
 
     def createSimpleListItem(self, obj):
-        mli = kodigui.ManagedListItem(obj.title, thumbnailImage=obj.thumbUrl, data_source=obj)
+        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumbUrl, data_source=obj)
         return mli
 
     def createListItem(self, obj):
@@ -348,8 +350,8 @@ class HomeWindow(kodigui.BaseWindow):
         if idx < 0:
             return
         server = servers[idx]
-        plex.changeServer(server)
-        self.serverRefresh()
+        if plex.changeServer(server):
+            self.serverRefresh()
 
     def userOptions(self):
         options = []

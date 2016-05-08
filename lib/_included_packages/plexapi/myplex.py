@@ -244,7 +244,7 @@ class MyPlexResource(object):
             log.info('Testing connection: %s %s', uri, 'OK' if result else 'ERR')
         results = list(filter(None, [r[1] for r in results if r]))
         if not results:
-            raise NotFound('Unable to connect to resource: %s' % self.name)
+            raise NotFound('Unable to connect to resource: %s (%s)' % (self.name, self.clientIdentifier))
         log.info('Connecting to server: %s', results[0])
         return results[0]
 

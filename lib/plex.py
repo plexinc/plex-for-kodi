@@ -1,5 +1,6 @@
 import xbmc
 from plexapi import myplex
+from plexapi import exceptions
 import util
 
 PLEX = None
@@ -25,17 +26,22 @@ def init():
         util.DEBUG_LOG('SIGN IN: Failed to sign in')
         return False
 
-    serverResource = USER.getFirstServer(owned=True)
-    if serverResource:
-        OWNED = True
-    else:
-        serverResource = USER.getFirstServer()
+    testservers = sorted(servers(), key=lambda x: x.owned, reverse=True)
+    print testservers
 
-    PLEX = serverResource.connect()
-    _setBase(PLEX)
+    for sr in testservers:
+        try:
+            util.DEBUG_LOG('Attemting to connect to: {0}'.format(sr.name))
+            PLEX = sr.connect()
+            _setBase(PLEX)
+            OWNED = sr.owned
+            break
+        except exceptions.NotFound, e:
+            util.DEBUG_LOG('SIGN IN: Connection error: {0}'.format(e.message))
 
     if not PLEX:
-        util.DEBUG_LOG('SIGN IN: Failed to connect to server')
+        util.messageDialog('Connection Error', u'Unable to connect to any servers')
+        util.DEBUG_LOG('SIGN IN: Failed to connect to any servers')
         return False
 
     util.DEBUG_LOG('SIGN IN: Connected to server')
@@ -46,7 +52,7 @@ def initSingleUser():
     global PLEX
     lastID = util.getSetting('last.server.{0}'.format(USER.id))
     if lastID and lastID != PLEX.machineIdentifier:
-        PLEX = getServer(USER, lastID)
+        PLEX = getServer(USER, lastID) or PLEX
 
 
 def _setBase(server):
@@ -139,9 +145,13 @@ def getServer(user, ID=None, owned=False):
         serverResource = user.getFirstServer(owned=owned)
         ID = serverResource.clientIdentifier
 
-    util.setSetting('last.server.{0}'.format(user.id), ID)
-
-    return serverResource and serverResource.connect()
+    try:
+        server = serverResource and serverResource.connect() or None
+        util.setSetting('last.server.{0}'.format(user.id), ID)
+        return server
+    except exceptions.NotFound, e:
+        util.messageDialog('Connection Error', u'Unable to connect to {0}'.format(serverResource.name))
+        util.DEBUG_LOG('Connection error: {0}'.format(e.message))
 
 
 def switchUser(new_user, pin):
@@ -150,15 +160,21 @@ def switchUser(new_user, pin):
     USER = myplex.MyPlexUser.switch(new_user, pin)
     ID = util.getSetting('last.server.{0}'.format(USER.id))
 
-    PLEX = getServer(USER, ID)
+    PLEX = getServer(USER, ID) or PLEX
 
 
 def changeServer(server):
     global PLEX
 
-    util.setSetting('last.server.{0}'.format(USER.id), server.clientIdentifier)
+    try:
+        PLEX = server.connect()
+        util.setSetting('last.server.{0}'.format(USER.id), server.clientIdentifier)
+        return True
+    except exceptions.NotFound, e:
+        util.messageDialog('Connection Error', u'Unable to connect to {0}'.format(server.name))
+        util.DEBUG_LOG('Connection error: {0}'.format(e.message))
 
-    PLEX = server.connect()
+    return False
 
 
 def signOut():

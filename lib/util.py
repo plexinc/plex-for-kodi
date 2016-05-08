@@ -107,6 +107,10 @@ def videoIsPlaying():
     return xbmc.getCondVisibility('Player.HasVideo')
 
 
+def messageDialog(heading='Message', msg=''):
+    xbmcgui.Dialog().ok(heading, msg)
+
+
 def showTextDialog(heading, text):
     t = TextBox()
     t.setControls(heading, text)

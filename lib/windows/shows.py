@@ -17,6 +17,8 @@ class ShowsWindow(kodigui.BaseWindow):
 
     SHOW_PANEL_ID = 101
 
+    HOME_BUTTON_ID = 201
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.section = kwargs.get('section')
@@ -24,6 +26,10 @@ class ShowsWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.SHOW_PANEL_ID, 5)
         self.fillShows()
+
+    def onClick(self, controlID):
+        if controlID == self.HOME_BUTTON_ID:
+            self.doClose()
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.grandparentTitle or obj.parentTitle or obj.title or ''

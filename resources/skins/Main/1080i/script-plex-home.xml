@@ -4406,8 +4406,8 @@
                 <onright>201</onright>
                 <font>font12</font>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/home/search.png</texturefocus>
-                <texturenofocus colordiffuse="99FFFFFF">script.plex/home/search.png</texturenofocus>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/search.png</texturenofocus>
                 <label> </label>
             </control>
             <control type="label">

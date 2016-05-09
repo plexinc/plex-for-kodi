@@ -116,8 +116,9 @@ class HomeWindow(kodigui.BaseWindow):
         'movie.topunwatched': {'index': 11},
         'movie.recentlyviewed': {'index': 12},
         # ARTIST
-        'music.recent.added': {'index': 5},
-        'music.videos.popular.new': {'index': 6},
+        'music.recent.played': {'index': 5},
+        'music.recent.added': {'index': 9},
+        'music.videos.popular.new': {'index': 15},
         # PHOTO
         'photo.recent': {'index': 5},
         'photo.random.year': {'index': 9},

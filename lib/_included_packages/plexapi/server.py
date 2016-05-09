@@ -55,6 +55,7 @@ class PlexServer(object):
         self.machineIdentifier = data.attrib.get('machineIdentifier')
         self.myPlex = bool(data.attrib.get('myPlex') == '1')
         self.multiuser = bool(data.attrib.get('multiuser') == '1')
+        self.synced = bool(data.attrib.get('synced') == '1')
         self.myPlexMappingState = data.attrib.get('myPlexMappingState')
         self.myPlexSigninState = data.attrib.get('myPlexSigninState')
         self.myPlexSubscription = data.attrib.get('myPlexSubscription')
@@ -62,6 +63,8 @@ class PlexServer(object):
         self.platform = data.attrib.get('platform')
         self.platformVersion = data.attrib.get('platformVersion')
         self.transcoderActiveVideoSessions = int(data.attrib.get('transcoderActiveVideoSessions', 0))
+        self.transcoderPhoto = bool(data.attrib.get('transcoderPhoto') == '1')
+        self.transcoderAudio = bool(data.attrib.get('transcoderAudio') == '1')
         self.updatedAt = int(data.attrib.get('updatedAt', 0))
         self.version = data.attrib.get('version')
         self.isSecure = self.baseuri.startswith('https://')
@@ -155,6 +158,55 @@ class PlexServer(object):
 
     def sessions(self):
         return utils.listItems(self, '/status/sessions')
+
+    # Ported from Roku code #################################
+    def getLocalServerPort(self):
+        # TODO(schuyler): The correct thing to do here is to iterate over local
+        # connections and pull out the port. For now, we're always returning 32400.
+
+        return "32400"
+
+    def isRequestToServer(self, url):
+        # if m.activeconnection = invalid then return false
+
+        schemeAndHost = ''.join(self.baseuri.split(':', 2)[0:2])
+
+        return url[:len(schemeAndHost)] == schemeAndHost
+
+    def convertUrlToLoopBack(self, url):
+        # If the URL starts with our server URL, replace it with 127.0.0.1:32400.
+        if self.isRequestToServer(url):
+            url = "http://127.0.0.1:32400" + url[len(self.baseuri) - 1:]
+
+        return url
+
+    def getImageTranscodeURL(self, path, width, height, extraopts=None):
+        if not self.transcoderPhoto:
+            return self.url(path)
+
+        # Build up our parameters
+        params = "&width=" + str(width) + "&height=" + str(height)
+
+        if extraopts:
+            for key in extraopts:
+                params = params + "&" + key + "=" + str(extraopts[key])
+
+        if "://" in path:
+            imageUrl = self.convertUrlToLoopBack(path)
+        else:
+            imageUrl = "http://127.0.0.1:" + self.getLocalServerPort() + path
+
+        path = "/photo/:/transcode?url=" + quote(imageUrl) + params
+
+        # Try to use a better server to transcode for synced servers
+        # TODO: Implement (ruuk)
+        if self.synced:
+            selectedServer = None  # PlexServerManager().GetTranscodeServer("photo")
+            if selectedServer:
+                return selectedServer.url(path)
+
+        return self.url(path)
+    #######################################################
 
     def url(self, path):
         if self.token:

@@ -251,6 +251,12 @@ class Episode(Video):
         except TypeError:
             return ''
 
+    def transcodedThumbURL(self, w=270, h=400):
+        try:
+            return self.server.getImageTranscodeURL(self.grandparentThumb or self.parentThumb or self.thumb, w, h)
+        except TypeError:
+            return ''
+
     def getStreamURL(self, **params):
         return self._getStreamURL(videoResolution='800x600', **params)
 

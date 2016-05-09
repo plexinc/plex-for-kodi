@@ -65,9 +65,24 @@ class PlexPartialObject(object):
         except TypeError:
             return ''
 
+    def transcodedThumbURL(self, w=400, h=400):
+        try:
+            return self.server.getImageTranscodeURL(self.thumb, w, h)
+        except TypeError:
+            return ''
+
     @property
     def artUrl(self):
-        return self.server.url(self.art)
+        try:
+            return self.server.url(self.art)
+        except TypeError:
+            return ''
+
+    def transcodedArtURL(self, w=640, h=360):
+        try:
+            return self.server.getImageTranscodeURL(self.art, w, h)
+        except TypeError:
+            return ''
 
     def _getStreamURL(self, **params):
         if self.TYPE not in ('movie', 'episode', 'track'):

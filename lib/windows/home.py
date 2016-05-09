@@ -93,7 +93,7 @@ class HomeWindow(kodigui.BaseWindow):
         'home.television.recent': {'index': 3},
         'home.movies.recent': {'index': 4},
         'home.music.recent': {'index': 5},
-        'home.videos.recent': {'index': 6},
+        'home.videos.recent': {'index': 6, 'ar16x9': True},
         'home.photos.recent': {'index': 9},
         # SHOW
         'tv.ondeck': {'index': 1},
@@ -124,12 +124,16 @@ class HomeWindow(kodigui.BaseWindow):
         'photo.random.year': {'index': 9},
         'photo.random.decade': {'index': 10},
         # VIDEO
-        'video.recent': {'index': 0},
-        'video.random.year': {'index': 6},
-        'video.random.decade': {'index': 15},
-        'video.inprogress': {'index': 16, 'with_progress': True, 'with_art': True},
-        'video.unwatched.random': {'index': 17},
+        'video.recent': {'index': 0, 'ar16x9': True},
+        'video.random.year': {'index': 6, 'ar16x9': True},
+        'video.random.decade': {'index': 15, 'ar16x9': True},
+        'video.inprogress': {'index': 16, 'with_progress': True, 'ar16x9': True},
+        'video.unwatched.random': {'index': 17, 'ar16x9': True},
     }
+
+    THUMB_POSTER_DIM = (287, 425)
+    THUMB_AR16X9_DIM = (619, 348)
+    THUMB_SQUARE_DIM = (425, 425)
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -291,37 +295,53 @@ class HomeWindow(kodigui.BaseWindow):
             else:
                 util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
 
-    def createGrandparentedListItem(self, obj):
+    def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.thumbUrl, data_source=obj)
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
-    def createParentedListItem(self, obj):
+    def createParentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.thumbUrl, data_source=obj)
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
-    def createSimpleListItem(self, obj):
-        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumbUrl, data_source=obj)
+    def createSimpleListItem(self, obj, thumb_w, thumb_h):
+        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createListItem(self, obj):
         if obj.type == 'episode':
-            return self.createGrandparentedListItem(obj)
+            mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+            return mli
         elif obj.type == 'season':
-            return self.createParentedListItem(obj)
+            mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+            return mli
         elif obj.type == 'movie':
-            return self.createSimpleListItem(obj)
+            mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
+            return mli
         elif obj.type == 'show':
-            return self.createSimpleListItem(obj)
+            mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+            return mli
         elif obj.type == 'album':
-            return self.createParentedListItem(obj)
+            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+            return mli
         elif obj.type == 'track':
-            return self.createParentedListItem(obj)
+            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+            return mli
         elif obj.type == 'photo':
-            return self.createSimpleListItem(obj)
+            mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
+            return mli
         elif obj.type == 'clip':
-            return self.createSimpleListItem(obj)
+            mli = self.createSimpleListItem(obj, *self.THUMB_AR16X9_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
+            return mli
         else:
             util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
 
@@ -329,7 +349,7 @@ class HomeWindow(kodigui.BaseWindow):
         for control in self.hubControls:
             control.reset()
 
-    def showHub(self, hub, index=None, with_progress=False, with_art=False):
+    def showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False):
         if not hub.items:
             return
 
@@ -338,14 +358,22 @@ class HomeWindow(kodigui.BaseWindow):
         control = self.hubControls[index]
 
         items = []
+
         for obj in hub.items:
             mli = self.createListItem(obj)
             if mli:
-                if with_progress:
-                    mli.setProperty('progress', util.getProgressImage(obj))
-                if with_art:
-                    mli.setThumbnailImage(obj.artUrl)
                 items.append(mli)
+
+        if with_progress:
+            for mli in items:
+                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
+        if with_art:
+            for mli in items:
+                mli.setThumbnailImage(mli.dataSource.transcodedArtURL(*self.THUMB_AR16X9_DIM))
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
+        if ar16x9:
+            for mli in items:
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
 
         control.addItems(items)
 

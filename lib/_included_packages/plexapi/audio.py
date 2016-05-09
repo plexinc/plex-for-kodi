@@ -149,6 +149,9 @@ class Track(Audio):
     def thumbUrl(self):
         return self.server.url(self.parentThumb)
 
+    def transcodedThumbURL(self, w=400, h=400):
+        return self.server.getImageTranscodeURL(self.parentThumb, w, h)
+
     def album(self):
         return utils.listItems(self.server, self.parentKey)[0]
 

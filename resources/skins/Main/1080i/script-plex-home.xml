@@ -358,8 +358,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -419,8 +418,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -485,8 +483,7 @@
                                         <posy>0</posy>
                                         <width>619</width>
                                         <height>348</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>FF000000</colordiffuse>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -588,8 +585,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -660,8 +656,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>FF000000</colordiffuse>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -721,8 +716,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -816,7 +810,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -887,7 +881,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -947,7 +941,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1041,7 +1035,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1112,7 +1106,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -1172,7 +1166,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1266,7 +1260,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/movie.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1337,7 +1331,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/movie.png</texture>
+                                        <texture>$INFO[$INFO[ListItem.Property(thumb.fallback)]]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -1397,7 +1391,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/movie.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1491,7 +1485,7 @@
                                     <posy>0</posy>
                                     <width>361</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/music.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1562,7 +1556,7 @@
                                         <posy>0</posy>
                                         <width>425</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/music.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -1622,7 +1616,7 @@
                                     <posy>0</posy>
                                     <width>361</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/music.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1715,8 +1709,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1776,8 +1769,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -1842,8 +1834,7 @@
                                         <posy>0</posy>
                                         <width>619</width>
                                         <height>348</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>FF000000</colordiffuse>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -1945,7 +1936,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2016,7 +2007,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -2076,7 +2067,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2170,7 +2161,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2241,7 +2232,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -2301,7 +2292,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2395,7 +2386,7 @@
                                     <posy>0</posy>
                                     <width>361</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2466,7 +2457,7 @@
                                         <posy>0</posy>
                                         <width>425</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -2526,7 +2517,7 @@
                                     <posy>0</posy>
                                     <width>361</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2620,7 +2611,7 @@
                                     <posy>0</posy>
                                     <width>361</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2691,7 +2682,7 @@
                                         <posy>0</posy>
                                         <width>425</width>
                                         <height>425</height>
-                                        <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -2751,7 +2742,7 @@
                                     <posy>0</posy>
                                     <width>361</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/photo.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2845,7 +2836,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -2916,7 +2907,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -2976,7 +2967,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3070,7 +3061,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3141,7 +3132,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -3201,7 +3192,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3295,7 +3286,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3366,7 +3357,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -3426,7 +3417,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3520,7 +3511,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3591,7 +3582,7 @@
                                         <posy>0</posy>
                                         <width>287</width>
                                         <height>425</height>
-                                        <texture>script.plex/whiscript.plex/thumb_fallbacks/show.png</texture>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -3651,7 +3642,7 @@
                                     <posy>0</posy>
                                     <width>244</width>
                                     <height>361</height>
-                                    <texture>script.plex/thumb_fallbacks/show.png</texture>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3744,8 +3735,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3805,8 +3795,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -3871,8 +3860,7 @@
                                         <posy>0</posy>
                                         <width>619</width>
                                         <height>348</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>FF000000</colordiffuse>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -3973,8 +3961,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -4034,8 +4021,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -4100,8 +4086,7 @@
                                         <posy>0</posy>
                                         <width>619</width>
                                         <height>348</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>FF000000</colordiffuse>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -4202,8 +4187,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -4263,8 +4247,7 @@
                                     <posy>0</posy>
                                     <width>532</width>
                                     <height>299</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>FF000000</colordiffuse>
+                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -4329,8 +4312,7 @@
                                         <posy>0</posy>
                                         <width>619</width>
                                         <height>348</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>FF000000</colordiffuse>
+                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>

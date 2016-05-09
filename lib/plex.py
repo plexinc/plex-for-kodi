@@ -27,7 +27,11 @@ def init():
         return False
 
     testservers = sorted(servers(), key=lambda x: x.owned, reverse=True)
-    print testservers
+    for sr in testservers:
+        util.DEBUG_LOG('Server: {0}'.format(sr))
+        util.DEBUG_LOG('    Owned: {0}'.format(sr.owned))
+        util.DEBUG_LOG('    Local: {0}'.format(sr.owned))
+        util.DEBUG_LOG('    Connections: {0}'.format(sr.connections))
 
     for sr in testservers:
         try:

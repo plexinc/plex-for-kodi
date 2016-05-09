@@ -78,13 +78,14 @@ class HomeWindow(kodigui.BaseWindow):
     HUB_POSTER_08 = 408
     HUB_SQUARE_09 = 409
     HUB_SQUARE_10 = 410
-    HUB_POSTER_11 = 411
+    HUB_SQUARE_11 = 411
     HUB_POSTER_12 = 412
     HUB_POSTER_13 = 413
     HUB_POSTER_14 = 414
-    HUB_AR16X9_15 = 415
+    HUB_POSTER_15 = 415
     HUB_AR16X9_16 = 416
     HUB_AR16X9_17 = 417
+    HUB_AR16X9_18 = 418
 
     HUBMAP = {
         # HOME
@@ -102,10 +103,10 @@ class HomeWindow(kodigui.BaseWindow):
         'tv.inprogress': {'index': 4, 'with_progress': True},
         'tv.startwatching': {'index': 7},
         'tv.rediscover': {'index': 8},
-        'tv.morefromnetwork': {'index': 11},
-        'tv.toprated': {'index': 12},
-        'tv.moreingenre': {'index': 13},
-        'tv.recentlyviewed': {'index': 14},
+        'tv.morefromnetwork': {'index': 12},
+        'tv.toprated': {'index': 13},
+        'tv.moreingenre': {'index': 14},
+        'tv.recentlyviewed': {'index': 15},
         # MOVIE
         'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True},
         'movie.recentlyreleased': {'index': 1},
@@ -113,12 +114,14 @@ class HomeWindow(kodigui.BaseWindow):
         'movie.genre': {'index': 3},
         'movie.director': {'index': 7},
         'movie.actor': {'index': 8},
-        'movie.topunwatched': {'index': 11},
-        'movie.recentlyviewed': {'index': 12},
+        'movie.topunwatched': {'index': 12},
+        'movie.recentlyviewed': {'index': 13},
         # ARTIST
         'music.recent.played': {'index': 5},
         'music.recent.added': {'index': 9},
-        'music.videos.popular.new': {'index': 15},
+        'music.recent.artist': {'index': 10},
+        'music.recent.genre': {'index': 11},
+        'music.videos.popular.new': {'index': 16},
         # PHOTO
         'photo.recent': {'index': 5},
         'photo.random.year': {'index': 9},
@@ -126,9 +129,9 @@ class HomeWindow(kodigui.BaseWindow):
         # VIDEO
         'video.recent': {'index': 0, 'ar16x9': True},
         'video.random.year': {'index': 6, 'ar16x9': True},
-        'video.random.decade': {'index': 15, 'ar16x9': True},
-        'video.inprogress': {'index': 16, 'with_progress': True, 'ar16x9': True},
-        'video.unwatched.random': {'index': 17, 'ar16x9': True},
+        'video.random.decade': {'index': 16, 'ar16x9': True},
+        'video.inprogress': {'index': 17, 'with_progress': True, 'ar16x9': True},
+        'video.unwatched.random': {'index': 18, 'ar16x9': True},
     }
 
     THUMB_POSTER_DIM = (287, 425)
@@ -158,13 +161,14 @@ class HomeWindow(kodigui.BaseWindow):
             kodigui.ManagedControlList(self, self.HUB_POSTER_08, 5),
             kodigui.ManagedControlList(self, self.HUB_SQUARE_09, 5),
             kodigui.ManagedControlList(self, self.HUB_SQUARE_10, 5),
-            kodigui.ManagedControlList(self, self.HUB_POSTER_11, 5),
+            kodigui.ManagedControlList(self, self.HUB_SQUARE_11, 5),
             kodigui.ManagedControlList(self, self.HUB_POSTER_12, 5),
             kodigui.ManagedControlList(self, self.HUB_POSTER_13, 5),
             kodigui.ManagedControlList(self, self.HUB_POSTER_14, 5),
-            kodigui.ManagedControlList(self, self.HUB_AR16X9_15, 5),
+            kodigui.ManagedControlList(self, self.HUB_POSTER_15, 5),
             kodigui.ManagedControlList(self, self.HUB_AR16X9_16, 5),
-            kodigui.ManagedControlList(self, self.HUB_AR16X9_17, 5)
+            kodigui.ManagedControlList(self, self.HUB_AR16X9_17, 5),
+            kodigui.ManagedControlList(self, self.HUB_AR16X9_18, 5),
         )
 
         self.bottomItem = 0
@@ -341,6 +345,10 @@ class HomeWindow(kodigui.BaseWindow):
         elif obj.type == 'clip':
             mli = self.createSimpleListItem(obj, *self.THUMB_AR16X9_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
+            return mli
+        elif obj.type == 'artist':
+            mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli
         else:
             util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))

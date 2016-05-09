@@ -27,61 +27,61 @@
                 <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
                 <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
                 <defaultcontrol>301</defaultcontrol>
-                <posx>45</posx>
+                <posx>30</posx>
                 <posy>30</posy>
                 <width>1000</width>
-                <height>65</height>
+                <height>145</height>
                 <onup>200</onup>
                 <ondown>101</ondown>
-                <itemgap>15</itemgap>
+                <itemgap>-20</itemgap>
                 <orientation>horizontal</orientation>
                 <scrolltime tween="quadratic" easing="out">200</scrolltime>
                 <usecontrolcoords>true</usecontrolcoords>
                 <control type="button" id="301">
-                    <animation effect="zoom" start="100" end="143" time="100" center="50,32.5" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="143" end="100" time="100" center="50,32.5" reversible="false">UnFocus</animation>
-                    <posx>15</posx>
-                    <posy>10</posy>
-                    <width>70</width>
-                    <height>45</height>
+                    <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>126</width>
+                    <height>100</height>
                     <font>font12</font>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/play.png</texturefocus>
+                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/play.png</texturenofocus>
                     <label> </label>
                 </control>
                 <control type="button" id="302">
-                    <animation effect="zoom" start="100" end="143" time="100" center="50,32.5" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="143" end="100" time="100" center="50,32.5" reversible="false">UnFocus</animation>
-                    <posx>15</posx>
-                    <posy>10</posy>
-                    <width>70</width>
-                    <height>45</height>
+                    <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>126</width>
+                    <height>100</height>
                     <font>font12</font>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle.png</texturefocus>
+                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
                     <label> </label>
                 </control>
                 <control type="button" id="303">
-                    <animation effect="zoom" start="100" end="143" time="100" center="50,32.5" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="143" end="100" time="100" center="50,32.5" reversible="false">UnFocus</animation>
-                    <posx>15</posx>
-                    <posy>10</posy>
-                    <width>70</width>
-                    <height>45</height>
+                    <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>126</width>
+                    <height>100</height>
                     <font>font12</font>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/more.png</texturefocus>
+                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/more-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/more.png</texturenofocus>
                     <label> </label>
                 </control>
                 <control type="button" id="304">
-                    <animation effect="zoom" start="100" end="143" time="100" center="50,32.5" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="143" end="100" time="100" center="50,32.5" reversible="false">UnFocus</animation>
-                    <posx>15</posx>
-                    <posy>10</posy>
-                    <width>70</width>
-                    <height>45</height>
+                    <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>126</width>
+                    <height>100</height>
                     <font>font12</font>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/chapters.png</texturefocus>
+                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/chapters-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/chapters.png</texturenofocus>
                     <label> </label>
                 </control>

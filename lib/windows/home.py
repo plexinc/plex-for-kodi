@@ -90,6 +90,7 @@ class HomeWindow(kodigui.BaseWindow):
         'home.movies.recent': {'index': 4},
         'home.music.recent': {'index': 5},
         'home.videos.recent': {'index': 6},
+        'home.photos.recent': {'index': 9},
         # SHOW
         'tv.ondeck': {'index': 1},
         'tv.recentlyaired': {'index': 2},

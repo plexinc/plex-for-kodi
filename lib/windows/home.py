@@ -7,6 +7,8 @@ import kodigui
 from lib import util
 from lib import plex
 from lib import backgroundthread
+
+import shows
 import busy
 
 
@@ -58,6 +60,8 @@ class HomeWindow(kodigui.BaseWindow):
     res = '1080i'
     width = 1920
     height = 1080
+
+    OPTIONS_GROUP_ID = 200
 
     SECTION_LIST_ID = 101
     SERVER_BUTTON_ID = 201
@@ -166,6 +170,11 @@ class HomeWindow(kodigui.BaseWindow):
         try:
             if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
                 self.checkSectionItem()
+            elif action == xbmcgui.ACTION_NAV_BACK:
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.setFocusId(self.OPTIONS_GROUP_ID)
+                    return
+
         except:
             util.ERROR()
 
@@ -341,7 +350,13 @@ class HomeWindow(kodigui.BaseWindow):
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()
-        print item
+        if not item:
+            return
+
+        section = item.dataSource
+
+        if section.type == 'show':
+            shows.ShowsWindow.open(section=section)
 
     def selectServer(self):
         servers = busy.widthDialog(plex.servers, None)

@@ -42,9 +42,11 @@ class SectionHubsTask(backgroundthread.Task):
 
             if self.isCanceled():
                 return
-
-            hubs = plex.PLEX.hubs(section.key, count=10)
-            self.callback(section, hubs)
+            try:
+                hubs = plex.PLEX.hubs(section.key, count=10)
+                self.callback(section, hubs)
+            except plex.exceptions.BadRequest:
+                util.DEBUG_LOG('404 on section: {0}'.format(repr(section.title)))
 
 
 class HomeSection(object):

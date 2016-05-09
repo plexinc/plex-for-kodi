@@ -223,8 +223,9 @@ class MyPlexResource(object):
     def connect(self, ssl=None):
         # Only check non-local connections unless we own the resource
         connections = sorted(self.connections, key=lambda c: c.local, reverse=True)
-        if not self.owned:
-            connections = [c for c in connections if c.local is False]
+        # if not self.owned:
+        #     connections = [c for c in connections if c.local is False]
+
         # Try connecting to all known resource connections in parellel, but
         # only return the first server (in order) that provides a response.
         threads, results = [], []
@@ -236,8 +237,17 @@ class MyPlexResource(object):
                     results.append(None)
                     threads.append(Thread(target=self._connect, args=args))
                     threads[-1].start()
-        for thread in threads:
-            thread.join()
+        alive = True
+        while alive:
+            alive = False
+            for i, thread in enumerate(threads):
+                if thread.is_alive():
+                    alive = True
+                else:
+                    if results[i][1]:
+                        log.info('Returning first OK result: %s', results[i][0])
+                        return results[i][1]
+            time.sleep(0.1)
         # At this point we have a list of result tuples containing (uri, PlexServer)
         # or (uri, None) in the case a connection could not be established.
         for uri, result in results:
@@ -249,11 +259,14 @@ class MyPlexResource(object):
         return results[0]
 
     def _connect(self, uri, results, i):
+        log.info('Testing connection: %s', uri)
         try:
             from plexapi.server import PlexServer
             results[i] = (uri, PlexServer(uri, self.accessToken))
+            log.info('Result: %s - OK', uri)
         except NotFound:
             results[i] = (uri, None)
+            log.info('Result: %s - ERR', uri)
 
     @classmethod
     def fetchResources(cls, token):

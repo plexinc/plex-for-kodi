@@ -260,7 +260,7 @@ def switchUser(new_user, pin):
     USER = myplex.MyPlexUser.switch(new_user, pin)
     ID = util.getSetting('last.server.{0}'.format(USER.id))
 
-    if ID and PLEX.machineIdentifier != ID:
+    if ID:
         PLEX = SEVERMANAGER.getServerByID(ID, wait=True) or PLEX
 
 

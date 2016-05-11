@@ -39,9 +39,9 @@ def main():
     except:
         util.ERROR()
     finally:
-        plex.SEVERMANAGER and plex.SEVERMANAGER.abort()
+        plex.SERVERMANAGER and plex.SERVERMANAGER.abort()
         backgroundthread.BGThreader.shutdown()
-        plex.SEVERMANAGER and plex.SEVERMANAGER.finish()
+        plex.SERVERMANAGER and plex.SERVERMANAGER.finish()
         background.setBusy(False)
         background.setSplash(False)
         back.doClose()

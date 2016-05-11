@@ -169,7 +169,7 @@ def init():
         util.DEBUG_LOG('SIGN IN: Failed to connect to any servers')
         return False
 
-    util.DEBUG_LOG('SIGN IN: Connected to server: {0}'.format(PLEX.friendlyName))
+    util.DEBUG_LOG('SIGN IN: Connected to server: {0} - {1}'.format(PLEX.friendlyName, PLEX.baseuri))
     return True
 
 

@@ -222,7 +222,7 @@ class MyPlexResource(object):
 
     def connect(self, ssl=None):
         # Only check non-local connections unless we own the resource
-        connections = sorted(self.connections, key=lambda c: c.local, reverse=True)
+        connections = sorted(self.connections, key=lambda c: c.local)
         # if not self.owned:
         #     connections = [c for c in connections if c.local is False]
 

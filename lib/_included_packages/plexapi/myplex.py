@@ -246,6 +246,7 @@ class MyPlexResource(object):
                 else:
                     if results[i][1]:
                         log.info('Returning first OK result: %s', results[i][0])
+                        results[i][1].owned = self.owned
                         return results[i][1]
             time.sleep(0.1)
         # At this point we have a list of result tuples containing (uri, PlexServer)
@@ -256,6 +257,7 @@ class MyPlexResource(object):
         if not results:
             raise NotFound('Unable to connect to resource: %s (%s)' % (self.name, self.clientIdentifier))
         log.info('Connecting to server: %s', results[0])
+        results[0].owned = self.owned
         return results[0]
 
     def _connect(self, uri, results, i):

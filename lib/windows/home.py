@@ -398,9 +398,9 @@ class HomeWindow(kodigui.BaseWindow):
             shows.ShowsWindow.open(section=section)
 
     def selectServer(self):
-        servers = busy.widthDialog(plex.servers, None)
+        servers = plex.SEVERMANAGER.validServers
 
-        display = [s.name for s in servers]
+        display = [s.friendlyName for s in servers]
         idx = xbmcgui.Dialog().select('Select Server', display)
         if idx < 0:
             return
@@ -410,7 +410,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def userOptions(self):
         options = []
-        if plex.BASE.multiuser and plex.OWNED:
+        if plex.BASE.multiuser and plex.PLEX.owned:
             options.append(('switch', 'Switch User...'))
         options.append(('signout', 'Sign Out'))
 

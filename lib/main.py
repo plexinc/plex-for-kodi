@@ -13,7 +13,7 @@ def main():
         while not xbmc.abortRequested:
             if plex.init():
                 while not xbmc.abortRequested:
-                    if plex.PLEX.multiuser and plex.OWNED:
+                    if plex.BASE.multiuser and plex.BASE.owned:
                         background.setSplash(False)
                         user, pin = userselect.getUser()
                         if not user:
@@ -34,11 +34,17 @@ def main():
                             break
                     finally:
                         del hw
+            else:
+                break
+    except:
+        util.ERROR()
     finally:
+        plex.SEVERMANAGER and plex.SEVERMANAGER.abort()
         backgroundthread.BGThreader.shutdown()
+        plex.SEVERMANAGER and plex.SEVERMANAGER.finish()
         background.setBusy(False)
         background.setSplash(False)
         back.doClose()
         del back
 
-    util.DEBUG_LOG('FINISHED')
+        util.DEBUG_LOG('FINISHED')

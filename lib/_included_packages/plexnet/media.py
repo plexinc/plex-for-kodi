@@ -7,6 +7,7 @@ class Media(plexobjects.PlexObject):
     def __init__(self, data, initpath=None, server=None, video=None):
         plexobjects.PlexObject.__init__(self, data, initpath=initpath, server=server)
         self.video = video
+        self.parts = [MediaPart(elem, initpath=self.initpath, server=self.server, media=self) for elem in data]
 
     def __repr__(self):
         title = self.video.title.replace(' ', '.')[0:20]
@@ -19,7 +20,7 @@ class MediaPart(plexobjects.PlexObject):
     def __init__(self, data, initpath=None, server=None, media=None):
         plexobjects.PlexObject.__init__(self, data, initpath=initpath, server=server)
         self.media = media
-        self.streams = [MediaPartStream.parse(self.server, e, self.initpath, self) for e in data if e.tag == 'Stream']
+        self.streams = [MediaPartStream.parse(e, initpath=self.initpath, server=server, part=self) for e in data if e.tag == 'Stream']
 
     def __repr__(self):
         return '<%s:%s>' % (self.__class__.__name__, self.id)
@@ -37,7 +38,7 @@ class MediaPartStream(plexobjects.PlexObject):
     STREAMTYPE = None
 
     def __init__(self, data, initpath=None, server=None, part=None):
-        plexobjects.PlexObject.__init(self, data, initpath, server)
+        plexobjects.PlexObject.__init__(self, data, initpath, server)
         self.part = part
 
     @staticmethod
@@ -49,7 +50,7 @@ class MediaPartStream(plexobjects.PlexObject):
         }
         stype = int(data.attrib.get('streamType'))
         cls = STREAMCLS.get(stype, MediaPartStream)
-        return cls(server, data, initpath, part)
+        return cls(data, initpath=initpath, server=server, part=part)
 
     def __repr__(self):
         return '<%s:%s>' % (self.__class__.__name__, self.id)

@@ -102,6 +102,8 @@ class PlexObject(object):
 
         self._setData(data)
 
+        print '{0} {0}'.format(self.initpath, self.key)
+
         self.init(data)
 
     def _setData(self, data):

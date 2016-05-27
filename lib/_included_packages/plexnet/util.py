@@ -1,9 +1,9 @@
 import sys
 import platform
 import uuid
-import traceback
 
 import compat
+import appinterface
 
 BASE_HEADERS = ''
 
@@ -47,14 +47,23 @@ BASE_HEADERS = resetBaseHeaders()
 
 
 def LOG(msg):
-    print 'plexnet.api: {0}'.format(msg)
+    appinterface.APPINTERFACE.LOG(msg)
+
+
+def DEBUG_LOG(msg):
+    appinterface.APPINTERFACE.LOG(msg)
+
+
+def ERROR_LOG(msg):
+    appinterface.APPINTERFACE.DEBUG_LOG(msg)
+
+
+def WARN_LOG(msg):
+    appinterface.APPINTERFACE.WARN_LOG(msg)
 
 
 def ERROR(msg=None, err=None):
-    if err:
-        LOG('ERROR: {0} - {1}'.format(msg, err.message))
-    else:
-        traceback.print_exc()
+    appinterface.APPINTERFACE.WARN_LOG(msg, err)
 
 
 def joinArgs(args):

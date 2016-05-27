@@ -43,7 +43,7 @@ class PlexResource(plexobjects.PlexObject):
                     if conn.reachable:
                         util.LOG('Using server connection: {0}'.format(conn))
                         self.setConnection(conn)
-                        return
+                        return self
             time.sleep(0.1)
 
         reachable = [c for c in connections if c.reachable]
@@ -59,8 +59,25 @@ class PlexResource(plexobjects.PlexObject):
         util.LOG('Using server connection: {0}'.format(conn))
         self.setConnection(conn)
 
+        return self
+
 
 class ResourceConnection(plexobjects.PlexObject):
+    # Constants
+    STATE_UNKNOWN = "unknown"
+    STATE_UNREACHABLE = "unreachable"
+    STATE_REACHABLE = "reachable"
+    STATE_UNAUTHORIZED = "unauthorized"
+    STATE_INSECURE = "insecure_untested"
+
+    SOURCE_MANUAL = 1
+    SOURCE_DISCOVERED = 2
+    SOURCE_MYPLEX = 4
+
+    SCORE_REACHABLE = 4
+    SCORE_LOCAL = 2
+    SCORE_SECURE = 1
+
     def init(self, data):
         self.secure = True
         self.reachable = False

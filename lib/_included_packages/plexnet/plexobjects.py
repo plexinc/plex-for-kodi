@@ -111,7 +111,7 @@ class PlexObject(object):
             setattr(self, k, PlexValue(v, self))
 
     def __getattr__(self, attr):
-        if self.isPartialObject():
+        if not self.isFullObject():
             self.reload()
             if attr in self.__dict__:
                 return self.__dict__[attr]
@@ -131,9 +131,6 @@ class PlexObject(object):
 
     def isFullObject(self):
         return self.initpath is None or self.key is None or self.initpath == self.key
-
-    def isPartialObject(self):
-        return not self.isFullObject()
 
     def refresh(self):
         import requests

@@ -1,9 +1,18 @@
 import json
 import time
 import hashlib
+from xml.etree import ElementTree
 
 import plexapp
-import plexservermanager
+import myplexrequest
+import locks
+import callback
+
+import util
+
+ACCOUNT = None
+
+
 # import plexobjects
 # import plexresource
 
@@ -31,6 +40,14 @@ import plexservermanager
 #         return plexresource.findResourceByID(self.resources(), ID)
 
 
+class HomeUser(dict):
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+
 class MyPlexAccount(object):
     def __init__(self):
         # Strings
@@ -39,9 +56,10 @@ class MyPlexAccount(object):
         self.username = None
         self.email = None
         self.authToken = None
+        self.pin = None
 
         # Booleans
-        self.isAuthenticated = plexapp.getPreference('auto_signin', False)
+        self.isAuthenticated = plexapp.INTERFACE.getPreference('auto_signin', False)
         self.isSignedIn = False
         self.isOffline = False
         self.isExpired = False
@@ -50,8 +68,13 @@ class MyPlexAccount(object):
         self.isSecure = False
         self.hasQueue = False
 
+        self.isAdmin = False
+        self.switchUser = False
+
+        self.lastHomeUserUpdate = None
         self.homeUsers = []
 
+    def init(self):
         self.loadState()
 
     def saveState(self):
@@ -75,12 +98,11 @@ class MyPlexAccount(object):
         # old token and Plex Pass values.
 
         plexapp.INTERFACE.addInitializer("myplex")
-        settings = AppSettings()
 
-        json = plexapp.INTERFACE.getRegistry("MyPlexAccount", None, "myplex")
+        jstring = plexapp.INTERFACE.getRegistry("MyPlexAccount", None, "myplex")
 
-        if json:
-            obj = json.loads(json)
+        if jstring:
+            obj = json.loads(jstring)
             if obj:
                 self.ID = obj.get('ID') or self.ID
                 self.title = obj.get('title') or self.title
@@ -94,91 +116,89 @@ class MyPlexAccount(object):
                 self.isSecure = obj.get('isSecure') or self.isSecure
                 self.isProtected = bool(obj.get('pin'))
 
-        if self.authToken:  # TODO: -------------------------------------------------------------------------------------------------------------------IMPLEMENT
-            request = createMyPlexRequest("/users/account")
-            context = request.CreateRequestContext("account", createCallable("OnAccountResponse", m))
+        if self.authToken:
+            request = myplexrequest.MyPlexRequest("/users/account")
+            context = request.createRequestContext("account", callback.Callable(self.onAccountResponse, self))
             context.timeout = 10000
-            Application().StartRequest(request, context)
+            plexapp.APP.startRequest(request, context)
         else:
             plexapp.INTERFACE.clearInitializer("myplex")
 
-    def onAccountResponse(request, response, context):
+    def onAccountResponse(self, request, response, context):
         oldId = self.ID
 
         if response.isSuccess():
-            xml = response.GetBodyXml()
+            data = response.getBodyXml()
 
             # The user is signed in
             self.isSignedIn = True
             self.isOffline = False
-            self.ID = xml@id
-            self.title = xml@title
-            self.username = xml@username
-            self.email = xml@email
-            self.thumb = xml@thumb
-            self.authToken = xml@authenticationToken
-            self.isPlexPass = (xml.subscription <> invalid and xml.subscription@active = "1")
-            self.isManaged = (xml@restricted = "1")
-            self.isSecure = (xml@secure = "1")
-            self.hasQueue = (xml@queueEmail <> invalid and xml@queueEmail <> "" and xml@queueEmail <> invalid and xml@queueEmail <> "")
+            self.ID = data.attrib.get('id')
+            self.title = data.attrib.get('title')
+            self.username = data.attrib.get('username')
+            self.email = data.attrib.get('email')
+            self.thumb = data.attrib.get('thumb')
+            self.authToken = data.attrib.get('authenticationToken')
+            self.isPlexPass = (data.find('subscription') is not None and data.find('subscription').attrib.get('active') == '1')
+            self.isManaged = data.attrib.get('restricted') == '1'
+            self.isSecure = data.attrib.get('secure') == '1'
+            self.hasQueue = bool(data.attrib.get('queueEmail'))
 
             # PIN
-            if xml@pin <> invalid and xml@pin <> "":
-                self.pin = xml@pin
+            if data.attrib.get('pin'):
+                self.pin = data.attrib.get('pin')
             else:
-                self.pin = invalid
-            self.isProtected = (m.pin <> invalid)
+                self.pin = None
+            self.isProtected = bool(self.pin)
 
             # update the list of users in the home
-            self.UpdateHomeUsers()
+            self.updateHomeUsers()
 
             # set admin attribute for the user
             self.isAdmin = False
-            if self.homeUsers.count() > 0 then
-                for each user in self.homeUsers
-                    if self.ID = user.ID then
-                        self.isAdmin = (tostr(user.admin) = "1")
+            if self.homeUsers:
+                for user in self.homeUsers:
+                    if self.ID == user.ID:
+                        self.isAdmin = str(user.admin) == "1"
                         break
 
             # consider a single, unprotected user authenticated
-            if self.isAuthenticated = False and self.isProtected = False and self.homeUsers.Count() <= 1 then
+            if not self.isAuthenticated and not self.isProtected and len(self.homeUsers) <= 1:
                 self.isAuthenticated = True
 
-            Info("Authenticated as " + tostr(m.ID) + ":" + tostr(m.Title))
-            Info("SignedIn: " + tostr(m.isSignedIn))
-            Info("Offline: " + tostr(m.isOffline))
-            Info("Authenticated: " + tostr(m.isAuthenticated))
-            Info("PlexPass: " + tostr(m.isPlexPass))
-            Info("Managed: " + tostr(m.isManaged))
-            Info("Protected: " + tostr(m.isProtected))
-            Info("Admin: " + tostr(m.isAdmin))
+            util.LOG("Authenticated as {0}:{1}".format(self.ID, self.title))
+            util.LOG("SignedIn: {0}".format(self.isSignedIn))
+            util.LOG("Offline: {0}".format(self.isOffline))
+            util.LOG("Authenticated: {0}".format(self.isAuthenticated))
+            util.LOG("PlexPass: {0}".format(self.isPlexPass))
+            util.LOG("Managed: {0}".format(self.isManaged))
+            util.LOG("Protected: {0}".format(self.isProtected))
+            util.LOG("Admin: {0}".format(self.isAdmin))
 
-            self.SaveState()
-            MyPlexManager().Publish()
-            RefreshResources()
-        else if response.GetStatus() >= 400 and response.GetStatus() < 500 then
+            self.saveState()
+            # MyPlexManager().Publish()  # TODO: -----------------------------------------------------------------------------------------------------IMPLEMENT?
+            import plexservermanager
+            plexservermanager.refreshResources()
+        elif response.getStatus() >= 400 and response.getStatus() < 500:
             # The user is specifically unauthorized, clear everything
-            Warn("Sign Out: User is unauthorized")
-            self.SignOut(True)
-        else
+            util.WARN_LOG("Sign Out: User is unauthorized")
+            self.signOut(True)
+        else:
             # Unexpected error, keep using whatever we read from the registry
-            Warn("Unexpected response from plex.tv (" + tostr(response.GetStatus()) + "), switching to offline mode")
+            util.WARN_LOG("Unexpected response from plex.tv ({0}), switching to offline mode".format(response.getStatus()))
             self.isOffline = True
             # consider a single, unprotected user authenticated
-            if self.isAuthenticated = False and self.isProtected = False then
+            if not self.isAuthenticated and not self.isProtected:
                 self.isAuthenticated = True
-            end if
-        end if
 
-        Application().ClearInitializer("myplex")
-        Logger().UpdateSyslogHeader()
+        plexapp.INTERFACE.clearInitializer("myplex")
+        # Logger().UpdateSyslogHeader()  # TODO: ------------------------------------------------------------------------------------------------------IMPLEMENT
 
-        if oldId <> self.ID or self.switchUser = True then
-            self.switchUser = invalid
-            Application().Trigger("change:user", [m, (oldId <> self.ID)])
-        end if
+        if oldId != self.ID or self.switchUser:
+            self.switchUser = None
+            plexapp.APP.trigger("change:user", [self, oldId != self.ID])
 
-    def signOut(expired=False):
+    def signOut(self, expired=False):
         # Strings
         self.ID = None
         self.title = None
@@ -199,6 +219,7 @@ class MyPlexAccount(object):
         plexapp.INTERFACE.clearRegistry("mpaResources", "xml_cache")
 
         # Remove all saved servers
+        import plexservermanager
         plexservermanager.MANAGER.clearServers()
 
         # Enable the welcome screen again
@@ -212,18 +233,17 @@ class MyPlexAccount(object):
         self.authToken = token
         self.switchUser = switchUser
 
-        # TODO: --------------------------------------------------------------------------------------------------------------------------------------IMPLEMENT
-        request = createMyPlexRequest("/users/sign_in.xml")
-        context = request.CreateRequestContext("sign_in", createCallable("OnAccountResponse", m))
-        context.timeout = iif(m.isOffline, 1000, 10000)
-        Application().StartRequest(request, context, "")
+        request = myplexrequest.MyPlexRequest("/users/sign_in.xml")
+        context = request.createRequestContext("sign_in", callback.Callable(self.onAccountResponse, self))
+        context.timeout = self.isOffline and 10000 or 1000
+        plexapp.APP.startRequest(request, context, {})
 
     def updateHomeUsers(self):
         # Ignore request and clear any home users we are not signed in
         if not self.isSignedIn:
             self.homeUsers = []
             if self.isOffline:
-                self.homeUsers.append(MyPlexAccount())  # TODO: ---------------------------------------------------------------------------------------IMPLEMENT
+                self.homeUsers.append(MyPlexAccount())
 
             self.lastHomeUserUpdate = None
             return
@@ -236,24 +256,24 @@ class MyPlexAccount(object):
             util.DEBUG_LOG("Skipping home user update (updated {0} seconds ago)".format(epoch - self.lastHomeUserUpdate))
             return
 
-        req = createMyPlexRequest("/api/home/users")
-        xml = CreateObject("roXMLElement")
-        xml.Parse(req.GetToStringWithTimeout(10))
-        if int(xml@size or "0") and xml.user:
+        req = myplexrequest.MyPlexRequest("/api/home/users")
+        xml = req.getToStringWithTimeout(10)
+        data = ElementTree.fromstring(xml)
+        if data.attrib.get('size') and data.find('User') is not None:
             self.homeUsers = []
-            for user in xml.user:
-                homeUser = user.GetAttributes()
-                homeUser.isAdmin = (homeUser.admin = "1")
-                homeUser.isManaged = (homeUser.restricted = "1")
-                homeUser.isProtected = (homeUser.protected = "1")
+            for user in data.findall('User'):
+                homeUser = HomeUser(user.attrib)
+                homeUser.isAdmin = homeUser.admin == "1"
+                homeUser.isManaged = homeUser.restricted == "1"
+                homeUser.isProtected = homeUser.protected == "1"
                 self.homeUsers.append(homeUser)
 
             self.lastHomeUserUpdate = epoch
 
-        util.LOG("home users: {0}".format(len(m.homeUsers.count)))
+        util.LOG("home users: {0}".format(len(self.homeUsers)))
 
     def switchHomeUser(self, userId, pin=''):
-        if userId = self.ID and self.isAuthenticated:
+        if userId == self.ID and self.isAuthenticated:
             return True
 
         # Offline support
@@ -266,21 +286,24 @@ class MyPlexAccount(object):
                 self.validateToken(self.AuthToken, True)
                 return True
         else:
-            # TODO: -----------------------------------------------------------------------------------------------------------------------------------IMPLEMENT
             # build path and post to myplex to swith the user
-            path = "/api/home/users/" + userid + "/switch"
-            req = createMyPlexRequest(path)
-            xml = CreateObject("roXMLElement")
-            xml.Parse(req.PostToStringWithTimeout("pin=" + pin, 10))
+            path = '/api/home/users/{0}/switch'.format(userId)
+            req = myplexrequest.MyPlexRequest(path)
+            xml = req.postToStringWithTimeout({'pin': pin}, 10)
+            data = ElementTree.fromstring(xml)
 
-            if xml@authenticationToken:
+            if data.attrib.get('authenticationToken'):
                 self.isAuthenticated = True
                 # validate the token (trigger change:user) on user change or channel startup
-                if userId != self.ID or not Locks().IsLocked("idleLock"):
-                    self.ValidateToken(xml@authenticationToken, True)
+                if userId != self.ID or not locks.LOCKS.isLocked("idleLock"):
+                    self.validateToken(data.attrib.get('authenticationToken'), True)
                 return True
 
         return False
 
     def isActive(self):
         return self.isSignedIn or self.isOffline
+
+
+ACCOUNT = MyPlexAccount()
+ACCOUNT.init()

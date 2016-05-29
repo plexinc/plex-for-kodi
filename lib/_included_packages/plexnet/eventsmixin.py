@@ -1,14 +1,15 @@
 class EventsMixin(object):
-    def on(self, eventName, callback):
-        self.eventsCallbacks = self.eventsCallbacks or {}
+    def __init__(self):
+        self.eventsCallbacks = {}
 
-        callbacks = self.eventsCallbacks[eventName]
+    def on(self, eventName, callback):
+        callbacks = self.eventsCallbacks.get(eventName)
         if not callbacks:
             callbacks = []
             self.eventsCallbacks[eventName] = callbacks
 
         # If the callback has an ID, check for duplicates
-        if callback.id:
+        if callback.ID:
             if callback in callbacks:
                 return
 
@@ -21,15 +22,15 @@ class EventsMixin(object):
         if not eventName:
             if not callback:
                 self.eventsCallbacks = None
-            elif callback.id:
+            elif callback.ID:
                 for name in self.eventsCallbacks:
                     self.off(name, callback)
         else:
             if not callback:
                 if eventName in self.eventsCallbacks:
                     del self.eventsCallbacks[eventName]
-            elif callback.id:
-                callbacks = self.eventsCallbacks[eventName]
+            elif callback.ID:
+                callbacks = self.eventsCallbacks.get(eventName)
                 if not callbacks:
                     return
 
@@ -41,7 +42,7 @@ class EventsMixin(object):
         if not self.eventsCallbacks:
             return
 
-        callbacks = self.eventsCallbacks[eventName]
+        callbacks = self.eventsCallbacks.get(eventName)
         if not callbacks:
             return
 

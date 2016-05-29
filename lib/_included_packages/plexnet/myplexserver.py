@@ -1,7 +1,8 @@
+import plexconnection
 import plexserver
 import plexresource
-
 import plexservermanager
+import myplexaccount
 
 
 class MyPlexServer(plexserver.PlexServerBase):
@@ -10,12 +11,12 @@ class MyPlexServer(plexserver.PlexServerBase):
         self.uuid = 'myplex'
         self.name = 'plex.tv'
 
-        conn = createPlexConnection(plexresource.ResourceConnection.SOURCE_MYPLEX, "https://plex.tv", False, None)
+        conn = plexconnection.PlexConnection(plexresource.ResourceConnection.SOURCE_MYPLEX, "https://plex.tv", False, None)
         self.connections.append(conn)
         self.activeConnection = conn
 
     def getToken(self):
-        return MyPlexAccount().authToken
+        return myplexaccount.ACCOUNT.authToken
 
     def buildUrl(self, path, includeToken=False):
         if "://node.plexapp.com" in path:
@@ -26,8 +27,8 @@ class MyPlexServer(plexserver.PlexServerBase):
 
             server = plexservermanager.MANAGER.getChannelServer()
             if server:
-                url = server.SwizzleUrl(path, includeToken)
+                url = server.swizzleUrl(path, includeToken)
                 if url:
                     return url
 
-        return plexserver.PlexServerBase.BuildUrl(self, path, includeToken)
+        return plexserver.PlexServerBase.buildUrl(self, path, includeToken)

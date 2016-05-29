@@ -1,21 +1,35 @@
 import json
 
 import http
+import myplexaccount
+import plexconnection
 import plexresource
 import plexserver
 import myplexserver
 import eventsmixin
 import callback
 import plexapp
+import gdm
+import util
+
+
+class SearchContext(dict):
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
 
 
 class PlexServerManager(eventsmixin.EventsMixin):
     def __init__(self):
+        eventsmixin.EventsMixin.__init__(self)
         # obj.Append(ListenersMixin())
         self.serversByUuid = {}
         self.selectedServer = None
         self.transcodeServer = None
         self.channelServer = None
+        self.deferReachabilityTimer = None
 
         self.startSelectedServerSearch()
         self.loadState()
@@ -72,7 +86,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
         return servers
 
     def removeServer(self, server):
-        del self.serversByUuid(server.uuid)
+        del self.serversByUuid[server.uuid]
 
         if server == self.selectedServer:
             util.LOG("The selected server went away")
@@ -112,7 +126,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
         for uuid in self.serversByUuid:
             self.serversByUuid[uuid].markAsRefreshing()
 
-    def mergeServer(server):
+    def mergeServer(self, server):
         if server.uuid in self.serversByUuid:
             existing = self.serversByUuid[server.uuid]
             existing.merge(server)
@@ -139,7 +153,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
     def updateReachability(self, force=False, preferSearch=False, defer=False):
         # We don't need to test any servers unless we are signed in and authenticated.
-        if not MyPlexAccount().isAuthenticated and MyPlexAccount().isActive():  # TODO: --------------------------------------------------IMPLEMENT
+        if not myplexaccount.ACCOUNT.isAuthenticated and myplexaccount.ACCOUNT.isActive():
             util.LOG("Ignore testing server reachability until we're authenticated")
             return
 
@@ -156,24 +170,24 @@ class PlexServerManager(eventsmixin.EventsMixin):
             self.deferUpdateReachability()
         elif defer:
             self.deferUpdateReachability()
-        elif hasPreferredServer and not preferredServerExists and GDMDiscovery().isActive():  # TODO: ------------------------------------------------IMPLEMENT
+        elif hasPreferredServer and not preferredServerExists and gdm.DISCOVERY.isActive():
             # Defer the update if requested or if GDM discovery is enabled and
             # active while the preferred server doesn't exist.
 
             util.LOG("Defer update reachability until GDM has finished to help locate the preferred server")
             self.deferUpdateReachability(True, False)
         else:
-            if self.deferReachabilityTimer:  # TODO: --------------------------------------------------------------------------------------------------IMPLEMENT
-                self.deferReachabilityTimer.active = False
+            if self.deferReachabilityTimer:
+                self.deferReachabilityTimer.cancel()
                 self.deferReachabilityTimer = None
 
-            util.LOG("Updating reachability for all devices: force=" + tostr(force))
+            util.LOG("Updating reachability for all devices: force={0}".format(force))
             for uuid in self.serversByUuid:
                 self.serversByUuid[uuid].updateReachability(force)
 
     def cancelReachability(self):
         if self.deferReachabilityTimer:
-            self.deferReachabilityTimer.active = False
+            self.deferReachabilityTimer.cancel()
             self.deferReachabilityTimer = None
 
         for uuid in self.serversByUuid:
@@ -296,7 +310,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
             for i in range(len(serverObj.connections)):
                 conn = serverObj.connections[i]
                 isFallback = hasSecureConn and conn.address[:5] == "https"
-                connection = createPlexConnection(conn.sources, conn.address, bool(conn.isLocal), conn.token, isFallback)  # TODO: -----------------IMPLEMENT
+                connection = plexconnection.PlexConnection(conn.sources, conn.address, bool(conn.isLocal), conn.token, isFallback)
 
                 # Keep the secure connection on top
                 if connection.isSecure:
@@ -309,7 +323,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
         util.LOG("Loaded {0} servers from registry".format(len(obj.servers)))
         self.updateReachability(False, True)
 
-    def saveState():
+    def saveState(self):
         # Serialize our important information to JSON and save it to the registry.
         # We'll always update server info upon connecting, so we don't need much
         # info here. We do have to use roArray instead of roList, because Brightscript.
@@ -324,20 +338,20 @@ class PlexServerManager(eventsmixin.EventsMixin):
             # Don't save secondary servers. They should be discovered through GDM or myPlex.
             if not server.isSecondary():
                 serverObj = {
-                    name: server.name,
-                    uuid: server.uuid,
-                    owned: server.owned,
-                    connections: []
+                    'name': server.name,
+                    'uuid': server.uuid,
+                    'owned': server.owned,
+                    'connections': []
                 }
 
                 for i in range(len(server.connections)):
                     conn = server.connections[i]
                     serverObj.connections.append({
-                        sources: conn.sources,
-                        address: conn.address,
-                        isLocal: conn.isLocal,
-                        isSecure: conn.isSecure,
-                        token: conn.token
+                        'sources': conn.sources,
+                        'address': conn.address,
+                        'isLocal': conn.isLocal,
+                        'isSecure': conn.isSecure,
+                        'token': conn.token
                     })
 
                 obj.servers.append(serverObj)
@@ -366,7 +380,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
                         self.channelServer = s
 
             if self.channelServer:
-                util.LOG("Setting channel server to " + tostr(self.channelServer))
+                util.LOG("Setting channel server to {0}".format(self.channelServer))
 
         return self.channelServer
 
@@ -375,9 +389,9 @@ class PlexServerManager(eventsmixin.EventsMixin):
             return None
 
         transcodeMap = {
-            audio: "supportsAudioTranscoding",
-            video: "supportsVideoTranscoding",
-            photo: "supportsPhotoTranscoding"
+            'audio': "supportsAudioTranscoding",
+            'video': "supportsVideoTranscoding",
+            'photo': "supportsPhotoTranscoding"
         }
         transcodeSupport = transcodeMap[transcodeType]
 
@@ -406,11 +420,11 @@ class PlexServerManager(eventsmixin.EventsMixin):
             self.channelServer = None
 
         # Keep track of some information during our search
-        self.searchContext = {
-            bestServer: None,
-            preferredServer: plexapp.INTERFACE.getPreference('lastServerId', '')
-            waitingForResources: MyPlexAccount().isSignedIn  # TODO: --------------------------------------------------------------------------IMPLEMENT
-        }
+        self.searchContext = SearchContext({
+            'bestServer': None,
+            'preferredServer': plexapp.INTERFACE.getPreference('lastServerId', ''),
+            'waitingForResources': myplexaccount.ACCOUNT.isSignedIn
+        })
 
         util.LOG("Starting selected server search, hoping for {0}".format(self.searchContext.preferredServer))
 
@@ -454,7 +468,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
         if self.deferReachabilityTimer:
             if logInfo:
-                util.LOG('Defer update reachability for all devices a few seconds: GDMactive={0}'.format(False))  # GDMDiscovery().isActive()))
+                util.LOG('Defer update reachability for all devices a few seconds: GDMactive={0}'.format(gdm.DISCOVERY.isActive()))
             self.deferReachabilityTimer.reset()
 
     def onDeferUpdateReachabilityTimer(self, timer):
@@ -531,22 +545,22 @@ class PlexServerManager(eventsmixin.EventsMixin):
             context.timeout = 10000
             plexapp.APP.startRequest(request, context)
 
-    def onManualConnectionsResponse(self, request, response, context):  # TODO: ---------------------------------------------------------------IMPLEMENT
+    def onManualConnectionsResponse(self, request, response, context):
         if not response.isSuccess():
             return
 
-        xml = response.getBodyXml()
-        if xml:
+        data = response.getBodyXml()
+        if data:
             serverAddress = context.serverAddress
             util.DEBUG_LOG("Received manual connection response for {0}".format(serverAddress))
 
-            machineID = None  # xml@machineIdentifier  # TODO: ---------------------------------------------------------------IMPLEMENT
+            machineID = data.attrib.get('machineIdentifier')
             name = context.address
             if not name or not machineID:
                 return
 
             # TODO(rob): Do we NOT want to consider manual connections local?
-            conn = createPlexConnection(plexresource.ResourceConnection.SOURCE_MANUAL, serverAddress, True, None)
+            conn = plexconnection.PlexConnection(plexresource.ResourceConnection.SOURCE_MANUAL, serverAddress, True, None)
             server = plexserver.createPlexServerForConnection(conn)
             server.uuid = machineID
             server.name = name
@@ -568,7 +582,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
 
 def refreshResources(force=False):
-    # GDMDiscovery().Discover()  # TODO: IMPLEMENT
+    gdm.DISCOVERY.discover()
     MANAGER.refreshManualConnections()
 
 # TODO(schuyler): Notifications

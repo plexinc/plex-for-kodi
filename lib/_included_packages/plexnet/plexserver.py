@@ -13,7 +13,6 @@ import plexresource
 import plexlibrary
 import myplexaccount
 import plexapp
-import plexservermanager
 # from plexapi.client import Client
 # from plexapi.playqueue import PlayQueue
 
@@ -37,6 +36,8 @@ class Hub(plexobjects.PlexObject):
 
 class PlexServerBase(plexresource.PlexResource, eventsmixin.EventsMixin):
     def __init__(self):
+        eventsmixin.EventsMixin.__init__(self)
+        plexresource.PlexResource.__init__(self, None)
         self.name = None
         self.uuid = None
         self.versionNorm = None
@@ -80,7 +81,7 @@ class PlexServerBase(plexresource.PlexResource, eventsmixin.EventsMixin):
 
     def buildUrl(self, path, includeToken=False):
         if self.activeConnection:
-            return self.activeConnection.BuildUrl(self, path, includeToken)
+            return self.activeConnection.buildUrl(self, path, includeToken)
         else:
             util.WARN_LOG("Server connection is None, returning an empty url")
             return ""
@@ -102,6 +103,7 @@ class PlexServerBase(plexresource.PlexResource, eventsmixin.EventsMixin):
 
         # Try to use a better server to transcode for synced servers
         if self.synced:
+            import plexservermanager
             selectedServer = plexservermanager.MANAGER.getTranscodeServer("photo")
             if selectedServer:
                 return selectedServer.buildUrl(path, True)
@@ -255,6 +257,7 @@ class PlexServerBase(plexresource.PlexResource, eventsmixin.EventsMixin):
 
         util.LOG("Active connection for {0} is {1}".format(self.name, self.activeConnection))
 
+        import plexservermanager
         plexservermanager.MANAGER.updateReachabilityResult(self, bool(self.activeConnection))
 
     def markAsRefreshing(self):

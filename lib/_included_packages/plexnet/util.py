@@ -3,7 +3,7 @@ import platform
 import uuid
 
 import compat
-import appinterface
+import plexapp
 
 BASE_HEADERS = ''
 
@@ -20,8 +20,8 @@ def resetBaseHeaders():
     }
 
 # Core Settings
-PROJECT = 'PlexAPI'                                 # name provided to plex server
-VERSION = '2.0.0a'                                  # version of this api
+PROJECT = 'PlexNet'                                 # name provided to plex server
+VERSION = '0.0.0a1'                                  # version of this api
 TIMEOUT = 10                                        # request timeout
 X_PLEX_CONTAINER_SIZE = 50                          # max results to return in a single search page
 
@@ -47,23 +47,23 @@ BASE_HEADERS = resetBaseHeaders()
 
 
 def LOG(msg):
-    appinterface.APPINTERFACE.LOG(msg)
+    plexapp.INTERFACE.LOG(msg)
 
 
 def DEBUG_LOG(msg):
-    appinterface.APPINTERFACE.LOG(msg)
+    plexapp.INTERFACE.LOG(msg)
 
 
 def ERROR_LOG(msg):
-    appinterface.APPINTERFACE.DEBUG_LOG(msg)
+    plexapp.INTERFACE.DEBUG_LOG(msg)
 
 
 def WARN_LOG(msg):
-    appinterface.APPINTERFACE.WARN_LOG(msg)
+    plexapp.INTERFACE.WARN_LOG(msg)
 
 
 def ERROR(msg=None, err=None):
-    appinterface.APPINTERFACE.WARN_LOG(msg, err)
+    plexapp.INTERFACE.ERROR(msg, err)
 
 
 def joinArgs(args):
@@ -76,3 +76,28 @@ def joinArgs(args):
         arglist.append('{0}={1}'.format(key, compat.quote(value)))
 
     return '?{0}'.format('&'.join(arglist))
+
+
+def addPlexHeaders(transferObj, token=None):
+    transferObj.addHeader("X-Plex-Platform", plexapp.INTERFACE.getGlobal("platform"))
+    transferObj.addHeader("X-Plex-Version", plexapp.INTERFACE.getGlobal("appVersionStr"))
+    transferObj.addHeader("X-Plex-Client-Identifier", plexapp.INTERFACE.getGlobal("clientIdentifier"))
+    transferObj.addHeader("X-Plex-Platform-Version", plexapp.INTERFACE.getGlobal("platformVersion", "unknown"))
+    transferObj.addHeader("X-Plex-Product", plexapp.INTERFACE.getGlobal("product"))
+    transferObj.addHeader("X-Plex-Provides", not plexapp.INTERFACE.getPreference("remotecontrol", False) and 'player' or '')
+    transferObj.addHeader("X-Plex-Device", plexapp.INTERFACE.getGlobal("device"))
+    transferObj.addHeader("X-Plex-Model", plexapp.INTERFACE.getGlobal("model"))
+    transferObj.addHeader("X-Plex-Device-Name", plexapp.INTERFACE.getGlobal("friendlyName"))
+
+    # Adding the X-Plex-Client-Capabilities header causes node.plexapp.com to 500
+    if not type(transferObj) == "roUrlTransfer" or 'node.plexapp.com' not in transferObj.getUrl():
+        transferObj.addHeader("X-Plex-Client-Capabilities", plexapp.INTERFACE.getCapabilities())
+
+    addAccountHeaders(transferObj, token)
+
+
+def addAccountHeaders(transferObj, token=None):
+    if token:
+        transferObj.addHeader("X-Plex-Token", token)
+
+    # TODO(schuyler): Add username?

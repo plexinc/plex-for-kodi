@@ -8,6 +8,21 @@ import util
 APP = None
 INTERFACE = None
 
+MANAGER = None
+SERVERMANAGER = None
+ACCOUNT = None
+
+
+def init():
+    global MANAGER, SERVERMANAGER, ACCOUNT
+    import myplexaccount
+    ACCOUNT = myplexaccount.ACCOUNT
+    import plexservermanager
+    SERVERMANAGER = plexservermanager.MANAGER
+    import myplexmanager
+    MANAGER = myplexmanager.MANAGER
+    ACCOUNT.init()
+
 
 class App(eventsmixin.EventsMixin):
     def __init__(self):
@@ -170,6 +185,12 @@ class DumbInterface(AppInterface):
     def LOG(self, msg):
         print 'PlexNet.API: {0}'.format(msg)
 
+    def DEBUG_LOG(self, msg):
+        self.LOG('DEBUG: {0}'.format(msg))
+
+    def WARN_LOG(self, msg):
+        self.LOG('WARNING: {0}'.format(msg))
+
     def ERROR(self, msg=None, err=None):
         if err:
             self.LOG('ERROR: {0} - {1}'.format(msg, err.message))
@@ -224,6 +245,14 @@ def setInterface(interface):
 def setApp(app):
     global APP
     APP = app
+
+
+def refreshResources(force=False):
+    import gdm
+    gdm.DISCOVERY.discover()
+    MANAGER.refreshResources(force)
+    SERVERMANAGER.refreshManualConnections()
+
 
 setApp(App())
 setInterface(DumbInterface())

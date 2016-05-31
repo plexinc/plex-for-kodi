@@ -1,22 +1,21 @@
+import plexapp
 import plexconnection
 import plexserver
 import plexresource
 import plexservermanager
-import myplexaccount
 
 
-class MyPlexServer(plexserver.PlexServerBase):
+class MyPlexServer(plexserver.PlexServer):
     def __init__(self):
-        plexserver.PlexServerBase.__init__(self)
+        plexserver.PlexServer.__init__(self)
         self.uuid = 'myplex'
         self.name = 'plex.tv'
-
         conn = plexconnection.PlexConnection(plexresource.ResourceConnection.SOURCE_MYPLEX, "https://plex.tv", False, None)
         self.connections.append(conn)
         self.activeConnection = conn
 
     def getToken(self):
-        return myplexaccount.ACCOUNT.authToken
+        return plexapp.ACCOUNT.authToken
 
     def buildUrl(self, path, includeToken=False):
         if "://node.plexapp.com" in path:
@@ -31,4 +30,4 @@ class MyPlexServer(plexserver.PlexServerBase):
                 if url:
                     return url
 
-        return plexserver.PlexServerBase.buildUrl(self, path, includeToken)
+        return plexserver.PlexServer.buildUrl(self, path, includeToken)

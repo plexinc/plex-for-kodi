@@ -1,65 +1,70 @@
-import time
-import threading
 from xml.etree import ElementTree
 
 import http
 import exceptions
 import plexobjects
+import plexconnection
 import util
 
 RESOURCES = 'https://plex.tv/api/resources?includeHttps=1'
 
 
-class PlexResource(plexobjects.PlexObject):
-    def init(self, data):
+class PlexResource(object):
+    def __init__(self, data):
         self.connection = None
-        self.connections = plexobjects.PlexItemList(data, ResourceConnection, 'Connection')
+        self.connections = []
+        self.accessToken = None
+
+        if not data:
+            return
+
+        self.accessToken = data.attrib.get('accessToken')
+        self.httpsRequired = data.attrib.get('httpsRequired') == '1'
+        self.type = data.attrib.get('type')
+        self.clientIdentifier = data.attrib.get('clientIdentifier')
+        self.product = data.attrib.get('product')
+        self.provides = data.attrib.get('provides')
+        self.serverClass = data.attrib.get('serverClass')
+        self.sourceType = data.attrib.get('sourceType')
+
+        hasSecureConn = False
+
+        for conn in data.findall('Connection'):
+            if conn.attrib.get('protocol') == "https":
+                hasSecureConn = True
+                break
+
+        for conn in data.findall('Connection'):
+            connection = plexconnection.PlexConnection(
+                plexconnection.PlexConnection.SOURCE_MYPLEX,
+                conn.attrib.get('uri'),
+                conn.attrib.get('local') == '1',
+                self.accessToken,
+                hasSecureConn and conn.attrib.get('protocol') != "https"
+            )
+
+            # Keep the secure connection on top
+            if connection.isSecure:
+                self.connections.insert(0, connection)
+            else:
+                self.connections.append(connection)
+
+            # If the connection is one of our plex.direct secure connections, add
+            # the nonsecure variant as well, unless https is required.
+            #
+            if self.httpsRequired and conn.attrib.get('protocol') == "https" and conn.attrib.get('address') not in conn.attrib.get('uri'):
+                self.connections.append(
+                    plexconnection.PlexConnection(
+                        plexconnection.PlexConnection.SOURCE_MYPLEX,
+                        "http://{0}:{1}".format(conn.attrib.get('address'), conn.attrib.get('port')),
+                        conn.attrib.get('local') == '1',
+                        self.accessToken,
+                        True
+                    )
+                )
 
     def __repr__(self):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.name.encode('utf8'))
-
-    def setConnection(self, connection):
-        self.connection = connection
-        self._setData(connection.data)
-
-    def connect(self):
-        connections = sorted(self.connections(), key=lambda c: c.local)
-
-        # Try connecting to all known resource connections in parellel, but
-        # only return the first server (in order) that provides a response.
-        threads = []
-        for i, connection in enumerate(connections):
-            threads.append(threading.Thread(target=connection.connect))
-            threads[-1].start()
-
-        alive = True
-        while alive:
-            alive = False
-            for i, thread in enumerate(threads):
-                if thread.is_alive():
-                    alive = True
-                else:
-                    conn = connections[i]
-                    if conn.reachable:
-                        util.LOG('Using server connection: {0}'.format(conn))
-                        self.setConnection(conn)
-                        return self
-            time.sleep(0.1)
-
-        reachable = [c for c in connections if c.reachable]
-        if not reachable:
-            raise exceptions.NotFound('No reachable resource connections: {0} ({1})'.format(self.name, self.clientIdentifier))
-
-        secure = [c for c in reachable if c.secure]
-        if secure:
-            conn = secure[0]
-        else:
-            conn = reachable[0]
-
-        util.LOG('Using server connection: {0}'.format(conn))
-        self.setConnection(conn)
-
-        return self
 
 
 class ResourceConnection(plexobjects.PlexObject):
@@ -141,6 +146,41 @@ class ResourceConnection(plexobjects.PlexObject):
             delim = '&' if '?' in path else '?'
             return '{base}{path}{delim}X-Plex-Token={token}'.format(base=self.URL, path=path, delim=delim, token=token)
         return '{0}{1}'.format(self.URL, path)
+
+
+class PlexResourceList(plexobjects.PlexItemList):
+    def __init__(self, data, initpath=None, server=None):
+        self._data = data
+        self.initpath = initpath
+        self._server = server
+        self._items = None
+
+    @property
+    def items(self):
+        if self._items is None:
+            if self._data is not None:
+                self._items = [PlexResource(elem, initpath=self.initpath, server=self._server) for elem in self._data]
+            else:
+                self._items = []
+
+        return self._items
+
+
+class PlexContainer(plexobjects.PlexObject):
+    def __init__(self, data, initpath=None, server=None):
+        plexobjects.PlexObject.__init__(self, data, initpath, server)
+        import plexserver
+        self.resources = [plexserver.PlexServer(elem) for elem in data]
+
+    def __getitem__(self, idx):
+        return self.resources[idx]
+
+    def __iter__(self):
+        for i in self.resources:
+            yield i
+
+    def __len__(self):
+        return len(self.resources)
 
 
 def fetchResources(token):

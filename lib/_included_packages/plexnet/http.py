@@ -40,7 +40,7 @@ class RequestContext(dict):
 class HttpRequest(object):
     def __init__(self, url, method=None, forceCertificate=False):
         self.hasParams = '?' in url
-
+        self.ignoreResponse = False
         self.session = requests.session()
         self.method = method
         self.url = url
@@ -69,9 +69,9 @@ class HttpRequest(object):
                 else:
                     self.session.headers.update({"Content-Type": mimetypes.guess_type(contentType)})
 
-                res = self.session.post(self.url, data=body)
+                res = self.session.post(self.url, data=body, timeout=10)
             else:
-                res = self.session.get(self.url)
+                res = self.session.get(self.url, timeout=10)
 
             if self._cancel:
                 return
@@ -92,9 +92,9 @@ class HttpRequest(object):
         self.logRequest(body, seconds, False)
         try:
             if body is not None:
-                res = self.session.post(self.url, data=body)
+                res = self.session.post(self.url, data=body, timeout=10)
             else:
-                res = self.session.get(self.url)
+                res = self.session.get(self.url, timeout=10)
 
             util.LOG("Got a {0} from {1}".format(res.status_code, self.url))
             # self.event = msg
@@ -137,7 +137,7 @@ class HttpRequest(object):
     def onResponse(self, event, context):
         if context.completionCallback:
             response = HttpResponse(event)
-            context.completionCallback([self, response, context])
+            context.completionCallback(self, response, context)
 
     def logRequest(self, body, timeout=None, async=True):
         # Log the real request method

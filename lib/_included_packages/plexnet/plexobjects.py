@@ -62,15 +62,21 @@ class PlexItemList(object):
     @property
     def items(self):
         if self._items is None:
-            if self._server:
-                self._items = [self._itemClass(elem, server=self._server) for elem in self._data if elem.tag == self._itemTag]
+            if self._data is not None:
+                if self._server:
+                    self._items = [self._itemClass(elem, server=self._server) for elem in self._data if elem.tag == self._itemTag]
+                else:
+                    self._items = [self._itemClass(elem) for elem in self._data if elem.tag == self._itemTag]
             else:
-                self._items = [self._itemClass(elem) for elem in self._data if elem.tag == self._itemTag]
+                self._items = []
 
         return self._items
 
     def __call__(self):
         return self.items
+
+    def append(self, item):
+        self.items.append(item)
 
 
 class PlexMediaItemList(PlexItemList):
@@ -86,7 +92,10 @@ class PlexMediaItemList(PlexItemList):
     @property
     def items(self):
         if self._items is None:
-            self._items = [self._itemClass(elem, self._initpath, self._server, self._media) for elem in self._data if elem.tag == self._itemTag]
+            if self._data is not None:
+                self._items = [self._itemClass(elem, self._initpath, self._server, self._media) for elem in self._data if elem.tag == self._itemTag]
+            else:
+                self._items = []
 
         return self._items
 
@@ -101,6 +110,8 @@ class PlexObject(object):
             return
 
         self._setData(data)
+
+        self.uuid = self.clientIdentifier
 
         print '{0} {0}'.format(self.initpath, self.key)
 

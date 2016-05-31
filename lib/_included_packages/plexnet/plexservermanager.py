@@ -1,7 +1,6 @@
 import json
 
 import http
-import myplexaccount
 import plexconnection
 import plexresource
 import plexserver
@@ -147,13 +146,13 @@ class PlexServerManager(eventsmixin.EventsMixin):
         for uuid in toRemove:
             server = self.serversByUuid[uuid]
 
-            util.DEBUG_LOG("Server {0} has no more connections".format(server.name))
+            util.DEBUG_LOG("Server {0} has no more connections - removing".format(server.name))
             # self.notifyAboutDevice(server, False)
             self.removeServer(server)
 
     def updateReachability(self, force=False, preferSearch=False, defer=False):
         # We don't need to test any servers unless we are signed in and authenticated.
-        if not myplexaccount.ACCOUNT.isAuthenticated and myplexaccount.ACCOUNT.isActive():
+        if not plexapp.ACCOUNT.isAuthenticated and plexapp.ACCOUNT.isActive():
             util.LOG("Ignore testing server reachability until we're authenticated")
             return
 
@@ -201,6 +200,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
             # this is a candidate.
 
             if searching:
+                print 'kk'
                 # If this is what we were hoping for, select it
                 if server.uuid == self.searchContext.preferredServer:
                     self.setSelectedServer(server, True)
@@ -274,6 +274,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
                 self.setSelectedServer(self.searchContext.bestServer or self.searchContext.fallbackServer, True)
 
     def compareServers(self, first, second):
+        print 'xx', first, second
         if not first or not first.isSupported:
             return second and -1 or 0
         elif not second:
@@ -295,22 +296,22 @@ class PlexServerManager(eventsmixin.EventsMixin):
             util.ERROR_LOG("Failed to parse PlexServerManager JSON")
             return
 
-        for serverObj in obj.servers:
-            server = plexserver.createPlexServerForName(serverObj.uuid, serverObj.name)
-            server.owned = serverObj.owned
-            server.sameNetwork = serverObj.sameNetwork
+        for serverObj in obj['servers']:
+            server = plexserver.createPlexServerForName(serverObj['uuid'], serverObj['name'])
+            server.owned = serverObj['owned']
+            server.sameNetwork = serverObj['sameNetwork']
 
             hasSecureConn = False
-            for i in range(len(serverObj.connections)):
-                conn = serverObj.connections[i]
-                if conn.address[:5] == "https":
+            for i in range(len(serverObj['connections'])):
+                conn = serverObj['connections'][i]
+                if conn['address'][:5] == "https":
                     hasSecureConn = True
                     break
 
-            for i in range(len(serverObj.connections)):
-                conn = serverObj.connections[i]
-                isFallback = hasSecureConn and conn.address[:5] == "https"
-                connection = plexconnection.PlexConnection(conn.sources, conn.address, bool(conn.isLocal), conn.token, isFallback)
+            for i in range(len(serverObj['connections'])):
+                conn = serverObj['connections'][i]
+                isFallback = hasSecureConn and conn['address'][:5] == "https"
+                connection = plexconnection.PlexConnection(conn['sources'], conn['address'], conn['isLocal'], conn['token'], isFallback)
 
                 # Keep the secure connection on top
                 if connection.isSecure:
@@ -320,7 +321,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
             self.serversByUuid[server.uuid] = server
 
-        util.LOG("Loaded {0} servers from registry".format(len(obj.servers)))
+        util.LOG("Loaded {0} servers from registry".format(len(obj['servers'])))
         self.updateReachability(False, True)
 
     def saveState(self):
@@ -328,11 +329,10 @@ class PlexServerManager(eventsmixin.EventsMixin):
         # We'll always update server info upon connecting, so we don't need much
         # info here. We do have to use roArray instead of roList, because Brightscript.
 
-        class obj:
-            servers = None
+        obj = {}
 
         servers = self.getServers()
-        obj.servers = []
+        obj['servers'] = []
 
         for server in servers:
             # Don't save secondary servers. They should be discovered through GDM or myPlex.
@@ -346,7 +346,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
                 for i in range(len(server.connections)):
                     conn = server.connections[i]
-                    serverObj.connections.append({
+                    serverObj['connections'].append({
                         'sources': conn.sources,
                         'address': conn.address,
                         'isLocal': conn.isLocal,
@@ -354,7 +354,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
                         'token': conn.token
                     })
 
-                obj.servers.append(serverObj)
+                obj['servers'].append(serverObj)
 
         if self.selectedServer and not self.selectedServer.synced and not self.selectedServer.isSecondary():
             plexapp.INTERFACE.setPreference("lastServerId", self.selectedServer.uuid)
@@ -423,7 +423,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
         self.searchContext = SearchContext({
             'bestServer': None,
             'preferredServer': plexapp.INTERFACE.getPreference('lastServerId', ''),
-            'waitingForResources': myplexaccount.ACCOUNT.isSignedIn
+            'waitingForResources': plexapp.ACCOUNT.isSignedIn
         })
 
         util.LOG("Starting selected server search, hoping for {0}".format(self.searchContext.preferredServer))
@@ -498,7 +498,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
         # tested when the server dropdown is enable, but we may as well
         # test all the connections immediately.
 
-        refreshResources(True)
+        plexapp.refreshResources(True)
 
     def onManualConnectionChange(self, value=None):
         # Clear all manual connections on change. We will keep the selected
@@ -579,11 +579,6 @@ class PlexServerManager(eventsmixin.EventsMixin):
                         manualConnections.append(conn)
 
         return manualConnections
-
-
-def refreshResources(force=False):
-    gdm.DISCOVERY.discover()
-    MANAGER.refreshManualConnections()
 
 # TODO(schuyler): Notifications
 # TODO(schuyler): Transcode (and primary) server selection

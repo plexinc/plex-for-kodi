@@ -176,9 +176,8 @@ class MyPlexAccount(object):
             util.LOG("Admin: {0}".format(self.isAdmin))
 
             self.saveState()
-            # MyPlexManager().Publish()  # TODO: -----------------------------------------------------------------------------------------------------IMPLEMENT?
-            import plexservermanager
-            plexservermanager.refreshResources()
+            plexapp.MANAGER.publish()
+            plexapp.refreshResources()
         elif response.getStatus() >= 400 and response.getStatus() < 500:
             # The user is specifically unauthorized, clear everything
             util.WARN_LOG("Sign Out: User is unauthorized")
@@ -219,8 +218,7 @@ class MyPlexAccount(object):
         plexapp.INTERFACE.clearRegistry("mpaResources", "xml_cache")
 
         # Remove all saved servers
-        import plexservermanager
-        plexservermanager.MANAGER.clearServers()
+        plexapp.SERVERMANAGER.clearServers()
 
         # Enable the welcome screen again
         plexapp.INTERFACE.setPreference("show_welcome", True)
@@ -306,4 +304,3 @@ class MyPlexAccount(object):
 
 
 ACCOUNT = MyPlexAccount()
-ACCOUNT.init()

@@ -33,6 +33,9 @@ class PlexConnection(object):
         self.refreshed = True
         self.score = 0
 
+        self.lastTestedAt = 0
+        self.hasPendingRequest = False
+
         self.getScore(True)
 
     def __eq__(self, other):
@@ -95,7 +98,7 @@ class PlexConnection(object):
             else:
                 util.LOG("Insecure connections not allowed. Ignore insecure connection test for {0}".format(server))
                 self.state = self.STATE_INSECURE
-                callable = callback.Callable("OnReachabilityResult", server, random.randint(0, 256), [self])
+                callable = callback.Callable(self.onReachabilityResult, server, random.randint(0, 256), [self])
                 callable.deferCall()
                 return True
 
@@ -112,7 +115,7 @@ class PlexConnection(object):
             context = self.request.createRequestContext("reachability", callback.Callable(self.onReachabilityResponse, self))
             context.server = server
             context.timeout = 10000
-            util.addPlexHeaders(self.request.session, server.getToken())
+            util.addPlexHeaders(self.request, server.getToken())
             self.hasPendingRequest = plexapp.APP.startRequest(self.request, context)
             return True
 
@@ -132,7 +135,7 @@ class PlexConnection(object):
 
         if response.isSuccess():
             data = response.getBodyXml()
-            if data and context.server.collectDataFromRoot(data):
+            if data is not None and context.server.collectDataFromRoot(data):
                 self.state = self.STATE_REACHABLE
             else:
                 # This is unexpected, but treat it as unreachable

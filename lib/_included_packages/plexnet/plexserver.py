@@ -6,8 +6,9 @@ import exceptions
 import compat
 import verlib
 import re
+from xml.etree import ElementTree
 
-import eventsmixin
+import signalsmixin
 import plexobjects
 import plexresource
 import plexlibrary
@@ -33,9 +34,9 @@ class Hub(plexobjects.PlexObject):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
 
 
-class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
+class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     def __init__(self, data=None):
-        eventsmixin.EventsMixin.__init__(self)
+        signalsmixin.SignalsMixin.__init__(self)
         plexresource.PlexResource.__init__(self, data)
         self.accessToken = None
         self.multiuser = False
@@ -49,6 +50,7 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
         self.allowsMediaDeletion = False
         self.allowChannelAccess = False
         self.activeConnection = None
+        self.serverClass = None
 
         self.pendingReachabilityRequests = 0
         self.pendingSecureRequests = 0
@@ -59,7 +61,16 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
         self.server = self
         self.session = http.Session()
 
-        if not data:
+        self.owner = None
+        self.owned = False
+        self.synced = False
+        self.sameNetwork = False
+        self.uuid = None
+        self.name = None
+        self.platform = None
+        self.versionNorm = None
+
+        if data is None:
             return
 
         self.owner = data.attrib.get('sourceTitle')
@@ -68,6 +79,7 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
         self.sameNetwork = data.attrib.get('publicAddressMatches') == '1'
         self.uuid = data.attrib.get('clientIdentifier')
         self.name = data.attrib.get('name')
+        self.platform = data.attrib.get('platform')
         self.versionNorm = verlib.suggest_normalized_version(data.attrib.get('productVersion'))
 
     def __eq__(self, other):
@@ -87,6 +99,11 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
     def __repr__(self):
         return self.__str__()
 
+    @property
+    def isSecure(self):
+        if self.activeConnection:
+            return self.activeConnection.isSecure
+
     def hubs(self, section=None, count=None):
         hubs = []
 
@@ -102,6 +119,14 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
             hubs.append(Hub(elem, server=self))
         return hubs
 
+    @property
+    def library(self):
+        util.LOG(repr(self.__dict__))
+        if self.platform == 'cloudsync':
+            return plexlibrary.Library(None, server=self)
+        else:
+            return plexlibrary.Library(self.query('/library/'), server=self)
+
     def buildUrl(self, path, includeToken=False):
         if self.activeConnection:
             return self.activeConnection.buildUrl(self, path, includeToken)
@@ -111,8 +136,15 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
 
     def query(self, path, method=None, **kwargs):
         method = method or self.session.get
-        url = self.buildUrl(path)
-        method(url, **kwargs)
+        url = self.buildUrl(path, includeToken=True)
+        util.LOG('{0} {1}'.format(method.__name__.upper(), url))
+        response = method(url, **kwargs)
+        if response.status_code not in (200, 201):
+            codename = http.codes.get(response.status_code, ['Unknown'])[0]
+            raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
+        data = response.text.encode('utf8')
+
+        return ElementTree.fromstring(data) if data else None
 
     def getImageTranscodeURL(self, path, width, height, extraOpts=None):
         # Build up our parameters
@@ -174,7 +206,6 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
 
     def collectDataFromRoot(self, data):
         print '.    {0}'.format(self.name)
-        print data.attrib
         # Make sure we're processing data for our server, and not some other
         # server that happened to be at the same IP.
         if self.uuid != data.attrib.get('machineIdentifier'):
@@ -195,6 +226,7 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
         self.allowsMediaDeletion = not self.synced and self.owned and data.attrib.get('allowMediaDeletion') == '1'
         self.multiuser = data.attrib.get('multiuser') == '1'
         self.name = data.attrib.get('friendlyName') or self.name
+        self.platform = data.attrib.get('platform')
 
         # TODO(schuyler): Process transcoder qualities
 
@@ -254,7 +286,7 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
         if connection.isSecure:
             self.pendingSecureRequests -= 1
 
-        util.DEBUG_LOG("Reachability result for {0}: {1} is {1}".format(self.name, connection.address, connection.state))
+        util.DEBUG_LOG("Reachability result for {0}: {1} is {2}".format(self.name, connection.address, connection.state))
 
         # Noneate active connection if the state is unreachable
         if self.activeConnection and self.activeConnection.state != plexresource.ResourceConnection.STATE_REACHABLE:
@@ -334,7 +366,7 @@ class PlexServer(plexresource.PlexResource, eventsmixin.EventsMixin):
         # Wherever this other server came from, assume its information is better
         # except for manual connections.
 
-        if plexresource.ResourceConnection.SOURCE_MANUAL != other.sourceType:
+        if other.sourceType != plexresource.ResourceConnection.SOURCE_MANUAL:
             self.name = other.name
             self.versionNorm = other.versionNorm
             self.sameNetwork = other.sameNetwork

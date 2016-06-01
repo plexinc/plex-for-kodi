@@ -28,7 +28,7 @@ class MyPlexManager(object):
             plexapp.SERVERMANAGER.resetLastTest()
 
         request = myplexrequest.MyPlexRequest("/pms/resources")
-        context = request.createRequestContext("resources", callback.Callable(self.onResourcesResponse, self))
+        context = request.createRequestContext("resources", callback.Callable(self.onResourcesResponse))
         context.timeout = plexapp.ACCOUNT.isOffline and 1000 or 10000
 
         if plexapp.ACCOUNT.isSecure:

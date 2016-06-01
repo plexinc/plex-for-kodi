@@ -5,7 +5,7 @@ import plexconnection
 import plexresource
 import plexserver
 import myplexserver
-import eventsmixin
+import signalsmixin
 import callback
 import plexapp
 import gdm
@@ -20,9 +20,9 @@ class SearchContext(dict):
         self[attr] = value
 
 
-class PlexServerManager(eventsmixin.EventsMixin):
+class PlexServerManager(signalsmixin.SignalsMixin):
     def __init__(self):
-        eventsmixin.EventsMixin.__init__(self)
+        signalsmixin.SignalsMixin.__init__(self)
         # obj.Append(ListenersMixin())
         self.serversByUuid = {}
         self.selectedServer = None
@@ -33,9 +33,9 @@ class PlexServerManager(eventsmixin.EventsMixin):
         self.startSelectedServerSearch()
         self.loadState()
 
-        plexapp.INTERFACE.on("change:user", callback.Callable("onAccountChange", self))
-        plexapp.INTERFACE.on("change:allow_insecure", callback.Callable("onSecurityChange", self))
-        plexapp.INTERFACE.on("change:manual_connections", callback.Callable("onManualConnectionChange", self))
+        plexapp.INTERFACE.on("change:user", callback.Callable(self.onAccountChange))
+        plexapp.INTERFACE.on("change:allow_insecure", callback.Callable(self.onSecurityChange))
+        plexapp.INTERFACE.on("change:manual_connections", callback.Callable(self.onManualConnectionChange))
 
     def getSelectedServer(self):
         return self.selectedServer
@@ -62,7 +62,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
             self.saveState()
 
             # Notify anyone who might care.
-            plexapp.INTERFACE.trigger("change:selectedServer", [server])
+            plexapp.INTERFACE.trigger("change:selectedServer", server=server)
 
             return True
 
@@ -134,7 +134,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
         else:
             self.serversByUuid[server.uuid] = server
             util.DEBUG_LOG("Added new server {0}".format(server.name))
-            self.trigger("new_server", [server])
+            self.trigger("new_server", server=server)
             return server
 
     def deviceRefreshComplete(self, source):
@@ -200,7 +200,6 @@ class PlexServerManager(eventsmixin.EventsMixin):
             # this is a candidate.
 
             if searching:
-                print 'kk'
                 # If this is what we were hoping for, select it
                 if server.uuid == self.searchContext.preferredServer:
                     self.setSelectedServer(server, True)
@@ -274,7 +273,6 @@ class PlexServerManager(eventsmixin.EventsMixin):
                 self.setSelectedServer(self.searchContext.bestServer or self.searchContext.fallbackServer, True)
 
     def compareServers(self, first, second):
-        print 'xx', first, second
         if not first or not first.isSupported:
             return second and -1 or 0
         elif not second:
@@ -298,19 +296,19 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
         for serverObj in obj['servers']:
             server = plexserver.createPlexServerForName(serverObj['uuid'], serverObj['name'])
-            server.owned = serverObj['owned']
-            server.sameNetwork = serverObj['sameNetwork']
+            server.owned = bool(serverObj.get('owned'))
+            server.sameNetwork = serverObj.get('sameNetwork')
 
             hasSecureConn = False
-            for i in range(len(serverObj['connections'])):
+            for i in range(len(serverObj.get('connections', []))):
                 conn = serverObj['connections'][i]
                 if conn['address'][:5] == "https":
                     hasSecureConn = True
                     break
 
-            for i in range(len(serverObj['connections'])):
+            for i in range(len(serverObj.get('connections', []))):
                 conn = serverObj['connections'][i]
-                isFallback = hasSecureConn and conn['address'][:5] == "https"
+                isFallback = hasSecureConn and conn['address'][:5] != "https"
                 connection = plexconnection.PlexConnection(conn['sources'], conn['address'], conn['isLocal'], conn['token'], isFallback)
 
                 # Keep the secure connection on top
@@ -463,7 +461,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
 
     def deferUpdateReachability(self, addTimer=True, logInfo=True):
         if addTimer and not self.deferReachabilityTimer:
-            self.deferReachabilityTimer = plexapp.createTimer(1000, callback.Callable(self.onDeferUpdateReachabilityTimer, self), repeat=True)
+            self.deferReachabilityTimer = plexapp.createTimer(1000, callback.Callable(self.onDeferUpdateReachabilityTimer), repeat=True)
             plexapp.APP.addTimer(self.deferReachabilityTimer)
 
         if self.deferReachabilityTimer:
@@ -471,14 +469,14 @@ class PlexServerManager(eventsmixin.EventsMixin):
                 util.LOG('Defer update reachability for all devices a few seconds: GDMactive={0}'.format(gdm.DISCOVERY.isActive()))
             self.deferReachabilityTimer.reset()
 
-    def onDeferUpdateReachabilityTimer(self, timer):
+    def onDeferUpdateReachabilityTimer(self):
         if not self.selectedServer and self.searchContext:
             for server in self.getServers():
                 if server.pendingReachabilityRequests > 0 and server.uuid == self.searchContext.preferredServer:
                     util.LOG('Still waiting on {0} responses from preferred server'.format(server.pendingReachabilityRequests))
                     return
 
-        timer.active = False
+        self.deferReachabilityTimer.cancel()
         self.deferReachabilityTimer = None
         self.updateReachability(True, False, False)
 
@@ -537,7 +535,7 @@ class PlexServerManager(eventsmixin.EventsMixin):
             serverAddress = "{0}://{1}:{2}".format(proto, conn.connection, port)
 
             request = http.HttpRequest(serverAddress + "/identity")
-            context = request.createRequestContext("manual_connections", callback.Callable("OnManualConnectionsResponse", self))
+            context = request.createRequestContext("manual_connections", callback.Callable(self.onManualConnectionsResponse))
             context.serverAddress = serverAddress
             context.address = conn.connection
             context.proto = proto

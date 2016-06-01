@@ -1,4 +1,3 @@
-import os
 import requests
 import threading
 import urllib
@@ -9,7 +8,7 @@ import callback
 import util
 
 
-codes = requests.codes
+codes = requests.status_codes._codes
 status_codes = requests.status_codes
 
 
@@ -128,7 +127,7 @@ class HttpRequest(object):
         context.requestType = requestType
 
         if callback_:
-            context.callback = callback.Callable(self.onResponse, self)
+            context.callback = callback.Callable(self.onResponse)
             context.completionCallback = callback_
             context.callbackCtx = callback_.context
 

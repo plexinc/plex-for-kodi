@@ -2,7 +2,7 @@ import threading
 import platform
 import uuid
 
-import eventsmixin
+import signalsmixin
 import util
 
 APP = None
@@ -24,9 +24,9 @@ def init():
     ACCOUNT.init()
 
 
-class App(eventsmixin.EventsMixin):
+class App(signalsmixin.SignalsMixin):
     def __init__(self):
-        eventsmixin.EventsMixin.__init__(self)
+        signalsmixin.SignalsMixin.__init__(self)
         self.pendingRequests = {}
         self.timers = []
 
@@ -43,7 +43,7 @@ class App(eventsmixin.EventsMixin):
             self.pendingRequests[id] = context
 
             # if context.timeout:
-            #     timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, self, [context]))
+            #     timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, context=context))
             #     self.addTimer(timer)
         elif context.callback:
             context.callback(None, context)
@@ -84,7 +84,7 @@ except:
         _platform = sys.platform
 
 
-class AppInterface(eventsmixin.EventsMixin):
+class AppInterface(signalsmixin.SignalsMixin):
     def getPreference(self, pref, default=None):
         raise NotImplementedError
 
@@ -199,37 +199,40 @@ class DumbInterface(AppInterface):
             traceback.print_exc()
 
 
-class RepeatableTimer(threading.Thread):
+class RepeatableTimer(object):
     def __init__(self, timeout, function, repeat=False, *args, **kwargs):
         self.function = function
         self.timeout = timeout
         self.repeat = repeat
         self.args = args
         self.kwargs = kwargs
-        threading.Thread.__init__(self, *args, **kwargs)
         self._reset = False
         self.event = threading.Event()
         self.start()
 
+    def start(self):
+        self.event.clear()
+        self.thread = threading.Thread(target=self.run, *self.args, **self.kwargs)
+        self.thread.start()
+
     def run(self):
+        util.DEBUG_LOG('Timer {0}: STARTED'.format(repr(self.function)))
         while not self.event.isSet():
             while not self.event.wait(self.timeout):
                 self.function(*self.args, **self.kwargs)
                 if not self.repeat:
                     break
 
-            if not self._reset:
-                break
-
-            self._reset = False
-            self.event.clear()
+        util.DEBUG_LOG('Timer {0}: FINISHED'.format(repr(self.function)))
 
     def cancel(self):
         self.event.set()
 
     def reset(self):
-        self._reset = True
         self.cancel()
+        if self.thread and self.thread.isAlive():
+            self.thread.join()
+        self.start()
 
 
 def createTimer(timeout, function, repeat=False, *args, **kwargs):

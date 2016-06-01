@@ -1,243 +1,136 @@
+import platform
+import uuid
+import json
 import threading
 
 import xbmc
 
-from plexapi import myplex
-from plexapi import exceptions
+from plexnet import plexapp, myplex
 import util
 
-PLEX = None
-BASE = None
 
-USER = None
-SERVERMANAGER = None
+class PlexInterface(plexapp.AppInterface):
+    _regs = {
+        None: {},
+    }
+    _globals = {
+        'platform': platform.uname()[0],
+        'appVersionStr': '0.0.0a1',
+        'clientIdentifier': str(hex(uuid.getnode())),
+        'platformVersion': platform.uname()[2],
+        'product': 'Kodi.Plex.Addon',
+        'provides': 'player',
+        'device': plexapp._platform,
+        'model': 'Unknown',
+        'friendlyName': 'Kodi Plex Addon',
+    }
 
+    def getPreference(self, pref, default=None):
+        return util.getSetting(pref, default)
 
-class ServerTester(object):
-    def __init__(self):
-        self._abort = False
-        self.validServers = []
-        self.failedServers = []
-        self.init()
+    def setPreference(self, pref, value):
+        util.setSetting(pref, value)
 
-    def init(self):
-        self._hasOwned = False
-        self.serverResources = self.getServerResources()
-        self.validServers = []
-        self.failedServers = []
+    def getRegistry(self, reg, default=None, sec=None):
+        if sec == 'myplex' and reg == 'MyPlexAccount':
+            ret = util.getSetting('{0}.{1}'.format(sec, reg), default)
+            if ret:
+                return ret
+            return json.dumps({'authToken': util.getSetting('auth.token')})
+        else:
+            return util.getSetting('{0}.{1}'.format(sec, reg), default)
 
-        for sr in self.serverResources:
-            self._hasOwned = sr.owned or self._hasOwned
-            util.DEBUG_LOG('Server Resources:')
-            util.DEBUG_LOG('  Server: {0}'.format(sr))
-            util.DEBUG_LOG('    Owned: {0}'.format(sr.owned))
-            util.DEBUG_LOG('    Local: {0}'.format(sr.owned))
-            util.DEBUG_LOG('    Connections: {0}'.format(sr.connections))
+    def setRegistry(self, reg, value, sec=None):
+        util.setSetting('{0}.{1}'.format(sec, reg), value)
 
-        self._thread = threading.Thread(target=self._testServers)
-        self._thread.start()
+    def clearRegistry(self, reg, sec=None):
+        util.setSetting('{0}.{1}'.format(sec, reg), '')
 
-    def isRunning(self, wait=None):
-        if not self._thread.isAlive():
-            return False
+    def addInitializer(self, sec):
+        pass
 
-        if wait:
-            self._thread.join(wait)
+    def clearInitializer(self, sec):
+        pass
 
-        return self._thread.isAlive()
+    def getGlobal(self, glbl, default=None):
+        return self._globals.get(glbl, default)
 
-    def wait(self):
-        if not self.isRunning():
-            return
-        self._thread.join()
+    def getCapabilities(self):
+        return ''
 
-    def abort(self):
-        self._abort = True
+    def LOG(self, msg):
+        util.DEBUG_LOG('API: {0}'.format(msg))
 
-    def getServerResources(self):
-        return sorted([s for s in USER.resources() if s.provides == 'server'], key=lambda x: x.owned, reverse=True)
+    def DEBUG_LOG(self, msg):
+        self.LOG('DEBUG: {0}'.format(msg))
 
-    def _testServers(self):
-        util.DEBUG_LOG('Testing servers: START')
-        self.validServers = []
-        self.failedServers = []
+    def WARN_LOG(self, msg):
+        self.LOG('WARNING: {0}'.format(msg))
 
-        testThreads = []
-
-        for sr in self.serverResources:
-            if self._abort or xbmc.abortRequested:
-                break
-            testThreads.append(threading.Thread(target=self._testServer, args=(sr,)))
-            testThreads[-1].start()
-
-        for t in testThreads:
-            t.join()
-
-        util.DEBUG_LOG('Testing servers: DONE')
-
-    def _testServer(self, sr):
-        try:
-            util.DEBUG_LOG('Attemting to connect to: {0}'.format(sr.name))
-            self.validServers.append(sr.connect(ssl=True))
-        except exceptions.NotFound, e:
-            try:
-                self.validServers.append(sr.connect(ssl=False))
-            except exceptions.NotFound, e:
-                util.DEBUG_LOG('Connection error: {0}'.format(e.message))
-                self.failedServers.append(sr)
+    def ERROR(self, msg=None, err=None):
+        if err:
+            self.LOG('ERROR: {0} - {1}'.format(msg, err.message))
+        else:
+            util.ERROR()
 
 
-class ServerManager(object):
-    def __init__(self):
-        self._abort = False
-        self._currentTest = None
-        self._oldTests = []
+plexapp.setInterface(PlexInterface())
 
-    def testServers(self):
-        if self._currentTest and self._currentTest.isRunning():
-            self._currentTest.abort()
-            self._oldTests.append(self._currentTest)
 
-        self._currentTest = ServerTester()
+class CallbackEvent(threading._Event):
+    def __init__(self, context, signal, timeout=15, *args, **kwargs):
+        threading._Event.__init__(self, *args, **kwargs)
+        self.context = context
+        self.signal = signal
+        self.timeout = timeout
+        self.context.on(self.signal, self.set)
 
-    def start(self):
-        self.testServers()
+    def __enter__(self):
         return self
 
-    def reStart(self):
-        self.start()
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.wait()
 
-    def abort(self):
-        self._abort = True
-        self._currentTest.abort()
-        for test in self._oldTests:
-            test.abort()
+    def __del__(self):
+        self.close()
 
-    def getServerByID(self, ID, wait=False):
-        server = self._getServerByID(ID)
-        if server:
-            return server
+    def set(self, **kwargs):
+        threading._Event.set(self)
 
-        if wait and self._currentTest.isRunning():
-            util.DEBUG_LOG('Waiting for preferred server...')
-            # Otherwise, if we're in the middle of testing, wait 5 mins while checking
-            for x in range(25):
-                server = self._getServerByID(ID)
-                if server:
-                    return server
-                if self._currentTest.isRunning(wait=0.2):
-                    # Testing is done so return what we have
-                    return self._getServerByID(ID)
+    def wait(self):
+        threading._Event.wait(self, self.timeout)
+        self.close()
 
-        return None
-
-    def _getServerByID(self, ID):
-        # See if we already have it in valid servers
-        for server in self._currentTest.validServers:
-            if server.machineIdentifier == ID:
-                return server
-        else:
-            # If it's in the failed servers, give up
-            for resource in self._currentTest.failedServers:
-                if resource.clientIdentifier == ID:
-                    return None
-
-        return None
-
-    def getServer(self):
-        util.DEBUG_LOG('Waiting for server connection...')
-        while not self._abort and not xbmc.abortRequested and self._currentTest.isRunning():
-            if self._currentTest.validServers:
-                break
-            xbmc.sleep(100)
-
-        if self._currentTest._hasOwned:
-            util.DEBUG_LOG('Waiting for an owned server...')
-            for x in range(10):
-                if self._abort or xbmc.abortRequested or not self._currentTest.isRunning():
-                    break
-                for s in self._currentTest.validServers:
-                    if s.owned:
-                        return s
-                    xbmc.sleep(100)
-
-        return self._currentTest.validServers and self._currentTest.validServers[0] or None
-
-    def validServers(self):
-        return self._currentTest and self._currentTest.validServers or []
-
-    def finish(self):
-        self.abort()
-        if self._currentTest:
-            self._oldTests.append(self._currentTest)
-            self._currentTest = None
-
-        for test in self._oldTests:
-            if test.isRunning():
-                util.DEBUG_LOG('Waiting on server testing thread...')
-                test.wait()
+    def close(self):
+        self.context.off(self.signal, self.set)
 
 
 def init():
     util.DEBUG_LOG('Initializing...')
-    global PLEX, USER, SERVERMANAGER
 
-    token_user = getToken()
+    with CallbackEvent(plexapp.INTERFACE, 'account:response'):
+        plexapp.init()
+        util.DEBUG_LOG('Waiting for account response')
 
-    if not token_user:
-        return False
+    if not plexapp.ACCOUNT.authToken:
+        token = authorize()
 
-    token, USER = token_user
+        if not token:
+            return False
 
-    util.DEBUG_LOG('SIGN IN: Signing in...')
-    USER = USER or myplex.MyPlexUser.tokenSignin(token)
-    if not USER:
-        util.DEBUG_LOG('SIGN IN: Failed to sign in')
-        return False
+        util.setSetting('auth.token', token)
+        plexapp.ACCOUNT.loadState()
 
-    util.DEBUG_LOG('SIGN IN: Signed in')
+    # if not PLEX:
+    #     util.messageDialog('Connection Error', u'Unable to connect to any servers')
+    #     util.DEBUG_LOG('SIGN IN: Failed to connect to any servers')
+    #     return False
 
-    SERVERMANAGER = ServerManager().start()
-    PLEX = SERVERMANAGER.getServer()
-    _setBase(PLEX)
-
-    if not PLEX:
-        util.messageDialog('Connection Error', u'Unable to connect to any servers')
-        util.DEBUG_LOG('SIGN IN: Failed to connect to any servers')
-        return False
-
-    util.DEBUG_LOG('SIGN IN: Connected to server: {0} - {1}'.format(PLEX.friendlyName, PLEX.baseuri))
+    # util.DEBUG_LOG('SIGN IN: Connected to server: {0} - {1}'.format(PLEX.friendlyName, PLEX.baseuri))
     return True
 
 
-def initSingleUser():
-    global PLEX
-    lastID = util.getSetting('last.server.{0}'.format(USER.id))
-    if lastID and lastID != PLEX.machineIdentifier:
-        PLEX = SERVERMANAGER.getServerByID(lastID, wait=True) or PLEX
-
-
-def _setBase(server):
-    global BASE
-    BASE = server
-
-
-def getToken():
-    token_user = authorize()
-    if token_user:
-        util.setSetting('auth.token', token_user[0])
-        return token_user
-    else:
-        util.DEBUG_LOG('SIGN IN: Failed to get initial token')
-
-    return None
-
-
 def authorize():
-    token = util.getSetting('auth.token')
-    if token:
-        return (token, None)
-
     from windows import signin, background
 
     background.setSplash(False)
@@ -269,8 +162,7 @@ def authorize():
                     if not pl.expired():
                         if pl.authenticationToken:
                             pinLoginWindow.setLinking()
-                            user = myplex.MyPlexUser.tokenSignin(pl.authenticationToken)
-                            return (pl.authenticationToken, user)
+                            return pl.authenticationToken
                         else:
                             return None
             finally:
@@ -292,37 +184,12 @@ def authorize():
 
 
 def switchUser(new_user, pin):
-    global PLEX, USER
-
-    util.DEBUG_LOG('USER SWITCH: Started')
-    USER = myplex.MyPlexUser.switch(new_user, pin)
-    ID = util.getSetting('last.server.{0}'.format(USER.id))
-    util.DEBUG_LOG('USER SWITCH: Switched')
-
-    util.DEBUG_LOG('USER SWITCH: Getting new server')
-    SERVERMANAGER.reStart()
-
-    PLEX = None
-    if ID:
-        PLEX = SERVERMANAGER.getServerByID(ID, wait=True)
-
-    if not PLEX:
-        PLEX = SERVERMANAGER.getServer()
-    util.DEBUG_LOG('USER SWITCH: Finished')
+    pass
 
 
 def changeServer(server):
-    global PLEX
-
-    PLEX = server
-    util.setSetting('last.server.{0}'.format(USER.id), server.machineIdentifier)
     return True
 
 
 def signOut():
     util.DEBUG_LOG('Signing out')
-    global PLEX, BASE, USER
-    util.setSetting('auth.token', '')
-    PLEX = None
-    BASE = None
-    USER = None

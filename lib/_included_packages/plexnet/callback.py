@@ -4,18 +4,17 @@ import threading
 class Callable(object):
     _currID = 0
 
-    def __init__(self, func, context=None, forcedArgs=None, ID=None):
+    def __init__(self, func, forcedArgs=None, ID=None):
         self.func = func
-        self.context = context
         self.forcedArgs = forcedArgs
 
-        if not context:
-            self.ID = ID
-        else:
-            self.ID = ID or id(func)
+        self.ID = ID or id(func)
 
         if not self.ID:
             self.ID = Callable.nextID()
+
+    def __repr__(self):
+        return '<Callable:({0})>'.format(repr(self.func).strip('<>'))
 
     def __eq__(self, other):
         if not other:
@@ -29,12 +28,16 @@ class Callable(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def __call__(self, *args):
+    def __call__(self, *args, **kwargs):
         args = args or []
         if self.forcedArgs:
             args = self.forcedArgs
         print args
         self.func(*args)
+
+    @property
+    def context(self):
+        return self.func.im_self
 
     @classmethod
     def nextID(cls):

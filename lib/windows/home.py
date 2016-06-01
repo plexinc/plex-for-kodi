@@ -5,8 +5,10 @@ import xbmcgui
 
 import kodigui
 from lib import util
-from lib import plex
 from lib import backgroundthread
+
+import plexnet
+from plexnet import plexapp
 
 import shows
 import busy
@@ -43,9 +45,10 @@ class SectionHubsTask(backgroundthread.Task):
             if self.isCanceled():
                 return
             try:
-                hubs = plex.PLEX.hubs(section.key, count=10)
+                xbmc.log(repr(section.__dict__))
+                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(section.key, count=10)
                 self.callback(section, hubs)
-            except plex.exceptions.BadRequest:
+            except plexnet.exceptions.BadRequest:
                 util.DEBUG_LOG('404 on section: {0}'.format(repr(section.title)))
 
 
@@ -231,11 +234,11 @@ class HomeWindow(kodigui.BaseWindow):
             self.sectionList.selectItem(self.bottomItem)
 
     def displayServerAndUser(self):
-        self.setProperty('server.name', plex.PLEX.friendlyName)
+        self.setProperty('server.name', plexapp.SERVERMANAGER.selectedServer.name)
         self.setProperty('server.icon', 'script.plex/home/device/plex.png')  # TODO: Set dynamically to whatever it should be if that's how it even works :)
-        self.setProperty('server.iconmod', plex.PLEX.isSecure and 'script.plex/home/device/lock.png' or '')
-        self.setProperty('user.name', plex.USER.title)
-        self.setProperty('user.avatar', plex.USER.thumb)
+        self.setProperty('server.iconmod', plexapp.SERVERMANAGER.selectedServer.isSecure and 'script.plex/home/device/lock.png' or '')
+        self.setProperty('user.name', plexapp.ACCOUNT.username)
+        self.setProperty('user.avatar', plexapp.ACCOUNT.thumb)
 
     def sectionChanged(self, section):
         self.setProperty('hub.focus', '')
@@ -256,7 +259,7 @@ class HomeWindow(kodigui.BaseWindow):
         homemli.setProperty('item', '1')
         items.append(homemli)
 
-        sections = plex.PLEX.library.sections()
+        sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
 
         self.task = SectionHubsTask().setup([HomeSection] + sections, self.sectionHubsCallback)
         backgroundthread.BGThreader.addTask(self.task)
@@ -303,16 +306,16 @@ class HomeWindow(kodigui.BaseWindow):
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createParentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createSimpleListItem(self, obj, thumb_w, thumb_h):
-        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
+        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createListItem(self, obj):
@@ -379,7 +382,7 @@ class HomeWindow(kodigui.BaseWindow):
                 mli.setProperty('progress', util.getProgressImage(mli.dataSource))
         if with_art:
             for mli in items:
-                mli.setThumbnailImage(mli.dataSource.transcodedArtURL(*self.THUMB_AR16X9_DIM))
+                mli.setThumbnailImage(mli.dataSource.art.asTranscodedImageURL(*self.THUMB_AR16X9_DIM))
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
         if ar16x9:
             for mli in items:
@@ -398,19 +401,19 @@ class HomeWindow(kodigui.BaseWindow):
             shows.ShowsWindow.open(section=section)
 
     def selectServer(self):
-        servers = plex.SERVERMANAGER.validServers()
+        servers = sorted([s for s in plexapp.SERVERMANAGER.serversByUuid.values() if s.isReachable()], key=lambda x: x.name.lower())
 
-        display = [s.friendlyName for s in servers]
+        display = [s.name for s in servers]
         idx = xbmcgui.Dialog().select('Select Server', display)
         if idx < 0:
             return
         server = servers[idx]
-        if plex.changeServer(server):
+        if plexapp.SERVERMANAGER.setSelectedServer(server, force=True):
             self.serverRefresh()
 
     def userOptions(self):
         options = []
-        if plex.BASE.multiuser and plex.BASE.owned:
+        if len(plexapp.ACCOUNT.homeUsers) > 1:
             options.append(('switch', 'Switch User...'))
         options.append(('signout', 'Sign Out'))
 

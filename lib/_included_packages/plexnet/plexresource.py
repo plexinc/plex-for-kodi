@@ -15,7 +15,7 @@ class PlexResource(object):
         self.connections = []
         self.accessToken = None
 
-        if not data:
+        if data is None:
             return
 
         self.accessToken = data.attrib.get('accessToken')
@@ -26,6 +26,7 @@ class PlexResource(object):
         self.provides = data.attrib.get('provides')
         self.serverClass = data.attrib.get('serverClass')
         self.sourceType = data.attrib.get('sourceType')
+        self.uuid = self.clientIdentifier
 
         hasSecureConn = False
 

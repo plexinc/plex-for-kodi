@@ -1,5 +1,6 @@
 import xbmc
 import plex
+from plexnet import plexapp
 from windows import background, userselect, home
 import backgroundthread
 import util
@@ -12,25 +13,25 @@ def main():
     try:
         while not xbmc.abortRequested:
             if plex.init():
-                while not xbmc.abortRequested:
-                    if plex.BASE.multiuser and plex.BASE.owned:
-                        background.setSplash(False)
-                        user, pin = userselect.getUser()
-                        if not user:
-                            return
-                        background.setBusy()
-                        plex.switchUser(user, pin)
-                    else:
-                        plex.initSingleUser()
+                done = plex.CallbackEvent(plexapp.INTERFACE, 'change:selectedServer')
 
+                while not xbmc.abortRequested:
+                    if len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected:
+                        background.setSplash(False)
+                        if not userselect.start():
+                            return
                     try:
+                        if not plexapp.SERVERMANAGER.selectedServer:
+                            util.DEBUG_LOG('Waiting for selected server')
+                            done.wait()
+
                         hw = home.HomeWindow.open()
 
                         if not hw.closeOption:
                             return
 
                         if hw.closeOption == 'signout':
-                            plex.signOut()
+                            plexapp.ACCOUNT.signOut()
                             break
                     finally:
                         del hw
@@ -39,9 +40,7 @@ def main():
     except:
         util.ERROR()
     finally:
-        plex.SERVERMANAGER and plex.SERVERMANAGER.abort()
         backgroundthread.BGThreader.shutdown()
-        plex.SERVERMANAGER and plex.SERVERMANAGER.finish()
         background.setBusy(False)
         background.setSplash(False)
         back.doClose()

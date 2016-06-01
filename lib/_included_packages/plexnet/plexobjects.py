@@ -48,7 +48,7 @@ class PlexValue(unicode):
         return self.parent.server.url(self)
 
     def asTranscodedImageURL(self, w, h):
-        return self.parent.server.transcodedImageURL(self, w, h)
+        return self.parent.server.getImageTranscodeURL(self, w, h)
 
 
 class PlexItemList(object):
@@ -111,8 +111,6 @@ class PlexObject(object):
 
         self._setData(data)
 
-        self.uuid = self.clientIdentifier
-
         print '{0} {0}'.format(self.initpath, self.key)
 
         self.init(data)
@@ -127,7 +125,7 @@ class PlexObject(object):
             if attr in self.__dict__:
                 return self.__dict__[attr]
 
-        a = PlexValue('')
+        a = PlexValue('', self)
         a.NA = True
 
         try:
@@ -142,6 +140,10 @@ class PlexObject(object):
 
     def isFullObject(self):
         return self.initpath is None or self.key is None or self.initpath == self.key
+
+    @property
+    def defaultThumb(self):
+        return self.thumb
 
     def refresh(self):
         import requests

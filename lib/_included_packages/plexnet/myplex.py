@@ -4,10 +4,7 @@ from threading import Thread
 from xml.etree import ElementTree
 import time
 
-import plexobjects
-import plexresource
 import exceptions
-import util
 
 import video
 import audio
@@ -80,94 +77,94 @@ class PinLogin(object):
         self._abort = True
 
 
-class MyPlexUser(plexobjects.PlexObject):
-    """ Logs into my.plexapp.com to fetch account and token information. This
-        useful to get a token if not on the local network.
-    """
-    SIGNIN = 'https://my.plexapp.com/users/sign_in.xml'
+# class MyPlexUser(plexobjects.PlexObject):
+#     """ Logs into my.plexapp.com to fetch account and token information. This
+#         useful to get a token if not on the local network.
+#     """
+#     SIGNIN = 'https://my.plexapp.com/users/sign_in.xml'
 
-    def resources(self):
-        return plexresource.fetchResources(self.authenticationToken)
+#     def resources(self):
+#         return plexresource.fetchResources(self.authenticationToken)
 
-    def getResource(self, search, port=32400):
-        """ Searches server.name, server.sourceTitle and server.host:server.port
-            from the list of available for this PlexUser.
-        """
-        return plexresource.findResource(self.resources(), search, port)
+#     def getResource(self, search, port=32400):
+#         """ Searches server.name, server.sourceTitle and server.host:server.port
+#             from the list of available for this PlexUser.
+#         """
+#         return plexresource.findResource(self.resources(), search, port)
 
-    def getResourceByID(self, ID):
-        """ Searches by server.clientIdentifier
-            from the list of available for this PlexUser.
-        """
-        return plexresource.findResourceByID(self.resources(), ID)
+#     def getResourceByID(self, ID):
+#         """ Searches by server.clientIdentifier
+#             from the list of available for this PlexUser.
+#         """
+#         return plexresource.findResourceByID(self.resources(), ID)
 
-    # def devices(self):
-    #     return MyPlexDevice.fetchResources(self.authenticationToken)
+#     # def devices(self):
+#     #     return MyPlexDevice.fetchResources(self.authenticationToken)
 
-    @classmethod
-    def processResponse(cls, response):
-        if response.status_code != http.codes.created:
-            codename = http.status_codes.get(response.status_code)[0]
-            if response.status_code == 401:
-                raise exceptions.Unauthorized('({0}) {1}'.format(response.status_code, codename))
-            raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
-        data = ElementTree.fromstring(response.text.encode('utf8'))
-        return cls(data)
+#     @classmethod
+#     def processResponse(cls, response):
+#         if response.status_code != http.codes.created:
+#             codename = http.status_codes.get(response.status_code)[0]
+#             if response.status_code == 401:
+#                 raise exceptions.Unauthorized('({0}) {1}'.format(response.status_code, codename))
+#             raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
+#         data = ElementTree.fromstring(response.text.encode('utf8'))
+#         return cls(data)
 
-    @classmethod
-    def signin(cls, username, password):
-        if 'X-Plex-Token' in util.BASE_HEADERS:
-            del util.BASE_HEADERS['X-Plex-Token']
-        auth = (username, password)
-        util.LOG('POST {0}'.format(cls.SIGNIN))
-        response = http.POST(cls.SIGNIN, auth=auth)
-        return cls.processResponse(response)
+#     @classmethod
+#     def signin(cls, username, password):
+#         if 'X-Plex-Token' in util.BASE_HEADERS:
+#             del util.BASE_HEADERS['X-Plex-Token']
+#         auth = (username, password)
+#         util.LOG('POST {0}'.format(cls.SIGNIN))
+#         response = http.POST(cls.SIGNIN, auth=auth)
+#         return cls.processResponse(response)
 
-    @classmethod
-    def tokenSignin(cls, auth_token):
-        if 'X-Plex-Token' in util.BASE_HEADERS:
-            del util.BASE_HEADERS['X-Plex-Token']
-        util.LOG('POST {0}'.format(cls.SIGNIN))
-        response = http.POST(cls.SIGNIN, params={'auth_token': auth_token})
-        return cls.processResponse(response)
+#     @classmethod
+#     def tokenSignin(cls, auth_token):
+#         if 'X-Plex-Token' in util.BASE_HEADERS:
+#             del util.BASE_HEADERS['X-Plex-Token']
+#         util.LOG('POST {0}'.format(cls.SIGNIN))
+#         response = http.POST(cls.SIGNIN, params={'auth_token': auth_token})
+#         return cls.processResponse(response)
 
-    @classmethod
-    def switch(cls, user, pin=None):
-        token = MyPlexHomeUser.getSwitchToken(user, pin)
-        if not token:
-            return None
-        util.BASE_HEADERS['X-Plex-Token'] = token
-        util.LOG('POST {0}'.format(cls.SIGNIN))
-        response = http.POST(cls.SIGNIN)
-        return cls.processResponse(response)
+#     @classmethod
+#     def switch(cls, user, pin=None):
+#         token = MyPlexHomeUser.getSwitchToken(user, pin)
+#         if not token:
+#             return None
+#         util.BASE_HEADERS['X-Plex-Token'] = token
+#         util.LOG('POST {0}'.format(cls.SIGNIN))
+#         response = http.POST(cls.SIGNIN)
+#         return cls.processResponse(response)
 
 
-class MyPlexHomeUser(plexobjects.PlexObject):
-    USERS = 'https://plex.tv/api/home/users'
-    SWITCH = 'https://plex.tv/api/home/users/{0}/switch?pin={1}'
+# class MyPlexHomeUser(plexobjects.PlexObject):
+#     USERS = 'https://plex.tv/api/home/users'
+#     SWITCH = 'https://plex.tv/api/home/users/{0}/switch?pin={1}'
 
-    def __repr__(self):
-        return '<{1}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.title.encode('utf8'))
+#     def __repr__(self):
+#         return '<{1}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.title.encode('utf8'))
 
-    @classmethod
-    def getSwitchToken(cls, user, pin=None):
-        response = http.POST(cls.SWITCH.format(user.id, pin or ''))
-        if response.status_code != http.codes.created:
-            codename = http.status_codes.get(response.status_code)[0]
-            if response.status_code == 401:
-                raise exceptions.Unauthorized('({0}) {1}'.format(response.status_code, codename))
-            raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
-        data = ElementTree.fromstring(response.text.encode('utf8'))
-        return data.attrib.get('authenticationToken')
+#     @classmethod
+#     def getSwitchToken(cls, user, pin=None):
+#         response = http.POST(cls.SWITCH.format(user.id, pin or ''))
+#         if response.status_code != http.codes.created:
+#             codename = http.status_codes.get(response.status_code)[0]
+#             if response.status_code == 401:
+#                 raise exceptions.Unauthorized('({0}) {1}'.format(response.status_code, codename))
+#             raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
+#         data = ElementTree.fromstring(response.text.encode('utf8'))
+#         return data.attrib.get('authenticationToken')
 
-    @classmethod
-    def fetchUsers(cls, token):
-        headers = util.BASE_HEADERS
-        headers['X-Plex-Token'] = token
-        util.LOG('GET {0}?X-Plex-Token={1}'.format(cls.USERS, token))
-        response = http.GET(cls.USERS)
-        data = ElementTree.fromstring(response.text.encode('utf8'))
-        return [MyPlexHomeUser(elem) for elem in data]
+#     @classmethod
+#     def fetchUsers(cls, token):
+#         headers = util.BASE_HEADERS
+#         headers['X-Plex-Token'] = token
+#         util.LOG('GET {0}?X-Plex-Token={1}'.format(cls.USERS, token))
+#         response = http.GET(cls.USERS)
+#         data = ElementTree.fromstring(response.text.encode('utf8'))
+#         return [MyPlexHomeUser(elem) for elem in data]
 
 
 # TODO: Is this a plex client in disguise?

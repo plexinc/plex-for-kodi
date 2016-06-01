@@ -33,16 +33,16 @@ class ShowsWindow(kodigui.BaseWindow):
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createParentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
+        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createSimpleListItem(self, obj, thumb_w, thumb_h):
-        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.transcodedThumbURL(thumb_w, thumb_h), data_source=obj)
+        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
     def createListItem(self, obj):

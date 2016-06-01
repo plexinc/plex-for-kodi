@@ -47,6 +47,9 @@ class HomeUser(dict):
     def __setattr__(self, attr, value):
         self[attr] = value
 
+    def __repr__(self):
+        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.title.encode('utf8'))
+
 
 class MyPlexAccount(object):
     def __init__(self):
@@ -118,7 +121,7 @@ class MyPlexAccount(object):
 
         if self.authToken:
             request = myplexrequest.MyPlexRequest("/users/account")
-            context = request.createRequestContext("account", callback.Callable(self.onAccountResponse, self))
+            context = request.createRequestContext("account", callback.Callable(self.onAccountResponse))
             context.timeout = 10000
             plexapp.APP.startRequest(request, context)
         else:
@@ -195,7 +198,9 @@ class MyPlexAccount(object):
 
         if oldId != self.ID or self.switchUser:
             self.switchUser = None
-            plexapp.APP.trigger("change:user", [self, oldId != self.ID])
+            plexapp.APP.trigger("change:user", account=self, reallyChanged=oldId != self.ID)
+
+        plexapp.INTERFACE.trigger('account:response')
 
     def signOut(self, expired=False):
         # Strings
@@ -223,7 +228,7 @@ class MyPlexAccount(object):
         # Enable the welcome screen again
         plexapp.INTERFACE.setPreference("show_welcome", True)
 
-        plexapp.INTERFACE.trigger("change:user", [self, True])
+        plexapp.INTERFACE.trigger("change:user", account=self, reallyChanged=True)
 
         self.saveState()
 
@@ -232,7 +237,7 @@ class MyPlexAccount(object):
         self.switchUser = switchUser
 
         request = myplexrequest.MyPlexRequest("/users/sign_in.xml")
-        context = request.createRequestContext("sign_in", callback.Callable(self.onAccountResponse, self))
+        context = request.createRequestContext("sign_in", callback.Callable(self.onAccountResponse))
         context.timeout = self.isOffline and 10000 or 1000
         plexapp.APP.startRequest(request, context, {})
 

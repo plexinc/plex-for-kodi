@@ -50,7 +50,7 @@ class Movie(Video):
         self._subtitleStreams = None
 
         # data for active sessions
-        self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''))
+        self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''), self)
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
@@ -173,10 +173,14 @@ class Episode(Video):
         self._subtitleStreams = None
 
         # data for active sessions
-        self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''))
+        self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''), self)
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
+
+    @property
+    def defaultThumb(self):
+        return self.grandparentThumb or self.parentThumb or self.thumb
 
     @property
     def videoStreams(self):

@@ -98,7 +98,7 @@ class PlexConnection(object):
             else:
                 util.LOG("Insecure connections not allowed. Ignore insecure connection test for {0}".format(server))
                 self.state = self.STATE_INSECURE
-                callable = callback.Callable(self.onReachabilityResult, server, random.randint(0, 256), [self])
+                callable = callback.Callable(server.onReachabilityResult, [self], random.randint(0, 256))
                 callable.deferCall()
                 return True
 
@@ -112,7 +112,7 @@ class PlexConnection(object):
             ):
                 util.DEBUG_LOG("Invalid insecure connection test in progress")
             self.request = http.HttpRequest(self.buildUrl(server, "/"))
-            context = self.request.createRequestContext("reachability", callback.Callable(self.onReachabilityResponse, self))
+            context = self.request.createRequestContext("reachability", callback.Callable(self.onReachabilityResponse))
             context.server = server
             context.timeout = 10000
             util.addPlexHeaders(self.request, server.getToken())

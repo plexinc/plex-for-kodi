@@ -1,7 +1,8 @@
 import xbmc
 import xbmcgui
 import kodigui
-from lib import util, plex, image, backgroundthread
+from lib import util, image, backgroundthread
+from plexnet import plexapp
 
 
 class UserThumbTask(backgroundthread.Task):
@@ -31,9 +32,8 @@ class UserSelectWindow(kodigui.BaseWindow):
     PIN_ENTRY_GROUP_ID = 400
 
     def __init__(self, *args, **kwargs):
-        self.user = None
-        self.pin = None
         self.task = None
+        self.selected = False
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
 
     def onFirstInit(self):
@@ -63,7 +63,7 @@ class UserSelectWindow(kodigui.BaseWindow):
     def onClick(self, controlID):
         if controlID == self.USER_LIST_ID:
             item = self.userList.getSelectedItem()
-            if item.dataSource.protected:
+            if item.dataSource.isProtected:
                 self.setFocusId(self.PIN_ENTRY_GROUP_ID)
             else:
                 self.userSelected(item.dataSource)
@@ -84,7 +84,7 @@ class UserSelectWindow(kodigui.BaseWindow):
     def start(self):
         self.setProperty('busy', '1')
         try:
-            users = plex.BASE.account().users()
+            users = plexapp.ACCOUNT.homeUsers
 
             items = []
             for user in users:
@@ -93,8 +93,8 @@ class UserSelectWindow(kodigui.BaseWindow):
                 mli = kodigui.ManagedListItem(user.title, user.title[0].upper(), data_source=user)
                 mli.setProperty('pin', user.title)
                 # mli.setProperty('back.image', back)
-                mli.setProperty('protected', user.protected and '1' or '')
-                mli.setProperty('admin', user.admin and '1' or '')
+                mli.setProperty('protected', user.isProtected and '1' or '')
+                mli.setProperty('admin', user.isAdmin and '1' or '')
                 items.append(mli)
 
             self.userList.addItems(items)
@@ -132,23 +132,18 @@ class UserSelectWindow(kodigui.BaseWindow):
 
     def userSelected(self, user, pin=None):
         xbmc.sleep(500)
-        self.user = user
-        self.pin = pin
-        self.doClose()
         util.DEBUG_LOG('Home user selected: {0}'.format(user))
+        plexapp.ACCOUNT.switchHomeUser(user.id, pin)
+        self.selected = True
+        self.doClose()
 
     def finished(self):
         if self.task:
             self.task.cancel()
 
 
-def getUser():
+def start():
     w = UserSelectWindow.open()
-
-    try:
-        return (w.user, w.pin)
-    finally:
-        w.finished()
-        del w
-
-    return (None, None)
+    selected = w.selected
+    del w
+    return selected

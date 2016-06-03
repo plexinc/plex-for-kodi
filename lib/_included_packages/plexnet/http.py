@@ -8,8 +8,8 @@ import callback
 import util
 
 
-codes = requests.status_codes._codes
-status_codes = requests.status_codes
+codes = requests.codes
+status_codes = requests.status_codes._codes
 
 
 def GET(*args, **kwargs):
@@ -91,9 +91,9 @@ class HttpRequest(object):
         self.logRequest(body, seconds, False)
         try:
             if body is not None:
-                res = self.session.post(self.url, data=body, timeout=10)
+                res = self.session.post(self.url, data=body, timeout=seconds)
             else:
-                res = self.session.get(self.url, timeout=10)
+                res = self.session.get(self.url, timeout=seconds)
 
             util.LOG("Got a {0} from {1}".format(res.status_code, self.url))
             # self.event = msg

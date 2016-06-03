@@ -33,7 +33,7 @@ class Callable(object):
         if self.forcedArgs:
             args = self.forcedArgs
         print args
-        self.func(*args)
+        self.func(*args, **kwargs)
 
     @property
     def context(self):

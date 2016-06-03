@@ -33,9 +33,9 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         self.startSelectedServerSearch()
         self.loadState()
 
-        plexapp.INTERFACE.on("change:user", callback.Callable(self.onAccountChange))
-        plexapp.INTERFACE.on("change:allow_insecure", callback.Callable(self.onSecurityChange))
-        plexapp.INTERFACE.on("change:manual_connections", callback.Callable(self.onManualConnectionChange))
+        plexapp.APP.on("change:user", callback.Callable(self.onAccountChange))
+        plexapp.APP.on("change:allow_insecure", callback.Callable(self.onSecurityChange))
+        plexapp.APP.on("change:manual_connections", callback.Callable(self.onManualConnectionChange))
 
     def getSelectedServer(self):
         return self.selectedServer
@@ -62,7 +62,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             self.saveState()
 
             # Notify anyone who might care.
-            plexapp.INTERFACE.trigger("change:selectedServer", server=server)
+            plexapp.APP.trigger("change:selectedServer", server=server)
 
             return True
 
@@ -80,7 +80,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         servers = []
         for uuid in self.serversByUuid:
             if uuid != "myplex":
-                servers.insert(0, self.serversByUuid[uuid])
+                servers.append(self.serversByUuid[uuid])
 
         return servers
 

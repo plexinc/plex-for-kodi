@@ -13,17 +13,19 @@ def main():
     try:
         while not xbmc.abortRequested:
             if plex.init():
-                done = plex.CallbackEvent(plexapp.INTERFACE, 'change:selectedServer')
-
+                background.setSplash(False)
                 while not xbmc.abortRequested:
                     if len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected:
-                        background.setSplash(False)
                         if not userselect.start():
                             return
+
                     try:
+                        done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer')
                         if not plexapp.SERVERMANAGER.selectedServer:
-                            util.DEBUG_LOG('Waiting for selected server')
+                            util.DEBUG_LOG('Waiting for selected server...')
                             done.wait()
+
+                        util.DEBUG_LOG('STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
 
                         hw = home.HomeWindow.open()
 
@@ -31,6 +33,8 @@ def main():
                             return
 
                         if hw.closeOption == 'signout':
+                            util.setSetting('auth.token', '')
+                            util.DEBUG_LOG('Signing out...')
                             plexapp.ACCOUNT.signOut()
                             break
                     finally:
@@ -40,7 +44,9 @@ def main():
     except:
         util.ERROR()
     finally:
+        plexapp.APP.preShutdown()
         backgroundthread.BGThreader.shutdown()
+        plexapp.APP.shutdown()
         background.setBusy(False)
         background.setSplash(False)
         back.doClose()

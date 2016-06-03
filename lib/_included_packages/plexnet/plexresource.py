@@ -136,7 +136,7 @@ class ResourceConnection(plexobjects.PlexObject):
         util.LOG('{0} {1}'.format(method.__name__.upper(), url))
         response = method(url, headers=self.headers(token), timeout=util.TIMEOUT, **kwargs)
         if response.status_code not in (200, 201):
-            codename = http.codes.get(response.status_code)[0]
+            codename = http.status_codes.get(response.status_code)[0]
             raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
         data = response.text.encode('utf8')
 

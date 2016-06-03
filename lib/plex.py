@@ -9,6 +9,14 @@ from plexnet import plexapp, myplex
 import util
 
 
+class PlexTimer(plexapp.Timer):
+    def shouldAbort(self):
+        return xbmc.abortRequested
+
+
+plexapp.setTimer(PlexTimer)
+
+
 class PlexInterface(plexapp.AppInterface):
     _regs = {
         None: {},
@@ -94,32 +102,39 @@ class CallbackEvent(threading._Event):
     def __del__(self):
         self.close()
 
+    def __repr__(self):
+        return '<{0}:{1}>'.format(self.__class__.__name__, self.signal)
+
     def set(self, **kwargs):
         threading._Event.set(self)
 
     def wait(self):
-        threading._Event.wait(self, self.timeout)
+        if not threading._Event.wait(self, self.timeout):
+            util.DEBUG_LOG('{0}: TIMED-OUT'.format(self))
         self.close()
 
     def close(self):
+        self.set()
         self.context.off(self.signal, self.set)
 
 
 def init():
     util.DEBUG_LOG('Initializing...')
 
-    with CallbackEvent(plexapp.INTERFACE, 'account:response'):
+    with CallbackEvent(plexapp.APP, 'init'):
         plexapp.init()
-        util.DEBUG_LOG('Waiting for account response')
+        util.DEBUG_LOG('Waiting for account initialization...')
 
     if not plexapp.ACCOUNT.authToken:
         token = authorize()
 
         if not token:
+            util.DEBUG_LOG('FAILED TO AUTHORIZE')
             return False
 
-        util.setSetting('auth.token', token)
-        plexapp.ACCOUNT.loadState()
+        with CallbackEvent(plexapp.APP, 'account:response'):
+            plexapp.ACCOUNT.validateToken(token)
+            util.DEBUG_LOG('Waiting for account initialization...')
 
     # if not PLEX:
     #     util.messageDialog('Connection Error', u'Unable to connect to any servers')
@@ -181,15 +196,3 @@ def authorize():
     finally:
         back.doClose()
         del back
-
-
-def switchUser(new_user, pin):
-    pass
-
-
-def changeServer(server):
-    return True
-
-
-def signOut():
-    util.DEBUG_LOG('Signing out')

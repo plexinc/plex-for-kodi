@@ -44,8 +44,12 @@ class SectionHubsTask(backgroundthread.Task):
 
             if self.isCanceled():
                 return
+
+            if not plexapp.SERVERMANAGER.selectedServer:
+                # Could happen during sign-out for instance
+                return
+
             try:
-                xbmc.log(repr(section.__dict__))
                 hubs = plexapp.SERVERMANAGER.selectedServer.hubs(section.key, count=10)
                 self.callback(section, hubs)
             except plexnet.exceptions.BadRequest:

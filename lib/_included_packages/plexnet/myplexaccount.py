@@ -100,7 +100,7 @@ class MyPlexAccount(object):
         # Look for the new JSON serialization. If it's not there, look for the
         # old token and Plex Pass values.
 
-        plexapp.INTERFACE.addInitializer("myplex")
+        plexapp.APP.addInitializer("myplex")
 
         jstring = plexapp.INTERFACE.getRegistry("MyPlexAccount", None, "myplex")
 
@@ -125,7 +125,7 @@ class MyPlexAccount(object):
             context.timeout = 10000
             plexapp.APP.startRequest(request, context)
         else:
-            plexapp.INTERFACE.clearInitializer("myplex")
+            plexapp.APP.clearInitializer("myplex")
 
     def onAccountResponse(self, request, response, context):
         oldId = self.ID
@@ -193,14 +193,14 @@ class MyPlexAccount(object):
             if not self.isAuthenticated and not self.isProtected:
                 self.isAuthenticated = True
 
-        plexapp.INTERFACE.clearInitializer("myplex")
+        plexapp.APP.clearInitializer("myplex")
         # Logger().UpdateSyslogHeader()  # TODO: ------------------------------------------------------------------------------------------------------IMPLEMENT
 
         if oldId != self.ID or self.switchUser:
             self.switchUser = None
             plexapp.APP.trigger("change:user", account=self, reallyChanged=oldId != self.ID)
 
-        plexapp.INTERFACE.trigger('account:response')
+        plexapp.APP.trigger("account:response")
 
     def signOut(self, expired=False):
         # Strings
@@ -228,7 +228,7 @@ class MyPlexAccount(object):
         # Enable the welcome screen again
         plexapp.INTERFACE.setPreference("show_welcome", True)
 
-        plexapp.INTERFACE.trigger("change:user", account=self, reallyChanged=True)
+        plexapp.APP.trigger("change:user", account=self, reallyChanged=True)
 
         self.saveState()
 

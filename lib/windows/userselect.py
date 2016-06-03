@@ -131,9 +131,16 @@ class UserSelectWindow(kodigui.BaseWindow):
             item.setProperty('editing.pin', '')
 
     def userSelected(self, user, pin=None):
-        xbmc.sleep(500)
+        # xbmc.sleep(500)
         util.DEBUG_LOG('Home user selected: {0}'.format(user))
-        plexapp.ACCOUNT.switchHomeUser(user.id, pin)
+
+        from lib import plex
+        with plex.CallbackEvent(plexapp.APP, 'account:response') as e:
+            if plexapp.ACCOUNT.switchHomeUser(user.id, pin) and plexapp.ACCOUNT.switchUser:
+                util.DEBUG_LOG('Waiting for user change...')
+            else:
+                e.close()
+
         self.selected = True
         self.doClose()
 

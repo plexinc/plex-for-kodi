@@ -28,6 +28,7 @@ class App(signalsmixin.SignalsMixin):
     def __init__(self):
         signalsmixin.SignalsMixin.__init__(self)
         self.pendingRequests = {}
+        self.initializers = {}
         self.timers = []
 
     def addTimer(self, timer):
@@ -63,16 +64,44 @@ class App(signalsmixin.SignalsMixin):
         if requestContext.callback:
             requestContext.callback(None, requestContext)
 
+    def addInitializer(self, name):
+        self.initializers[name] = True
+
+    def clearInitializer(self, name):
+        if name in self.initializers:
+            del self.initializers[name]
+            if self.isInitialized():
+                self.onInitialized()
+
+    def isInitialized(self):
+        return not self.initializers
+
+    def onInitialized(self):
+        # Wire up a few of our own listeners
+        # PlexServerManager()
+        # self.on("change:user", callback.Callable(self.onAccountChange))
+
+        self.trigger('init')
+
+    def cancelAllTimers(self):
+        for timer in self.timers:
+            timer.cancel()
+
+    def preShutdown(self):
+        if self.timers:
+            util.DEBUG_LOG('Canceling App() timers')
+            self.cancelAllTimers()
+
     def shutdown(self):
         if self.timers:
-            util.DEBUG_LOG('Shutting down App() timers: Started')
-            for timer in self.timers:
-                timer.cancel()
+            util.DEBUG_LOG('Waiting for App() timers: Started')
+
+            self.cancelAllTimers()
 
             for timer in self.timers:
-                if timer.isAlive():
-                    timer.join()
-            util.DEBUG_LOG('Shutting down App() timers: Finished')
+                timer.join()
+
+            util.DEBUG_LOG('Waiting for App() timers: Finished')
 
 
 try:
@@ -84,7 +113,7 @@ except:
         _platform = sys.platform
 
 
-class AppInterface(signalsmixin.SignalsMixin):
+class AppInterface(object):
     def getPreference(self, pref, default=None):
         raise NotImplementedError
 
@@ -92,12 +121,6 @@ class AppInterface(signalsmixin.SignalsMixin):
         raise NotImplementedError
 
     def clearRegistry(self, reg, sec=None):
-        raise NotImplementedError
-
-    def addInitializer(self, sec):
-        raise NotImplementedError
-
-    def clearInitializer(self, sec):
         raise NotImplementedError
 
     def getRegistry(self, reg, default=None, sec=None):
@@ -128,10 +151,7 @@ class AppInterface(signalsmixin.SignalsMixin):
 class DumbInterface(AppInterface):
     _prefs = {}
     _regs = {
-        None: {},
-        'myplex': {
-            'MyPlexAccount': '{"authToken": "YMcrCsBmwj89pqxLqy66"}'
-        }
+        None: {}
     }
     _globals = {
         'platform': platform.uname()[0],
@@ -166,16 +186,6 @@ class DumbInterface(AppInterface):
     def clearRegistry(self, reg, sec=None):
         del self._regs[sec][reg]
 
-    def addInitializer(self, sec):
-        # if sec not in self._regs:
-        #     self._regs[sec] = {}
-        pass
-
-    def clearInitializer(self, sec):
-        # if sec in self._regs:
-        #     del self._regs[sec]
-        pass
-
     def getGlobal(self, glbl, default=None):
         return self._globals.get(glbl, default)
 
@@ -199,7 +209,7 @@ class DumbInterface(AppInterface):
             traceback.print_exc()
 
 
-class RepeatableTimer(object):
+class Timer(object):
     def __init__(self, timeout, function, repeat=False, *args, **kwargs):
         self.function = function
         self.timeout = timeout
@@ -217,8 +227,8 @@ class RepeatableTimer(object):
 
     def run(self):
         util.DEBUG_LOG('Timer {0}: STARTED'.format(repr(self.function)))
-        while not self.event.isSet():
-            while not self.event.wait(self.timeout):
+        while not self.event.isSet() and not self.shouldAbort():
+            while not self.event.wait(self.timeout) and not self.shouldAbort():
                 self.function(*self.args, **self.kwargs)
                 if not self.repeat:
                     break
@@ -234,10 +244,24 @@ class RepeatableTimer(object):
             self.thread.join()
         self.start()
 
+    def shouldAbort(self):
+        return False
+
+    def join(self):
+        if self.thread.isAlive():
+            self.thread.join()
+
+TIMER = Timer
+
 
 def createTimer(timeout, function, repeat=False, *args, **kwargs):
-    timer = RepeatableTimer(timeout / 1000.0, function, repeat=repeat, *args, **kwargs)
+    timer = TIMER(timeout / 1000.0, function, repeat=repeat, *args, **kwargs)
     return timer
+
+
+def setTimer(timer):
+    global TIMER
+    TIMER = timer
 
 
 def setInterface(interface):

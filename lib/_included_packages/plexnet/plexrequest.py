@@ -8,9 +8,9 @@ import util
 
 class PlexRequest(http.HttpRequest):
     def __init__(self, server, path, method=None):
+        server = server or plexserver.dummyPlexServer()
+
         http.HttpRequest.__init__(self, server.buildUrl(path), method)
-        if not server:
-            server = plexserver.dummyPlexServer()
 
         self.server = server
         self.path = path

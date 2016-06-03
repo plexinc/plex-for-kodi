@@ -32,6 +32,7 @@ class PlexConnection(object):
         self.token = token
         self.refreshed = True
         self.score = 0
+        self.request = None
 
         self.lastTestedAt = 0
         self.hasPendingRequest = False
@@ -105,7 +106,7 @@ class PlexConnection(object):
         if allowConnectionTest:
             if not self.isSecure and (
                 not allowFallback and
-                server.HasSecureConnections() or
+                server.hasSecureConnections() or
                 server.activeConnection and
                 server.activeConnection.state != server.STATE_REACHABLE and
                 server.activeConnection.isSecure

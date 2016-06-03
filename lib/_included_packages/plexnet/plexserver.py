@@ -220,7 +220,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             not data.attrib.get('transcoderPhoto') and not self.synced and not self.isSecondary()
         )
         self.allowChannelAccess = data.attrib.get('allowChannelAccess') == '1' or (
-            not data.attrib.get('allowChannelAccess') and self.owned and not self.synced and not self.IsSecondary()
+            not data.attrib.get('allowChannelAccess') and self.owned and not self.synced and not self.isSecondary()
         )
         self.supportsScrobble = not self.isSecondary() or self.synced
         self.allowsMediaDeletion = not self.synced and self.owned and data.attrib.get('allowMediaDeletion') == '1'

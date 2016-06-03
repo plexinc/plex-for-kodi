@@ -282,11 +282,11 @@ class MyPlexAccount(object):
         # Offline support
         if self.isOffline:
             digest = hashlib.sha256()
-            digest.update(pin + self.AuthToken)
+            digest.update(pin + self.authToken)
             if not self.isProtected or self.isAuthenticated or digest.digest() == (self.pin or ""):
                 util.DEBUG_LOG("Offline access granted")
                 self.isAuthenticated = True
-                self.validateToken(self.AuthToken, True)
+                self.validateToken(self.authToken, True)
                 return True
         else:
             # build path and post to myplex to swith the user

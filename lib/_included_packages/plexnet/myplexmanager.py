@@ -56,9 +56,9 @@ class MyPlexManager(object):
                 "Parsed resource from plex.tv: type:{0} clientIdentifier:{1} name:{2} product:{3} provides:{4}".format(
                     resource.type,
                     resource.clientIdentifier,
-                    resource.name,
-                    resource.product,
-                    resource.provides
+                    resource.name.encode('utf-8'),
+                    resource.product.encode('utf-8'),
+                    resource.provides.encode('utf-8')
                 )
             )
 

@@ -1,0 +1,2 @@
+Handle state with no available servers
+Hook to completed:reachability and update server drop down

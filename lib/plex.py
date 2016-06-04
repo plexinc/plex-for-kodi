@@ -2,6 +2,7 @@ import platform
 import uuid
 import json
 import threading
+import time
 
 import xbmc
 
@@ -88,6 +89,7 @@ plexapp.setInterface(PlexInterface())
 class CallbackEvent(threading._Event):
     def __init__(self, context, signal, timeout=15, *args, **kwargs):
         threading._Event.__init__(self, *args, **kwargs)
+        self.start = time.time()
         self.context = context
         self.signal = signal
         self.timeout = timeout
@@ -112,6 +114,17 @@ class CallbackEvent(threading._Event):
         if not threading._Event.wait(self, self.timeout):
             util.DEBUG_LOG('{0}: TIMED-OUT'.format(self))
         self.close()
+
+    def triggeredOrTimedOut(self, timeout=None):
+        try:
+            if time.time() - self.start() > self.timeout:
+                util.DEBUG_LOG('{0}: TIMED-OUT'.format(self))
+                return True
+
+            if timeout:
+                threading._Event.wait(self, timeout)
+        finally:
+            return self.isSet()
 
     def close(self):
         self.set()

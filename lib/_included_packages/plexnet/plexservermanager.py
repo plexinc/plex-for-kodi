@@ -84,6 +84,13 @@ class PlexServerManager(signalsmixin.SignalsMixin):
 
         return servers
 
+    def hasPendingRequests(self):
+        for server in self.getServers():
+            if server.pendingReachabilityRequests:
+                return True
+
+        return False
+
     def removeServer(self, server):
         del self.serversByUuid[server.uuid]
 

@@ -32,7 +32,7 @@ class Callable(object):
         args = args or []
         if self.forcedArgs:
             args = self.forcedArgs
-        print args
+
         self.func(*args, **kwargs)
 
     @property

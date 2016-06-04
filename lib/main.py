@@ -10,6 +10,7 @@ def main():
     util.DEBUG_LOG('STARTED: {0}'.format(util.ADDON.getAddonInfo('version')))
     back = background.BackgroundWindow.create()
     background.setSplash()
+    hw = None
     try:
         while not xbmc.abortRequested:
             if plex.init():
@@ -20,10 +21,14 @@ def main():
                             return
 
                     try:
-                        done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer')
+                        done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
                         if not plexapp.SERVERMANAGER.selectedServer:
                             util.DEBUG_LOG('Waiting for selected server...')
-                            done.wait()
+                            try:
+                                background.setBusy()
+                                done.wait()
+                            finally:
+                                background.setBusy(False)
 
                         util.DEBUG_LOG('STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
 

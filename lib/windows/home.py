@@ -181,8 +181,8 @@ class HomeWindow(kodigui.BaseWindow):
         )
 
         self.bottomItem = 0
-        self.serverRefresh()
-        self.setFocusId(self.SECTION_LIST_ID)
+        if self.serverRefresh():
+            self.setFocusId(self.SECTION_LIST_ID)
 
     def onAction(self, action):
         try:
@@ -222,8 +222,13 @@ class HomeWindow(kodigui.BaseWindow):
     def serverRefresh(self):
         self.setProperty('hub.focus', '')
         self.displayServerAndUser()
+        if not plexapp.SERVERMANAGER.selectedServer:
+            self.setFocusId(self.USER_BUTTON_ID)
+            return False
+
         self.showSections()
         self.showHubs(HomeSection)
+        return True
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
@@ -238,11 +243,17 @@ class HomeWindow(kodigui.BaseWindow):
             self.sectionList.selectItem(self.bottomItem)
 
     def displayServerAndUser(self):
-        self.setProperty('server.name', plexapp.SERVERMANAGER.selectedServer.name)
-        self.setProperty('server.icon', 'script.plex/home/device/plex.png')  # TODO: Set dynamically to whatever it should be if that's how it even works :)
-        self.setProperty('server.iconmod', plexapp.SERVERMANAGER.selectedServer.isSecure and 'script.plex/home/device/lock.png' or '')
-        self.setProperty('user.name', plexapp.ACCOUNT.username)
+        self.setProperty('user.name', plexapp.ACCOUNT.title or plexapp.ACCOUNT.username)
         self.setProperty('user.avatar', plexapp.ACCOUNT.thumb)
+
+        if plexapp.SERVERMANAGER.selectedServer:
+            self.setProperty('server.name', plexapp.SERVERMANAGER.selectedServer.name)
+            self.setProperty('server.icon', 'script.plex/home/device/plex.png')  # TODO: Set dynamically to whatever it should be if that's how it even works :)
+            self.setProperty('server.iconmod', plexapp.SERVERMANAGER.selectedServer.isSecure and 'script.plex/home/device/lock.png' or '')
+        else:
+            self.setProperty('server.name', 'No Servers Found')
+            self.setProperty('server.icon', 'script.plex/home/device/error.png')
+            self.setProperty('server.iconmod', '')
 
     def sectionChanged(self, section):
         self.setProperty('hub.focus', '')

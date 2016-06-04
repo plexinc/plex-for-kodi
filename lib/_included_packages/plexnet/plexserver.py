@@ -28,7 +28,7 @@ class Hub(plexobjects.PlexObject):
             try:
                 self.items.append(plexobjects.buildItem(self.server, elem, '/hubs'))
             except exceptions.UnknownType:
-                print 'Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type'))
+                util.DEBUG_LOG('Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type')))
 
     def __repr__(self):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
@@ -121,7 +121,6 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
     @property
     def library(self):
-        util.LOG(repr(self.__dict__))
         if self.platform == 'cloudsync':
             return plexlibrary.Library(None, server=self)
         else:
@@ -205,7 +204,6 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         return '32400'
 
     def collectDataFromRoot(self, data):
-        print '.    {0}'.format(self.name)
         # Make sure we're processing data for our server, and not some other
         # server that happened to be at the same IP.
         if self.uuid != data.attrib.get('machineIdentifier'):
@@ -263,7 +261,6 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             elif diff < minSeconds or (not self.isSecondary() and self.isReachable() and diff < retrySeconds):
                 util.DEBUG_LOG("Skipping reachability test for {0} (checked {1} seconds ago)".format(conn, diff))
             elif conn.testReachability(self, allowFallback):
-                print repr(self.pendingReachabilityRequests)
                 self.pendingReachabilityRequests += 1
                 if conn.isSecure:
                     self.pendingSecureRequests += 1

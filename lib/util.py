@@ -51,6 +51,10 @@ def ERROR(txt='', hide_tb=False, notify=False):
     return short
 
 
+def TEST(msg):
+    xbmc.log('---TEST: {0}'.format(msg))
+
+
 def getSetting(key, default=None):
     setting = ADDON.getSetting(key)
     return _processSetting(setting, default)

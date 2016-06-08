@@ -73,9 +73,11 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
             self.onFirstInit()
             self.finishedInit = True
 
-    def onFirstInit(self): pass
+    def onFirstInit(self):
+        pass
 
-    def onReInit(self): pass
+    def onReInit(self):
+        pass
 
     def setProperty(self, key, value):
         if self._closing:
@@ -101,7 +103,8 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
         self._closing = False
         xbmcgui.WindowXML.show(self)
 
-    def onClosed(self): pass
+    def onClosed(self):
+        pass
 
 
 class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
@@ -120,9 +123,11 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
             self.started = True
             self.onFirstInit()
 
-    def onFirstInit(self): pass
+    def onFirstInit(self):
+        pass
 
-    def onReInit(self): pass
+    def onReInit(self):
+        pass
 
     def setProperty(self, key, value):
         if self._closing:
@@ -145,7 +150,8 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
         self._closing = False
         xbmcgui.WindowXMLDialog.show(self)
 
-    def onClosed(self): pass
+    def onClosed(self):
+        pass
 
 
 class ManagedListItem(object):
@@ -407,11 +413,11 @@ class ManagedControlList(object):
         source_idx = mli.pos()
         if source_idx < dest_idx:
             rstart = source_idx
-            rend = dest_idx+1
+            rend = dest_idx + 1
             # dest_idx-=1
         else:
             rstart = dest_idx
-            rend = source_idx+1
+            rend = source_idx + 1
         mli = self.items.pop(source_idx)
         self.items.insert(dest_idx, mli)
 

@@ -1,6 +1,12 @@
+import xbmc
+import xbmcgui
 import kodigui
 
 from lib import util
+
+KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+MOVE_SET = ((xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_MOUSE_MOVE))
 
 
 class ShowsWindow(kodigui.BaseWindow):
@@ -16,79 +22,159 @@ class ShowsWindow(kodigui.BaseWindow):
     THUMB_SQUARE_DIM = (425, 425)
 
     SHOW_PANEL_ID = 101
+    KEY_LIST_ID = 151
+
+    OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.section = kwargs.get('section')
+        self.keyItems = {}
+        self.firstOfKeyItems = {}
 
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.SHOW_PANEL_ID, 5)
+        self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
+
         self.fillShows()
+
+    def onAction(self, action):
+        try:
+            if action in MOVE_SET:
+                controlID = self.getFocusId()
+                if controlID == self.SHOW_PANEL_ID:
+                    self.updateKey()
+            elif action == xbmcgui.ACTION_NAV_BACK:
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.setFocusId(self.OPTIONS_GROUP_ID)
+                    return
+
+        except:
+            util.ERROR()
+
+        kodigui.BaseWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
             self.doClose()
+        elif controlID == self.KEY_LIST_ID:
+            self.keyClicked()
+
+    def onFocus(self, controlID):
+        if controlID == self.KEY_LIST_ID:
+            self.selectKey()
+
+    def updateKey(self):
+        mli = self.showPanelControl.getSelectedItem()
+        if not mli:
+            return
+
+        self.setProperty('key', mli.getProperty('key'))
+
+    def selectKey(self):
+        mli = self.showPanelControl.getSelectedItem()
+        if not mli:
+            return
+
+        li = self.keyItems.get(mli.getProperty('key'))
+        if not li:
+            return
+        self.keyListControl.selectItem(li.pos())
+
+    def keyClicked(self):
+        li = self.keyListControl.getSelectedItem()
+        if not li:
+            return
+
+        mli = self.firstOfKeyItems.get(li.dataSource)
+        if not mli:
+            return
+
+        self.showPanelControl.selectItem(mli.pos())
+        self.setFocusId(self.SHOW_PANEL_ID)
+        self.setProperty('key', li.dataSource)
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
+        titleSort = obj.titleSort or title
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
-        return mli
+        return mli, titleSort
 
     def createParentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.parentTitle or obj.title or ''
+        titleSort = obj.titleSort or title
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
-        return mli
+        return mli, titleSort
 
     def createSimpleListItem(self, obj, thumb_w, thumb_h):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
-        return mli
+        return mli, obj.titleSort or obj.title
 
     def createListItem(self, obj):
         if obj.type == 'episode':
-            mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
+            mli, titleSort = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-            return mli
         elif obj.type == 'season':
-            mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
+            mli, titleSort = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-            return mli
         elif obj.type == 'movie':
-            mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
-            return mli
         elif obj.type == 'show':
-            mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-            return mli
         elif obj.type == 'album':
-            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-            return mli
         elif obj.type == 'track':
-            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-            return mli
         elif obj.type == 'photo':
-            mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
-            return mli
         elif obj.type == 'clip':
-            mli = self.createSimpleListItem(obj, *self.THUMB_AR16X9_DIM)
+            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_AR16X9_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
-            return mli
         else:
-            util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
+            util.DEBUG_LOG('Unhandled item: {0}'.format(obj.type))
+            return None, None
+
+        return mli, titleSort
 
     def fillShows(self):
         items = []
+        keys = []
+        self.firstOfKeyItems = {}
         idx = 0
         for show in self.section.all():
-            mli = self.createListItem(show)
+            mli, titleSort = self.createListItem(show)
             if mli:
                 mli.setProperty('index', str(idx))
+                label = mli.getLabel()
+                if titleSort in label:
+                    key = titleSort[0].upper()
+                else:
+                    key = label[0].upper()
+                if key not in KEYS:
+                    key = '#'
+                if key not in keys:
+                    self.firstOfKeyItems[key] = mli
+                    keys.append(key)
+                mli.setProperty('key', str(key))
                 items.append(mli)
                 idx += 1
 
+        litems = []
+        self.keyItems = {}
+        for key in keys:
+            mli = kodigui.ManagedListItem(key, data_source=key)
+            mli.setProperty('key', key)
+            self.keyItems[key] = mli
+            litems.append(mli)
+
         self.showPanelControl.addItems(items)
+        self.keyListControl.addItems(litems)
+
+        self.setProperty('key', keys[0])

@@ -100,9 +100,11 @@
                     <width>1800</width>
                     <height>1280</height>
                     <onup>300</onup>
+                    <onright>150</onright>
                     <scrolltime>200</scrolltime>
                     <orientation>vertical</orientation>
                     <preloaditems>2</preloaditems>
+                    <pagecontrol>152</pagecontrol>
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout width="287" height="460">
                         <control type="group">
@@ -296,6 +298,147 @@
 
         </control>
 
+        <control type="group" id="150">
+            <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <defaultcontrol>151</defaultcontrol>
+            <posx>1780</posx>
+            <posy>150</posy>
+            <width>20</width>
+            <height>920</height>
+            <control type="list" id="151">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>34</width>
+                <height>1050</height>
+                <onleft>100</onleft>
+                <onright>152</onright>
+                <scrolltime>200</scrolltime>
+                <orientation>vertical</orientation>
+                <!-- ITEM LAYOUT ########################################## -->
+                <itemlayout height="34">
+                    <control type="group">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <control type="group">
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <control type="label">
+                                <visible>!StringCompare(Window.Property(key), ListItem.Property(letter))</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>34</width>
+                                <height>32</height>
+                                <font>font10</font>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <textcolor>99FFFFFF</textcolor>
+                                <label>$INFO[ListItem.Label]</label>
+                            </control>
+                            <control type="group">
+                                <visible>StringCompare(Window.Property(key), ListItem.Property(key))</visible>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>34</width>
+                                    <height>34</height>
+                                    <colordiffuse>99FFFFFF</colordiffuse>
+                                    <texture border="12">script.plex/white-square-rounded.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>34</width>
+                                    <height>32</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>FF000000</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+                    </control>
+                </itemlayout>
+
+                <!-- FOCUSED LAYOUT ####################################### -->
+                <focusedlayout height="34">
+                    <control type="group">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <control type="group">
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <control type="label">
+                                <visible>!StringCompare(Window.Property(key), ListItem.Property(letter))</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>34</width>
+                                <height>32</height>
+                                <font>font10</font>
+                                <align>center</align>
+                                <aligny>center</aligny>
+                                <textcolor>99FFFFFF</textcolor>
+                                <label>$INFO[ListItem.Label]</label>
+                            </control>
+                            <control type="group">
+                                <visible>StringCompare(Window.Property(key), ListItem.Property(key))</visible>
+                                <control type="image">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>34</width>
+                                    <height>34</height>
+                                    <colordiffuse>99FFFFFF</colordiffuse>
+                                    <texture border="12">script.plex/white-square-rounded.png</texture>
+                                </control>
+                                <control type="label">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <width>34</width>
+                                    <height>32</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>FF000000</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
+                                </control>
+                            </control>
+                        </control>
+
+                        <control type="group">
+                            <visible>Control.HasFocus(151)</visible>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <control type="image">
+                                <visible>Control.HasFocus(151)</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>34</width>
+                                <height>34</height>
+                                <colordiffuse>FFE5A00D</colordiffuse>
+                                <texture border="12">script.plex/white-outline-rounded.png</texture>
+                            </control>
+                        </control>
+                    </control>
+                </focusedlayout>
+            </control>
+        </control>
+
+        <control type="scrollbar" id="152">
+            <left>1860</left>
+            <top>150</top>
+            <width>12</width>
+            <height>910</height>
+            <visible>true</visible>
+            <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
+            <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
+            <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
+            <textureslidernib>-</textureslidernib>
+            <textureslidernibfocus>-</textureslidernibfocus>
+            <pulseonselect>false</pulseonselect>
+            <orientation>vertical</orientation>
+            <showonepage>false</showonepage>
+            <onleft>151</onleft>
+        </control>
 
 
         <control type="group" id="200">

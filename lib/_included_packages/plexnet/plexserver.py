@@ -136,7 +136,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     def query(self, path, method=None, **kwargs):
         method = method or self.session.get
         url = self.buildUrl(path, includeToken=True)
-        util.LOG('{0} {1}'.format(method.__name__.upper(), url))
+        util.LOG('{0} {1}'.format(method.__name__.upper(), re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', url)))
         response = method(url, **kwargs)
         if response.status_code not in (200, 201):
             codename = http.status_codes.get(response.status_code, ['Unknown'])[0]

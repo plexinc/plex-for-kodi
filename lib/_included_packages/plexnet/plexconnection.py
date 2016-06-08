@@ -53,7 +53,7 @@ class PlexConnection(object):
         return "Connection: {0} local: {1} token: {2} sources: {3} state: {4}".format(
             self.address,
             self.isLocal,
-            self.token,
+            util.hideToken(self.token),
             self.sources,
             self.state
         )

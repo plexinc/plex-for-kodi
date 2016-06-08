@@ -105,6 +105,7 @@ class PlexObject(object):
         self.initpath = initpath
         self.key = None
         self.server = server
+        self.titleSort = PlexValue('')
 
         if data is None:
             return

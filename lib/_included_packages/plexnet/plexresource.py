@@ -145,7 +145,7 @@ class ResourceConnection(plexobjects.PlexObject):
     def getURL(self, path, token=None):
         if token:
             delim = '&' if '?' in path else '?'
-            return '{base}{path}{delim}X-Plex-Token={token}'.format(base=self.URL, path=path, delim=delim, token=token)
+            return '{base}{path}{delim}X-Plex-Token={token}'.format(base=self.URL, path=path, delim=delim, token=util.hideToken(token))
         return '{0}{1}'.format(self.URL, path)
 
 
@@ -187,7 +187,7 @@ class PlexContainer(plexobjects.PlexObject):
 def fetchResources(token):
     headers = util.BASE_HEADERS
     headers['X-Plex-Token'] = token
-    util.LOG('GET {0}?X-Plex-Token={1}'.format(RESOURCES, token))
+    util.LOG('GET {0}?X-Plex-Token={1}'.format(RESOURCES, util.hideToken(token)))
     response = http.GET(RESOURCES)
     data = ElementTree.fromstring(response.text.encode('utf8'))
     import plexserver

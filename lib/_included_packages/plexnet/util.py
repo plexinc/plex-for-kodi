@@ -66,6 +66,11 @@ def ERROR(msg=None, err=None):
     plexapp.INTERFACE.ERROR(msg, err)
 
 
+def hideToken(token):
+    # return 'X' * len(token)
+    return '*' * (len(token) - 4) + token[-4:]
+
+
 def joinArgs(args):
     if not args:
         return ''

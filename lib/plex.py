@@ -24,10 +24,10 @@ class PlexInterface(plexapp.AppInterface):
     }
     _globals = {
         'platform': platform.uname()[0],
-        'appVersionStr': '0.0.0a1',
+        'appVersionStr': util.ADDON.getAddonInfo('version'),
         'clientIdentifier': str(hex(uuid.getnode())),
         'platformVersion': platform.uname()[2],
-        'product': 'Kodi.Plex.Addon',
+        'product': 'Plex for Kodi',
         'provides': 'player',
         'device': plexapp._platform,
         'model': 'Unknown',

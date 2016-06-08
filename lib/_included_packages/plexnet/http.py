@@ -1,3 +1,4 @@
+import re
 import requests
 import threading
 import urllib
@@ -143,7 +144,9 @@ class HttpRequest(object):
         method = self.method
         if not method:
             method = body and "POST" or "GET"
-        util.LOG("Starting request: {0} {1} (async={2} timeout={3})".format(method, self.url, async, timeout))
+        util.LOG(
+            "Starting request: {0} {1} (async={2} timeout={3})".format(method, re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', self.url), async, timeout)
+        )
 
 
 class HttpResponse(object):

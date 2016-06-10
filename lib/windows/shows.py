@@ -4,6 +4,8 @@ import kodigui
 
 from lib import util
 
+import seasons
+
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 MOVE_SET = ((xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_MOUSE_MOVE))
@@ -33,12 +35,14 @@ class ShowsWindow(kodigui.BaseWindow):
         self.section = kwargs.get('section')
         self.keyItems = {}
         self.firstOfKeyItems = {}
+        self.exitCommand = None
 
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.SHOW_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
 
         self.fillShows()
+        self.setFocusId(self.SHOW_PANEL_ID)
 
     def onAction(self, action):
         try:
@@ -59,6 +63,8 @@ class ShowsWindow(kodigui.BaseWindow):
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
             self.doClose()
+        elif controlID == self.SHOW_PANEL_ID:
+            self.showPanelClicked()
         elif controlID == self.KEY_LIST_ID:
             self.keyClicked()
 
@@ -95,6 +101,19 @@ class ShowsWindow(kodigui.BaseWindow):
         self.showPanelControl.selectItem(mli.pos())
         self.setFocusId(self.SHOW_PANEL_ID)
         self.setProperty('key', li.dataSource)
+
+    def showPanelClicked(self):
+        mli = self.showPanelControl.getSelectedItem()
+        if not mli:
+            return
+
+        w = seasons.SeasonsWindow.open(show=mli.dataSource)
+        try:
+            if w.exitCommand == 'HOME':
+                self.exitCommand = 'HOME'
+                self.doClose()
+        finally:
+            del w
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
         title = obj.grandparentTitle or obj.parentTitle or obj.title or ''

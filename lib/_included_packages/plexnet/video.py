@@ -1,9 +1,20 @@
 import plexobjects
 import media
+import exceptions
+import compat
 
 
 class Video(plexobjects.PlexObject):
     TYPE = None
+
+    def _findStreams(self, streamtype):
+        streams = []
+        for media_ in self.media():
+            for part in media_.parts:
+                for stream in part.streams:
+                    if stream.TYPE == streamtype:
+                        streams.append(stream)
+        return streams
 
     def analyze(self):
         """ The primary purpose of media analysis is to gather information about that media
@@ -27,6 +38,34 @@ class Video(plexobjects.PlexObject):
 
     def refresh(self):
         self.server.query('%s/refresh' % self.key, method=self.server.session.put)
+
+    def _getStreamURL(self, **params):
+        if self.TYPE not in ('movie', 'episode', 'track'):
+            raise exceptions.Unsupported('Fetching stream URL for %s is unsupported.' % self.TYPE)
+        mvb = params.get('maxVideoBitrate')
+        vr = params.get('videoResolution')
+
+        # import plexapp
+
+        params = {
+            'path': self.key,
+            'offset': params.get('offset', 0),
+            'copyts': params.get('copyts', 1),
+            'protocol': params.get('protocol', 'hls'),
+            'mediaIndex': params.get('mediaIndex', 0),
+            'directStream': '1',
+            'directPlay': '0',
+            'X-Plex-Platform': params.get('platform', 'Chrome'),
+            # 'X-Plex-Platform': params.get('platform', plexapp.INTERFACE.getGlobal('platform')),
+            'maxVideoBitrate': max(mvb, 64) if mvb else None,
+            'videoResolution': '{0}x{1}'.format(*vr) if vr else None
+        }
+        params = {k: v for k, v in params.items() if v is not None}  # remove None values
+        streamtype = 'audio' if self.TYPE in ('track', 'album') else 'video'
+        server = self.getTranscodeServer(True, self.TYPE)
+
+        return server.buildUrl('/{0}/:/transcode/universal/start.m3u8?{1}'.format(streamtype, compat.urlencode(params)), includeToken=True)
+        # path = "/video/:/transcode/universal/" + command + "?session=" + AppSettings().GetGlobal("clientIdentifier")
 
 
 @plexobjects.registerLibType
@@ -205,7 +244,7 @@ class Episode(Video):
         return self.viewCount > 0
 
     def getStreamURL(self, **params):
-        return self._getStreamURL(videoResolution='800x600', **params)
+        return self._getStreamURL(**params)
 
     def season(self):
         return plexobjects.listItems(self.server, self.parentKey)[0]
@@ -223,4 +262,4 @@ class Clip(Video):
         return self.viewCount > 0
 
     def getStreamURL(self, **params):
-        return self._getStreamURL(videoResolution='800x600', **params)
+        return self._getStreamURL(**params)

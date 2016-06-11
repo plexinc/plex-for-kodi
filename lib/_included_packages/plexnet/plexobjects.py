@@ -2,6 +2,8 @@ from datetime import datetime
 
 import exceptions
 import util
+import plexapp
+
 
 # Search Types - Plex uses these to filter specific media types when searching.
 SEARCHTYPES = {
@@ -47,8 +49,8 @@ class PlexValue(unicode):
     def asURL(self):
         return self.parent.server.url(self)
 
-    def asTranscodedImageURL(self, w, h):
-        return self.parent.server.getImageTranscodeURL(self, w, h)
+    def asTranscodedImageURL(self, w, h, **extras):
+        return self.parent.server.getImageTranscodeURL(self, w, h, **extras)
 
 
 class PlexItemList(object):
@@ -74,6 +76,9 @@ class PlexItemList(object):
 
     def __call__(self):
         return self.items
+
+    def __len__(self):
+        return len(self.items)
 
     def append(self, item):
         self.items.append(item)
@@ -167,15 +172,6 @@ class PlexObject(object):
             return Client(self.server, elem)
         return None
 
-    def _findStreams(self, streamtype):
-        streams = []
-        for media in self.media():
-            for part in media.parts:
-                for stream in part.streams:
-                    if stream.TYPE == streamtype:
-                        streams.append(stream)
-        return streams
-
     def _findTranscodeSession(self, data):
         elem = data.find('TranscodeSession')
         if elem is not None:
@@ -189,6 +185,21 @@ class PlexObject(object):
             from plexapi.myplex import MyPlexUser
             return MyPlexUser(elem, self.initpath)
         return None
+
+    def getTranscodeServer(self, localServerRequired=False, transcodeType=None):
+        server = self.server
+
+        # If the server is myPlex, try to use a different PMS for transcoding
+        import myplexserver
+        if server == myplexserver.MyPlexServer:
+            fallbackServer = plexapp.SERVERMANAGER.getChannelServer()
+
+            if fallbackServer:
+                server = fallbackServer
+            elif localServerRequired:
+                return None
+
+        return server
 
 
 def findItem(server, path, title):

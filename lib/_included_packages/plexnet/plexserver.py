@@ -145,13 +145,13 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
         return ElementTree.fromstring(data) if data else None
 
-    def getImageTranscodeURL(self, path, width, height, extraOpts=None):
+    def getImageTranscodeURL(self, path, width, height, **extraOpts):
         # Build up our parameters
         params = "&width={0}&height={1}".format(width, height)
 
-        if extraOpts is not None:
-            for key in extraOpts:
-                params += "&{0}={1}".format(key, extraOpts[key])
+        # if extraOpts is not None:
+        for key in extraOpts:
+            params += "&{0}={1}".format(key, extraOpts[key])
 
         if "://" in path:
             imageUrl = self.convertUrlToLoopBack(path)

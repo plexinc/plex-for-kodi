@@ -1,4 +1,5 @@
 import plexobjects
+import plexstream
 
 
 class Media(plexobjects.PlexObject):
@@ -33,7 +34,7 @@ class MediaPart(plexobjects.PlexObject):
         return selected[0]
 
 
-class MediaPartStream(plexobjects.PlexObject):
+class MediaPartStream(plexstream.PlexStream):
     TYPE = None
     STREAMTYPE = None
 

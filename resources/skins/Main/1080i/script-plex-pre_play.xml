@@ -13,7 +13,7 @@
             <posy>0</posy>
             <width>1920</width>
             <height>1080</height>
-            <fadetime>200</fadetime>
+            <fadetime>1000</fadetime>
             <texture fallback="script.plex/home/background-fallback.jpg" background="true">$INFO[Window.Property(background)]</texture>
         </control>
 

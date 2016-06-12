@@ -63,14 +63,16 @@ class PrePlayWindow(kodigui.BaseWindow):
             return
 
     def setInfo(self):
-        self.setProperty('background', self.video.art.asTranscodedImageURL(1920, 1080, blur=100, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('background', self.video.art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
         self.setProperty('summary', self.video.summary)
         self.setProperty('thumb', self.video.thumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
+
         directors = u' / '.join([d.tag for d in self.video.directors()])
         directorsLabel = len(self.video.directors) > 1 and u'DIRECTORS' or u'DIRECTOR'
         self.setProperty('directors', directors and u'{0}    {1}'.format(directorsLabel, directors) or '')
+
         writers = u' / '.join([w.tag for w in self.video.writers()])
         writersLabel = len(self.video.writers) > 1 and u'WRITERS' or u'WRITER'
         self.setProperty('writers', writers and u'{0}    {1}'.format(writersLabel, writers) or '')

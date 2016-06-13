@@ -60,6 +60,7 @@ class MyPlexAccount(object):
         self.email = None
         self.authToken = None
         self.pin = None
+        self.thumb = None
 
         # Booleans
         self.isAuthenticated = plexapp.INTERFACE.getPreference('auto_signin', False)

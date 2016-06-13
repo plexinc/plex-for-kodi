@@ -125,7 +125,6 @@
             <posy>96</posy>
             <width>2130</width>
             <height>5540</height>
-            <onup>151</onup>
             <itemgap>20</itemgap>
             <orientation>vertical</orientation>
             <usecontrolcoords>true</usecontrolcoords>
@@ -4868,7 +4867,6 @@
                 <width>40</width>
                 <height>40</height>
                 <ondown>50</ondown>
-                <onright>201</onright>
                 <font>font12</font>
                 <focusedcolor>FF000000</focusedcolor>
                 <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search.png</texturefocus>
@@ -4905,14 +4903,14 @@
                 <texture>script.plex/home/plex.png</texture>
             </control>
             <control type="group">
-                <posx>833</posx>
+                <posx>536</posx>
                 <posy>34</posy>
-                <width>703</width>
+                <width>1000</width>
                 <height>66</height>
                 <control type="grouplist">
                     <posx>0</posx>
                     <posy>0</posy>
-                    <width>703</width>
+                    <width>1000</width>
                     <height>66</height>
                     <ondown>50</ondown>
                     <onleft>203</onleft>
@@ -4922,10 +4920,8 @@
                     <scrolltime tween="quadratic" easing="out">200</scrolltime>
                     <usecontrolcoords>true</usecontrolcoords>
                     <control type="button" id="201">
-                        <width>auto</width>
+                        <width max="500">auto</width>
                         <height>66</height>
-                        <ondown>50</ondown>
-                        <onleft>203</onleft>
                         <font>font12</font>
                         <textcolor>FFFFFFFF</textcolor>
                         <focusedcolor>FF000000</focusedcolor>
@@ -4975,10 +4971,8 @@
                         </control>
                     </control>
                     <control type="button" id="202">
-                        <width>auto</width>
+                        <width max="500">auto</width>
                         <height>66</height>
-                        <ondown>50</ondown>
-                        <onleft>201</onleft>
                         <font>font12</font>
                         <textcolor>FFFFFFFF</textcolor>
                         <focusedcolor>FF000000</focusedcolor>

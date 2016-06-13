@@ -79,6 +79,7 @@ class HomeWindow(kodigui.BaseWindow):
     SECTION_LIST_ID = 101
     SERVER_BUTTON_ID = 201
     USER_BUTTON_ID = 202
+    SEARCH_BUTTON_ID = 203
 
     HUB_AR16X9_00 = 400
     HUB_POSTER_01 = 401
@@ -200,6 +201,8 @@ class HomeWindow(kodigui.BaseWindow):
             if controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.USER_BUTTON_ID)
             elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
+                self.setFocusId(self.SERVER_BUTTON_ID)
+            elif controlID == self.SEARCH_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
             if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
                 self.checkSectionItem()

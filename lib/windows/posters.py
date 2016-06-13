@@ -24,7 +24,7 @@ MOVE_SET = frozenset(
 
 
 class PostersWindow(kodigui.BaseWindow):
-    xmlFile = 'script-plex-shows.xml'
+    xmlFile = 'script-plex-posters.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
     res = '1080i'
@@ -53,6 +53,7 @@ class PostersWindow(kodigui.BaseWindow):
         self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
 
+        self.setTitle()
         self.fillShows()
         self.setFocusId(self.POSTERS_PANEL_ID)
 
@@ -188,6 +189,9 @@ class PostersWindow(kodigui.BaseWindow):
             return None, None
 
         return mli, titleSort
+
+    def setTitle(self):
+        self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
 
     def fillShows(self):
         items = []

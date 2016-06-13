@@ -60,11 +60,17 @@ class Video(plexobjects.PlexObject):
             'maxVideoBitrate': max(mvb, 64) if mvb else None,
             'videoResolution': '{0}x{1}'.format(*vr) if vr else None
         }
-        params = {k: v for k, v in params.items() if v is not None}  # remove None values
+
+        final = {}
+
+        for k, v in params.items():
+            if v is not None:  # remove None values
+                final[k] = v
+
         streamtype = 'audio' if self.TYPE in ('track', 'album') else 'video'
         server = self.getTranscodeServer(True, self.TYPE)
 
-        return server.buildUrl('/{0}/:/transcode/universal/start.m3u8?{1}'.format(streamtype, compat.urlencode(params)), includeToken=True)
+        return server.buildUrl('/{0}/:/transcode/universal/start.m3u8?{1}'.format(streamtype, compat.urlencode(final)), includeToken=True)
         # path = "/video/:/transcode/universal/" + command + "?session=" + AppSettings().GetGlobal("clientIdentifier")
 
 

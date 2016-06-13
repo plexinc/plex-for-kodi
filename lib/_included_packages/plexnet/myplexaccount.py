@@ -57,6 +57,7 @@ class MyPlexAccount(object):
         self.ID = None
         self.title = None
         self.username = None
+        self.thumb = None
         self.email = None
         self.authToken = None
         self.pin = None

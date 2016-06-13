@@ -194,7 +194,13 @@ class HomeWindow(kodigui.BaseWindow):
             self.setFocusId(self.SECTION_LIST_ID)
 
     def onAction(self, action):
+        controlID = self.getFocusId()
+
         try:
+            if controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
+                self.setFocusId(self.USER_BUTTON_ID)
+            elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
+                self.setFocusId(self.SERVER_BUTTON_ID)
             if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
                 self.checkSectionItem()
             elif action == xbmcgui.ACTION_NAV_BACK:

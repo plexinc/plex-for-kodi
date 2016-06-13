@@ -4909,19 +4909,23 @@
                 <posy>34</posy>
                 <width>703</width>
                 <height>66</height>
-                <control type="group">
+                <control type="grouplist">
                     <posx>0</posx>
                     <posy>0</posy>
-                    <width>350</width>
+                    <width>703</width>
                     <height>66</height>
+                    <ondown>50</ondown>
+                    <onleft>203</onleft>
+                    <align>right</align>
+                    <itemgap>0</itemgap>
+                    <orientation>horizontal</orientation>
+                    <scrolltime tween="quadratic" easing="out">200</scrolltime>
+                    <usecontrolcoords>true</usecontrolcoords>
                     <control type="button" id="201">
-                        <posx>0</posx>
-                        <posy>0</posy>
-                        <width>350</width>
+                        <width>auto</width>
                         <height>66</height>
                         <ondown>50</ondown>
                         <onleft>203</onleft>
-                        <onright>202</onright>
                         <font>font12</font>
                         <textcolor>FFFFFFFF</textcolor>
                         <focusedcolor>FF000000</focusedcolor>
@@ -4930,52 +4934,48 @@
                         <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
                         <texturenofocus>-</texturenofocus>
                         <textoffsetx>100</textoffsetx>
-                        <textwidth>228</textwidth>
                         <textoffsety>0</textoffsety>
                         <label>$INFO[Window.Property(server.name)]</label>
                     </control>
-                    <control type="image">
-                        <posx>87r</posx>
-                        <posy>14</posy>
-                        <width>40</width>
-                        <height>39</height>
-                        <texture>$INFO[Window.Property(server.icon)]</texture>
+                    <control type="group">
+                        <posx>-93</posx>
+                        <width>93</width>
+                        <height>66</height>
+                        <control type="image">
+                            <posx>6</posx>
+                            <posy>14</posy>
+                            <width>40</width>
+                            <height>39</height>
+                            <texture>$INFO[Window.Property(server.icon)]</texture>
+                        </control>
+                        <control type="image">
+                            <posx>0</posx>
+                            <posy>38</posy>
+                            <width>16</width>
+                            <height>15</height>
+                            <texture>$INFO[Window.Property(server.iconmod)]</texture>
+                        </control>
+                        <control type="image">
+                            <visible>!Control.HasFocus(201)</visible>
+                            <posx>59</posx>
+                            <posy>27</posy>
+                            <width>15</width>
+                            <height>13</height>
+                            <texture>script.plex/indicators/dropdown-triangle.png</texture>
+                            <colordiffuse>99FFFFFF</colordiffuse>
+                        </control>
+                        <control type="image">
+                            <visible>Control.HasFocus(201)</visible>
+                            <posx>59</posx>
+                            <posy>27</posy>
+                            <width>15</width>
+                            <height>13</height>
+                            <texture>script.plex/indicators/dropdown-triangle.png</texture>
+                            <colordiffuse>FF222222</colordiffuse>
+                        </control>
                     </control>
-                    <control type="image">
-                        <posx>93r</posx>
-                        <posy>38</posy>
-                        <width>16</width>
-                        <height>15</height>
-                        <texture>$INFO[Window.Property(server.iconmod)]</texture>
-                    </control>
-                    <control type="image">
-                        <visible>!Control.HasFocus(201)</visible>
-                        <posx>34r</posx>
-                        <posy>27</posy>
-                        <width>15</width>
-                        <height>13</height>
-                        <texture>script.plex/indicators/dropdown-triangle.png</texture>
-                        <colordiffuse>99FFFFFF</colordiffuse>
-                    </control>
-                    <control type="image">
-                        <visible>Control.HasFocus(201)</visible>
-                        <posx>34r</posx>
-                        <posy>27</posy>
-                        <width>15</width>
-                        <height>13</height>
-                        <texture>script.plex/indicators/dropdown-triangle.png</texture>
-                        <colordiffuse>FF222222</colordiffuse>
-                    </control>
-                </control>
-                <control type="group">
-                    <posx>353</posx>
-                    <posy>0</posy>
-                    <width>350</width>
-                    <height>66</height>
                     <control type="button" id="202">
-                        <posx>0</posx>
-                        <posy>0</posy>
-                        <width>350</width>
+                        <width>auto</width>
                         <height>66</height>
                         <ondown>50</ondown>
                         <onleft>201</onleft>
@@ -4987,34 +4987,38 @@
                         <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
                         <texturenofocus>-</texturenofocus>
                         <textoffsetx>100</textoffsetx>
-                        <textwidth>228</textwidth>
                         <textoffsety>0</textoffsety>
                         <label>$INFO[Window.Property(user.name)]</label>
                     </control>
-                    <control type="image">
-                        <posx>87r</posx>
-                        <posy>14</posy>
-                        <width>40</width>
-                        <height>39</height>
-                        <texture diffuse="script.plex/home/avatar-diffuse.png">$INFO[Window.Property(user.avatar)]</texture>
-                    </control>
-                    <control type="image">
-                        <visible>!Control.HasFocus(202)</visible>
-                        <posx>34r</posx>
-                        <posy>27</posy>
-                        <width>15</width>
-                        <height>13</height>
-                        <texture>script.plex/indicators/dropdown-triangle.png</texture>
-                        <colordiffuse>99FFFFFF</colordiffuse>
-                    </control>
-                    <control type="image">
-                        <visible>Control.HasFocus(202)</visible>
-                        <posx>34r</posx>
-                        <posy>27</posy>
-                        <width>15</width>
-                        <height>13</height>
-                        <texture>script.plex/indicators/dropdown-triangle.png</texture>
-                        <colordiffuse>FF222222</colordiffuse>
+                    <control type="group">
+                        <posx>-87</posx>
+                        <width>87</width>
+                        <height>66</height>
+                        <control type="image">
+                            <posx>0</posx>
+                            <posy>14</posy>
+                            <width>40</width>
+                            <height>39</height>
+                            <texture diffuse="script.plex/home/avatar-diffuse.png">$INFO[Window.Property(user.avatar)]</texture>
+                        </control>
+                        <control type="image">
+                            <visible>!Control.HasFocus(202)</visible>
+                            <posx>53</posx>
+                            <posy>27</posy>
+                            <width>15</width>
+                            <height>13</height>
+                            <texture>script.plex/indicators/dropdown-triangle.png</texture>
+                            <colordiffuse>99FFFFFF</colordiffuse>
+                        </control>
+                        <control type="image">
+                            <visible>Control.HasFocus(202)</visible>
+                            <posx>53</posx>
+                            <posy>27</posy>
+                            <width>15</width>
+                            <height>13</height>
+                            <texture>script.plex/indicators/dropdown-triangle.png</texture>
+                            <colordiffuse>FF222222</colordiffuse>
+                        </control>
                     </control>
                 </control>
             </control>

@@ -6,11 +6,15 @@ import xbmcgui
 import kodigui
 from lib import util
 from lib import backgroundthread
+from lib import colors
 
 import plexnet
 from plexnet import plexapp
 
-import shows
+import posters
+import seasons
+import episodes
+import preplay
 import busy
 
 
@@ -88,13 +92,14 @@ class HomeWindow(kodigui.BaseWindow):
     HUB_SQUARE_09 = 409
     HUB_SQUARE_10 = 410
     HUB_SQUARE_11 = 411
-    HUB_POSTER_12 = 412
+    HUB_SQUARE_12 = 412
     HUB_POSTER_13 = 413
     HUB_POSTER_14 = 414
     HUB_POSTER_15 = 415
-    HUB_AR16X9_16 = 416
+    HUB_POSTER_16 = 416
     HUB_AR16X9_17 = 417
     HUB_AR16X9_18 = 418
+    HUB_AR16X9_19 = 419
 
     HUBMAP = {
         # HOME
@@ -112,10 +117,10 @@ class HomeWindow(kodigui.BaseWindow):
         'tv.inprogress': {'index': 4, 'with_progress': True},
         'tv.startwatching': {'index': 7},
         'tv.rediscover': {'index': 8},
-        'tv.morefromnetwork': {'index': 12},
-        'tv.toprated': {'index': 13},
-        'tv.moreingenre': {'index': 14},
-        'tv.recentlyviewed': {'index': 15},
+        'tv.morefromnetwork': {'index': 13},
+        'tv.toprated': {'index': 14},
+        'tv.moreingenre': {'index': 15},
+        'tv.recentlyviewed': {'index': 16},
         # MOVIE
         'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True},
         'movie.recentlyreleased': {'index': 1},
@@ -123,14 +128,16 @@ class HomeWindow(kodigui.BaseWindow):
         'movie.genre': {'index': 3},
         'movie.director': {'index': 7},
         'movie.actor': {'index': 8},
-        'movie.topunwatched': {'index': 12},
-        'movie.recentlyviewed': {'index': 13},
+        'movie.topunwatched': {'index': 13},
+        'movie.recentlyviewed': {'index': 14},
         # ARTIST
         'music.recent.played': {'index': 5},
         'music.recent.added': {'index': 9},
         'music.recent.artist': {'index': 10},
         'music.recent.genre': {'index': 11},
-        'music.videos.popular.new': {'index': 16},
+        'music.popular': {'index': 12},
+        'music.videos.popular.new': {'index': 17},
+        'music.videos.recent.artists': {'index': 18},
         # PHOTO
         'photo.recent': {'index': 5},
         'photo.random.year': {'index': 9},
@@ -138,9 +145,9 @@ class HomeWindow(kodigui.BaseWindow):
         # VIDEO
         'video.recent': {'index': 0, 'ar16x9': True},
         'video.random.year': {'index': 6, 'ar16x9': True},
-        'video.random.decade': {'index': 16, 'ar16x9': True},
-        'video.inprogress': {'index': 17, 'with_progress': True, 'ar16x9': True},
-        'video.unwatched.random': {'index': 18, 'ar16x9': True},
+        'video.random.decade': {'index': 17, 'ar16x9': True},
+        'video.inprogress': {'index': 18, 'with_progress': True, 'ar16x9': True},
+        'video.unwatched.random': {'index': 19, 'ar16x9': True},
     }
 
     THUMB_POSTER_DIM = (287, 425)
@@ -153,6 +160,7 @@ class HomeWindow(kodigui.BaseWindow):
         self.task = None
         self.closeOption = None
         self.hubControls = None
+        self.backgroundSet = False
         self.sectionHubs = {}
 
     def onFirstInit(self):
@@ -171,13 +179,14 @@ class HomeWindow(kodigui.BaseWindow):
             kodigui.ManagedControlList(self, self.HUB_SQUARE_09, 5),
             kodigui.ManagedControlList(self, self.HUB_SQUARE_10, 5),
             kodigui.ManagedControlList(self, self.HUB_SQUARE_11, 5),
-            kodigui.ManagedControlList(self, self.HUB_POSTER_12, 5),
+            kodigui.ManagedControlList(self, self.HUB_SQUARE_12, 5),
             kodigui.ManagedControlList(self, self.HUB_POSTER_13, 5),
             kodigui.ManagedControlList(self, self.HUB_POSTER_14, 5),
             kodigui.ManagedControlList(self, self.HUB_POSTER_15, 5),
-            kodigui.ManagedControlList(self, self.HUB_AR16X9_16, 5),
+            kodigui.ManagedControlList(self, self.HUB_POSTER_16, 5),
             kodigui.ManagedControlList(self, self.HUB_AR16X9_17, 5),
             kodigui.ManagedControlList(self, self.HUB_AR16X9_18, 5),
+            kodigui.ManagedControlList(self, self.HUB_AR16X9_19, 5),
         )
 
         self.bottomItem = 0
@@ -205,6 +214,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.selectServer()
         elif controlID == self.USER_BUTTON_ID:
             self.userOptions()
+        elif 399 < controlID < 500:
+            self.hubItemClicked(controlID)
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -227,8 +238,34 @@ class HomeWindow(kodigui.BaseWindow):
             return False
 
         self.showSections()
+        self.backgroundSet = False
         self.showHubs(HomeSection)
         return True
+
+    def hubItemClicked(self, hubControlID):
+        control = self.hubControls[hubControlID - 400]
+        mli = control.getSelectedItem()
+        if not mli:
+            return
+
+        if mli.dataSource.TYPE in ('episode', 'movie'):
+            self.playableClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('show'):
+            self.showClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('season'):
+            self.seasonClicked(mli.dataSource)
+
+    def playableClicked(self, playable):
+        w = preplay.PrePlayWindow.open(video=playable)
+        del w
+
+    def showClicked(self, show):
+        w = seasons.SeasonsWindow.open(show=show)
+        del w
+
+    def seasonClicked(self, season):
+        w = episodes.EpisodesWindow.open(season=season)
+        del w
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
@@ -388,6 +425,11 @@ class HomeWindow(kodigui.BaseWindow):
         items = []
 
         for obj in hub.items:
+            if not self.backgroundSet:
+                self.backgroundSet = True
+                self.setProperty(
+                    'background', obj.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+                )
             mli = self.createListItem(obj)
             if mli:
                 items.append(mli)
@@ -412,8 +454,8 @@ class HomeWindow(kodigui.BaseWindow):
 
         section = item.dataSource
 
-        if section.type == 'show':
-            shows.ShowsWindow.open(section=section)
+        if section.type in ('show', 'movie'):
+            posters.PostersWindow.open(section=section)
 
     def selectServer(self):
         servers = sorted([s for s in plexapp.SERVERMANAGER.serversByUuid.values() if s.isReachable()], key=lambda x: x.name.lower())

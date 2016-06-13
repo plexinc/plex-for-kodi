@@ -1,17 +1,29 @@
-import xbmc
+import random
 import xbmcgui
 import kodigui
 
+from lib import colors
 from lib import util
 
 import seasons
+import preplay
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-MOVE_SET = ((xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_MOUSE_MOVE))
+MOVE_SET = frozenset(
+    (
+        xbmcgui.ACTION_MOVE_LEFT,
+        xbmcgui.ACTION_MOVE_RIGHT,
+        xbmcgui.ACTION_MOVE_UP,
+        xbmcgui.ACTION_MOVE_DOWN,
+        xbmcgui.ACTION_MOUSE_MOVE,
+        xbmcgui.ACTION_PAGE_UP,
+        xbmcgui.ACTION_PAGE_DOWN
+    )
+)
 
 
-class ShowsWindow(kodigui.BaseWindow):
+class PostersWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-shows.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -23,7 +35,7 @@ class ShowsWindow(kodigui.BaseWindow):
     THUMB_AR16X9_DIM = (619, 348)
     THUMB_SQUARE_DIM = (425, 425)
 
-    SHOW_PANEL_ID = 101
+    POSTERS_PANEL_ID = 101
     KEY_LIST_ID = 151
 
     OPTIONS_GROUP_ID = 200
@@ -38,17 +50,17 @@ class ShowsWindow(kodigui.BaseWindow):
         self.exitCommand = None
 
     def onFirstInit(self):
-        self.showPanelControl = kodigui.ManagedControlList(self, self.SHOW_PANEL_ID, 5)
+        self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
 
         self.fillShows()
-        self.setFocusId(self.SHOW_PANEL_ID)
+        self.setFocusId(self.POSTERS_PANEL_ID)
 
     def onAction(self, action):
         try:
-            if action in MOVE_SET:
+            if action.getId() in MOVE_SET:
                 controlID = self.getFocusId()
-                if controlID == self.SHOW_PANEL_ID:
+                if controlID == self.POSTERS_PANEL_ID:
                     self.updateKey()
             # elif action == xbmcgui.ACTION_NAV_BACK:
             #     if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
@@ -63,7 +75,7 @@ class ShowsWindow(kodigui.BaseWindow):
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
             self.doClose()
-        elif controlID == self.SHOW_PANEL_ID:
+        elif controlID == self.POSTERS_PANEL_ID:
             self.showPanelClicked()
         elif controlID == self.KEY_LIST_ID:
             self.keyClicked()
@@ -99,7 +111,7 @@ class ShowsWindow(kodigui.BaseWindow):
             return
 
         self.showPanelControl.selectItem(mli.pos())
-        self.setFocusId(self.SHOW_PANEL_ID)
+        self.setFocusId(self.POSTERS_PANEL_ID)
         self.setProperty('key', li.dataSource)
 
     def showPanelClicked(self):
@@ -107,7 +119,22 @@ class ShowsWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        w = seasons.SeasonsWindow.open(show=mli.dataSource)
+        if self.section.TYPE == 'show':
+            self.showSeasons(mli.dataSource)
+        elif self.section.TYPE == 'movie':
+            self.showPreplay(mli.dataSource)
+
+    def showSeasons(self, show):
+        w = seasons.SeasonsWindow.open(show=show)
+        try:
+            if w.exitCommand == 'HOME':
+                self.exitCommand = 'HOME'
+                self.doClose()
+        finally:
+            del w
+
+    def showPreplay(self, movie):
+        w = preplay.PrePlayWindow.open(video=movie)
         try:
             if w.exitCommand == 'HOME':
                 self.exitCommand = 'HOME'
@@ -167,7 +194,15 @@ class ShowsWindow(kodigui.BaseWindow):
         keys = []
         self.firstOfKeyItems = {}
         idx = 0
-        for show in self.section.all():
+
+        shows = self.section.all()
+        if not shows:
+            return
+
+        show = random.choice(shows)
+        self.setProperty('background', show.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+
+        for show in shows:
             mli, titleSort = self.createListItem(show)
             if mli:
                 mli.setProperty('index', str(idx))

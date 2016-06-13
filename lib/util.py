@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import re
 import binascii
 import json
 import threading
@@ -172,6 +173,10 @@ def durationToShortText(seconds):
     if secs:
         return '{0} sec'.format(secs)
     return '0 sec'
+
+
+def cleanLeadingZeros(text):
+    return re.sub('(?<= )0(\d)', r'\1', text)
 
 
 SIZE_NAMES = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")

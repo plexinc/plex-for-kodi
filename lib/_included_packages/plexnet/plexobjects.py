@@ -35,16 +35,21 @@ class PlexValue(unicode):
         return self == '1'
 
     def asInt(self):
-        return int(self)
+        return int(self or '0')
 
     def asFloat(self):
         return float(self)
 
-    def asDatetime(self):
+    def asDatetime(self, format_=None):
         if self.isdigit():
-            return datetime.fromtimestamp(int(self))
+            dt = datetime.fromtimestamp(int(self))
         else:
-            return datetime.strptime(self, '%Y-%m-%d')
+            dt = datetime.strptime(self, '%Y-%m-%d')
+
+        if not format_:
+            return dt
+
+        return dt.strftime(format_)
 
     def asURL(self):
         return self.parent.server.url(self)
@@ -155,7 +160,13 @@ class PlexObject(object):
 
     def reload(self):
         """ Reload the data for this object from PlexServer XML. """
-        data = self.server.query(self.key)
+        try:
+            data = self.server.query(self.key)
+        except Exception, e:
+            util.ERROR(e)
+            self.initpath = self.key
+            return
+
         self.initpath = self.key
         self._setData(data[0])
 

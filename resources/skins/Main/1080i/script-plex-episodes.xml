@@ -8,12 +8,22 @@
     </coordinates>
     <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
-        <control type="image">
-            <posx>0</posx>
-            <posy>0</posy>
-            <width>1920</width>
-            <height>1080</height>
-            <texture fallback="script.plex/home/background-fallback.jpg">$INFO[Window.Property(background)]</texture>
+        <control type="group">
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <texture>script.plex/home/background-fallback.jpg</texture>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <fadetime>1000</fadetime>
+                <texture  background="true">$INFO[Window.Property(background)]</texture>
+            </control>
         </control>
 
         <control type="group" id="50">

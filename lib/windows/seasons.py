@@ -1,5 +1,6 @@
 import kodigui
 
+from lib import colors
 from lib import util
 
 import episodes
@@ -30,6 +31,7 @@ class SeasonsWindow(kodigui.BaseWindow):
         self.seasonListControl = kodigui.ManagedControlList(self, self.SEASON_LIST_ID, 5)
         self.setProperty('summary', self.show.summary)
         self.setProperty('thumb', self.show.defaultThumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
+        self.setProperty('background', self.show.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
 
         self.fillSeasons()
         self.setFocusId(self.SEASON_LIST_ID)

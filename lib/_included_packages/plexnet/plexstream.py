@@ -32,6 +32,9 @@ class PlexStream(plexobjects.PlexObject):
         'yid': "Yiddish"
     }
 
+    def reload(self):
+        pass
+
     def getTitle(self):
         title = self.getLanguageName()
         streamType = self.streamType.asInt()

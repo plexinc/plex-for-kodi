@@ -1,5 +1,6 @@
 import kodigui
 
+from lib import colors
 from lib import util
 
 import preplay
@@ -29,6 +30,9 @@ class EpisodesWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.episodePanelControl = kodigui.ManagedControlList(self, self.EPISODE_PANEL_ID, 5)
 
+        self.setProperty(
+            'background', self.season.show().art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+        )
         self.fillEpisodes()
         self.setFocusId(self.EPISODE_PANEL_ID)
 

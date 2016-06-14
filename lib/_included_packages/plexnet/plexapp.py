@@ -1,6 +1,7 @@
 import threading
 import platform
 import uuid
+import sys
 
 import signalsmixin
 import util

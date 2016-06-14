@@ -210,6 +210,12 @@ class DumbInterface(AppInterface):
             traceback.print_exc()
 
 
+class CompatEvent(threading._Event):
+    def wait(self, timeout):
+        threading._Event.wait(self, timeout)
+        return self.isSet()
+
+
 class Timer(object):
     def __init__(self, timeout, function, repeat=False, *args, **kwargs):
         self.function = function
@@ -218,7 +224,7 @@ class Timer(object):
         self.args = args
         self.kwargs = kwargs
         self._reset = False
-        self.event = threading.Event()
+        self.event = CompatEvent()
         self.start()
 
     def start(self):

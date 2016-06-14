@@ -86,7 +86,7 @@ class PlexInterface(plexapp.AppInterface):
 plexapp.setInterface(PlexInterface())
 
 
-class CallbackEvent(threading._Event):
+class CallbackEvent(plexapp.CompatEvent):
     def __init__(self, context, signal, timeout=15, *args, **kwargs):
         threading._Event.__init__(self, *args, **kwargs)
         self.start = time.time()

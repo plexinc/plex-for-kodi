@@ -1,4 +1,5 @@
 import random
+import xbmc
 import xbmcgui
 import kodigui
 
@@ -63,10 +64,10 @@ class PostersWindow(kodigui.BaseWindow):
                 controlID = self.getFocusId()
                 if controlID == self.POSTERS_PANEL_ID:
                     self.updateKey()
-            # elif action == xbmcgui.ACTION_NAV_BACK:
-            #     if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
-            #         self.setFocusId(self.OPTIONS_GROUP_ID)
-            #         return
+            elif action == xbmcgui.ACTION_CONTEXT_MENU:
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.setFocusId(self.OPTIONS_GROUP_ID)
+                    return
 
         except:
             util.ERROR()

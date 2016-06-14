@@ -206,7 +206,7 @@ class HomeWindow(kodigui.BaseWindow):
                 self.setFocusId(self.SERVER_BUTTON_ID)
             if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
                 self.checkSectionItem()
-            elif action == xbmcgui.ACTION_NAV_BACK:
+            elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return

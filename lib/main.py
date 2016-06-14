@@ -1,9 +1,21 @@
+import threading
 import xbmc
 import plex
 from plexnet import plexapp
 from windows import background, userselect, home
 import backgroundthread
 import util
+
+
+def waitForThreads():
+    util.DEBUG_LOG('Checking for any remaining threads')
+    for t in threading.enumerate():
+        if t != threading.currentThread():
+            if t.isAlive():
+                if isinstance(t, threading._Timer):
+                    t.cancel()
+                util.DEBUG_LOG('Waiting on: {0}...'.format(t.name))
+                t.join()
 
 
 def main():
@@ -52,6 +64,7 @@ def main():
         plexapp.APP.preShutdown()
         backgroundthread.BGThreader.shutdown()
         plexapp.APP.shutdown()
+        waitForThreads()
         background.setBusy(False)
         background.setSplash(False)
         back.doClose()

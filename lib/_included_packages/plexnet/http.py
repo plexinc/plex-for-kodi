@@ -57,7 +57,7 @@ class HttpRequest(object):
 
     def startAsync(self, *args, **kwargs):
         self.logRequest(kwargs.get('body'))
-        self.thread = threading.Thread(target=self._startAsync, args=args, kwargs=kwargs)
+        self.thread = threading.Thread(target=self._startAsync, args=args, kwargs=kwargs, name='HTTP-ASYNC:{0}'.format(self.url))
         self.thread.start()
         return True
 

@@ -242,7 +242,7 @@ class CronReceiver():
 
 class Cron(threading.Thread):
     def __init__(self, interval):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name='CRON')
         self.stopped = threading.Event()
         self.force = threading.Event()
         self.interval = interval

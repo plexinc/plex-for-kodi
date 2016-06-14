@@ -1,3 +1,5 @@
+import xbmc
+import xbmcgui
 import kodigui
 from lib import colors
 from lib import util
@@ -41,17 +43,17 @@ class PrePlayWindow(kodigui.BaseWindow):
         # else:
         #     self.setFocusId(self.PLAY_BUTTON_ID)
 
-    # def onAction(self, action):
-    #     try:
-    #         if action == xbmcgui.ACTION_NAV_BACK:
-    #             if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
-    #                 self.setFocusId(self.OPTIONS_GROUP_ID)
-    #                 return
+    def onAction(self, action):
+        try:
+            if action == xbmcgui.ACTION_CONTEXT_MENU:
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.setFocusId(self.OPTIONS_GROUP_ID)
+                    return
 
-    #     except:
-    #         util.ERROR()
+        except:
+            util.ERROR()
 
-    #     kodigui.BaseWindow.onAction(self, action)
+        kodigui.BaseWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:

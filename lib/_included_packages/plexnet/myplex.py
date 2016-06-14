@@ -64,7 +64,7 @@ class PinLogin(object):
         return self._expired
 
     def startTokenPolling(self):
-        t = Thread(target=self._poll)
+        t = Thread(target=self._poll, name='PIN-LOGIN:Token-Poll')
         t.start()
         return t
 

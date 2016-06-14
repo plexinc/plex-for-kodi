@@ -40,7 +40,7 @@ class BackgroundThreader:
         return self._abort or xbmc.abortRequested
 
     def start(self):
-        self._thread = threading.Thread(target=self._queueLoop)
+        self._thread = threading.Thread(target=self._queueLoop, name='BACKGROUND-WORKER')
         self._thread.start()
 
     def _queueLoop(self):

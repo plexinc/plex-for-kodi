@@ -223,7 +223,7 @@ class Timer(object):
 
     def start(self):
         self.event.clear()
-        self.thread = threading.Thread(target=self.run, *self.args, **self.kwargs)
+        self.thread = threading.Thread(target=self.run, name='TIMER:{0}'.format(self.function), *self.args, **self.kwargs)
         self.thread.start()
 
     def run(self):

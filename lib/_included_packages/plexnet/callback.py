@@ -46,6 +46,7 @@ class Callable(object):
 
     def deferCall(self, timeout=100):
         timer = threading.Timer(timeout, self.onDeferCallTimer)
+        timer.name = 'ONDEFERCALLBACK-TIMER:{0}'.format(self.func)
         timer.start()
 
     def onDeferCallTimer(self):

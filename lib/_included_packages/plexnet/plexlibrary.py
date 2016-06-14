@@ -177,7 +177,10 @@ class LibrarySection(plexobjects.PlexObject):
         # convert list of values to list of keys or ids
         result = set()
         choices = self.listChoices(category, libtype)
-        lookup = {c.title.lower(): c.key for c in choices}
+        lookup = {}
+        for c in choices:
+            lookup[c.title.lower()] = c.key
+
         allowed = set(c.key for c in choices)
         for item in value:
             item = str(item.id if isinstance(item, media.MediaTag) else item).lower()
@@ -200,7 +203,9 @@ class LibrarySection(plexobjects.PlexObject):
     def _cleanSearchSort(self, sort):
         sort = '%s:asc' % sort if ':' not in sort else sort
         scol, sdir = sort.lower().split(':')
-        lookup = {s.lower(): s for s in self.ALLOWED_SORT}
+        lookup = {}
+        for s in self.ALLOWED_SORT:
+            lookup[s.lower()] = s
         if scol not in lookup:
             raise exceptions.BadRequest('Unknown sort column: %s' % scol)
         if sdir not in ('asc', 'desc'):

@@ -1,4 +1,5 @@
 import sys
+import time
 import platform
 import uuid
 
@@ -71,6 +72,13 @@ def hideToken(token):
     return '*' * (len(token) - 4) + token[-4:]
 
 
+def now(local=False):
+    if local:
+        return time.time()
+    else:
+        return time.mktime(time.gmtime())
+
+
 def joinArgs(args):
     if not args:
         return ''
@@ -106,3 +114,47 @@ def addAccountHeaders(transferObj, token=None):
         transferObj.addHeader("X-Plex-Token", token)
 
     # TODO(schuyler): Add username?
+
+
+def validInt(int_str):
+    try:
+        return int(int_str)
+    except:
+        return 0
+
+
+def bitrateToString(bits):
+    if not bits:
+        return ''
+
+    speed = int(round(bits / 1000 / 100)) / 10
+    if speed < 1:
+        speed = int(round(bits / 1000))
+        format_ = "Kbps"
+    else:
+        format_ = "Mbps"
+
+    return "{0} {1}".format(speed, format_)
+
+
+class Res(tuple):
+    def __str__(self):
+        return '{0}x{1}'.format(*self[:2])
+
+    @classmethod
+    def fromString(cls, res_string):
+        try:
+            return cls(map(lambda n: int(n), res_string.split('x')))
+        except:
+            return None
+
+
+class AttributeDict(dict):
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+    def __repr__(self):
+        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.title.encode('utf8'))

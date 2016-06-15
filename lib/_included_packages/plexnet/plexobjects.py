@@ -31,14 +31,17 @@ class PlexValue(unicode):
         self.NA = False
         return self
 
+    def __call__(self, default):
+        return not self.NA and self or default
+
     def asBool(self):
         return self == '1'
 
-    def asInt(self):
-        return int(self or '0')
+    def asInt(self, default=0):
+        return int(self or default)
 
-    def asFloat(self):
-        return float(self)
+    def asFloat(self, default=0):
+        return float(self or default)
 
     def asDatetime(self, format_=None):
         if self.isdigit():

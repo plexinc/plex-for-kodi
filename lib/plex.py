@@ -17,6 +17,8 @@ class PlexTimer(plexapp.Timer):
 
 plexapp.setTimer(PlexTimer)
 
+maxVideoRes = plexapp.Res((3840, 2160))  # INTERFACE.globals["supports4k"] and plexapp.Res((3840, 2160)) or plexapp.Res((1920, 1080))
+
 
 class PlexInterface(plexapp.AppInterface):
     _regs = {
@@ -32,6 +34,29 @@ class PlexInterface(plexapp.AppInterface):
         'device': plexapp._platform,
         'model': 'Unknown',
         'friendlyName': 'Kodi Plex Addon',
+        'supports1080p60': True,
+        'supports4k': False,
+        'hevcSupport': True,
+        'vp9Support': True,
+        'transcodeVideoQualities': [
+            "10", "20", "30", "30", "40", "60", "60", "75", "100", "60", "75", "90", "100", "100"
+        ],
+        'transcodeVideoResolutions': [
+            plexapp.Res((220, 180)),
+            plexapp.Res((220, 128)),
+            plexapp.Res((284, 160)),
+            plexapp.Res((420, 240)),
+            plexapp.Res((576, 320)),
+            plexapp.Res((720, 480)),
+            plexapp.Res((1024, 768)),
+            plexapp.Res((1280, 720)),
+            plexapp.Res((1280, 720)),
+            maxVideoRes, maxVideoRes, maxVideoRes, maxVideoRes, maxVideoRes
+        ],
+        'transcodeVideoBitrates': [
+            "64", "96", "208", "320", "720", "1500", "2000", "3000", "4000", "8000", "10000", "12000", "20000", "200000"
+        ],
+        'deviceInfo': plexapp.DeviceInfo()
     }
 
     def getPreference(self, pref, default=None):
@@ -81,6 +106,36 @@ class PlexInterface(plexapp.AppInterface):
             self.LOG('ERROR: {0} - {1}'.format(msg, err.message))
         else:
             util.ERROR()
+
+    def supportsAudioStream(self, codec, channels):
+        return True
+        # if codec = invalid then return true
+
+        # canDownmix = (m.globals["audioDownmix"][codec] <> invalid)
+        # supportsSurroundSound = m.SupportsSurroundSound()
+
+        # if not supportsSurroundSound and canDownmix then
+        #     maxChannels = m.globals["audioDownmix"][codec]
+        # else
+        #     maxChannels = firstOf(m.globals["audioDecoders"][codec], 0)
+        # end if
+
+        # if maxChannels > 2 and not canDownmix and not supportsSurroundSound then
+        #     ' It's a surround sound codec and we can't do surround sound
+        #     supported = false
+        # else if maxChannels = 0 or maxChannels < channels then
+        #     ' The codec is either unsupported or can't handle the requested channels
+        #     supported = false
+        # else
+        #     supported = true
+
+        # return supported
+
+    def supportsSurroundSound(self):
+        return True
+
+    def getMaxResolution(self, quality_type):
+        return plexapp.Res(1280, 720)
 
 
 plexapp.setInterface(PlexInterface())

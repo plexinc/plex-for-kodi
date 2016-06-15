@@ -6,6 +6,8 @@ import sys
 import signalsmixin
 import util
 
+Res = util.Res
+
 APP = None
 INTERFACE = None
 
@@ -114,7 +116,16 @@ except:
         _platform = sys.platform
 
 
+class DeviceInfo(object):
+    def getCaptionsOption(self, key):
+        return None
+
+
 class AppInterface(object):
+    QUALITY_LOCAL = 0
+    QUALITY_REMOTE = 1
+    QUALITY_ONLINE = 2
+
     def getPreference(self, pref, default=None):
         raise NotImplementedError
 
@@ -148,6 +159,23 @@ class AppInterface(object):
     def ERROR(self, msg=None, err=None):
         self.LOG(msg)
 
+    def supportsAudioStream(self, codec, channels):
+        return False
+
+    def supportsSurroundSound(self):
+        return False
+
+    def getMaxResolution(self, quality_type):
+        return plexapp.Res(640, 480)
+
+    def getQualityIndex(qualityType):
+        if qualityType == self.QUALITY_LOCAL:
+            return self.getPreference("local_quality", 0)
+        elif qualityType == self.QUALITY_ONLINE:
+            return self.getPreference("online_quality", 0)
+        else:
+            return self.getPreference("remote_quality", 0)
+
 
 class DumbInterface(AppInterface):
     _prefs = {}
@@ -164,6 +192,7 @@ class DumbInterface(AppInterface):
         'device': _platform,
         'model': 'Unknown',
         'friendlyName': 'PlexNet.API',
+        'deviceInfo': DeviceInfo()
     }
 
     def getPreference(self, pref, default=None):

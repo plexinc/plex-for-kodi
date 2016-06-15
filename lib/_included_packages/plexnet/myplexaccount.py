@@ -40,15 +40,8 @@ ACCOUNT = None
 #         return plexresource.findResourceByID(self.resources(), ID)
 
 
-class HomeUser(dict):
-    def __getattr__(self, attr):
-        return self.get(attr)
-
-    def __setattr__(self, attr, value):
-        self[attr] = value
-
-    def __repr__(self):
-        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.title.encode('utf8'))
+class HomeUser(util.AttributeDict):
+    pass
 
 
 class MyPlexAccount(object):

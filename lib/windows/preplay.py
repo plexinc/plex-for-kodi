@@ -4,6 +4,7 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import player
+from plexnet import plexplayer
 
 
 class PrePlayWindow(kodigui.BaseWindow):
@@ -33,7 +34,6 @@ class PrePlayWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
-
         self.setInfo()
         self.fillExtras()
         # import xbmc
@@ -62,13 +62,16 @@ class PrePlayWindow(kodigui.BaseWindow):
         elif controlID == self.EXTRA_LIST_ID:
             self.extrasListClicked()
         elif controlID == self.RESUME_BUTTON_ID:
-            url = self.video.getStreamURL()
-            util.DEBUG_LOG('Resuming URL: {0}'.format(url))
-            player.PLAYER.playAt(url, self.video.viewOffset.asInt())
+            self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:
-            url = self.video.getStreamURL()
-            util.DEBUG_LOG('Playing URL: {0}'.format(url))
-            player.PLAYER.play(url)
+            self.playVideo()
+
+    def playVideo(self, resume=False):
+        offset = resume and self.video.viewOffset.asInt() or 0
+        m = plexplayer.PlexPlayer(self.video, offset).build()
+        url = m.streamUrls[0]
+        util.DEBUG_LOG('Playing URL(+{1}ms): {0}'.format(url, offset))
+        player.PLAYER.play(url + '&X-Plex-Platform=Chrome')
 
     def extrasListClicked(self):
         mli = self.seasonListControl.getSelectedItem()

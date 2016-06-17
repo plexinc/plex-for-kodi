@@ -114,10 +114,12 @@ class PlexMediaItemList(PlexItemList):
 
 
 class PlexObject(object):
-    def __init__(self, data, initpath=None, server=None):
+    def __init__(self, data, initpath=None, server=None, container=None):
         self.initpath = initpath
         self.key = None
         self.server = server
+        self.container = container
+        self.mediaChoice = None
         self.titleSort = PlexValue('')
 
         if data is None:
@@ -200,6 +202,16 @@ class PlexObject(object):
             return MyPlexUser(elem, self.initpath)
         return None
 
+    def getAbsolutePath(self, attr):
+        path = getattr(self, attr, None)
+        if path is None:
+            return None
+        else:
+            return self.container.getAbsolutePath(path)
+
+    def getServer(self):
+        return self.server
+
     def getTranscodeServer(self, localServerRequired=False, transcodeType=None):
         server = self.server
 
@@ -216,6 +228,47 @@ class PlexObject(object):
         return server
 
 
+class PlexContainer(PlexObject):
+    def __init__(self, data, initpath=None, server=None, address=None):
+        PlexObject.__init__(self, data, initpath, server)
+        self.setAddress(address)
+
+    def __getitem__(self, idx):
+        return self.resources[idx]
+
+    def __iter__(self):
+        for i in self.resources:
+            yield i
+
+    def __len__(self):
+        return len(self.resources)
+
+    def setAddress(self, address):
+        if address != "/" and address.endswith("/"):
+            self.address = address[:-1]
+        else:
+            self.address = address
+
+        # TODO(schuyler): Do we need to make sure that we only hang onto the path here and not a full URL?
+        if self.address.startswith("/") and "node.plexapp.com" not in self.address:
+            util.FATAL("Container address is not an expected path: {0}".format(address))
+
+    def getAbsolutePath(self, path):
+        if path.startswith('/'):
+            return path
+        elif "://" in path:
+            return path
+        else:
+            return self.address + "/" + path
+
+
+class PlexServerContainer(PlexContainer):
+    def __init__(self, data, initpath=None, server=None, address=None):
+        PlexContainer.__init__(self, data, initpath, server, address)
+        import plexserver
+        self.resources = [plexserver.PlexServer(elem) for elem in data]
+
+
 def findItem(server, path, title):
     for elem in server.query(path):
         if elem.attrib.get('title').lower() == title.lower():
@@ -223,17 +276,19 @@ def findItem(server, path, title):
     raise exceptions.NotFound('Unable to find item: {0}'.format(title))
 
 
-def buildItem(server, elem, initpath, bytag=False):
+def buildItem(server, elem, initpath, bytag=False, container=None):
     libtype = elem.tag if bytag else elem.attrib.get('type')
     if libtype in LIBRARY_TYPES:
         cls = LIBRARY_TYPES[libtype]
-        return cls(elem, initpath=initpath, server=server)
+        return cls(elem, initpath=initpath, server=server, container=container)
     raise exceptions.UnknownType('Unknown library type: {0}'.format(libtype))
 
 
 def listItems(server, path, libtype=None, watched=None, bytag=False):
     items = []
-    for elem in server.query(path):
+    data = server.query(path)
+    container = PlexContainer(data, path, server, '')
+    for elem in data:
         if libtype and elem.attrib.get('type') != libtype:
             continue
         if watched is True and elem.attrib.get('viewCount', 0) == 0:
@@ -241,7 +296,7 @@ def listItems(server, path, libtype=None, watched=None, bytag=False):
         if watched is False and elem.attrib.get('viewCount', 0) >= 1:
             continue
         try:
-            items.append(buildItem(server, elem, path, bytag))
+            items.append(buildItem(server, elem, path, bytag, container))
         except exceptions.UnknownType:
             pass
     return items

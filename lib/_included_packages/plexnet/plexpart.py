@@ -1,26 +1,30 @@
+import plexobjects
 import plexstream
 import plexrequest
 import util
 
 
-class PlexPart(object):
-    def __init__(self, container, xml):
+class PlexPart(plexobjects.PlexObject):
+    def reload(self):
+        self.key = self.initpath
+
+    def __init__(self, data, initpath=None, server=None, media=None):
+        plexobjects.PlexObject.__init__(self, data, initpath, server)
+        self.container = media
         self.streams = []
 
-        # If we weren't given any XML, this is a synthetic part
-        if xml is not None:
-            self.Init(container, xml)
-
-            for stream in xml.Streams:
-                self.streams.append(plexstream.PlexStream(stream))
-
+        # If we weren't given any data, this is a synthetic part
+        if data is not None:
+            self.streams = [plexstream.PlexStream(e, initpath=self.initpath, server=self.server) for e in data if e.tag == 'Stream']
+            return
+            #
+            #  TODO: FIX
+            #
             if self.indexes:
                 self.indexes = util.AttributeDict()
                 indexKeys = self.indexes('').split(",")
                 for indexKey in indexKeys:
                     self.indexes[indexKey] = True
-        else:
-            self.InitSynthetic(container, "Part")
 
     def getAddress(self):
         address = self.key
@@ -33,7 +37,7 @@ class PlexPart(object):
 
     def isAccessible(self):
         # If we haven't fetched accessibility info, assume it's accessible.
-        not self.accessible or self.accessible.asBool()
+        return not hasattr(self, 'accessible') or self.accessible.asBool()
 
     def isAvailable(self):
         # If we haven't fetched availability info, assume it's available
@@ -80,7 +84,7 @@ class PlexPart(object):
             # Indicate available streams to choose from, excluding video
             # streams until the server supports multiple videos streams.
 
-            return "{0} • {1} {2}".format(title, availableStreams, suffix)
+            return u"{0} : {1} {2}".format(title, availableStreams, suffix)
         else:
             return title
 

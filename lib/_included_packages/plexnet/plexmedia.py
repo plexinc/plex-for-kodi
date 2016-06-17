@@ -1,26 +1,19 @@
 import locks
 import http
+import plexobjects
 import plexpart
 import plexrequest
 import util
 
 
-class PlexMedia(object):
-    def __init__(self, container, xml, fallbackId=None):
+class PlexMedia(plexobjects.PlexObject):
+    def __init__(self, data, initpath=None, server=None, container=None):
+        plexobjects.PlexObject.__init__(self, data, initpath, server)
+        self.container = container
         self.parts = []
-
-        # If we weren't given any XML, this is a synthetic media
-        if xml:
-            self.Init(container, xml)
-
-            for part in xml.Part:
-                self.parts.append(plexpart.PlexPart(container, part))
-        else:
-            self.InitSynthetic(container, "Media")
-
-        # Make sure all media items have an id
-        if not hasattr(self, 'id') and fallbackId:
-            self.id = fallbackId
+        # If we weren't given any data, this is a synthetic media
+        if data is not None:
+            self.parts = [plexpart.PlexPart(elem, initpath=self.initpath, server=self.server, media=self) for elem in data]
 
     def hasStreams(self):
         return len(self.parts) > 0 and self.parts[0].hasStreams()
@@ -100,10 +93,12 @@ class PlexMedia(object):
 
     def __str__(self):
         extra = []
-        keys = ("container", "videoCodec", "audioCodec", "audioChannels", "protocol", "id")
-        for key in keys:
-            if self.key:
-                extra.append("{0}={1}".format(key, self.key))
+        attrs = ("container", "videoCodec", "audioCodec", "audioChannels", "protocol", "id")
+        for astr in attrs:
+            if hasattr(self, astr):
+                attr = getattr(self, astr)
+                if not attr.NA:
+                    extra.append("{0}={1}".format(astr, attr))
 
         return self.versionString() + " " + ' '.join(extra)
 
@@ -114,7 +109,7 @@ class PlexMedia(object):
             details.append(util.bitrateToString(self.bitrate.asInt() * 1000))
 
         detailString = ', '.join(details)
-        return u" \u2022 ".join([self.title, detailString])
+        return u" : ".join([self.title, detailString])
 
     def __eq__(self, other):
         if not other:
@@ -134,7 +129,7 @@ class PlexMedia(object):
     def getVideoResolution(self):
         if self.videoResolution:
             standardDefinitionHeight = 480
-            if str(util.validInt(filter(str.isdigit, self.videoResolution))) != self.videoResolution:
+            if str(util.validInt(filter(unicode.isdigit, self.videoResolution))) != self.videoResolution:
                 return self.height.asInt() > standardDefinitionHeight and self.height.asInt() or standardDefinitionHeight
             else:
                 return self.videoResolution.asInt(standardDefinitionHeight)
@@ -142,7 +137,7 @@ class PlexMedia(object):
         return self.height.asInt()
 
     def getVideoResolutionString(self):
-        resNumber = util.validInt(filter(str.isdigit, self.videoResolution))
+        resNumber = util.validInt(filter(unicode.isdigit, self.videoResolution))
         if resNumber > 0 and str(resNumber) == self.videoResolution:
             return self.videoResolution + "p"
 

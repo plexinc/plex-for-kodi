@@ -46,6 +46,10 @@ X_PLEX_IDENTIFIER = str(hex(uuid.getnode()))  # UUID, serial number, or other nu
 
 BASE_HEADERS = resetBaseHeaders()
 
+QUALITY_LOCAL = 0
+QUALITY_REMOTE = 1
+QUALITY_ONLINE = 2
+
 
 def LOG(msg):
     plexapp.INTERFACE.LOG(msg)
@@ -65,6 +69,14 @@ def WARN_LOG(msg):
 
 def ERROR(msg=None, err=None):
     plexapp.INTERFACE.ERROR(msg, err)
+
+
+def FATAL(msg=None):
+    plexapp.INTERFACE.FATAL(msg)
+
+
+def TEST(msg):
+    plexapp.INTERFACE.LOG(msg)
 
 
 def hideToken(token):
@@ -157,4 +169,4 @@ class AttributeDict(dict):
         self[attr] = value
 
     def __repr__(self):
-        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.title.encode('utf8'))
+        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.id, self.get('title', 'None').encode('utf8'))

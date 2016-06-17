@@ -24,9 +24,10 @@ DEFAULT_BASEURI = 'http://localhost:32400'
 class Hub(plexobjects.PlexObject):
     def init(self, data):
         self.items = []
+        container = plexobjects.PlexContainer(data, self.key, self.server, '')
         for elem in data:
             try:
-                self.items.append(plexobjects.buildItem(self.server, elem, '/hubs'))
+                self.items.append(plexobjects.buildItem(self.server, elem, '/hubs', container=container))
             except exceptions.UnknownType:
                 util.DEBUG_LOG('Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type')))
 
@@ -35,6 +36,8 @@ class Hub(plexobjects.PlexObject):
 
 
 class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
+    TYPE = 'PLEXSERVER'
+
     def __init__(self, data=None):
         signalsmixin.SignalsMixin.__init__(self)
         plexresource.PlexResource.__init__(self, data)
@@ -179,10 +182,13 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         return self.activeConnection and (self.sameNetwork or self.activeConnection.isLocal)
 
     def isRequestToServer(self, url):
-        if not self.activeconnection:
+        if not self.activeConnection:
             return False
 
-        schemeAndHost = ''.join(self.baseuri.split(':', 2)[0:2])
+        if ':' in self.activeConnection.address[8:]:
+            schemeAndHost = self.activeConnection.address.rsplit(':', 1)[0]
+        else:
+            schemeAndHost = self.activeConnection.address
 
         return url[:len(schemeAndHost)] == schemeAndHost
 

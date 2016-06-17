@@ -134,8 +134,25 @@ class PlexInterface(plexapp.AppInterface):
     def supportsSurroundSound(self):
         return True
 
-    def getMaxResolution(self, quality_type):
-        return plexapp.Res(1280, 720)
+    def getQualityIndex(self, qualityType):
+        if qualityType == self.QUALITY_LOCAL:
+            return self.getPreference("local_quality", 0)
+        elif qualityType == self.QUALITY_ONLINE:
+            return self.getPreference("online_quality", 0)
+        else:
+            return self.getPreference("remote_quality", 0)
+
+    def getMaxResolution(self, quality_type, allow4k=False):
+        qualityIndex = self.getQualityIndex(quality_type)
+
+        if qualityIndex >= 9:
+            return allow4k and 2160 or 1088
+        elif qualityIndex >= 6:
+            return 720
+        elif qualityIndex >= 5:
+            return 480
+        else:
+            return 360
 
 
 plexapp.setInterface(PlexInterface())

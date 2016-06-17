@@ -167,23 +167,6 @@ class PlexResourceList(plexobjects.PlexItemList):
         return self._items
 
 
-class PlexContainer(plexobjects.PlexObject):
-    def __init__(self, data, initpath=None, server=None):
-        plexobjects.PlexObject.__init__(self, data, initpath, server)
-        import plexserver
-        self.resources = [plexserver.PlexServer(elem) for elem in data]
-
-    def __getitem__(self, idx):
-        return self.resources[idx]
-
-    def __iter__(self):
-        for i in self.resources:
-            yield i
-
-    def __len__(self):
-        return len(self.resources)
-
-
 def fetchResources(token):
     headers = util.BASE_HEADERS
     headers['X-Plex-Token'] = token

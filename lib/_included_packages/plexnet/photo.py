@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import media
 import plexobjects
 
 
 @plexobjects.registerLibType
-class Photo(plexobjects.PlexObject):
+class Photo(media.MediaItem):
     TYPE = 'photo'
 
     def analyze(self):

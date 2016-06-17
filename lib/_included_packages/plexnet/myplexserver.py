@@ -6,6 +6,8 @@ import plexservermanager
 
 
 class MyPlexServer(plexserver.PlexServer):
+    TYPE = 'MYPLEXSERVER'
+
     def __init__(self):
         plexserver.PlexServer.__init__(self)
         self.uuid = 'myplex'

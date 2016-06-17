@@ -3,7 +3,7 @@ import plexobjects
 import media
 
 
-class Audio(plexobjects.PlexObject):
+class Audio(media.MediaItem):
     pass
 
 

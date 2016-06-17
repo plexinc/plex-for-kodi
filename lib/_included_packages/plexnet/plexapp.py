@@ -159,22 +159,47 @@ class AppInterface(object):
     def ERROR(self, msg=None, err=None):
         self.LOG(msg)
 
+    def FATAL(self, msg=None):
+        self.ERROR(msg)
+
     def supportsAudioStream(self, codec, channels):
         return False
 
     def supportsSurroundSound(self):
         return False
 
-    def getMaxResolution(self, quality_type):
-        return plexapp.Res(640, 480)
+    def getMaxResolution(self, quality_type, allow4k=False):
+        return 480
 
-    def getQualityIndex(qualityType):
+    def getQualityIndex(self, qualityType):
         if qualityType == self.QUALITY_LOCAL:
             return self.getPreference("local_quality", 0)
         elif qualityType == self.QUALITY_ONLINE:
             return self.getPreference("online_quality", 0)
         else:
             return self.getPreference("remote_quality", 0)
+
+    def settingsGetMaxResolution(self, qualityType, allow4k):
+        qualityIndex = self.getQualityIndex(qualityType)
+
+        if qualityIndex >= 9:
+            return allow4k and 2160 or 1088
+        elif qualityIndex >= 6:
+            return 720
+        elif qualityIndex >= 5:
+            return 480
+        else:
+            return 360
+
+    def getMaxBitrate(self, qualityType):
+        qualityIndex = self.getQualityIndex(qualityType)
+
+        qualities = self.getGlobal("qualities", [])
+        for quality in qualities:
+            if quality.index == qualityIndex:
+                return util.validInt(quality.maxBitrate)
+
+        return 0
 
 
 class DumbInterface(AppInterface):

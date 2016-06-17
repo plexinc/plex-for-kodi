@@ -1,18 +1,23 @@
 import plexobjects
 import media
+import plexmedia
+import plexstream
 import exceptions
 import compat
 
 
-class Video(plexobjects.PlexObject):
+class Video(media.MediaItem):
     TYPE = None
+
+    def isVideoItem(self):
+        return True
 
     def _findStreams(self, streamtype):
         streams = []
         for media_ in self.media():
             for part in media_.parts:
                 for stream in part.streams:
-                    if stream.TYPE == streamtype:
+                    if stream.streamType.asInt() == streamtype:
                         streams.append(stream)
         return streams
 
@@ -85,7 +90,7 @@ class Movie(Video):
             self.countries = plexobjects.PlexItemList(data, media.Country, media.Country.TYPE, server=self.server)
             self.directors = plexobjects.PlexItemList(data, media.Director, media.Director.TYPE, server=self.server)
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
-            self.media = plexobjects.PlexMediaItemList(data, media.Media, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
+            self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
@@ -210,7 +215,7 @@ class Episode(Video):
         Video._setData(self, data)
         if self.isFullObject():
             self.directors = plexobjects.PlexItemList(data, media.Director, media.Director.TYPE, server=self.server)
-            self.media = plexobjects.PlexMediaItemList(data, media.Media, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
+            self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
 
         self._videoStreams = None
@@ -230,19 +235,19 @@ class Episode(Video):
     @property
     def videoStreams(self):
         if self._videoStreams is None:
-            self._videoStreams = self._findStreams('videostream')
+            self._videoStreams = self._findStreams(plexstream.PlexStream.TYPE_VIDEO)
         return self._videoStreams
 
     @property
     def audioStreams(self):
         if self._audioStreams is None:
-            self._audioStreams = self._findStreams('audiostream')
+            self._audioStreams = self._findStreams(plexstream.PlexStream.TYPE_AUDIO)
         return self._audioStreams
 
     @property
     def subtitleStreams(self):
         if self._subtitleStreams is None:
-            self._subtitleStreams = self._findStreams('subtitlestream')
+            self._subtitleStreams = self._findStreams(plexstream.PlexStream.TYPE_SUBTITLE)
         return self._subtitleStreams
 
     @property

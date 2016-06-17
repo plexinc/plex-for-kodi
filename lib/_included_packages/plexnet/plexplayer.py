@@ -9,12 +9,25 @@ class PlexPlayer(object):
     def __init__(self, item, seekValue=0):
         self.item = item
         self.seekValue = seekValue
-        self.choice = None  # MediaDecisionEngine().chooseMedia(item)
+        self.choice = mediadecisionengine.MediaDecisionEngine().chooseMedia(item)
         if self.choice:
             self.media = self.choice.media
 
-    def build(self, directPlay=None, directStream=True, currentPartIndex=None):
-        isForced = bool(directPlay)
+    def build(self, forceTranscode=False):
+        if plexapp.INTERFACE.getPreference("playback_directplay", False):
+            directPlayPref = plexapp.INTERFACE.getPreference("playback_directplay_force", False) and 'forced' or 'allow'
+        else:
+            directPlayPref = 'disabled'
+
+        if forceTranscode or directPlayPref == "disabled" or self.choice.hasBurnedInSubtitles is True:
+            directPlay = False
+        else:
+            directPlay = directPlayPref == "forced" and True or None
+
+        return self._build(directPlay, plexapp.INTERFACE.getPreference("playback_remux", False))
+
+    def _build(self, directPlay=None, directStream=True, currentPartIndex=None):
+        isForced = directPlay is not None
         if isForced:
             util.LOG(directPlay and "Forced Direct Play" or "Forced Transcode; allowDirectStream={0}".format(directStream))
 
@@ -266,8 +279,7 @@ class PlexPlayer(object):
         else:
             builder = self.buildTranscodeHls(obj)
 
-        import myplexserver
-        if self.item.getServer() == myplexserver.MyPlexServer():
+        if self.item.getServer().TYPE == 'MYPLEXSERVER':
             path = server.swizzleUrl(self.item.getAbsolutePath("key"))
         else:
             path = self.item.getAbsolutePath("key")
@@ -278,7 +290,7 @@ class PlexPlayer(object):
         seekOffset = int(self.seekValue / 1000)
 
         # Disabled for HLS due to a Roku bug plexinc/roku-client-issues#776
-        if obj.streamFormat == "mkv":
+        if True:  # obj.streamFormat == "mkv":
             # Trust our seekOffset for this part if it's the current part (now playing) or
             # the seekOffset is within the time frame. We have to trust the current part
             # as we may have to rebuild the transcode when seeking, and not all parts
@@ -313,7 +325,7 @@ class PlexPlayer(object):
 
         qualityIndex = settings.getQualityIndex(self.item.getQualityType(server))
         builder.addParam("videoQuality", settings.getGlobal("transcodeVideoQualities")[qualityIndex])
-        builder.addParam("videoResolution", settings.getGlobal("transcodeVideoResolutions")[qualityIndex])
+        builder.addParam("videoResolution", str(settings.getGlobal("transcodeVideoResolutions")[qualityIndex]))
         builder.addParam("maxVideoBitrate", settings.getGlobal("transcodeVideoBitrates")[qualityIndex])
 
         if self.media.mediaIndex is not None:

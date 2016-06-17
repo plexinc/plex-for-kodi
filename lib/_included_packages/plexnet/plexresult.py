@@ -1,5 +1,5 @@
 import http
-import plexresource
+import plexobjects
 
 
 class PlexResult(http.HttpResponse):
@@ -21,7 +21,7 @@ class PlexResult(http.HttpResponse):
         if self.isSuccess():
             data = self.getBodyXml()
             if data is not None:
-                self.container = plexresource.PlexContainer(data, initpath=self.address, server=self.server)
+                self.container = plexobjects.PlexServerContainer(data, initpath=self.address, server=self.server, address=self.address)
                 self.parsed = True
 
         return self.parsed
@@ -33,7 +33,7 @@ class PlexResult(http.HttpResponse):
         self.parsed = False
 
         if data is not None:
-            self.container = plexresource.PlexContainer(data, initpath=self.address, server=self.server)
+            self.container = plexobjects.PlexServerContainer(data, initpath=self.address, server=self.server, address=self.address)
             self.parsed = True
 
         return self.parsed

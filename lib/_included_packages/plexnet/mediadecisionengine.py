@@ -25,26 +25,24 @@ class MediaDecisionEngine(object):
             return item.mediaChoice
 
         # See if we're missing media/stream details for this item.
-        if item.isLibraryItem() and item.isVideoItem() and len(item.mediaItems) > 0 and not item.mediaItems[0].hasStreams():
+        if item.isLibraryItem() and item.isVideoItem() and len(item.media()) > 0 and not item.media()[0].hasStreams():
             # TODO(schuyler): Fetch the details
             util.WARN("Can't make media choice, missing details")
 
         # Take a first pass through the media items to create an array of candidates
         # that we'll evaluate more completely. If we find a forced item, we use it.
         # If we find an indirect, we only keep a single candidate.
-
         indirect = False
         candidates = []
         maxResolution = plexapp.INTERFACE.getMaxResolution(item.getQualityType())
-        for mediaIndex in range(len(item.mediaItems)):
-            media = item.mediaItems[mediaIndex]
+        for mediaIndex in range(len(item.media())):
+            media = item.media()[mediaIndex]
             media.mediaIndex = mediaIndex
 
             if media.isSelected():
                 candidates = []
                 candidates.append(media)
                 break
-
             if media.isIndirect():
                 # Only add indirect media if the resolution fits. We cannot
                 # exit early as the user may have selected media.
@@ -63,7 +61,7 @@ class MediaDecisionEngine(object):
 
         # Make sure we have at least one valid item, regardless of availability
         if len(candidates) == 0:
-            candidates.append(item.mediaItems[0])
+            candidates.append(item.media()[0])
 
         # Now that we have an array of candidates, evaluate them completely.
         choices = []
@@ -76,9 +74,7 @@ class MediaDecisionEngine(object):
                     choice = self.evaluateMediaMusic(item, media)
                 else:
                     choice = mediachoice.MediaChoice(media)
-
                 choices.append(choice)
-
         item.mediaChoice = self.sortChoices(choices)[-1]
         util.LOG("MDE: MediaChoice: {0}".format(item.mediaChoice))
         return item.mediaChoice
@@ -113,7 +109,7 @@ class MediaDecisionEngine(object):
             return choice
 
         choice.isSelected = media.isSelected()
-        choice.protocol = media.get("protocol", "http")
+        choice.protocol = media.protocol("http")
 
         maxResolution = settings.getMaxResolution(item.getQualityType(), self.isSupported4k(media, choice.videoStream))
         maxBitrate = settings.getMaxBitrate(item.getQualityType())
@@ -151,6 +147,7 @@ class MediaDecisionEngine(object):
             audioLanguageChannelsSeen = -1
         else:
             # No audio stream, which is fine, so pretend like we saw it
+            audioLanguage = None
             audioStreamCompatible = True
 
         if part.hasChapterVideoStream.asBool():
@@ -257,7 +254,7 @@ class MediaDecisionEngine(object):
         choice.sorts.canTranscode = server.supportsVideoTranscoding and 1 or 0
         choice.sorts.canRemuxOnly = server.supportsVideoRemuxOnly and 1 or 0
         choice.sorts.directPlay = (choice.isDirectPlayable is True and choice.forceTranscode is not True) and 1 or 0
-        choice.sorts.proxyType = choice.media.proxyType and choice.media.proxyType or self.ProxyTypes.NORMAL
+        choice.sorts.proxyType = choice.media.proxyType and choice.media.proxyType or self.proxyTypes.NORMAL
 
         return choice
 
@@ -479,12 +476,12 @@ class MediaDecisionEngine(object):
         return 0
 
     def cloudIfRemote(self, choice):
-        if choice.media is not None and choice.media.getServer().isLocalConnection() and choice.proxyType != self.ProxyTypes.CLOUD:
+        if choice.media is not None and choice.media.getServer().isLocalConnection() and choice.proxyType != self.proxyTypes.CLOUD:
             return 1
 
         return 0
 
-    def isSupported4k(media, videoStream):
+    def isSupported4k(self, media, videoStream):
         if videoStream is None or not plexapp.INTERFACE.getGlobal("supports4k"):
             return False
 

@@ -260,7 +260,7 @@ class PlexPlayer(object):
 
         util.LOG("Next part set for playback: {0}".format(self.metadata))
 
-    def getBifUrl(self, offset):
+    def getBifUrl(self, offset=0):
         server = self.item.getServer()
         if server is not None and self.metadata is not None:
             bifUrl = self.metadata.hdBifPath or self.metadata.sdBifPath

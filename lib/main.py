@@ -3,6 +3,7 @@ import xbmc
 import plex
 from plexnet import plexapp
 from windows import background, userselect, home
+import player
 import backgroundthread
 import util
 
@@ -61,6 +62,7 @@ def main():
     except:
         util.ERROR()
     finally:
+        player.PLAYER.close()
         plexapp.APP.preShutdown()
         backgroundthread.BGThreader.shutdown()
         plexapp.APP.shutdown()

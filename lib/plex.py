@@ -19,6 +19,11 @@ plexapp.setTimer(PlexTimer)
 
 maxVideoRes = plexapp.Res((3840, 2160))  # INTERFACE.globals["supports4k"] and plexapp.Res((3840, 2160)) or plexapp.Res((1920, 1080))
 
+CLIENT_ID = util.getSetting('client.ID')
+if not CLIENT_ID:
+    CLIENT_ID = str(uuid.uuid4())
+    util.setSetting('client.ID', CLIENT_ID)
+
 
 class PlexInterface(plexapp.AppInterface):
     _regs = {
@@ -27,7 +32,7 @@ class PlexInterface(plexapp.AppInterface):
     _globals = {
         'platform': platform.uname()[0],
         'appVersionStr': util.ADDON.getAddonInfo('version'),
-        'clientIdentifier': str(hex(uuid.getnode())),
+        'clientIdentifier': CLIENT_ID,
         'platformVersion': platform.uname()[2],
         'product': 'Plex for Kodi',
         'provides': 'player',

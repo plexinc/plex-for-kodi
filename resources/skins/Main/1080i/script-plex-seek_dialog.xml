@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<window>
+    <defaultcontrol>100</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="image">
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>A0000000</colordiffuse>
+        </control>
+        <control type="group">
+            <control type="group">
+                <defaultcontrol>100</defaultcontrol>
+                <control type="fixedlist" id="100">
+                    <focusposition>3</focusposition>
+                    <posx>0</posx>
+                    <posy>242</posy>
+                    <width>1920</width>
+                    <height>236</height>
+                    <scrolltime>0</scrolltime>
+                    <orientation>horizontal</orientation>
+                    <onleft>99</onleft>
+                    <onright>99</onright>
+                    <itemlayout width="160">
+
+                    </itemlayout>
+
+                    <focusedlayout width="320">
+                        <control type="group">
+
+                        </control>
+                    </focusedlayout>
+                </control>
+            </control>
+        </control>
+
+        <control type="group" id="300">
+            <posx>40</posx>
+            <posy>600</posy>
+            <control type="image">
+                <posx>-2</posx>
+                <posy>26</posy>
+                <width>324</width>
+                <height>184</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>FF000000</colordiffuse>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>28</posy>
+                <width>320</width>
+                <height>180</height>
+                <fadetime>10</fadetime>
+                <texture>$INFO[Container(100).ListItem.Thumb]</texture>
+            </control>
+        </control>
+        <control type="image">
+            <posx>160</posx>
+            <posy>820</posy>
+            <width>1600</width>
+            <height>20</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>FF404040</colordiffuse>
+        </control>
+        <control type="image" id="200">
+            <posx>160</posx>
+            <posy>820</posy>
+            <width>1</width>
+            <height>20</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>FFE5A00D</colordiffuse>
+        </control>
+    </controls>
+</window>

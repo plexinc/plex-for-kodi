@@ -15,14 +15,11 @@ class PlexPart(plexobjects.PlexObject):
 
         # If we weren't given any data, this is a synthetic part
         if data is not None:
+            util.TEST(data.attrib)
             self.streams = [plexstream.PlexStream(e, initpath=self.initpath, server=self.server) for e in data if e.tag == 'Stream']
-            return
-            #
-            #  TODO: FIX
-            #
             if self.indexes:
-                self.indexes = util.AttributeDict()
                 indexKeys = self.indexes('').split(",")
+                self.indexes = util.AttributeDict()
                 for indexKey in indexKeys:
                     self.indexes[indexKey] = True
 
@@ -152,7 +149,7 @@ class PlexPart(plexobjects.PlexObject):
 
     def getIndexPath(self, indexKey, interval=None):
         if self.indexes is not None and indexKey in self.indexes:
-            return "/library/parts/{0}/indexes/".format(self.id, indexKey)
+            return "/library/parts/{0}/indexes/{1}".format(self.id, indexKey)
         else:
             return None
 

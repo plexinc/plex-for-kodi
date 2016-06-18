@@ -67,11 +67,7 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.playVideo()
 
     def playVideo(self, resume=False):
-        offset = resume and self.video.viewOffset.asInt() or 0
-        m = plexplayer.PlexPlayer(self.video, offset).build()
-        url = m.streamUrls[0]
-        util.DEBUG_LOG('Playing URL(+{1}ms): {0}'.format(url, offset))
-        player.PLAYER.play(url + '&X-Plex-Platform=Chrome')
+        player.PLAYER.playVideo(self.video, resume)
 
     def extrasListClicked(self):
         mli = self.seasonListControl.getSelectedItem()

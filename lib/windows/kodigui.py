@@ -30,9 +30,10 @@ class BaseFunctions:
         return window
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, show=True, **kwargs):
         window = cls(cls.xmlFile, cls.path, cls.theme, cls.res, **kwargs)
-        window.show()
+        if show:
+            window.show()
         window.isOpen = True
         return window
 

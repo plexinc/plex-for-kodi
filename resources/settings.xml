@@ -3,8 +3,8 @@
 
   <!-- General -->
   <category label="32000">
-    <setting id="transcode_format" label="32023" type="labelenum" values="hls|mkv" default="0" />
-    <setting id="local_quality" label="32020" type="enum" lvalues="32014|32013|32012|32011|32010|32009|32008|32007|32006|32005|32004|32003|32002|32001" default="13" />
+    <setting id="transcode_format" label="32023" type="labelenum" values="mkv|hls" default="0" />
+    <setting id="local_quality"  label="32020" type="enum" lvalues="32014|32013|32012|32011|32010|32009|32008|32007|32006|32005|32004|32003|32002|32001" default="13" />
     <setting id="remote_quality" label="32021" type="enum" lvalues="32014|32013|32012|32011|32010|32009|32008|32007|32006|32005|32004|32003|32002|32001" default="13" />
     <setting id="online_quality" label="32022" type="enum" lvalues="32014|32013|32012|32011|32010|32009|32008|32007|32006|32005|32004|32003|32002|32001" default="13" />
     <setting id="playback_directplay" type="bool" label="32025" default="false" />

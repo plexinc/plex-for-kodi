@@ -62,7 +62,7 @@ def main():
     except:
         util.ERROR()
     finally:
-        player.PLAYER.close()
+        player.PLAYER.close(shutdown=True)
         plexapp.APP.preShutdown()
         backgroundthread.BGThreader.shutdown()
         plexapp.APP.shutdown()

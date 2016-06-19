@@ -21,8 +21,7 @@ class JSONRPCMethod:
             if kwargs:
                 command['params'] = kwargs
 
-            # print json.dumps(command)
-            xbmc.log(json.dumps(command))
+            # xbmc.log(json.dumps(command))
             ret = json.loads(xbmc.executeJSONRPC(json.dumps(command)))
 
             if ret:

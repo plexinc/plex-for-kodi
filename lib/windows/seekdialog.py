@@ -25,6 +25,12 @@ class SeekDialog(kodigui.BaseDialog):
         self.offset = 0
         self.imageListSize = 1
 
+    def trueOffset(self):
+        return self.baseOffset + self.offset
+
+    def selectedOffset(self):
+        return self.imageListControl.getSelectedItem().dataSource
+
     def onFirstInit(self):
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
@@ -46,12 +52,12 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onClick(self, controlID):
         if controlID == self.IMAGE_LIST_ID:
-            self.offset = int((self.imageListControl.getSelectedPosition() / self.imageListSize) * self.duration)
-            self.handler.seek(self.baseOffset + self.offset)
+            self.handler.seek(self.selectedOffset())
             self.doClose()
 
     def setup(self, duration, offset=0, bif_url=None):
         self.baseOffset = offset
+        self.offset = 0
         self.duration = duration
         self.bifURL = bif_url
         # self.getBif()
@@ -69,11 +75,18 @@ class SeekDialog(kodigui.BaseDialog):
         if not self.imageListControl:
             return
 
-        self.imageListControl.selectItem(int(((self.baseOffset + self.offset) / float(self.duration)) * int(self.imageListSize)))
+        offset = self.trueOffset()
+        for mli in self.imageListControl:
+            if mli.dataSource > offset:
+                pos = mli.pos()
+                self.imageListControl.selectItem(pos and pos - 1 or 0)
+                break
+
+        # self.imageListControl.selectItem(int(((self.baseOffset + self.offset) / float(self.duration)) * int(self.imageListSize)))
         self._updateProgress()
 
     def _updateProgress(self):
-        ratio = self.imageListControl.getSelectedPosition() / self.imageListSize
+        ratio = self.selectedOffset() / float(self.duration)
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
         # bifx = (w - int(ratio * 320)) + 40
         bifx = w

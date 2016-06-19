@@ -7,7 +7,8 @@ import threading
 import math
 import time
 import datetime
-
+import contextlib
+from kodijsonrpc import rpc
 import xbmc
 import xbmcgui
 import xbmcaddon
@@ -217,6 +218,38 @@ class TextBox:
         self.win.getControl(self.CONTROL_LABEL).setLabel(heading)
         # set text
         self.win.getControl(self.CONTROL_TEXTBOX).setText(text)
+
+
+class SettingControl:
+    def __init__(self, setting, log_display, disable_value=''):
+        self.setting = setting
+        self.logDisplay = log_display
+        self.disableValue = disable_value
+        self._originalMode = None
+        self.store()
+
+    def disable(self):
+        rpc.Settings.SetSettingValue(setting=self.setting, value=self.disableValue)
+        DEBUG_LOG('{0}: DISABLED'.format(self.logDisplay))
+
+    def store(self):
+        try:
+            self._originalMode = rpc.Settings.GetSettingValue(setting=self.setting).get('value')
+            DEBUG_LOG('{0}: Mode stored ({1})'.format(self.logDisplay, self._originalMode))
+        except:
+            ERROR()
+
+    def restore(self):
+        if self._originalMode is None:
+            return
+        rpc.Settings.SetSettingValue(setting=self.setting, value=self._originalMode)
+        DEBUG_LOG('{0}: RESTORED'.format(self.logDisplay))
+
+    @contextlib.contextmanager
+    def suspend(self):
+        self.disable()
+        yield
+        self.restore()
 
 
 def timeInDayLocalSeconds():

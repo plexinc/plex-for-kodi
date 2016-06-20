@@ -94,7 +94,7 @@
         </control>
 
         <control type="group" id="300">
-            <visible>Control.HasFocus(100)</visible>
+            <visible>!IsEmpty(Window.Property(has.bif)) + Control.HasFocus(100)</visible>
             <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
             <posx>0</posx>
             <posy>752</posy>
@@ -304,6 +304,7 @@
 
         <control type="image" id="201">
             <visible>!Control.HasFocus(100)</visible>
+            <animation effect="fade" time="100" delay="100" end="0">Hidden</animation>
             <posx>0</posx>
             <posy>942</posy>
             <width>1</width>

@@ -36,6 +36,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.handler = kwargs.get('handler')
         self.bifURL = None
         self.baseURL = None
+        self.hasBif = bool(self.bifURL)
         self.baseOffset = 0
         self.duration = 0
         self.offset = 0
@@ -98,6 +99,7 @@ class SeekDialog(kodigui.BaseDialog):
         else:
             self.setFocusId(400)
 
+        self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)
         self.setProperty('video.title2', self.title2)
         self.setProperty('time.duration', timeDisplay(self.duration))
@@ -145,7 +147,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.offset = 0
         self.duration = duration
         self.bifURL = bif_url
-        self.baseURL = re.sub('/\d+\?', '/{0}?', self.bifURL)
+        self.hasBif = bool(self.bifURL)
+        if self.hasBif:
+            self.baseURL = re.sub('/\d+\?', '/{0}?', self.bifURL)
         self.update()
 
     def update(self, offset=None, from_seek=False):
@@ -164,9 +168,11 @@ class SeekDialog(kodigui.BaseDialog):
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
         bifx = (w - int(ratio * 324)) + self.BAR_X
         # bifx = w
-        self.setProperty('bif.image', self.baseURL.format(self.selectedOffset))
+        if self.hasBif:
+            self.setProperty('bif.image', self.baseURL.format(self.selectedOffset))
+            self.bifImageControl.setPosition(bifx, 752)
+
         self.seekbarControl.setWidth(w)
-        self.bifImageControl.setPosition(bifx, 752)
 
     def tick(self):
         if not self.initialized:

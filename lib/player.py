@@ -86,8 +86,8 @@ class SeekPlayerHandler(object):
 
     def onVideoOSD(self):
         # xbmc.executebuiltin('Dialog.Close(seekbar,true)')  # Doesn't work :)
-        if not self.seeking:
-            self.showSeekDialog()
+        # if not self.seeking:
+        self.showSeekDialog()
 
     def tick(self):
         self.dialog.tick()
@@ -100,6 +100,7 @@ class PlexPlayer(xbmc.Player):
     def init(self):
         self._closed = False
         self.video = None
+        self.hasOSD = False
         self.xbmcMonitor = xbmc.Monitor()
         self.handler = SeekPlayerHandler(self)
         self.playerBackground = playerbackground.PlayerBackground.create()
@@ -263,7 +264,11 @@ class PlexPlayer(xbmc.Player):
                         while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
                             self.xbmcMonitor.waitForAbort(0.1)
                             if xbmc.getCondVisibility('Window.IsActive(videoosd)'):
-                                self.onVideoOSD()
+                                if not self.hasOSD:
+                                    self.hasOSD = True
+                                    self.onVideoOSD()
+                            else:
+                                self.hasOSD = False
 
                             if xbmc.getCondVisibility('VideoPlayer.IsFullscreen'):
                                 if not hasFullScreened:

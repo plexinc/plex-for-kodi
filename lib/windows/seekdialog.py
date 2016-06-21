@@ -12,6 +12,13 @@ def timeDisplay(ms):
     return '{0:0>2}:{1:0>2}:{2:0>2}'.format(h, m, s)
 
 
+def simplifiedTimeDisplay(ms):
+    disp = timeDisplay(ms).lstrip('0:')
+    if ':' not in disp:
+        disp = '0:' + disp
+    return disp
+
+
 class SeekDialog(kodigui.BaseDialog):
     xmlFile = 'script-plex-seek_dialog.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -23,6 +30,7 @@ class SeekDialog(kodigui.BaseDialog):
     MAIN_BUTTON_ID = 100
     SEEK_IMAGE_ID = 200
     POSITION_IMAGE_ID = 201
+    SELECTION_INDICATOR = 202
     BIF_IMAGE_ID = 300
     SEEK_IMAGE_WIDTH = 1920
 
@@ -53,6 +61,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
         self.positionControl = self.getControl(self.POSITION_IMAGE_ID)
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
+        self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
         self.initialized = True
         self.setProperties()
         self.update()
@@ -168,6 +177,8 @@ class SeekDialog(kodigui.BaseDialog):
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
         bifx = (w - int(ratio * 324)) + self.BAR_X
         # bifx = w
+        self.selectionIndicator.setPosition(w, 896)
+        self.setProperty('time.selection', simplifiedTimeDisplay(self.selectedOffset))
         if self.hasBif:
             self.setProperty('bif.image', self.baseURL.format(self.selectedOffset))
             self.bifImageControl.setPosition(bifx, 752)

@@ -324,5 +324,31 @@
             <colordiffuse>FFE5A00D</colordiffuse>
         </control>
 
+        <control type="group" id="202">
+            <visible>Control.HasFocus(100)</visible>
+            <posx>0</posx>
+            <posy>896</posy>
+            <control type="image">
+                <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
+                <posx>-50</posx>
+                <posy>0</posy>
+                <width>101</width>
+                <height>46</height>
+                <texture>script.plex/indicators/player-selection-time.png</texture>
+                <colordiffuse>D0000000</colordiffuse>
+            </control>
+            <control type="label">
+                <posx>-50</posx>
+                <posy>0</posy>
+                <width>101</width>
+                <height>40</height>
+                <font>font10</font>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(time.selection)]</label>
+            </control>
+        </control>
+
     </controls>
 </window>

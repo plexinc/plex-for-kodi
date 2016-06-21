@@ -8,21 +8,25 @@ from plexnet import plexplayer
 
 
 class SeekPlayerHandler(object):
+    NO_SEEK = 0
+    SEEK_INIT = 1
+    SEEK_IN_PROGRESS = 2
+
     def __init__(self, player):
         self.player = player
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
         self.duration = 0
         self.offset = 0
-        self.seeking = False
+        self.seeking = self.NO_SEEK
 
-    def setup(self, duration, offset, bif_url, title='', title2='', seeking=False):
+    def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
         self.seeking = seeking
         self.duration = duration
         self.dialog.setup(duration, offset, bif_url, title, title2)
 
     def onSeekAborted(self):
         if self.seeking:
-            self.seeking = False
+            self.seeking = self.NO_SEEK
             self.player.control('play')
 
     def showSeekDialog(self, from_seek=False):
@@ -32,18 +36,18 @@ class SeekPlayerHandler(object):
         self.dialog.update(self.offset, from_seek)
 
     def seek(self, offset):
-        self.seeking = True
+        self.seeking = self.SEEK_IN_PROGRESS
         self.offset = offset
         # self.player.control('play')
         util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
-        self.player._playVideo(offset, seeking=True)
+        self.player._playVideo(offset, seeking=self.seeking)
 
     def closeSeekDialog(self):
         if self.dialog:
             self.dialog.doClose()
 
     def onPlayBackStarted(self):
-        self.seeking = False
+        self.seeking = self.NO_SEEK
 
     def onPlayBackPaused(self):
         pass
@@ -53,16 +57,16 @@ class SeekPlayerHandler(object):
 
     def onPlayBackStopped(self):
         self.closeSeekDialog()
-        if not self.seeking:
+        if not self.seeking == self.SEEK_IN_PROGRESS:
             self.player.close()
 
     def onPlayBackEnded(self):
         self.closeSeekDialog()
-        if not self.seeking:
+        if not self.seeking == self.SEEK_IN_PROGRESS:
             self.player.close()
 
     def onPlayBackSeek(self, time, offset):
-        self.seeking = True
+        self.seeking = self.SEEK_INIT
         self.player.control('pause')
         self.updateOffset()
         self.showSeekDialog(from_seek=True)
@@ -71,7 +75,7 @@ class SeekPlayerHandler(object):
         self.offset = int(self.player.getTime() * 1000)
 
     def onPlayBackFailed(self):
-        self.seeking = False
+        self.seeking = self.NO_SEEK
         self.player.close()
         return True
 
@@ -125,10 +129,14 @@ class PlexPlayer(xbmc.Player):
 
     def control(self, cmd):
         if cmd == 'play':
+            util.DEBUG_LOG('Player - Control:  Command=Play')
             if xbmc.getCondVisibility('Player.Paused'):
+                util.DEBUG_LOG('Player - Control:  Playing')
                 xbmc.executebuiltin('PlayerControl(Play)')
         elif cmd == 'pause':
+            util.DEBUG_LOG('Player - Control:  Command=Pause')
             if not xbmc.getCondVisibility('Player.Paused'):
+                util.DEBUG_LOG('Player - Control:  Pausing')
                 xbmc.executebuiltin('PlayerControl(Play)')
 
     def videoIsFullscreen(self):
@@ -160,7 +168,7 @@ class PlexPlayer(xbmc.Player):
         self.open()
         self._playVideo(resume and video.viewOffset.asInt() or 0)
 
-    def _playVideo(self, offset=0, seeking=False):
+    def _playVideo(self, offset=0, seeking=0):
         pobj = plexplayer.PlexPlayer(self.video, offset)
         url = pobj.build().streamUrls[0]
         bifURL = pobj.getBifUrl()

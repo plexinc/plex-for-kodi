@@ -130,7 +130,7 @@ class PlexPlayer(xbmc.Player):
     def control(self, cmd):
         if cmd == 'play':
             util.DEBUG_LOG('Player - Control:  Command=Play')
-            if xbmc.getCondVisibility('Player.Paused'):
+            if xbmc.getCondVisibility('Player.Paused | !Player.Playing'):
                 util.DEBUG_LOG('Player - Control:  Playing')
                 xbmc.executebuiltin('PlayerControl(Play)')
         elif cmd == 'pause':

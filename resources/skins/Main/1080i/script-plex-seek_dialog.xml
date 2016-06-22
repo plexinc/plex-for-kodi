@@ -132,6 +132,7 @@
             <scrolltime tween="quadratic" easing="out">200</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
             <control type="button" id="401">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -145,6 +146,7 @@
                 <label> </label>
             </control>
             <control type="button" id="402">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -158,6 +160,7 @@
                 <label> </label>
             </control>
             <control type="button" id="403">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -173,6 +176,7 @@
 
 
             <control type="button" id="404">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -186,6 +190,7 @@
                 <label> </label>
             </control>
             <control type="button" id="405">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -231,6 +236,7 @@
                 <label> </label>
             </control>
             <control type="button" id="408">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -244,6 +250,7 @@
                 <label> </label>
             </control>
             <control type="button" id="409">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -259,6 +266,7 @@
 
 
             <control type="button" id="410">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -272,6 +280,7 @@
                 <label> </label>
             </control>
             <control type="button" id="411">
+                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -282,6 +291,178 @@
                 <font>font12</font>
                 <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/more-focus.png</texturefocus>
                 <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/more.png</texturenofocus>
+                <label> </label>
+            </control>
+        </control>
+
+        <control type="grouplist" id="500">
+            <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
+            <defaultcontrol>501</defaultcontrol>
+            <posx>0</posx>
+            <posy>700</posy>
+            <width>1920</width>
+
+            <height>124</height>
+            <align>center</align>
+            <onup>100</onup>
+            <itemgap>0</itemgap>
+            <orientation>horizontal</orientation>
+            <scrolltime tween="quadratic" easing="out">200</scrolltime>
+            <usecontrolcoords>true</usecontrolcoords>
+            <control type="button" id="501">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.1)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.1)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="502">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.2)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.2)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="503">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.3)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.3)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="504">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.4)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.4)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="505">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.5)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.5)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="506">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.6)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.6)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="507">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.7)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.7)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="508">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.8)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.8)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="509">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.9)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.9)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="510">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.10)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.10)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="511">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.11)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.11)]</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="512">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="200" time="100" center="80,45" reversible="false">Focus</animation>
+                <animation effect="zoom" start="200" end="100" time="100" center="80,45" reversible="false">UnFocus</animation>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>160</width>
+                <height>90</height>
+                <font>font10</font>
+                <texturefocus colordiffuse="FFFFFFFF">$INFO[Window.Property(big.seek.12)]</texturefocus>
+                <texturenofocus colordiffuse="D0FFFFFF">$INFO[Window.Property(big.seek.12)]</texturenofocus>
                 <label> </label>
             </control>
         </control>

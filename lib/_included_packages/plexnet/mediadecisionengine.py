@@ -324,11 +324,11 @@ class MediaDecisionEngine(object):
                 util.LOG("MDE: Unsupported audio track: {0} ({1} channels)".format(audioCodec, numChannels))
                 return False
 
-            # TODO(schuyler): We've reported this to Roku, they may fix it. If/when
-            # they do, we should move this behind a firmware version check.
-            if container == "mkv" and choice.videoStream.headerStripping.asBool() and audioCodec == "ac3":
-                util.ERROR_LOG("MDE: Header stripping with AC3 audio")
-                return False
+            # # TODO(schuyler): We've reported this to Roku, they may fix it. If/when
+            # # they do, we should move this behind a firmware version check.
+            # if container == "mkv" and choice.videoStream.headerStripping.asBool() and audioCodec == "ac3":
+            #     util.ERROR_LOG("MDE: Header stripping with AC3 audio")
+            #     return False
 
             # Those were our problems, everything else should be OK.
             return True
@@ -354,69 +354,69 @@ class MediaDecisionEngine(object):
             # Sidecar subs can be direct played or used alongside a transcode
             result = mediachoice.MediaChoice.SUBTITLES_SOFT_ANY
 
-        # TODO(schuyler) If Roku adds support for non-Latin characters, remove
-        # this hackery. To the extent that we continue using this hackery, it
-        # seems that the Roku requires UTF-8 subtitles but only supports characters
-        # from Windows-1252. This should be the full set of languages that are
-        # completely representable in Windows-1252. PMS should specifically be
-        # returning ISO 639-2/B language codes.
-        # Update: Roku has added support for additional characters, but still only
-        # Latin characters. We can now basically support anything from the various
-        # ISO-8859 character sets, but nothing non-Latin.
+        # # TODO(schuyler) If Roku adds support for non-Latin characters, remove
+        # # this hackery. To the extent that we continue using this hackery, it
+        # # seems that the Roku requires UTF-8 subtitles but only supports characters
+        # # from Windows-1252. This should be the full set of languages that are
+        # # completely representable in Windows-1252. PMS should specifically be
+        # # returning ISO 639-2/B language codes.
+        # # Update: Roku has added support for additional characters, but still only
+        # # Latin characters. We can now basically support anything from the various
+        # # ISO-8859 character sets, but nothing non-Latin.
 
-        if not self.softSubLanguages:
-            self.softSubLanguages = frozenset((
-                'afr',
-                'alb',
-                'baq',
-                'bre',
-                'cat',
-                'cze',
-                'dan',
-                'dut',
-                'eng',
-                'epo',
-                'est',
-                'fao',
-                'fin',
-                'fre',
-                'ger',
-                'gla',
-                'gle',
-                'glg',
-                'hrv',
-                'hun',
-                'ice',
-                'ita',
-                'lat',
-                'lav',
-                'lit',
-                'ltz',
-                'may',
-                'mlt',
-                'nno',
-                'nob',
-                'nor',
-                'oci',
-                'pol',
-                'por',
-                'roh',
-                'rum',
-                'slo',
-                'slv',
-                'spa',
-                'srd',
-                'swa',
-                'swe',
-                'tur',
-                'vie',
-                'wel',
-                'wln'
-            ))
+        # if not self.softSubLanguages:
+        #     self.softSubLanguages = frozenset((
+        #         'afr',
+        #         'alb',
+        #         'baq',
+        #         'bre',
+        #         'cat',
+        #         'cze',
+        #         'dan',
+        #         'dut',
+        #         'eng',
+        #         'epo',
+        #         'est',
+        #         'fao',
+        #         'fin',
+        #         'fre',
+        #         'ger',
+        #         'gla',
+        #         'gle',
+        #         'glg',
+        #         'hrv',
+        #         'hun',
+        #         'ice',
+        #         'ita',
+        #         'lat',
+        #         'lav',
+        #         'lit',
+        #         'ltz',
+        #         'may',
+        #         'mlt',
+        #         'nno',
+        #         'nob',
+        #         'nor',
+        #         'oci',
+        #         'pol',
+        #         'por',
+        #         'roh',
+        #         'rum',
+        #         'slo',
+        #         'slv',
+        #         'spa',
+        #         'srd',
+        #         'swa',
+        #         'swe',
+        #         'tur',
+        #         'vie',
+        #         'wel',
+        #         'wln'
+        #     ))
 
-        if not (stream.languageCode or 'eng') in self.softSubLanguages:
-            # If the language is unsupported,: we need to force burning
-            result = mediachoice.MediaChoice.SUBTITLES_BURN
+        # if not (stream.languageCode or 'eng') in self.softSubLanguages:
+        #     # If the language is unsupported,: we need to force burning
+        #     result = mediachoice.MediaChoice.SUBTITLES_BURN
 
         return result
 

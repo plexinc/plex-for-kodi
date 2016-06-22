@@ -33,6 +33,9 @@ class SeekDialog(kodigui.BaseDialog):
     BIF_IMAGE_ID = 300
     SEEK_IMAGE_WIDTH = 1920
 
+    SKIP_BACK_BUTTON_ID = 405
+    SKIP_FORWARD_BUTTON_ID = 408
+
     BAR_X = 0
     BAR_Y = 921
     BAR_RIGHT = 1920
@@ -72,22 +75,24 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onAction(self, action):
         try:
+            util.TEST(action.getId())
             controlID = self.getFocusId()
             if controlID == self.MAIN_BUTTON_ID:
-                if action == xbmcgui.ACTION_MOVE_RIGHT:
+                if action == xbmcgui.ACTION_MOUSE_MOVE:
+                    return self.seekMouse(action)
+                elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
                     return self.seekForward(10000)
-                elif action == xbmcgui.ACTION_MOVE_LEFT:
+                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
                     return self.seekBack(10000)
                 # elif action == xbmcgui.ACTION_MOVE_UP:
                 #     self.seekForward(60000)
                 # elif action == xbmcgui.ACTION_MOVE_DOWN:
                 #     self.seekBack(60000)
-                elif action == xbmcgui.ACTION_MOUSE_MOVE:
-                    return self.seekMouse(action)
 
-            if action == xbmcgui.ACTION_PREVIOUS_MENU or action == xbmcgui.ACTION_NAV_BACK:
+            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
                 self.doClose()
                 self.handler.onSeekAborted()
+                return
         except:
             util.ERROR()
 

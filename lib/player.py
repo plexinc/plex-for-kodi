@@ -31,6 +31,8 @@ class SeekPlayerHandler(object):
 
     def showSeekDialog(self, from_seek=False):
         xbmc.executebuiltin('Dialog.Close(videoosd,true)')
+        if xbmc.getCondVisibility('Player.showinfo'):
+            xbmc.executebuiltin('Action(Info)')
         self.updateOffset()
         self.dialog.show()
         self.dialog.update(self.offset, from_seek)
@@ -269,7 +271,7 @@ class PlexPlayer(xbmc.Player):
                         ct = 0
                         while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
                             self.xbmcMonitor.waitForAbort(0.1)
-                            if xbmc.getCondVisibility('Window.IsActive(videoosd)'):
+                            if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
                                 if not self.hasOSD:
                                     self.hasOSD = True
                                     self.onVideoOSD()

@@ -156,11 +156,14 @@ class AppInterface(object):
     def WARN_LOG(self, msg):
         self.LOG(msg)
 
+    def ERROR_LOG(self, msg):
+        self.LOG(msg)
+
     def ERROR(self, msg=None, err=None):
         self.LOG(msg)
 
     def FATAL(self, msg=None):
-        self.ERROR(msg)
+        self.ERROR_LOG('FATAL: {0}'.format(msg))
 
     def supportsAudioStream(self, codec, channels):
         return False
@@ -255,6 +258,9 @@ class DumbInterface(AppInterface):
 
     def WARN_LOG(self, msg):
         self.LOG('WARNING: {0}'.format(msg))
+
+    def ERROR_LOG(self, msg):
+        self.LOG('ERROR: {0}'.format(msg))
 
     def ERROR(self, msg=None, err=None):
         if err:

@@ -107,7 +107,7 @@ class PlexPlayer(xbmc.Player):
         self.hasOSD = False
         self.xbmcMonitor = xbmc.Monitor()
         self.handler = SeekPlayerHandler(self)
-        self.playerBackground = playerbackground.PlayerBackground.create()
+        self.playerBackground = None
         self.seekStepsSetting = util.SettingControl('videoplayer.seeksteps', 'Seek steps', disable_value=[-10, 10])
         self.seekDelaySetting = util.SettingControl('videoplayer.seekdelay', 'Seek delay', disable_value=0)
         return self
@@ -117,11 +117,9 @@ class PlexPlayer(xbmc.Player):
         self.monitor()
 
     def close(self, shutdown=False):
-        self.playerBackground.doClose()
         self._closed = True
-        if shutdown:
-            del self.playerBackground
-            self.playerBackground = None
+        if self.playerBackground:
+            self.playerBackground.close()
 
     def reset(self):
         self.started = False
@@ -258,7 +256,7 @@ class PlexPlayer(xbmc.Player):
         threading.Thread(target=self._monitor, name='PLAYER:MONITOR').start()
 
     def _monitor(self):
-        with self.playerBackground.asContext():
+        with playerbackground.PlayerBackgroundContext() as self.playerBackground:
             with self.seekDelaySetting.suspend():
                 with self.seekStepsSetting.suspend():
                     while not xbmc.abortRequested and not self._closed:

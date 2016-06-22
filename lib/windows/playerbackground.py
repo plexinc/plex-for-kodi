@@ -23,3 +23,21 @@ class PlayerBackground(kodigui.BaseWindow):
         self.show()
         yield
         self.doClose()
+
+
+class PlayerBackgroundContext(object):
+    def __init__(self):
+        self.window = None
+
+    def __enter__(self):
+        self.window = PlayerBackground.create()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.window.doClose()
+        del self.window
+
+    def close(self):
+        if self.window:
+            self.window.doClose()
+            del self.window
+            self.window = None

@@ -168,7 +168,7 @@ class PlexObject(object):
         try:
             data = self.server.query(self.key)
         except Exception, e:
-            util.ERROR(e)
+            util.ERROR(err=e)
             self.initpath = self.key
             return
 

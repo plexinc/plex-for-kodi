@@ -13,10 +13,9 @@ def timeDisplay(ms):
 
 
 def simplifiedTimeDisplay(ms):
-    disp = timeDisplay(ms).lstrip('0:')
-    if ':' not in disp:
-        disp = '0:' + disp
-    return disp
+    left, right = timeDisplay(ms).rsplit(':', 1)
+    left = left.lstrip('0:') or '0'
+    return left + ':' + right
 
 
 class SeekDialog(kodigui.BaseDialog):
@@ -62,6 +61,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.positionControl = self.getControl(self.POSITION_IMAGE_ID)
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
         self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
+        self.selectionBox = self.getControl(203)
         self.initialized = True
         self.setProperties()
         self.update()
@@ -75,18 +75,19 @@ class SeekDialog(kodigui.BaseDialog):
             controlID = self.getFocusId()
             if controlID == self.MAIN_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOVE_RIGHT:
-                    self.seekForward(10000)
+                    return self.seekForward(10000)
                 elif action == xbmcgui.ACTION_MOVE_LEFT:
-                    self.seekBack(10000)
+                    return self.seekBack(10000)
                 # elif action == xbmcgui.ACTION_MOVE_UP:
                 #     self.seekForward(60000)
                 # elif action == xbmcgui.ACTION_MOVE_DOWN:
                 #     self.seekBack(60000)
                 elif action == xbmcgui.ACTION_MOUSE_MOVE:
-                    self.seekMouse(action)
-                elif action == xbmcgui.ACTION_PREVIOUS_MENU or action == xbmcgui.ACTION_NAV_BACK:
-                    self.doClose()
-                    self.handler.onSeekAborted()
+                    return self.seekMouse(action)
+
+            if action == xbmcgui.ACTION_PREVIOUS_MENU or action == xbmcgui.ACTION_NAV_BACK:
+                self.doClose()
+                self.handler.onSeekAborted()
         except:
             util.ERROR()
 
@@ -178,6 +179,12 @@ class SeekDialog(kodigui.BaseDialog):
         bifx = (w - int(ratio * 324)) + self.BAR_X
         # bifx = w
         self.selectionIndicator.setPosition(w, 896)
+        if w < 51:
+            self.selectionBox.setPosition(-50 + (50 - w), 0)
+        elif w > 1869:
+            self.selectionBox.setPosition(-100 + (1920 - w), 0)
+        else:
+            self.selectionBox.setPosition(-50, 0)
         self.setProperty('time.selection', simplifiedTimeDisplay(self.selectedOffset))
         if self.hasBif:
             self.setProperty('bif.image', self.baseURL.format(self.selectedOffset))

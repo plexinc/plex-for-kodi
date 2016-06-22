@@ -276,7 +276,7 @@ class MediaDecisionEngine(object):
             return False
 
         if choice.videoStream is None:
-            util.ERROR("MDE: No video stream")
+            util.ERROR_LOG("MDE: No video stream")
             return True
 
         if not settings.getGlobal("supports1080p60"):
@@ -327,7 +327,7 @@ class MediaDecisionEngine(object):
             # TODO(schuyler): We've reported this to Roku, they may fix it. If/when
             # they do, we should move this behind a firmware version check.
             if container == "mkv" and choice.videoStream.headerStripping.asBool() and audioCodec == "ac3":
-                util.ERROR("MDE: Header stripping with AC3 audio")
+                util.ERROR_LOG("MDE: Header stripping with AC3 audio")
                 return False
 
             # Those were our problems, everything else should be OK.

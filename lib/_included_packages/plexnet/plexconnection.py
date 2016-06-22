@@ -140,7 +140,7 @@ class PlexConnection(object):
                 self.state = self.STATE_REACHABLE
             else:
                 # This is unexpected, but treat it as unreachable
-                util.ERROR("Unable to parse root response from {0}".format(context.server))
+                util.ERROR_LOG("Unable to parse root response from {0}".format(context.server))
                 self.state = self.STATE_UNREACHABLE
         elif response.getStatus() == 401:
             self.state = self.STATE_UNAUTHORIZED

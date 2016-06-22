@@ -56,11 +56,11 @@ def LOG(msg):
 
 
 def DEBUG_LOG(msg):
-    plexapp.INTERFACE.LOG(msg)
+    plexapp.INTERFACE.DEBUG_LOG(msg)
 
 
 def ERROR_LOG(msg):
-    plexapp.INTERFACE.DEBUG_LOG(msg)
+    plexapp.INTERFACE.ERROR_LOG(msg)
 
 
 def WARN_LOG(msg):

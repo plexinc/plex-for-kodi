@@ -106,6 +106,9 @@ class PlexInterface(plexapp.AppInterface):
     def WARN_LOG(self, msg):
         self.LOG('WARNING: {0}'.format(msg))
 
+    def ERROR_LOG(self, msg):
+        self.LOG('ERROR: {0}'.format(msg))
+
     def ERROR(self, msg=None, err=None):
         if err:
             self.LOG('ERROR: {0} - {1}'.format(msg, err.message))

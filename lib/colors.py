@@ -74,6 +74,6 @@ noAlpha = _noAlpha()
 #         color = COLORS[color]
 
 #     if isinstance(color, int):
-#         util.ERROR(str(color) + " is not found in object")
+#         util.ERROR_LOG(str(color) + " is not found in object")
 
 #     return color and int((percent / 100 * 255) - 256)

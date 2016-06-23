@@ -52,6 +52,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.duration = 0
         self.offset = 0
         self.selectedOffset = 0
+        self.bigSeekOffset = 0
         self.title = ''
         self.title2 = ''
         self.fromSeek = False
@@ -85,10 +86,17 @@ class SeekDialog(kodigui.BaseDialog):
                     return self.seekForward(10000)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
                     return self.seekBack(10000)
+                elif action == xbmcgui.ACTION_MOVE_DOWN:
+                    self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:
                 #     self.seekForward(60000)
                 # elif action == xbmcgui.ACTION_MOVE_DOWN:
                 #     self.seekBack(60000)
+            elif controlID == 500:
+                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
+                    return self.updateBigSeek()
+                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
+                    return self.updateBigSeek()
 
             if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
                 self.doClose()
@@ -103,16 +111,36 @@ class SeekDialog(kodigui.BaseDialog):
         if controlID == self.MAIN_BUTTON_ID:
             self.selectedOffset = self.trueOffset()
             self.updateProgress()
+        elif controlID == 500:
+            self.setBigSeekShift()
+            self.updateBigSeek()
 
     def onClick(self, controlID):
         if controlID == self.MAIN_BUTTON_ID:
             self.handler.seek(self.selectedOffset)
             self.doClose()
         elif controlID == 500:
-            self.setFocusId(self.MAIN_BUTTON_ID)
-            xbmc.sleep(100)
-            self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource
-            self.updateProgress()
+            self.bigSeekSelected()
+
+    def setBigSeekShift(self):
+        for mli in self.bigSeekControl:
+            if mli.dataSource > self.selectedOffset:
+                break
+            closest = mli
+        self.bigSeekOffset = self.selectedOffset - closest.dataSource
+        pxOffset = int(self.bigSeekOffset / float(self.duration) * 1920)
+        self.bigSeekControl.setPosition(-8 + pxOffset, 937)
+        self.bigSeekControl.selectItem(closest.pos())
+        xbmc.sleep(100)
+
+    def updateBigSeek(self):
+        self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
+        self.updateProgress()
+
+    def bigSeekSelected(self):
+        self.setFocusId(self.MAIN_BUTTON_ID)
+        xbmc.sleep(100)
+        self.updateBigSeek()
 
     def setProperties(self):
         if self.fromSeek:
@@ -127,12 +155,10 @@ class SeekDialog(kodigui.BaseDialog):
         self.updateCurrent()
 
         div = int(self.duration / 12)
-        shift = div / 2
         items = []
         for x in range(12):
-            offset = (div * x) + shift
-            url = self.baseURL.format(offset)
-            items.append(kodigui.ManagedListItem(thumbnailImage=url, data_source=offset))
+            offset = div * x
+            items.append(kodigui.ManagedListItem(data_source=offset))
         self.bigSeekControl.reset()
         self.bigSeekControl.addItems(items)
 

@@ -1,5 +1,6 @@
 import re
 import time
+import xbmc
 import xbmcgui
 import kodigui
 from lib import util
@@ -65,6 +66,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
         self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
         self.selectionBox = self.getControl(203)
+        self.bigSeekControl = kodigui.ManagedControlList(self, 500, 12)
         self.initialized = True
         self.setProperties()
         self.update()
@@ -75,7 +77,6 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onAction(self, action):
         try:
-            util.TEST(action.getId())
             controlID = self.getFocusId()
             if controlID == self.MAIN_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
@@ -107,6 +108,11 @@ class SeekDialog(kodigui.BaseDialog):
         if controlID == self.MAIN_BUTTON_ID:
             self.handler.seek(self.selectedOffset)
             self.doClose()
+        elif controlID == 500:
+            self.setFocusId(self.MAIN_BUTTON_ID)
+            xbmc.sleep(100)
+            self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource
+            self.updateProgress()
 
     def setProperties(self):
         if self.fromSeek:
@@ -119,6 +125,16 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('video.title2', self.title2)
         self.setProperty('time.duration', timeDisplay(self.duration))
         self.updateCurrent()
+
+        div = int(self.duration / 12)
+        shift = div / 2
+        items = []
+        for x in range(12):
+            offset = (div * x) + shift
+            url = self.baseURL.format(offset)
+            items.append(kodigui.ManagedListItem(thumbnailImage=url, data_source=offset))
+        self.bigSeekControl.reset()
+        self.bigSeekControl.addItems(items)
 
     def updateCurrent(self):
         ratio = self.trueOffset() / float(self.duration)

@@ -10,10 +10,12 @@ class MediaChoice(object):
 
     def __init__(self, media=None, partIndex=0):
         self.media = media
+        self.part = None
         self.isDirectPlayable = False
         self.videoStream = None
         self.audioStream = None
         self.subtitleStream = None
+        self.isSelected = False
         self.subtitleDecision = self.SUBTITLES_DEFAULT
 
         self.sorts = util.AttributeDict()

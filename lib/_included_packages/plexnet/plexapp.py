@@ -205,6 +205,31 @@ class AppInterface(object):
         return 0
 
 
+class PlayerSettingsInterface(object):
+    def __init__(self):
+        self.prefOverrides = {}
+
+    def __getattr__(self, name):
+        return getattr(INTERFACE, name)
+
+    def setPrefOverride(self, key, val):
+        self.prefOverrides[key] = val
+
+    def getQualityIndex(self, qualityType):
+        if qualityType == INTERFACE.QUALITY_LOCAL:
+            return self.getPreference("local_quality", 0)
+        elif qualityType == INTERFACE.QUALITY_ONLINE:
+            return self.getPreference("online_quality", 0)
+        else:
+            return self.getPreference("remote_quality", 0)
+
+    def getPreference(self, key, default=None):
+        if key in self.prefOverrides:
+            return self.prefOverrides[key]
+        else:
+            return INTERFACE.getPreference(key, default)
+
+
 class DumbInterface(AppInterface):
     _prefs = {}
     _regs = {

@@ -26,11 +26,12 @@ class PlayerBackground(kodigui.BaseWindow):
 
 
 class PlayerBackgroundContext(object):
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
         self.window = None
 
     def __enter__(self):
-        self.window = PlayerBackground.create()
+        self.window = PlayerBackground.create(**self.kwargs)
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.window.doClose()

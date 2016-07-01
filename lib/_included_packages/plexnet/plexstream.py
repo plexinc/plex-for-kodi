@@ -134,7 +134,7 @@ class PlexStream(plexobjects.PlexObject):
 
 class NoneStream(PlexStream):
     def __init__(self, *args, **kwargs):
-        PlexStream.__init__(self, *args, **kwargs)
+        PlexStream.__init__(self, None, *args, **kwargs)
         self.id = plexobjects.PlexValue("0")
         self.streamType = plexobjects.PlexValue(str(self.TYPE_SUBTITLE))
 

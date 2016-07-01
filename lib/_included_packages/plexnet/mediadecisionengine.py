@@ -34,7 +34,7 @@ class MediaDecisionEngine(object):
         # If we find an indirect, we only keep a single candidate.
         indirect = False
         candidates = []
-        maxResolution = plexapp.INTERFACE.getMaxResolution(item.getQualityType())
+        maxResolution = item.settings.getMaxResolution(item.getQualityType())
         for mediaIndex in range(len(item.media())):
             media = item.media()[mediaIndex]
             media.mediaIndex = mediaIndex
@@ -101,7 +101,6 @@ class MediaDecisionEngine(object):
             util.LOG("Resolve indirect media for {0}".format(item))
             media = media.resolveIndirect()
 
-        settings = plexapp.INTERFACE
         choice = mediachoice.MediaChoice(media, partIndex)
         server = item.getServer()
 
@@ -111,8 +110,8 @@ class MediaDecisionEngine(object):
         choice.isSelected = media.isSelected()
         choice.protocol = media.protocol("http")
 
-        maxResolution = settings.getMaxResolution(item.getQualityType(), self.isSupported4k(media, choice.videoStream))
-        maxBitrate = settings.getMaxBitrate(item.getQualityType())
+        maxResolution = item.settings.getMaxResolution(item.getQualityType(), self.isSupported4k(media, choice.videoStream))
+        maxBitrate = item.settings.getMaxBitrate(item.getQualityType())
 
         choice.resolution = media.getVideoResolution()
         if choice.resolution > maxResolution or media.bitrate.asInt() > maxBitrate:
@@ -159,9 +158,9 @@ class MediaDecisionEngine(object):
                 numVideoStreams = numVideoStreams + 1
 
                 if stream.codec == "h264" or (
-                    stream.codec == "hevc" and settings.getGlobal("hevcSupport")
+                    stream.codec == "hevc" and item.settings.getGlobal("hevcSupport")
                 ) or (
-                    stream.codec == "vp9" and settings.getGlobal("vp9Support")
+                    stream.codec == "vp9" and item.settings.getGlobal("vp9Support")
                 ):
                     choice.sorts.videoDS = 1
             elif streamType == stream.TYPE_AUDIO:
@@ -183,7 +182,7 @@ class MediaDecisionEngine(object):
                 if audioLanguage == stream.languageCode:
                     numChannels = stream.channels.asInt()
 
-                    if settings.supportsAudioStream(stream.codec, numChannels):
+                    if item.settings.supportsAudioStream(stream.codec, numChannels):
                         if stream.isSelected():
                             audioStreamCompatible = True
                         if numChannels > audioLanguageChannelsSeen:
@@ -259,17 +258,15 @@ class MediaDecisionEngine(object):
         return choice
 
     def canDirectPlay(self, item, choice):
-        settings = plexapp.INTERFACE
-
-        maxResolution = settings.getMaxResolution(item.getQualityType(), self.isSupported4k(choice.media, choice.videoStream))
+        maxResolution = item.settings.getMaxResolution(item.getQualityType(), self.isSupported4k(choice.media, choice.videoStream))
         height = choice.media.getVideoResolution()
         if height > maxResolution:
             util.LOG("MDE: Video height is greater than max allowed: {0} > {1}".format(height, maxResolution))
-            if height > 1088 and settings.GetGlobal("supports4k"):
+            if height > 1088 and item.settings.GetGlobal("supports4k"):
                 util.LOG("MDE: Unsupported 4k media")
             return False
 
-        maxBitrate = settings.getMaxBitrate(item.getQualityType())
+        maxBitrate = item.settings.getMaxBitrate(item.getQualityType())
         bitrate = choice.media.bitrate.asInt()
         if bitrate > maxBitrate:
             util.LOG("MDE: Video bitrate is greater than the allowed max: {0} > {1}".format(bitrate, maxBitrate))
@@ -279,7 +276,7 @@ class MediaDecisionEngine(object):
             util.ERROR_LOG("MDE: No video stream")
             return True
 
-        if not settings.getGlobal("supports1080p60"):
+        if not item.settings.getGlobal("supports1080p60"):
             videoFrameRate = choice.videoStream.asInt()
             if videoFrameRate > 30 and height >= 1080:
                 util.LOG("MDE: frame rate is not support for resolution: {0}@{1}".format(height, videoFrameRate))
@@ -301,8 +298,8 @@ class MediaDecisionEngine(object):
         if container in ("mp4", "mov", "m4v", "mkv"):
             util.LOG("MDE: {0} container looks OK, checking streams".format(container))
 
-            isHEVC = videoCodec == "hevc" and settings.getGlobal("hevcSupport")
-            isVP9 = videoCodec == "vp9" and container == "mkv" and settings.getGlobal("vp9Support")
+            isHEVC = videoCodec == "hevc" and item.settings.getGlobal("hevcSupport")
+            isVP9 = videoCodec == "vp9" and container == "mkv" and item.settings.getGlobal("vp9Support")
 
             if videoCodec != "h264" and videoCodec != "mpeg4" and not isHEVC and not isVP9:
                 util.LOG("MDE: Unsupported video codec: {0}".format(videoCodec))
@@ -320,7 +317,7 @@ class MediaDecisionEngine(object):
 
             # We shouldn't have to whitelist particular audio codecs, we can just
             # check to see if the Roku can decode this codec with the number of channels.
-            if not settings.supportsAudioStream(audioCodec, numChannels):
+            if not item.settings.supportsAudioStream(audioCodec, numChannels):
                 util.LOG("MDE: Unsupported audio track: {0} ({1} channels)".format(audioCodec, numChannels))
                 return False
 
@@ -439,7 +436,7 @@ class MediaDecisionEngine(object):
         # Verify the codec and container are compatible
         codec = media.audioCodec
         container = media.container
-        canPlayCodec = plexapp.INTERFACE.supportsAudioStream(codec, media.audioChannels.asInt())
+        canPlayCodec = item.settings.supportsAudioStream(codec, media.audioChannels.asInt())
         canPlayContainer = (codec == container) or (container in ("mp4", "mka", "mkv"))
 
         choice.isDirectPlayable = (canPlayCodec and canPlayContainer)

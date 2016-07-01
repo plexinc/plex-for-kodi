@@ -9,6 +9,32 @@ import compat
 class Video(media.MediaItem):
     TYPE = None
 
+    def __init__(self, *args, **kwargs):
+        self._settings = None
+        media.MediaItem.__init__(self, *args, **kwargs)
+
+    @property
+    def settings(self):
+        if not self._settings:
+            import plexapp
+            self._settings = plexapp.PlayerSettingsInterface()
+
+        return self._settings
+
+    def selectedAudioStream(self):
+        if self.audioStreams:
+            for stream in self.audioStreams:
+                if stream.isSelected():
+                    return stream
+        return None
+
+    def selectedSubtitleStream(self):
+        if self.subtitleStreams:
+            for stream in self.subtitleStreams:
+                if stream.isSelected():
+                    return stream
+        return None
+
     def isVideoItem(self):
         return True
 

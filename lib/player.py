@@ -2,6 +2,7 @@ import threading
 import xbmc
 import xbmcgui
 import kodijsonrpc
+import colors
 from windows import seekdialog, playerbackground
 import util
 from plexnet import plexplayer
@@ -224,7 +225,7 @@ class PlexPlayer(xbmc.Player):
             return
 
         if self.handler.onPlayBackFailed():
-            xbmcgui.Dialog.ok('Failed', 'Playback failed')
+            xbmcgui.Dialog().ok('Failed', 'Playback failed')
 
     def onVideoWindowOpened(self):
         util.DEBUG_LOG('Player: Video window opened')
@@ -258,7 +259,9 @@ class PlexPlayer(xbmc.Player):
         threading.Thread(target=self._monitor, name='PLAYER:MONITOR').start()
 
     def _monitor(self):
-        with playerbackground.PlayerBackgroundContext() as self.playerBackground:
+        with playerbackground.PlayerBackgroundContext(
+            background=self.video.art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
+        ) as self.playerBackground:
             with self.seekDelaySetting.suspend():
                 with self.seekStepsSetting.suspend():
                     while not xbmc.abortRequested and not self._closed:

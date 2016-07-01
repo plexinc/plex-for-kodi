@@ -3,6 +3,7 @@ import time
 import xbmc
 import xbmcgui
 import kodigui
+import playersettings
 from lib import util
 
 
@@ -34,6 +35,7 @@ class SeekDialog(kodigui.BaseDialog):
     BIF_IMAGE_ID = 300
     SEEK_IMAGE_WIDTH = 1920
 
+    SETTINGS_BUTTON_ID = 403
     SKIP_BACK_BUTTON_ID = 405
     SKIP_FORWARD_BUTTON_ID = 408
 
@@ -45,6 +47,9 @@ class SeekDialog(kodigui.BaseDialog):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.handler = kwargs.get('handler')
+        self.initialVideoSettings = {}
+        self.initialAudioStream = None
+        self.initialSubtitleStream = None
         self.bifURL = None
         self.baseURL = None
         self.hasBif = bool(self.bifURL)
@@ -58,6 +63,10 @@ class SeekDialog(kodigui.BaseDialog):
         self.fromSeek = False
         self.initialized = False
 
+    @property
+    def player(self):
+        return self.handler.player
+
     def trueOffset(self):
         return self.baseOffset + self.offset
 
@@ -70,10 +79,12 @@ class SeekDialog(kodigui.BaseDialog):
         self.bigSeekControl = kodigui.ManagedControlList(self, 500, 12)
         self.initialized = True
         self.setProperties()
+        self.videoSettingsHaveChanged()
         self.update()
 
     def onReInit(self):
         self.setProperties()
+        self.videoSettingsHaveChanged()
         self.updateProgress()
 
     def onAction(self, action):
@@ -119,8 +130,29 @@ class SeekDialog(kodigui.BaseDialog):
         if controlID == self.MAIN_BUTTON_ID:
             self.handler.seek(self.selectedOffset)
             self.doClose()
+        elif controlID == self.SETTINGS_BUTTON_ID:
+            self.showSettings()
         elif controlID == 500:
             self.bigSeekSelected()
+
+    def videoSettingsHaveChanged(self):
+        if (
+            self.player.video.settings.prefOverrides != self.initialVideoSettings or
+            self.player.video.selectedAudioStream() != self.initialAudioStream or
+            self.player.video.selectedSubtitleStream() != self.initialSubtitleStream
+        ):
+            self.initialVideoSettings = dict(self.player.video.settings.prefOverrides)
+            self.initialAudioStream = self.player.video.selectedAudioStream()
+            self.initialSubtitleStream = self.player.video.selectedSubtitleStream()
+            return True
+
+        return False
+
+    def showSettings(self):
+        playersettings.showDialog(self.player.video)
+        if self.videoSettingsHaveChanged():
+            self.handler.seek(self.trueOffset())
+            self.doClose()
 
     def setBigSeekShift(self):
         for mli in self.bigSeekControl:

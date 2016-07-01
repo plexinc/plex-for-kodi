@@ -1,5 +1,4 @@
 import util
-import plexapp
 import captions
 import http
 import mediadecisionengine
@@ -14,8 +13,8 @@ class PlexPlayer(object):
             self.media = self.choice.media
 
     def build(self, forceTranscode=False):
-        if plexapp.INTERFACE.getPreference("playback_directplay", False):
-            directPlayPref = plexapp.INTERFACE.getPreference("playback_directplay_force", False) and 'forced' or 'allow'
+        if self.item.settings.getPreference("playback_directplay", False):
+            directPlayPref = self.item.settings.getPreference("playback_directplay_force", False) and 'forced' or 'allow'
         else:
             directPlayPref = 'disabled'
 
@@ -24,7 +23,7 @@ class PlexPlayer(object):
         else:
             directPlay = directPlayPref == "forced" and True or None
 
-        return self._build(directPlay, plexapp.INTERFACE.getPreference("playback_remux", False))
+        return self._build(directPlay, self.item.settings.getPreference("playback_remux", False))
 
     def _build(self, directPlay=None, directStream=True, currentPartIndex=None):
         isForced = directPlay is not None
@@ -42,7 +41,7 @@ class PlexPlayer(object):
 
         videoRes = self.media.getVideoResolution()
         obj.fullHD = videoRes >= 1080
-        obj.streamQualities = (videoRes >= 480 and plexapp.INTERFACE.getGlobal("IsHD")) and ["HD"] or ["SD"]
+        obj.streamQualities = (videoRes >= 480 and self.item.settings.getGlobal("IsHD")) and ["HD"] or ["SD"]
 
         frameRate = self.media.videoFrameRate or "24p"
         if frameRate == "24p":
@@ -129,12 +128,12 @@ class PlexPlayer(object):
 
         self.metadata = obj
 
-        util.LOG("Constructed video item for playback: {0}".format(obj))
+        util.LOG("Constructed video item for playback: {0}".format(dict(obj)))
 
         return self.metadata
 
     def buildTranscodeHls(self, obj):
-        settings = plexapp.INTERFACE
+        util.DEBUG_LOG('buildTranscodeHls()')
         obj.streamFormat = "hls"
         obj.streamBitrates = [0]
         obj.switchingStrategy = "no-adaptation"
@@ -151,14 +150,14 @@ class PlexPlayer(object):
                 builder.addParam("subtitleSize", captionSize)
 
         # Augment the server's profile for things that depend on the Roku's configuration.
-        if settings.supportsAudioStream("ac3", 6):
+        if self.item.settings.supportsAudioStream("ac3", 6):
             builder.extras.append("append-transcode-target-audio-codec(type=videoProfile&context=streaming&protocol=hls&audioCodec=ac3)")
             builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=ac3)")
 
         return builder
 
     def buildTranscodeMkv(self, obj):
-        settings = plexapp.INTERFACE
+        util.DEBUG_LOG('buildTranscodeMkv()')
         obj.streamFormat = "mkv"
         obj.streamBitrates = [0]
 
@@ -183,20 +182,20 @@ class PlexPlayer(object):
             obj.subtitleConfig = {'TrackName': "mkv/3"}
 
             # Allow text conversion of subtitles if we only burn image formats
-            if settings.getPreference("burn_subtitles") == "image":
+            if self.item.settings.getPreference("burn_subtitles") == "image":
                 builder.addParam("advancedSubtitles", "text")
 
             builder.addParam("subtitles", "auto")
 
         # Augment the server's profile for things that depend on the Roku's configuration.
-        if settings.supportsSurroundSound():
+        if self.item.settings.supportsSurroundSound():
             if self.choice.audioStream is not None:
                 numChannels = self.choice.audioStream.channels.asInt(6)
             else:
                 numChannels = 6
 
             for codec in ("ac3", "eac3", "dca"):
-                if settings.supportsAudioStream(codec, numChannels):
+                if self.item.settings.supportsAudioStream(codec, numChannels):
                     builder.extras.append("append-transcode-target-audio-codec(type=videoProfile&context=streaming&protocol=http&audioCodec=" + codec + ")")
                     builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=" + codec + ")")
                     if codec == "dca":
@@ -209,15 +208,16 @@ class PlexPlayer(object):
             builder.extras.append("add-limitation(scope=videoAudioCodec&scopeName=aac&type=lowerBound&name=audio.samplingRate&value=22050&isRequired=false)")
 
         # HEVC and VP9 support!
-        if settings.getGlobal("hevcSupport"):
+        if self.item.settings.getGlobal("hevcSupport"):
             builder.extras.append("append-transcode-target-codec(type=videoProfile&context=streaming&protocol=http&videoCodec=hevc)")
 
-        if settings.getGlobal("vp9Support"):
+        if self.item.settings.getGlobal("vp9Support"):
             builder.extras.append("append-transcode-target-codec(type=videoProfile&context=streaming&protocol=http&videoCodec=vp9)")
 
         return builder
 
     def buildDirectPlay(self, obj, partIndex):
+        util.DEBUG_LOG('buildDirectPlay()')
         part = self.media.parts[partIndex]
         server = self.item.getServer()
 
@@ -270,11 +270,11 @@ class PlexPlayer(object):
         return None
 
     def buildTranscode(self, server, obj, partIndex, directStream, isCurrentPart):
-        settings = plexapp.INTERFACE
+        util.DEBUG_LOG('buildTranscode()')
         obj.transcodeServer = server
         obj.isTranscoded = True
 
-        if server.supportsFeature("mkv_transcode") and settings.getPreference("transcode_format") == "mkv":
+        if server.supportsFeature("mkv_transcode") and self.item.settings.getPreference("transcode_format") == "mkv":
             builder = self.buildTranscodeMkv(obj)
         else:
             builder = self.buildTranscodeHls(obj)
@@ -319,14 +319,14 @@ class PlexPlayer(object):
 
             builder.addParam("offset", str(startOffset))
 
-        builder.addParam("session", settings.getGlobal("clientIdentifier"))
+        builder.addParam("session", self.item.settings.getGlobal("clientIdentifier"))
         builder.addParam("directStream", directStream and "1" or "0")
         builder.addParam("directPlay", "0")
 
-        qualityIndex = settings.getQualityIndex(self.item.getQualityType(server))
-        builder.addParam("videoQuality", settings.getGlobal("transcodeVideoQualities")[qualityIndex])
-        builder.addParam("videoResolution", str(settings.getGlobal("transcodeVideoResolutions")[qualityIndex]))
-        builder.addParam("maxVideoBitrate", settings.getGlobal("transcodeVideoBitrates")[qualityIndex])
+        qualityIndex = self.item.settings.getQualityIndex(self.item.getQualityType(server))
+        builder.addParam("videoQuality", self.item.settings.getGlobal("transcodeVideoQualities")[qualityIndex])
+        builder.addParam("videoResolution", str(self.item.settings.getGlobal("transcodeVideoResolutions")[qualityIndex]))
+        builder.addParam("maxVideoBitrate", self.item.settings.getGlobal("transcodeVideoBitrates")[qualityIndex])
 
         if self.media.mediaIndex is not None:
             builder.addParam("mediaIndex", str(self.media.mediaIndex))
@@ -334,14 +334,14 @@ class PlexPlayer(object):
         builder.addParam("partIndex", str(partIndex))
 
         # Augment the server's profile for things that depend on the Roku's configuration.
-        if settings.getPreference("h264_level", "auto") != "auto":
+        if self.item.settings.getPreference("h264_level", "auto") != "auto":
             builder.extras.append(
                 "add-limitation(scope=videoCodec&scopeName=h264&type=upperBound&name=video.level&value={0}&isRequired=true)".format(
-                    settings.getPreference("h264_level")
+                    self.item.settings.getPreference("h264_level")
                 )
             )
 
-        if not settings.getGlobal("supports1080p60") and settings.getGlobal("transcodeVideoResolutions")[qualityIndex][0] >= 1920:
+        if not self.item.settings.getGlobal("supports1080p60") and self.item.settings.getGlobal("transcodeVideoResolutions")[qualityIndex][0] >= 1920:
             builder.extras.append("add-limitation(scope=videoCodec&scopeName=h264&type=upperBound&name=video.frameRate&value=30&isRequired=false)")
 
         if builder.extras:

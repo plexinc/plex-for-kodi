@@ -4846,6 +4846,7 @@
 
 
         <control type="group" id="200">
+            <animation effect="slide" end="0,-96" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
@@ -4853,7 +4854,7 @@
             <height>135</height>
             <control type="image">
                 <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                <visible>!IsEmpty(Window.Property(off.sections)) | ControlGroup(200).HasFocus(0)</visible>
+                <visible>ControlGroup(200).HasFocus(0)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>

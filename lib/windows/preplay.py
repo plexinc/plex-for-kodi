@@ -110,25 +110,11 @@ class PrePlayWindow(kodigui.BaseWindow):
         stars = self.video.rating and str(int(round((self.video.rating.asFloat() / 10) * 5))) or None
         self.setProperty('rating', stars and stars or '')
 
-        if self.video.audioStreams:
-            for stream in self.video.audioStreams:
-                if stream.isSelected():
-                    self.setProperty('audio', stream.getTitle())
-                    break
-                else:
-                    self.setProperty('audio', 'None')
-        else:
-            self.setProperty('audio', 'None')
+        sas = self.video.selectedAudioStream()
+        self.setProperty('audio', sas and sas.getTitle() or 'None')
 
-        if self.video.subtitleStreams:
-            for stream in self.video.subtitleStreams:
-                if stream.isSelected():
-                    self.setProperty('subtitles', stream.getTitle())
-                    break
-            else:
-                self.setProperty('subtitles', 'None')
-        else:
-            self.setProperty('subtitles', 'None')
+        sss = self.video.selectedAudioStream()
+        self.setProperty('subtitles', sss and sss.getTitle() or 'None')
 
         if self.video.viewOffset.asInt():
             width = self.video.viewOffset.asInt() and (1 + int((self.video.viewOffset.asInt() / self.video.duration.asFloat()) * self.width)) or 1

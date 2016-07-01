@@ -50,6 +50,23 @@ class SeekPlayerHandler(object):
             self.dialog.doClose()
 
     def onPlayBackStarted(self):
+        subs = self.player.video.selectedSubtitleStream()
+        if subs:
+            xbmc.sleep(100)
+            self.player.showSubtitles(False)
+            path = subs.getSubtitleServerPath()
+            if path:
+                util.DEBUG_LOG('Setting subtitle path: {0}'.format(path))
+                self.player.setSubtitles(path)
+            else:
+                util.TEST(subs.__dict__)
+                util.TEST(self.player.video.mediaChoice.__dict__)
+                util.DEBUG_LOG('Enabling embedded subtitles at: {0}'.format(subs.index))
+                util.DEBUG_LOG('Kodi reported subtitles: {0}'.format(self.player.getAvailableSubtitleStreams()))
+                self.player.setSubtitleStream(0)
+
+            self.player.showSubtitles(True)
+
         self.seeking = self.NO_SEEK
 
     def onPlayBackPaused(self):

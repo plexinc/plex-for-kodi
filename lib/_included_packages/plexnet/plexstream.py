@@ -109,6 +109,12 @@ class PlexStream(plexobjects.PlexObject):
 
         return self.key + query
 
+    def getSubtitleServerPath(self):
+        if not self.key:
+            return None
+
+        return self.getServer().buildUrl(self.getSubtitlePath(), True)
+
     def isSelected(self):
         return self.selected.asInt() == 1
 

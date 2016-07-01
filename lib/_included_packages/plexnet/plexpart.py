@@ -92,7 +92,7 @@ class PlexPart(plexobjects.PlexObject):
         default = None
 
         for stream in self.streams:
-            if stream.streamType.asInt == streamType:
+            if stream.streamType.asInt() == streamType:
                 if stream.isSelected():
                     return stream
                 elif default is None and streamType != stream.TYPE_SUBTITLE:

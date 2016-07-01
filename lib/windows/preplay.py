@@ -113,7 +113,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         sas = self.video.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')
 
-        sss = self.video.selectedAudioStream()
+        sss = self.video.selectedSubtitleStream()
         self.setProperty('subtitles', sss and sss.getTitle() or 'None')
 
         if self.video.viewOffset.asInt():

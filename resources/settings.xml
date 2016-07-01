@@ -10,6 +10,7 @@
     <setting id="playback_directplay" type="bool" label="32025" default="false" />
     <setting id="playback_directplay_force" type="bool" label="32027" default="false" enable="eq(-1,true)" subsetting="true" />
     <setting id="playback_remux" type="bool" label="32026" default="false" />
+    <setting id="burn_subtitles" label="Burn Subtitles" type="labelenum" values="auto|always|disable" default="0" />
     <setting id="debug" type="bool" label="32024" default="true" />
   </category>
 

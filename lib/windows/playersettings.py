@@ -1,7 +1,7 @@
 import xbmc
 import xbmcgui
 from lib.util import T
-from plexnet import plexstream
+import plexnet
 
 
 def showAudioDialog(video):
@@ -10,16 +10,17 @@ def showAudioDialog(video):
     if idx < 0:
         return
 
-    video.mediaChoice.part.setSelectedStream(plexstream.PlexStream.TYPE_AUDIO, video.audioStreams[idx].id, True)
+    video.selectStream(video.audioStreams[idx])
 
 
 def showSubtitlesDialog(video):
-    options = [s.getTitle() for s in video.subtitleStreams]
-    idx = xbmcgui.Dialog().select('Select Subtitle Stream', options)
+    options = [(s, s.getTitle()) for s in video.subtitleStreams]
+    options.insert(0, (plexnet.plexstream.NoneStream(), 'None'))
+    idx = xbmcgui.Dialog().select('Select Subtitle Stream', [o[1] for o in options])
     if idx < 0:
         return
 
-    video.mediaChoice.part.setSelectedStream(plexstream.PlexStream.TYPE_SUBTITLE, video.subtitleStreams[idx].id, True)
+    video.selectStream(options[idx][0])
 
 
 def showQualityDialog(video):
@@ -41,7 +42,11 @@ def showDialog(video):
         options = [
             ('audio', 'Audio: {0}'.format(sas and sas.getTitle() or 'None')),
             ('subs', 'Subtitles: {0}'.format(sss and sss.getTitle() or 'None')),
-            ('quality', 'Quality')
+            ('quality', 'Quality: {0} {1} ({2})'.format(
+                plexnet.util.bitrateToString(video.mediaChoice.media.bitrate.asInt() * 1000),
+                video.mediaChoice.media.getVideoResolutionString(),
+                video.mediaChoice.media.title
+            ))
         ]
 
         idx = xbmcgui.Dialog().select('Select Quality', [o[1] for o in options])

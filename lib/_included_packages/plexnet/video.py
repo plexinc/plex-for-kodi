@@ -35,6 +35,9 @@ class Video(media.MediaItem):
                     return stream
         return None
 
+    def selectStream(self, stream, async=True):
+        self.mediaChoice.part.setSelectedStream(stream.streamType.asInt(), stream.id, async)
+
     def isVideoItem(self):
         return True
 

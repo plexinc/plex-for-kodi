@@ -73,6 +73,7 @@ class Captions(object):
         return self.burnedSize.get(value) or self.defaults.burnedSize
 
     def getOption(self, key):
-        return self.deviceInfo.getCaptionsOption(key).lower().replace(' ', '')
+        opt = self.deviceInfo.getCaptionsOption(key)
+        return opt is not None and opt.lower().replace(' ', '') or None
 
 CAPTIONS = Captions()

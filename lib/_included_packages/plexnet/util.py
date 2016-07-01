@@ -139,14 +139,12 @@ def bitrateToString(bits):
     if not bits:
         return ''
 
-    speed = int(round(bits / 1000 / 100)) / 10
+    speed = bits / 1000000.0
     if speed < 1:
-        speed = int(round(bits / 1000))
-        format_ = "Kbps"
+        speed = int(round(bits / 1000.0))
+        return '{0} Kbps'.format(speed)
     else:
-        format_ = "Mbps"
-
-    return "{0} {1}".format(speed, format_)
+        return '{0:.1f} Mbps'.format(speed)
 
 
 class Res(tuple):

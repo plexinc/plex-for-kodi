@@ -83,7 +83,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         self.uuid = data.attrib.get('clientIdentifier')
         self.name = data.attrib.get('name')
         self.platform = data.attrib.get('platform')
-        self.versionNorm = verlib.suggest_normalized_version(data.attrib.get('productVersion'))
+        self.versionNorm = util.normalizedVersion(data.attrib.get('productVersion'))
 
     def __eq__(self, other):
         if not other:
@@ -97,7 +97,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         return not self.__eq__(other)
 
     def __str__(self):
-        return "<PlexServer {0} owned: {1} uuid: {2}>".format(self.name, self.owned, self.uuid)
+        return "<PlexServer {0} owned: {1} uuid: {2} version: {3}>".format(self.name, self.owned, self.uuid, self.versionNorm)
 
     def __repr__(self):
         return self.__str__()
@@ -235,7 +235,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         # TODO(schuyler): Process transcoder qualities
 
         if data.attrib.get('version'):
-            self.versionNorm = verlib.suggest_normalized_version('.'.join(data.attrib.get('version', '').split('.', 4)[:4]))
+            self.versionNorm = util.normalizedVersion(data.attrib.get('version'))
 
         if verlib.suggest_normalized_version('0.9.11.11') <= self.versionNorm:
             self.features["mkv_transcode"] = True

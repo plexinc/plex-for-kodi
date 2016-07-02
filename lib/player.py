@@ -63,7 +63,7 @@ class SeekPlayerHandler(object):
                 util.TEST(self.player.video.mediaChoice.__dict__)
                 util.DEBUG_LOG('Enabling embedded subtitles at: {0}'.format(subs.index))
                 util.DEBUG_LOG('Kodi reported subtitles: {0}'.format(self.player.getAvailableSubtitleStreams()))
-                self.player.setSubtitleStream(0)
+                self.player.setSubtitleStream(subs.index.asInt())
 
             self.player.showSubtitles(True)
 

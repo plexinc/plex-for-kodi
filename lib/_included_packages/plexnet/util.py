@@ -3,6 +3,7 @@ import time
 import platform
 import uuid
 
+import verlib
 import compat
 import plexapp
 
@@ -145,6 +146,11 @@ def bitrateToString(bits):
         return '{0} Kbps'.format(speed)
     else:
         return '{0:.1f} Mbps'.format(speed)
+
+
+def normalizedVersion(ver):
+    ver = '.'.join(ver.split('.')[:4]).rsplit('-', 1)[0]  # Clean the version i.e. Turn 1.2.3.4-asdf8 into 1.2.3.4
+    return verlib.suggest_normalized_version(ver)
 
 
 class Res(tuple):

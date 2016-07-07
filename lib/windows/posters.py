@@ -210,7 +210,10 @@ class PostersWindow(kodigui.BaseWindow):
         return mli, titleSort
 
     def setTitle(self):
-        self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
+        if self.section.TYPE == 'artist':
+            self.setProperty('screen.title', 'MUSIC')
+        else:
+            self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
 
     def fillShows(self):
         items = []

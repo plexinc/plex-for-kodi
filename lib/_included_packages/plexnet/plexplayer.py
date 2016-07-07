@@ -219,6 +219,7 @@ class PlexPlayer(object):
     def buildDirectPlay(self, obj, partIndex):
         util.DEBUG_LOG('buildDirectPlay()')
         part = self.media.parts[partIndex]
+
         server = self.item.getServer()
 
         # Check if we should include our token or not for this request

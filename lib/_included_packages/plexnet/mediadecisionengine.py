@@ -281,7 +281,7 @@ class MediaDecisionEngine(object):
                 util.LOG("MDE: frame rate is not support for resolution: {0}@{1}".format(height, videoFrameRate))
                 return False
 
-        container = choice.media.container
+        container = choice.media.get('container')
         videoCodec = choice.videoStream.codec
         if choice.audioStream is None:
             audioCodec = None
@@ -294,7 +294,7 @@ class MediaDecisionEngine(object):
         #  All Models: H.264/AVC  (MKV, MP4, MOV),
         # Roku 4 only: H.265/HEVC (MKV, MP4, MOV); VP9 (.MKV)
 
-        if container in ("mp4", "mov", "m4v", "mkv"):
+        if True:  # container in ("mp4", "mov", "m4v", "mkv"):
             util.LOG("MDE: {0} container looks OK, checking streams".format(container))
 
             isHEVC = videoCodec == "hevc" and item.settings.getGlobal("hevcSupport")
@@ -310,7 +310,7 @@ class MediaDecisionEngine(object):
                 return False
 
             # HEVC supports a bitDepth of 10, otherwise 8 is the limit
-            if choice.videoStream.GetInt("bitDepth") > (isHEVC and 10 or 8):
+            if choice.videoStream.bitDepth.asInt() > (isHEVC and 10 or 8):
                 util.LOG("MDE: Bit depth too high: {0}".format(choice.videoStream.bitDepth))
                 return False
 
@@ -434,7 +434,7 @@ class MediaDecisionEngine(object):
 
         # Verify the codec and container are compatible
         codec = media.audioCodec
-        container = media.container
+        container = media.get('container')
         canPlayCodec = item.settings.supportsAudioStream(codec, media.audioChannels.asInt())
         canPlayContainer = (codec == container) or True  # (container in ("mp4", "mka", "mkv"))
 
@@ -482,9 +482,9 @@ class MediaDecisionEngine(object):
             return False
 
         # Roku 4 only: H.265/HEVC (MKV, MP4, MOV); VP9 (.MKV)
-        if media.container in ("mp4", "mov", "m4v", "mkv"):
+        if media.get('container') in ("mp4", "mov", "m4v", "mkv"):
             isHEVC = (videoStream.codec == "hevc" and plexapp.INTERFACE.getGlobal("hevcSupport"))
-            isVP9 = (videoStream.codec == "vp9" and media.container == "mkv" and plexapp.INTERFACE.getGlobal("vp9Support"))
+            isVP9 = (videoStream.codec == "vp9" and media.get('container') == "mkv" and plexapp.INTERFACE.getGlobal("vp9Support"))
             return (isHEVC or isVP9)
 
         return False

@@ -6,7 +6,7 @@ import util
 
 class PlexPart(plexobjects.PlexObject):
     def reload(self):
-        self.key = self.initpath
+        self.initpath = self.key
 
     def __init__(self, data, initpath=None, server=None, media=None):
         plexobjects.PlexObject.__init__(self, data, initpath, server)

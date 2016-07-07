@@ -149,6 +149,9 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         return ElementTree.fromstring(data) if data else None
 
     def getImageTranscodeURL(self, path, width, height, **extraOpts):
+        if not path:
+            return ''
+
         # Build up our parameters
         params = "&width={0}&height={1}".format(width, height)
 

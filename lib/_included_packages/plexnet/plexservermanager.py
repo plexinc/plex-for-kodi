@@ -296,7 +296,12 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         if not jstring:
             return
 
-        obj = json.loads(jstring)
+        try:
+            obj = json.loads(jstring)
+        except:
+            util.ERROR()
+            obj = None
+
         if not obj:
             util.ERROR_LOG("Failed to parse PlexServerManager JSON")
             return
@@ -316,7 +321,8 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             for i in range(len(serverObj.get('connections', []))):
                 conn = serverObj['connections'][i]
                 isFallback = hasSecureConn and conn['address'][:5] != "https"
-                connection = plexconnection.PlexConnection(conn['sources'], conn['address'], conn['isLocal'], conn['token'], isFallback)
+                sources = plexconnection.PlexConnection.SOURCE_BY_VAL[conn['sources']]
+                connection = plexconnection.PlexConnection(sources, conn['address'], conn['isLocal'], conn['token'], isFallback)
 
                 # Keep the secure connection on top
                 if connection.isSecure:

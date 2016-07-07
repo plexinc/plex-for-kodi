@@ -11,11 +11,8 @@ class ConnectionSource(int):
         self.name = name
         return self
 
-    def __str__(self):
-        return self.name
-
     def __repr__(self):
-        return self.__str__()
+        return self.name
 
 
 class PlexConnection(object):
@@ -26,13 +23,27 @@ class PlexConnection(object):
     STATE_UNAUTHORIZED = "unauthorized"
     STATE_INSECURE = "insecure_untested"
 
-    SOURCE_MANUAL = ConnectionSource(1).init('SOURCE_MANUAL')
-    SOURCE_DISCOVERED = ConnectionSource(2).init('SOURCE_DISCOVERED')
-    SOURCE_MYPLEX = ConnectionSource(4).init('SOURCE_MYPLEX')
+    SOURCE_MANUAL = ConnectionSource(1).init('MANUAL')
+    SOURCE_DISCOVERED = ConnectionSource(2).init('DISCOVERED')
+    SOURCE_MANUAL_AND_DISCOVERED = ConnectionSource(3).init('MANUAL, DISCOVERED')
+    SOURCE_MYPLEX = ConnectionSource(4).init('MYPLEX')
+    SOURCE_MANUAL_AND_MYPLEX = ConnectionSource(5).init('MANUAL, MYPLEX')
+    SOURCE_DISCOVERED_AND_MYPLEX = ConnectionSource(6).init('DISCOVERED, MYPLEX')
+    SOURCE_ALL = ConnectionSource(7).init('ALL')
 
     SCORE_REACHABLE = 4
     SCORE_LOCAL = 2
     SCORE_SECURE = 1
+
+    SOURCE_BY_VAL = {
+        1: SOURCE_MANUAL,
+        2: SOURCE_DISCOVERED,
+        3: SOURCE_MANUAL_AND_DISCOVERED,
+        4: SOURCE_MYPLEX,
+        5: SOURCE_MANUAL_AND_MYPLEX,
+        6: SOURCE_DISCOVERED_AND_MYPLEX,
+        7: SOURCE_ALL
+    }
 
     def __init__(self, source, address, isLocal, token, isFallback=False):
         self.state = self.STATE_UNKNOWN
@@ -66,7 +77,7 @@ class PlexConnection(object):
             self.address,
             self.isLocal,
             util.hideToken(self.token),
-            self.sources,
+            repr(self.sources),
             self.state
         )
 
@@ -82,8 +93,8 @@ class PlexConnection(object):
             self.token = self.token or other.token
 
         self.address = other.address
-        self.sources = self.sources or other.sources
-        self.isLocal = self.isLocal or other.isLocal
+        self.sources = self.SOURCE_BY_VAL[self.sources | other.sources]
+        self.isLocal = self.isLocal | other.isLocal
         self.isSecure = other.isSecure
         self.isFallback = self.isFallback or other.isFallback
         self.refreshed = True

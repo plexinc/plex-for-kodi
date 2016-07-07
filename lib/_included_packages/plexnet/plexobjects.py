@@ -32,7 +32,7 @@ class PlexValue(unicode):
         return self
 
     def __call__(self, default):
-        return not self.NA and self or default
+        return not self.NA and self or PlexValue(default, self.parent)
 
     def asBool(self):
         return self == '1'
@@ -160,7 +160,7 @@ class PlexObject(object):
 
     @property
     def defaultThumb(self):
-        return self.thumb
+        return self.__dict__.get('thumb') and self.thumb or PlexValue('', self)
 
     def refresh(self):
         import requests

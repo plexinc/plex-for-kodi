@@ -27,11 +27,11 @@
         </control>
 
         <control type="grouplist" id="50">
-            <animation effect="slide" end="0,-96" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections))">Conditional</animation>
+            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections))">Conditional</animation>
 
             <!-- 501 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),500) + Control.IsVisible(500)" reversible="true">
-                <effect type="slide" end="0,-384" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-345" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 502 Focus animation -->
@@ -4846,7 +4846,7 @@
 
 
         <control type="group" id="200">
-            <animation effect="slide" end="0,-96" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
+            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
@@ -4884,6 +4884,53 @@
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
                 <label>[UPPERCASE]Discovery[/UPPERCASE]</label>
+            </control>
+            <control type="group">
+                <visible>Player.HasAudio</visible>
+                <posx>438</posx>
+                <posy>0</posy>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>48</posy>
+                    <width>42</width>
+                    <height>42</height>
+                    <texture>$INFO[Player.Art(thumb)]</texture>
+                </control>
+                <control type="label">
+                    <posx>53</posx>
+                    <posy>48</posy>
+                    <width>200</width>
+                    <height>20</height>
+                    <font>font10</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <info>MusicPlayer.Artist</info>
+                </control>
+                <control type="label">
+                    <posx>53</posx>
+                    <posy>72</posy>
+                    <width>200</width>
+                    <height>20</height>
+                    <font>font10</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <info>MusicPlayer.Title</info>
+                </control>
+                <control type="progress">
+                    <description>Progressbar</description>
+                    <posx>0</posx>
+                    <posy>102</posy>
+                    <width>200</width>
+                    <height>1</height>
+                    <texturebg colordiffuse="9AFFFFFF">script.plex/white-square-1px.png</texturebg>
+                    <lefttexture>-</lefttexture>
+                    <midtexture colordiffuse="FFCC7B19">script.plex/white-square-1px.png</midtexture>
+                    <righttexture>-</righttexture>
+                    <overlaytexture>-</overlaytexture>
+                    <info>Player.Progress</info>
+                </control>
             </control>
             <control type="label">
                 <right>213</right>

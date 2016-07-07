@@ -245,6 +245,8 @@ class PlexPlayer(xbmc.Player):
         util.DEBUG_LOG('Playing URL: {0}'.format(url))
         url += '&X-Plex-Platform=Chrome'
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.thumb.asTranscodedImageURL(256, 256))
+        util.TEST(track.__dict__)
+        li.setInfo('music', {'artist': str(track.grandparentTitle), 'title': str(track.title)})
         self.play(url, li)
 
     def onPlayBackStarted(self):

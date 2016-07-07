@@ -293,20 +293,19 @@
                 <texturenofocus>script.plex/white-square.png</texturenofocus>
                 <colordiffuse>A0000000</colordiffuse>
             </control>
-        </control>
-
-        <control type="progress">
-            <description>Progressbar</description>
-            <posx>0</posx>
-            <posy>942</posy>
-            <width>1920</width>
-            <height>6</height>
-            <texturebg>-</texturebg>
-            <lefttexture colordiffuse="FFCC7B19">script.plex/white-square.png</lefttexture>
-            <midtexture>-</midtexture>
-            <righttexture>-</righttexture>
-            <overlaytexture>-</overlaytexture>
-            <info>Player.Progress</info>
+            <control type="progress">
+                <description>Progressbar</description>
+                <posx>0</posx>
+                <posy>-1</posy>
+                <width>1920</width>
+                <height>6</height>
+                <texturebg>-</texturebg>
+                <lefttexture>-</lefttexture>
+                <midtexture colordiffuse="FFCC7B19">script.plex/white-square-6px.png</midtexture>
+                <righttexture>-</righttexture>
+                <overlaytexture>-</overlaytexture>
+                <info>Player.Progress</info>
+            </control>
         </control>
 
         <control type="slider">
@@ -315,8 +314,8 @@
             <width>1920</width>
             <height>6</height>
             <visible>true</visible>
-            <texturesliderbar colordiffuse="FFE5A00D">script.plex/white-square.png</texturesliderbar>
-            <textureslidernib>-</textureslidernib>
+            <texturesliderbar>-</texturesliderbar>
+            <textureslidernib colordiffuse="FFE5A00D">script.plex/white-square-6px.png</textureslidernib>
             <textureslidernibfocus>-</textureslidernibfocus>
             <action>seek</action>
         </control>

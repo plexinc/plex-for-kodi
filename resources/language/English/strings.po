@@ -104,3 +104,35 @@ msgstr ""
 msgctxt "#32027"
 msgid "Force"
 msgstr ""
+
+msgctxt "#32028"
+msgid "Always"
+msgstr ""
+
+msgctxt "#32029"
+msgid "Only image formats"
+msgstr ""
+
+msgctxt "#32030"
+msgid "Auto"
+msgstr ""
+
+msgctxt "#32031"
+msgid "Burn Subtitles"
+msgstr ""
+
+msgctxt "#32032"
+msgid "Allow insecure connections"
+msgstr ""
+
+msgctxt "#32033"
+msgid "Never"
+msgstr ""
+
+msgctxt "#32034"
+msgid "Same network"
+msgstr ""
+
+msgctxt "#32035"
+msgid "Always"
+msgstr ""

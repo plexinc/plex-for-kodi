@@ -10,6 +10,9 @@ class MediaItem(plexobjects.PlexObject):
     def isVideoItem(self):
         return False
 
+    def isMusicItem(self):
+        return False
+
     def isOnlineItem(self):
         return self.isChannelItem() or self.isMyPlexItem() or self.isVevoItem() or self.isIvaItem()
 
@@ -138,6 +141,15 @@ class MediaTag(plexobjects.PlexObject):
     def __repr__(self):
         tag = self.tag.replace(' ', '.')[0:20]
         return '<%s:%s:%s>' % (self.__class__.__name__, self.id, tag)
+
+    def __eq__(self, other):
+        if other.__class__ != self.__class__:
+            return False
+
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
 
 class Collection(MediaTag):

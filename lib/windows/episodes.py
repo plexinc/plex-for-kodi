@@ -6,6 +6,7 @@ from lib import colors
 from lib import util
 
 import preplay
+import musicplayer
 
 
 class EpisodesWindow(kodigui.BaseWindow):
@@ -16,7 +17,8 @@ class EpisodesWindow(kodigui.BaseWindow):
     width = 1920
     height = 1080
 
-    THUMB_AR16X9_DIM = (619, 348)
+    THUMB_AR16X9_DIM = (178, 100)
+    POSTER_DIM = (420, 630)
 
     EPISODE_PANEL_ID = 101
 
@@ -27,14 +29,13 @@ class EpisodesWindow(kodigui.BaseWindow):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.season = kwargs.get('season')
+        self.show = kwargs.get('show')
         self.exitCommand = None
 
     def onFirstInit(self):
         self.episodePanelControl = kodigui.ManagedControlList(self, self.EPISODE_PANEL_ID, 5)
 
-        self.setProperty(
-            'background', self.season.show().art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
-        )
+        self.setProperties()
         self.fillEpisodes()
         self.setFocusId(self.EPISODE_PANEL_ID)
 
@@ -74,9 +75,21 @@ class EpisodesWindow(kodigui.BaseWindow):
         finally:
             del w
 
+    def setProperties(self):
+        self.setProperty(
+            'background', self.show.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+        )
+        self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
+        self.setProperty('show.title', self.show and self.show.title or '')
+        self.setProperty('season.title', self.season.title)
+
     def createListItem(self, obj):
-        title = obj.index and 'Episode {0}'.format(obj.index) or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM), data_source=obj)
+        mli = kodigui.ManagedListItem(
+            obj.title, obj.originallyAvailableAt.asDatetime('%b %d, %Y'), thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM), data_source=obj
+        )
+        mli.setProperty('episode.number', str(obj.index) or '')
+        mli.setProperty('episode.duration', util.durationToText(obj.duration.asInt()))
+        mli.setProperty('watched', obj.isWatched and '1' or '')
         return mli
 
     def fillEpisodes(self):
@@ -84,6 +97,39 @@ class EpisodesWindow(kodigui.BaseWindow):
         idx = 0
         for episode in self.season.episodes():
             mli = self.createListItem(episode)
+            if mli:
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                idx += 1
+
+        self.episodePanelControl.addItems(items)
+
+
+class AlbumWindow(EpisodesWindow):
+    xmlFile = 'script-plex-episodes.xml'
+
+    def episodePanelClicked(self):
+        mli = self.episodePanelControl.getSelectedItem()
+        if not mli:
+            return
+
+        w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource)
+        del w
+
+    def createListItem(self, obj):
+        mli = kodigui.ManagedListItem(
+            obj.title, thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM), data_source=obj
+        )
+        mli.setProperty('episode.number', str(obj.index) or '')
+        mli.setProperty('episode.duration', util.durationToText(obj.duration.asInt()))
+        mli.setProperty('watched', obj.isWatched and '1' or '')
+        return mli
+
+    def fillEpisodes(self):
+        items = []
+        idx = 0
+        for track in self.season.tracks():
+            mli = self.createListItem(track)
             if mli:
                 mli.setProperty('index', str(idx))
                 items.append(mli)

@@ -38,7 +38,6 @@ class MediaDecisionEngine(object):
         for mediaIndex in range(len(item.media())):
             media = item.media()[mediaIndex]
             media.mediaIndex = mediaIndex
-
             if media.isSelected():
                 candidates = []
                 candidates.append(media)
@@ -437,7 +436,7 @@ class MediaDecisionEngine(object):
         codec = media.audioCodec
         container = media.container
         canPlayCodec = item.settings.supportsAudioStream(codec, media.audioChannels.asInt())
-        canPlayContainer = (codec == container) or (container in ("mp4", "mka", "mkv"))
+        canPlayContainer = (codec == container) or True  # (container in ("mp4", "mka", "mkv"))
 
         choice.isDirectPlayable = (canPlayCodec and canPlayContainer)
         if choice.isDirectPlayable:

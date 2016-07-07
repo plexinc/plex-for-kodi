@@ -100,7 +100,12 @@ class MyPlexAccount(object):
         jstring = plexapp.INTERFACE.getRegistry("MyPlexAccount", None, "myplex")
 
         if jstring:
-            obj = json.loads(jstring)
+            try:
+                obj = json.loads(jstring)
+            except:
+                util.ERROR()
+                obj = None
+
             if obj:
                 self.ID = obj.get('ID') or self.ID
                 self.title = obj.get('title') or self.title

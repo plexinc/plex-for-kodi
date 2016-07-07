@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 import plexobjects
+import plexmedia
 import media
 
 
 class Audio(media.MediaItem):
-    pass
+    def _setData(self, data):
+        for k, v in data.attrib.items():
+            setattr(self, k, plexobjects.PlexValue(v, self))
+
+        self.key = plexobjects.PlexValue(self.key.replace('/children', ''), self)
+
+    def isMusicItem(self):
+        return True
 
 
 @plexobjects.registerLibType
@@ -89,12 +97,20 @@ class Track(Audio):
         Audio._setData(self, data)
         if self.isFullObject():
             self.moods = plexobjects.PlexItemList(data, media.Mood, media.Mood.TYPE, server=self.server)
-            self.media = plexobjects.PlexMediaItemList(data, media.Media, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
+            self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
         # data for active sessions
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
+
+    @property
+    def settings(self):
+        if not self._settings:
+            import plexapp
+            self._settings = plexapp.PlayerSettingsInterface()
+
+        return self._settings
 
     @property
     def thumbUrl(self):

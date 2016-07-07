@@ -180,6 +180,10 @@ def cleanLeadingZeros(text):
     return re.sub('(?<= )0(\d)', r'\1', text)
 
 
+def removeDups(dlist):
+    return [ii for n, ii in enumerate(dlist) if ii not in dlist[:n]]
+
+
 SIZE_NAMES = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
 
 
@@ -231,6 +235,10 @@ class SettingControl:
     def disable(self):
         rpc.Settings.SetSettingValue(setting=self.setting, value=self.disableValue)
         DEBUG_LOG('{0}: DISABLED'.format(self.logDisplay))
+
+    def set(self, value):
+        rpc.Settings.SetSettingValue(setting=self.setting, value=value)
+        DEBUG_LOG('{0}: SET={1}'.format(self.logDisplay, value))
 
     def store(self):
         try:

@@ -39,14 +39,19 @@ def showDialog(video):
     while not xbmc.abortRequested:
         sas = video.selectedAudioStream()
         sss = video.selectedSubtitleStream()
+        override = video.settings.getPrefOverride('local_quality')
+        if override is not None and override < 13:
+            current = T((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014)[13 - override])
+        else:
+            current = '{0} {1} ({2})'.format(
+                plexnet.util.bitrateToString(video.mediaChoice.media.bitrate.asInt() * 1000),
+                video.mediaChoice.media.getVideoResolutionString(),
+                video.mediaChoice.media.title or 'Original'
+            )
         options = [
             ('audio', 'Audio: {0}'.format(sas and sas.getTitle() or 'None')),
             ('subs', 'Subtitles: {0}'.format(sss and sss.getTitle() or 'None')),
-            ('quality', 'Quality: {0} {1} ({2})'.format(
-                plexnet.util.bitrateToString(video.mediaChoice.media.bitrate.asInt() * 1000),
-                video.mediaChoice.media.getVideoResolutionString(),
-                video.mediaChoice.media.title
-            ))
+            ('quality', 'Quality: {0}'.format(current))
         ]
 
         idx = xbmcgui.Dialog().select('Select Quality', [o[1] for o in options])

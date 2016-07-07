@@ -14,6 +14,7 @@ class PlexResource(object):
         self.connection = None
         self.connections = []
         self.accessToken = None
+        self.sourceType = None
 
         if data is None:
             return

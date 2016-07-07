@@ -11,6 +11,7 @@ class MediaChoice(object):
     def __init__(self, media=None, partIndex=0):
         self.media = media
         self.part = None
+        self.forceTranscode = False
         self.isDirectPlayable = False
         self.videoStream = None
         self.audioStream = None
@@ -31,7 +32,7 @@ class MediaChoice(object):
                 self.audioStream = self.part.getSelectedStreamOfType(plexstream.PlexStream.TYPE_AUDIO)
                 self.subtitleStream = self.part.getSelectedStreamOfType(plexstream.PlexStream.TYPE_SUBTITLE)
             else:
-                util.WARN("Media does not contain a valid part")
+                util.WARN_LOG("Media does not contain a valid part")
 
             util.LOG("Choice media: {0} part:{1}".format(media, partIndex))
             for streamType in ("videoStream", "audioStream", "subtitleStream"):
@@ -39,7 +40,7 @@ class MediaChoice(object):
                 if attr:
                     util.LOG("Choice {0}: {1}".format(streamType, attr))
         else:
-            util.WARN("Could not create media choice for invalid media")
+            util.WARN_LOG("Could not create media choice for invalid media")
 
     def __str__(self):
         return "direct playable={0} version={1}".format(self.isDirectPlayable, self.media)

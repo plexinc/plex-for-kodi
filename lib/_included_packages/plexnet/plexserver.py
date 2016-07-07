@@ -340,7 +340,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         for i in range(len(self.connections)):
             conn = self.connections[i]
             if not conn.refreshed:
-                conn.sources = conn.sources and not source
+                conn.sources = conn.sources & (~source)
 
                 # If we lost our plex.tv connection, don't remember the token.
                 if source == conn.SOURCE_MYPLEX:
@@ -386,8 +386,6 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
             if not merged:
                 self.connections.append(otherConn)
-
-        next
 
         # If the other server has a token, then it came from plex.tv, which
         # means that its ownership information is better than ours. But if

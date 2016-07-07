@@ -158,7 +158,7 @@ class Movie(Video):
 
     @property
     def isWatched(self):
-        return self.viewCount > 0
+        return self.viewCount.asInt() > 0
 
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)
@@ -281,7 +281,7 @@ class Episode(Video):
 
     @property
     def isWatched(self):
-        return self.viewCount > 0
+        return self.viewCount.asInt() > 0
 
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)
@@ -299,7 +299,7 @@ class Clip(Video):
 
     @property
     def isWatched(self):
-        return self.viewCount > 0
+        return self.viewCount.asInt() > 0
 
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)

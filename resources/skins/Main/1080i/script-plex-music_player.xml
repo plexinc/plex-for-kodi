@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<window>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <zorder>100</zorder>
+    <controls>
+        <control type="group">
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <texture>script.plex/home/background-fallback.jpg</texture>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <fadetime>1000</fadetime>
+                <texture  background="true">$INFO[Window.Property(background)]</texture>
+            </control>
+        </control>
+
+        <control type="image">
+            <posx>75</posx>
+            <posy>75</posy>
+            <width>786</width>
+            <height>786</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>20FFFFFF</colordiffuse>
+        </control>
+        <control type="image">
+            <posx>90</posx>
+            <posy>90</posy>
+            <width>756</width>
+            <height>756</height>
+            <texture>$INFO[Window.Property(thumb)]</texture>
+        </control>
+
+        <!-- <control type="image">
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>140</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>A0000000</colordiffuse>
+        </control>
+
+        <control type="group">
+            <posx>0</posx>
+            <posy>940</posy>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>140</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>A0000000</colordiffuse>
+            </control>
+        </control>
+
+        <control type="group">
+            <posx>0</posx>
+            <posy>965</posy>
+            <control type="label">
+                <posx>60</posx>
+                <posy>0</posy>
+                <width>1000</width>
+                <height>60</height>
+                <font>font13</font>
+                <align>left</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(time.current)]</label>
+            </control>
+            <control type="label">
+                <posx>1860</posx>
+                <posy>0</posy>
+                <width>800</width>
+                <height>60</height>
+                <font>font13</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[Window.Property(time.duration)]</label>
+            </control>
+            <control type="label">
+                <posx>1860</posx>
+                <posy>40</posy>
+                <width>800</width>
+                <height>60</height>
+                <font>font13</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>A0FFFFFF</textcolor>
+                <label>$INFO[Window.Property(time.end)]</label>
+            </control>
+        </control> -->
+
+        <control type="grouplist" id="400">
+            <defaultcontrol>301</defaultcontrol>
+            <hitrect x="460" y="998" w="1000" h="55" />
+            <posx>360</posx>
+            <posy>964</posy>
+            <width>1200</width>
+
+            <height>124</height>
+            <align>center</align>
+            <onup>100</onup>
+            <itemgap>-40</itemgap>
+            <orientation>horizontal</orientation>
+            <scrolltime tween="quadratic" easing="out">200</scrolltime>
+            <usecontrolcoords>true</usecontrolcoords>
+            <control type="button" id="401">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="402">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="403">
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/settings-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/settings.png</texturenofocus>
+                <label> </label>
+            </control>
+
+
+            <control type="button" id="404">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>30</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus flipx="true" colordiffuse="FFE5A00D">script.plex/buttons/next-focus.png</texturefocus>
+                <texturenofocus flipx="true" colordiffuse="99FFFFFF">script.plex/buttons/next.png</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="405">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus flipx="true" colordiffuse="FFE5A00D">script.plex/buttons/skip-forward-focus.png</texturefocus>
+                <texturenofocus flipx="true" colordiffuse="99FFFFFF">script.plex/buttons/skip-forward.png</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="togglebutton" id="406">
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/pause-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/pause.png</texturenofocus>
+                <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
+                <alttexturefocus colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</alttexturefocus>
+                <alttexturenofocus colordiffuse="99FFFFFF">script.plex/buttons/play.png</alttexturenofocus>
+                <enable>Player.PauseEnabled</enable>
+                <onclick>PlayerControl(Play)</onclick>
+                <label> </label>
+            </control>
+            <control type="button" id="407">
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/stop-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/stop.png</texturenofocus>
+                <onclick>PlayerControl(Stop)</onclick>
+                <label> </label>
+            </control>
+            <control type="button" id="408">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/skip-forward-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/skip-forward.png</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="409">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/next-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/next.png</texturenofocus>
+                <label> </label>
+            </control>
+
+
+            <control type="button" id="410">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>30</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/pqueue-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/pqueue.png</texturenofocus>
+                <label> </label>
+            </control>
+            <control type="button" id="411">
+                <enable>false</enable>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
+                <hitrect x="28" y="28" w="69" h="45" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>125</width>
+                <height>101</height>
+                <font>font12</font>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/more-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/more.png</texturenofocus>
+                <label> </label>
+            </control>
+        </control>
+
+        <control type="group">
+            <posx>0</posx>
+            <posy>940</posy>
+            <control type="button" id="100">
+                <hitrect x="0" y="-19" w="1920" h="48" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>10</height>
+                <onup>500</onup>
+                <ondown>400</ondown>
+                <texturefocus>script.plex/white-square.png</texturefocus>
+                <texturenofocus>script.plex/white-square.png</texturenofocus>
+                <colordiffuse>A0000000</colordiffuse>
+            </control>
+        </control>
+
+        <control type="progress">
+            <description>Progressbar</description>
+            <posx>0</posx>
+            <posy>942</posy>
+            <width>1920</width>
+            <height>6</height>
+            <texturebg>-</texturebg>
+            <lefttexture colordiffuse="FFCC7B19">script.plex/white-square.png</lefttexture>
+            <midtexture>-</midtexture>
+            <righttexture>-</righttexture>
+            <overlaytexture>-</overlaytexture>
+            <info>Player.Progress</info>
+        </control>
+
+        <control type="slider">
+            <posx>0</posx>
+            <posy>942</posy>
+            <width>1920</width>
+            <height>6</height>
+            <visible>true</visible>
+            <texturesliderbar colordiffuse="FFE5A00D">script.plex/white-square.png</texturesliderbar>
+            <textureslidernib>-</textureslidernib>
+            <textureslidernibfocus>-</textureslidernibfocus>
+            <action>seek</action>
+        </control>
+
+        <!-- <control type="image" id="201">
+            <visible>!Control.HasFocus(100) + !Control.HasFocus(500)</visible>
+            <animation effect="fade" time="100" delay="100" end="0">Hidden</animation>
+            <posx>0</posx>
+            <posy>942</posy>
+            <width>1</width>
+            <height>6</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>FFCC7B19</colordiffuse>
+        </control>
+
+        <control type="image" id="200">
+            <visible>Control.HasFocus(100)</visible>
+            <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
+            <posx>0</posx>
+            <posy>942</posy>
+            <width>1</width>
+            <height>6</height>
+            <texture>script.plex/white-square.png</texture>
+            <colordiffuse>FFE5A00D</colordiffuse>
+        </control> -->
+
+        <control type="group" id="202">
+            <visible>Control.HasFocus(100) | Control.HasFocus(500)</visible>
+            <posx>0</posx>
+            <posy>896</posy>
+            <control type="group" id="203">
+                <posx>-50</posx>
+                <posy>0</posy>
+                <control type="image">
+                    <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>101</width>
+                    <height>39</height>
+                    <texture>script.plex/indicators/player-selection-time_box.png</texture>
+                    <colordiffuse>D0000000</colordiffuse>
+                </control>
+                <control type="label">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>101</width>
+                    <height>40</height>
+                    <font>font10</font>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$INFO[Window.Property(time.selection)]</label>
+                </control>
+            </control>
+            <control type="image">
+                <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
+                <posx>-6</posx>
+                <posy>39</posy>
+                <width>15</width>
+                <height>7</height>
+                <texture>script.plex/indicators/player-selection-time_arrow.png</texture>
+                <colordiffuse>D0000000</colordiffuse>
+            </control>
+        </control>
+
+    </controls>
+</window>

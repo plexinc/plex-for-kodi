@@ -8,12 +8,16 @@ import util
 
 class PlexMedia(plexobjects.PlexObject):
     def __init__(self, data, initpath=None, server=None, container=None):
+        self._data = data.attrib
         plexobjects.PlexObject.__init__(self, data, initpath, server)
         self.container = container
         self.parts = []
         # If we weren't given any data, this is a synthetic media
         if data is not None:
             self.parts = [plexpart.PlexPart(elem, initpath=self.initpath, server=self.server, media=self) for elem in data]
+
+    def get(self, key, default=None):
+        return self._data.get(key, default)
 
     def hasStreams(self):
         return len(self.parts) > 0 and self.parts[0].hasStreams()
@@ -93,11 +97,14 @@ class PlexMedia(plexobjects.PlexObject):
 
     def __str__(self):
         extra = []
-        attrs = ("container", "videoCodec", "audioCodec", "audioChannels", "protocol", "id")
+        attrs = ("videoCodec", "audioCodec", "audioChannels", "protocol", "id")
+        if self.get('container'):
+            extra.append("container={0}".format(self.get('container')))
+
         for astr in attrs:
             if hasattr(self, astr):
                 attr = getattr(self, astr)
-                if not attr.NA:
+                if attr and not attr.NA:
                     extra.append("{0}={1}".format(astr, attr))
 
         return self.versionString() + " " + ' '.join(extra)

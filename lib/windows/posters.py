@@ -6,7 +6,7 @@ import kodigui
 from lib import colors
 from lib import util
 
-import seasons
+import subitems
 import preplay
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -129,9 +129,11 @@ class PostersWindow(kodigui.BaseWindow):
             self.showSeasons(mli.dataSource)
         elif self.section.TYPE == 'movie':
             self.showPreplay(mli.dataSource)
+        elif self.section.TYPE == 'artist':
+            self.showArtist(mli.dataSource)
 
     def showSeasons(self, show):
-        w = seasons.SeasonsWindow.open(show=show)
+        w = subitems.ShowWindow.open(media_item=show)
         try:
             if w.exitCommand == 'HOME':
                 self.exitCommand = 'HOME'
@@ -141,6 +143,15 @@ class PostersWindow(kodigui.BaseWindow):
 
     def showPreplay(self, movie):
         w = preplay.PrePlayWindow.open(video=movie)
+        try:
+            if w.exitCommand == 'HOME':
+                self.exitCommand = 'HOME'
+                self.doClose()
+        finally:
+            del w
+
+    def showArtist(self, artist):
+        w = subitems.ArtistWindow.open(media_item=artist)
         try:
             if w.exitCommand == 'HOME':
                 self.exitCommand = 'HOME'
@@ -179,6 +190,9 @@ class PostersWindow(kodigui.BaseWindow):
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
         elif obj.type == 'album':
             mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+        elif obj.type == 'artist':
+            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
         elif obj.type == 'track':
             mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
@@ -240,4 +254,9 @@ class PostersWindow(kodigui.BaseWindow):
         self.showPanelControl.addItems(items)
         self.keyListControl.addItems(litems)
 
-        self.setProperty('key', keys[0])
+        if keys:
+            self.setProperty('key', keys[0])
+
+
+class SquaresWindow(PostersWindow):
+    xmlFile = 'script-plex-squares.xml'

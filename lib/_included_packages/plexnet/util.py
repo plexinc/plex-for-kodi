@@ -77,11 +77,13 @@ def FATAL(msg=None):
 
 
 def TEST(msg):
-    plexapp.INTERFACE.LOG(msg)
+    plexapp.INTERFACE.LOG(' -- TEST: {0}'.format(msg))
 
 
 def hideToken(token):
     # return 'X' * len(token)
+    if not token:
+        return token
     return '*' * (len(token) - 4) + token[-4:]
 
 

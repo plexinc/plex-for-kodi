@@ -8,7 +8,48 @@ import util
 from plexnet import plexplayer
 
 
-class SeekPlayerHandler(object):
+class BasePlayerHandler(object):
+    def __init__(self, player):
+        self.player = player
+
+    def onPlayBackStarted(self):
+        pass
+
+    def onPlayBackPaused(self):
+        pass
+
+    def onPlayBackResumed(self):
+        pass
+
+    def onPlayBackStopped(self):
+        pass
+
+    def onPlayBackEnded(self):
+        pass
+
+    def onPlayBackSeek(self, time, offset):
+        pass
+
+    def onPlayBackFailed(self):
+        pass
+
+    def onVideoWindowOpened(self):
+        pass
+
+    def onVideoWindowClosed(self):
+        pass
+
+    def onVideoOSD(self):
+        pass
+
+    def tick(self):
+        pass
+
+    def close(self):
+        pass
+
+
+class SeekPlayerHandler(BasePlayerHandler):
     NO_SEEK = 0
     SEEK_INIT = 1
     SEEK_IN_PROGRESS = 2
@@ -59,8 +100,8 @@ class SeekPlayerHandler(object):
                 util.DEBUG_LOG('Setting subtitle path: {0}'.format(path))
                 self.player.setSubtitles(path)
             else:
-                util.TEST(subs.__dict__)
-                util.TEST(self.player.video.mediaChoice.__dict__)
+                # util.TEST(subs.__dict__)
+                # util.TEST(self.player.video.mediaChoice.__dict__)
                 util.DEBUG_LOG('Enabling embedded subtitles at: {0}'.format(subs.index))
                 util.DEBUG_LOG('Kodi reported subtitles: {0}'.format(self.player.getAvailableSubtitleStreams()))
                 self.player.setSubtitleStream(subs.index.asInt())
@@ -68,9 +109,6 @@ class SeekPlayerHandler(object):
             self.player.showSubtitles(True)
 
         self.seeking = self.NO_SEEK
-
-    def onPlayBackPaused(self):
-        pass
 
     def onPlayBackResumed(self):
         self.closeSeekDialog()
@@ -99,9 +137,6 @@ class SeekPlayerHandler(object):
         self.player.close()
         return True
 
-    def onVideoWindowOpened(self):
-        pass
-
     def onVideoWindowClosed(self):
         self.closeSeekDialog()
         if not self.seeking:
@@ -120,13 +155,18 @@ class SeekPlayerHandler(object):
         self.closeSeekDialog()
 
 
+class AudioPlayerHandler(BasePlayerHandler):
+            pass
+
+
 class PlexPlayer(xbmc.Player):
     def init(self):
         self._closed = False
+        self.started = False
         self.video = None
         self.hasOSD = False
         self.xbmcMonitor = xbmc.Monitor()
-        self.handler = SeekPlayerHandler(self)
+        self.handler = BasePlayerHandler(self)
         self.playerBackground = None
         self.seekStepsSetting = util.SettingControl('videoplayer.seeksteps', 'Seek steps', disable_value=[-10, 10])
         self.seekDelaySetting = util.SettingControl('videoplayer.seekdelay', 'Seek delay', disable_value=0)
@@ -182,6 +222,7 @@ class PlexPlayer(xbmc.Player):
         xbmc.Player.play(self, *args, **kwargs)
 
     def playVideo(self, video, resume=False):
+        self.handler = SeekPlayerHandler(self)
         self.video = video
         self.open()
         self._playVideo(resume and video.viewOffset.asInt() or 0)
@@ -192,7 +233,19 @@ class PlexPlayer(xbmc.Player):
         bifURL = pobj.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
-        self.play(url + '&X-Plex-Platform=Chrome')
+        url += '&X-Plex-Platform=Chrome'
+        li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
+        li.setInfo('video', {'mediatype': self.video.type})
+        self.play(url, li)
+
+    def playAudio(self, track):
+        self.handler = AudioPlayerHandler(self)
+        pobj = plexplayer.PlexAudioPlayer(track)
+        url = pobj.build()['url']  # .streams[0]['url']
+        util.DEBUG_LOG('Playing URL: {0}'.format(url))
+        url += '&X-Plex-Platform=Chrome'
+        li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.thumb.asTranscodedImageURL(256, 256))
+        self.play(url, li)
 
     def onPlayBackStarted(self):
         self.started = True

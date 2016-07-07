@@ -465,6 +465,8 @@ class HomeWindow(kodigui.BaseWindow):
 
         if section.type in ('show', 'movie'):
             posters.PostersWindow.open(section=section)
+        elif section.type in ('artist',):
+            posters.SquaresWindow.open(section=section)
 
     def selectServer(self):
         servers = sorted([s for s in plexapp.SERVERMANAGER.serversByUuid.values() if s.isReachable()], key=lambda x: x.name.lower())

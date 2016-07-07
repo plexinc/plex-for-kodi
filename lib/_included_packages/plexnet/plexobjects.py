@@ -155,6 +155,9 @@ class PlexObject(object):
     def isFullObject(self):
         return self.initpath is None or self.key is None or self.initpath == self.key
 
+    def getAddress(self):
+        return self.server.activeConnection.address
+
     @property
     def defaultThumb(self):
         return self.thumb
@@ -207,7 +210,15 @@ class PlexObject(object):
         if path is None:
             return None
         else:
-            return self.container.getAbsolutePath(path)
+            return self.container._getAbsolutePath(path)
+
+    def _getAbsolutePath(self, path):
+        if path.startswith('/'):
+            return path
+        elif "://" in path:
+            return path
+        else:
+            return self.getAddress() + "/" + path
 
     def getServer(self):
         return self.server

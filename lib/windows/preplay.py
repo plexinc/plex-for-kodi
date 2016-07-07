@@ -4,7 +4,6 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import player
-from plexnet import plexplayer
 
 
 class PrePlayWindow(kodigui.BaseWindow):

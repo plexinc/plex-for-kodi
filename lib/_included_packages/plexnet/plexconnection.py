@@ -6,6 +6,18 @@ import callback
 import util
 
 
+class ConnectionSource(int):
+    def init(self, name):
+        self.name = name
+        return self
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class PlexConnection(object):
     # Constants
     STATE_UNKNOWN = "unknown"
@@ -14,9 +26,9 @@ class PlexConnection(object):
     STATE_UNAUTHORIZED = "unauthorized"
     STATE_INSECURE = "insecure_untested"
 
-    SOURCE_MANUAL = 1
-    SOURCE_DISCOVERED = 2
-    SOURCE_MYPLEX = 4
+    SOURCE_MANUAL = ConnectionSource(1).init('SOURCE_MANUAL')
+    SOURCE_DISCOVERED = ConnectionSource(2).init('SOURCE_DISCOVERED')
+    SOURCE_MYPLEX = ConnectionSource(4).init('SOURCE_MYPLEX')
 
     SCORE_REACHABLE = 4
     SCORE_LOCAL = 2
@@ -93,7 +105,7 @@ class PlexConnection(object):
                 server.hasFallback = not allowConnectionTest
                 util.LOG(
                     '{0} for {1}'.format(
-                        allowConnectionTest and "Insecure connection testing is deferred" or "Continuing with insecure connection testing", server
+                        allowConnectionTest and "Continuing with insecure connection testing" or "Insecure connection testing is deferred", server
                     )
                 )
             else:

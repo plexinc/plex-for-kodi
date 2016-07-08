@@ -40,6 +40,7 @@ class MusicPlayerWindow(kodigui.BaseDialog):
     def onFirstInit(self):
         self.setProperties()
         self.play()
+        self.setFocusId(406)
 
     def onAction(self, action):
         try:
@@ -77,4 +78,4 @@ class MusicPlayerWindow(kodigui.BaseDialog):
         self.setProperty('thumb', self.track.thumb.asTranscodedImageURL(756, 756))
 
     def play(self):
-        player.PLAYER.playAudio(self.track)
+        player.PLAYER.playAudio(self.track, window=self)

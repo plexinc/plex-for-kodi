@@ -118,7 +118,7 @@
         </control>
 
         <control type="grouplist" id="400">
-            <defaultcontrol>301</defaultcontrol>
+            <defaultcontrol>406</defaultcontrol>
             <hitrect x="460" y="998" w="1000" h="55" />
             <posx>360</posx>
             <posy>964</posy>

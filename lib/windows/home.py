@@ -12,7 +12,7 @@ import plexnet
 from plexnet import plexapp
 
 import posters
-import seasons
+import subitems
 import episodes
 import preplay
 import busy
@@ -261,19 +261,31 @@ class HomeWindow(kodigui.BaseWindow):
             self.playableClicked(mli.dataSource)
         elif mli.dataSource.TYPE in ('show'):
             self.showClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('artist'):
+            self.artistClicked(mli.dataSource)
         elif mli.dataSource.TYPE in ('season'):
             self.seasonClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('album'):
+            self.albumClicked(mli.dataSource)
 
     def playableClicked(self, playable):
         w = preplay.PrePlayWindow.open(video=playable)
         del w
 
     def showClicked(self, show):
-        w = seasons.SeasonsWindow.open(show=show)
+        w = subitems.ShowWindow.open(media_item=show)
+        del w
+
+    def artistClicked(self, artist):
+        w = subitems.ArtistWindow.open(media_item=artist)
         del w
 
     def seasonClicked(self, season):
         w = episodes.EpisodesWindow.open(season=season)
+        del w
+
+    def albumClicked(self, album):
+        w = episodes.AlbumWindow.open(season=album)
         del w
 
     def checkSectionItem(self):

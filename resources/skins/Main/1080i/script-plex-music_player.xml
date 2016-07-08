@@ -5,6 +5,7 @@
         <posx>0</posx>
         <posy>0</posy>
     </coordinates>
+    <defaultcontrol>406</defaultcontrol>
     <zorder>100</zorder>
     <controls>
         <control type="group">
@@ -102,7 +103,7 @@
         </control> -->
 
         <control type="grouplist" id="400">
-            <defaultcontrol>301</defaultcontrol>
+            <defaultcontrol>406</defaultcontrol>
             <hitrect x="460" y="998" w="1000" h="55" />
             <posx>360</posx>
             <posy>964</posy>
@@ -110,7 +111,7 @@
 
             <height>124</height>
             <align>center</align>
-            <onup>100</onup>
+            <!-- <onup>100</onup> -->
             <itemgap>-40</itemgap>
             <orientation>horizontal</orientation>
             <scrolltime tween="quadratic" easing="out">200</scrolltime>
@@ -200,7 +201,7 @@
                 <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
                 <alttexturefocus colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</alttexturefocus>
                 <alttexturenofocus colordiffuse="99FFFFFF">script.plex/buttons/play.png</alttexturenofocus>
-                <enable>Player.PauseEnabled</enable>
+                <!-- <enable>Player.PauseEnabled</enable> -->
                 <onclick>PlayerControl(Play)</onclick>
                 <label> </label>
             </control>
@@ -342,7 +343,7 @@
             <colordiffuse>FFE5A00D</colordiffuse>
         </control> -->
 
-        <control type="group" id="202">
+        <!-- <control type="group" id="202">
             <visible>Control.HasFocus(100) | Control.HasFocus(500)</visible>
             <posx>0</posx>
             <posy>896</posy>
@@ -379,7 +380,7 @@
                 <texture>script.plex/indicators/player-selection-time_arrow.png</texture>
                 <colordiffuse>D0000000</colordiffuse>
             </control>
-        </control>
+        </control> -->
 
     </controls>
 </window>

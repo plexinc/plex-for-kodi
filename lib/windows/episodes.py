@@ -77,7 +77,8 @@ class EpisodesWindow(kodigui.BaseWindow):
 
     def setProperties(self):
         self.setProperty(
-            'background', self.show.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            'background',
+            (self.show or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', self.show and self.show.title or '')
@@ -115,6 +116,15 @@ class AlbumWindow(EpisodesWindow):
 
         w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource)
         del w
+
+    def setProperties(self):
+        self.setProperty(
+            'background',
+            self.season.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+        )
+        self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
+        self.setProperty('show.title', self.season.grandparentTitle or '')
+        self.setProperty('season.title', self.season.title)
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(

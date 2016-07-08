@@ -156,7 +156,23 @@ class SeekPlayerHandler(BasePlayerHandler):
 
 
 class AudioPlayerHandler(BasePlayerHandler):
-            pass
+    def __init__(self, player, window=None):
+        BasePlayerHandler.__init__(self, player)
+        self.window = window
+
+    def onPlayBackStopped(self):
+        self.closeWindow()
+
+    def onPlayBackEnded(self):
+        self.closeWindow()
+
+    def closeWindow(self):
+        if not self.window:
+            return
+
+        self.window.doClose()
+        del self.window
+        self.window = None
 
 
 class PlexPlayer(xbmc.Player):
@@ -238,14 +254,13 @@ class PlexPlayer(xbmc.Player):
         li.setInfo('video', {'mediatype': self.video.type})
         self.play(url, li)
 
-    def playAudio(self, track):
-        self.handler = AudioPlayerHandler(self)
+    def playAudio(self, track, window=None):
+        self.handler = AudioPlayerHandler(self, window)
         pobj = plexplayer.PlexAudioPlayer(track)
         url = pobj.build()['url']  # .streams[0]['url']
         util.DEBUG_LOG('Playing URL: {0}'.format(url))
         url += '&X-Plex-Platform=Chrome'
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.thumb.asTranscodedImageURL(256, 256))
-        util.TEST(track.__dict__)
         li.setInfo('music', {'artist': str(track.grandparentTitle), 'title': str(track.title)})
         self.play(url, li)
 

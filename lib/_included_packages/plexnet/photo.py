@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 import media
 import plexobjects
+import plexmedia
 
 
 @plexobjects.registerLibType
 class Photo(media.MediaItem):
     TYPE = 'photo'
+
+    def _setData(self, data):
+        media.MediaItem._setData(self, data)
+        if self.isFullObject():
+            self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
     def analyze(self):
         """ The primary purpose of media analysis is to gather information about that media

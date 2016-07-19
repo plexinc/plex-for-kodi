@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<window>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <defaultcontrol>406</defaultcontrol>
+    <zorder>100</zorder>
+    <controls>
+        <control type="group">
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <texture>script.plex/home/background-fallback.jpg</texture>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <fadetime>200</fadetime>
+                <texture background="true">$INFO[Window.Property(photo)]</texture>
+                <aspectratio>keep</aspectratio>
+            </control>
+        </control>
+    </controls>
+</window>

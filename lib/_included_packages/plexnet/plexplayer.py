@@ -430,3 +430,27 @@ class PlexAudioPlayer(object):
     def hasLyrics(self):
         return False
         return self.lyrics.isAvailable()
+
+
+class PlexPhotoPlayer(object):
+    def __init__(self, item):
+        self.item = item
+        self.media = item.media()[0]
+        self.metadata = None
+
+    def build(self):
+        if self.media.parts and self.media.parts[0]:
+            obj = util.AttributeDict()
+
+            part = self.media.parts[0]
+            path = part.key or part.thumb
+            server = self.item.getServer()
+
+            obj.url = server.buildUrl(path, True)
+            obj.enableBlur = server.supportsPhotoTranscoding
+
+            util.DEBUG_LOG("Constructed photo item for playback: {0}".format(dict(obj)))
+
+            self.metadata = obj
+
+        return self.metadata

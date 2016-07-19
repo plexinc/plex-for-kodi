@@ -15,6 +15,7 @@ import posters
 import subitems
 import episodes
 import preplay
+import photos
 import busy
 
 
@@ -267,6 +268,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.seasonClicked(mli.dataSource)
         elif mli.dataSource.TYPE in ('album'):
             self.albumClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('photo'):
+            self.photoClicked(mli.dataSource)
 
     def playableClicked(self, playable):
         w = preplay.PrePlayWindow.open(video=playable)
@@ -286,6 +289,10 @@ class HomeWindow(kodigui.BaseWindow):
 
     def albumClicked(self, album):
         w = episodes.AlbumWindow.open(season=album)
+        del w
+
+    def photoClicked(self, photo):
+        w = photos.PhotoWindow.open(photo=photo)
         del w
 
     def checkSectionItem(self):

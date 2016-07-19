@@ -166,6 +166,9 @@ class AudioPlayerHandler(BasePlayerHandler):
     def onPlayBackEnded(self):
         self.closeWindow()
 
+    def onPlayBackFailed(self):
+        return True
+
     def closeWindow(self):
         if not self.window:
             return
@@ -186,6 +189,9 @@ class PlexPlayer(xbmc.Player):
         self.playerBackground = None
         self.seekStepsSetting = util.SettingControl('videoplayer.seeksteps', 'Seek steps', disable_value=[-10, 10])
         self.seekDelaySetting = util.SettingControl('videoplayer.seekdelay', 'Seek delay', disable_value=0)
+        if xbmc.getCondVisibility('Player.HasMedia'):
+            self.started = True
+
         return self
 
     def open(self):
@@ -261,7 +267,13 @@ class PlexPlayer(xbmc.Player):
         util.DEBUG_LOG('Playing URL: {0}'.format(url))
         url += '&X-Plex-Platform=Chrome'
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.thumb.asTranscodedImageURL(256, 256))
-        li.setInfo('music', {'artist': str(track.grandparentTitle), 'title': str(track.title)})
+        li.setInfo('music', {
+            'artist': str(track.grandparentTitle),
+            'title': str(track.title),
+            'album': str(track.parentTitle),
+            'discnumber': str(track.parentIndex),
+            'tracknumber': str(track.index)
+        })
         self.play(url, li)
 
     def onPlayBackStarted(self):

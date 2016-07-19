@@ -38,9 +38,13 @@ class EpisodesWindow(kodigui.BaseWindow):
         self.setProperties()
         self.fillEpisodes()
         self.setFocusId(self.EPISODE_PANEL_ID)
+        self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
 
     def onAction(self, action):
+        controlID = self.getFocusId()
         try:
+            if controlID == self.EPISODE_PANEL_ID:
+                self.checkForHeaderFocus(action)
             if action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -75,6 +79,14 @@ class EpisodesWindow(kodigui.BaseWindow):
         finally:
             del w
 
+    def checkForHeaderFocus(self, action):
+        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):
+            if self.episodePanelControl.getSelectedItem().getProperty('is.header'):
+                xbmc.executebuiltin('Action(up)')
+        if action in (xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_PAGE_DOWN, xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT):
+            if self.episodePanelControl.getSelectedItem().getProperty('is.header'):
+                xbmc.executebuiltin('Action(down)')
+
     def setProperties(self):
         self.setProperty(
             'background',
@@ -107,14 +119,14 @@ class EpisodesWindow(kodigui.BaseWindow):
 
 
 class AlbumWindow(EpisodesWindow):
-    xmlFile = 'script-plex-episodes.xml'
+    xmlFile = 'script-plex-album.xml'
 
     def episodePanelClicked(self):
         mli = self.episodePanelControl.getSelectedItem()
         if not mli:
             return
 
-        w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource)
+        w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, album=self.season)
         del w
 
     def setProperties(self):
@@ -123,26 +135,44 @@ class AlbumWindow(EpisodesWindow):
             self.season.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
-        self.setProperty('show.title', self.season.grandparentTitle or '')
-        self.setProperty('season.title', self.season.title)
+        self.setProperty('artist.title', self.season.parentTitle or '')
+        self.setProperty('album.title', self.season.title)
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(
             obj.title, thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM), data_source=obj
         )
-        mli.setProperty('episode.number', str(obj.index) or '')
-        mli.setProperty('episode.duration', util.durationToText(obj.duration.asInt()))
-        mli.setProperty('watched', obj.isWatched and '1' or '')
+        mli.setProperty('track.number', str(obj.index) or '')
+        mli.setProperty('track.duration', util.simplifiedTimeDisplay(obj.duration.asInt()))
         return mli
 
     def fillEpisodes(self):
         items = []
         idx = 0
+        multiDisc = 0
+
         for track in self.season.tracks():
+            disc = track.parentIndex.asInt()
+            if disc > 1:
+                if not multiDisc:
+                    items.insert(0, kodigui.ManagedListItem('DISC 1', properties={'is.header': '1'}))
+
+                if disc != multiDisc:
+                    items[-1].setProperty('is.footer', '1')
+                    multiDisc = disc
+                    items.append(kodigui.ManagedListItem('DISC {0}'.format(disc), properties={'is.header': '1'}))
+
             mli = self.createListItem(track)
             if mli:
                 mli.setProperty('index', str(idx))
+                mli.setProperty('artist', self.season.parentTitle)
+                mli.setProperty('disc', str(disc))
+                mli.setProperty('album', self.season.title)
+                mli.setProperty('number', '{0:0>2}'.format(track.index))
                 items.append(mli)
                 idx += 1
+
+        if items:
+            items[-1].setProperty('is.footer', '1')
 
         self.episodePanelControl.addItems(items)

@@ -7,19 +7,6 @@ import playersettings
 from lib import util
 
 
-def timeDisplay(ms):
-    h = ms / 3600000
-    m = (ms % 3600000) / 60000
-    s = (ms % 60000) / 1000
-    return '{0:0>2}:{1:0>2}:{2:0>2}'.format(h, m, s)
-
-
-def simplifiedTimeDisplay(ms):
-    left, right = timeDisplay(ms).rsplit(':', 1)
-    left = left.lstrip('0:') or '0'
-    return left + ':' + right
-
-
 class SeekDialog(kodigui.BaseDialog):
     xmlFile = 'script-plex-seek_dialog.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -183,7 +170,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)
         self.setProperty('video.title2', self.title2)
-        self.setProperty('time.duration', timeDisplay(self.duration))
+        self.setProperty('time.duration', util.timeDisplay(self.duration))
         self.updateCurrent()
 
         div = int(self.duration / 12)
@@ -199,7 +186,7 @@ class SeekDialog(kodigui.BaseDialog):
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
         self.positionControl.setWidth(w)
         to = self.trueOffset()
-        self.setProperty('time.current', timeDisplay(to))
+        self.setProperty('time.current', util.timeDisplay(to))
         self.setProperty('time.end', time.strftime('%I:%M %p', time.localtime(time.time() + ((self.duration - to) / 1000))).lstrip('0'))
 
     def seekForward(self, offset):
@@ -264,7 +251,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectionBox.setPosition(-100 + (1920 - w), 0)
         else:
             self.selectionBox.setPosition(-50, 0)
-        self.setProperty('time.selection', simplifiedTimeDisplay(self.selectedOffset))
+        self.setProperty('time.selection', util.simplifiedTimeDisplay(self.selectedOffset))
         if self.hasBif:
             self.setProperty('bif.image', self.baseURL.format(self.selectedOffset))
             self.bifImageControl.setPosition(bifx, 752)

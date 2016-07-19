@@ -158,7 +158,7 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
 class ManagedListItem(object):
     _properties = None
 
-    def __init__(self, label='', label2='', iconImage='', thumbnailImage='', path='', data_source=None):
+    def __init__(self, label='', label2='', iconImage='', thumbnailImage='', path='', data_source=None, properties=None):
         self._listItem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, path)
         self.dataSource = data_source
         self.properties = {}
@@ -170,6 +170,9 @@ class ManagedListItem(object):
         self._ID = None
         self._manager = None
         self._valid = True
+        if properties:
+            for k, v in properties.items():
+                self.setProperty(k, v)
 
     @classmethod
     def _addProperty(cls, prop):

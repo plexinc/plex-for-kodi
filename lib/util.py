@@ -203,6 +203,19 @@ def simpleSize(size):
         return '0B'
 
 
+def timeDisplay(ms):
+    h = ms / 3600000
+    m = (ms % 3600000) / 60000
+    s = (ms % 60000) / 1000
+    return '{0:0>2}:{1:0>2}:{2:0>2}'.format(h, m, s)
+
+
+def simplifiedTimeDisplay(ms):
+    left, right = timeDisplay(ms).rsplit(':', 1)
+    left = left.lstrip('0:') or '0'
+    return left + ':' + right
+
+
 class TextBox:
     # constants
     WINDOW = 10147
@@ -385,3 +398,17 @@ def getProgressImage(obj):
     pct = int((obj.viewOffset.asInt() / obj.duration.asFloat()) * 100)
     pct = pct - pct % 2  # Round to even number - we have even numbered progress only
     return 'script.plex/progress/{0}.png'.format(pct)
+
+
+def trackIsPlaying(track):
+    return xbmc.getCondVisibility((
+        'StringCompare(MusicPlayer.Artist,{0}) + ' +
+        'StringCompare(MusicPlayer.Album,{1}) + ' +
+        'StringCompare(MusicPlayer.DiscNumber,{2}) + ' +
+        'StringCompare(MusicPlayer.TrackNumber,{3})'
+    ).format(
+        track.grandparentTitle,
+        track.parentTitle,
+        track.parentIndex,
+        '{0:0>2}'.format(track.index)
+    ))

@@ -24,6 +24,13 @@ def registerLibType(cls):
     return cls
 
 
+def registerLibFactory(ftype):
+    def wrap(func):
+        LIBRARY_TYPES[ftype] = func
+        return func
+    return wrap
+
+
 class PlexValue(unicode):
     def __new__(cls, value, parent=None):
         self = super(PlexValue, cls).__new__(cls, value)

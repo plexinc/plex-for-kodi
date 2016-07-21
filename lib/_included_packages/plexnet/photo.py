@@ -4,12 +4,12 @@ import plexobjects
 import plexmedia
 
 
-@plexobjects.registerLibType
 class Photo(media.MediaItem):
     TYPE = 'photo'
 
     def _setData(self, data):
         media.MediaItem._setData(self, data)
+
         if self.isFullObject():
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
@@ -35,3 +35,15 @@ class Photo(media.MediaItem):
 
     def refresh(self):
         self.server.query('%s/refresh' % self.key, method=self.server.session.put)
+
+
+class PhotoDirectory(media.MediaItem):
+    TYPE = 'photodirectory'
+
+
+@plexobjects.registerLibFactory('photo')
+def PhotoFactory(data, initpath=None, server=None, container=None):
+    if data.tag == 'Photo':
+        return Photo(data, initpath=initpath, server=server, container=container)
+    else:
+        return PhotoDirectory(data, initpath=initpath, server=server, container=container)

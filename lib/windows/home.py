@@ -270,6 +270,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.albumClicked(mli.dataSource)
         elif mli.dataSource.TYPE in ('photo'):
             self.photoClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('photodirectory'):
+            self.photoDirectoryClicked(mli.dataSource)
 
     def playableClicked(self, playable):
         w = preplay.PrePlayWindow.open(video=playable)
@@ -293,6 +295,10 @@ class HomeWindow(kodigui.BaseWindow):
 
     def photoClicked(self, photo):
         w = photos.PhotoWindow.open(photo=photo)
+        del w
+
+    def photoDirectoryClicked(self, photodirectory):
+        w = posters.SquaresWindow.open(section=photodirectory)
         del w
 
     def checkSectionItem(self):
@@ -423,7 +429,7 @@ class HomeWindow(kodigui.BaseWindow):
             mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli
-        elif obj.type == 'photo':
+        elif obj.type in ('photo', 'photodirectory'):
             mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
             return mli
@@ -484,7 +490,7 @@ class HomeWindow(kodigui.BaseWindow):
 
         if section.type in ('show', 'movie'):
             posters.PostersWindow.open(section=section)
-        elif section.type in ('artist',):
+        elif section.type in ('artist', 'photo'):
             posters.SquaresWindow.open(section=section)
 
     def selectServer(self):

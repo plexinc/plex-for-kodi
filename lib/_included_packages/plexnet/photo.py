@@ -40,6 +40,10 @@ class Photo(media.MediaItem):
 class PhotoDirectory(media.MediaItem):
     TYPE = 'photodirectory'
 
+    def all(self):
+        path = '/library/metadata/%s/children' % self.ratingKey
+        return plexobjects.listItems(self.server, path)
+
 
 @plexobjects.registerLibFactory('photo')
 def PhotoFactory(data, initpath=None, server=None, container=None):

@@ -8,6 +8,8 @@ from lib import util
 
 import subitems
 import preplay
+import photos
+import plexnet
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -131,27 +133,29 @@ class PostersWindow(kodigui.BaseWindow):
             self.showPreplay(mli.dataSource)
         elif self.section.TYPE == 'artist':
             self.showArtist(mli.dataSource)
+        elif self.section.TYPE in ('photo', 'photodirectory'):
+            self.showPhoto(mli.dataSource)
 
     def showSeasons(self, show):
         w = subitems.ShowWindow.open(media_item=show)
-        try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
-                self.doClose()
-        finally:
-            del w
+        self.onChildWindowClosed(w)
 
     def showPreplay(self, movie):
         w = preplay.PrePlayWindow.open(video=movie)
-        try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
-                self.doClose()
-        finally:
-            del w
+        self.onChildWindowClosed(w)
 
     def showArtist(self, artist):
         w = subitems.ArtistWindow.open(media_item=artist)
+        self.onChildWindowClosed(w)
+
+    def showPhoto(self, photo):
+        if isinstance(photo, plexnet.photo.Photo):
+            w = photos.PhotoWindow.open(photo=photo)
+        else:
+            w = SquaresWindow.open(section=photo)
+            self.onChildWindowClosed(w)
+
+    def onChildWindowClosed(self, w):
         try:
             if w.exitCommand == 'HOME':
                 self.exitCommand = 'HOME'
@@ -197,7 +201,7 @@ class PostersWindow(kodigui.BaseWindow):
         elif obj.type == 'track':
             mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-        elif obj.type == 'photo':
+        elif obj.type in ('photo', 'photodirectory'):
             mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
         elif obj.type == 'clip':

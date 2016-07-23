@@ -531,7 +531,7 @@ class HomeWindow(kodigui.BaseWindow):
         self.serverList.reset()
         self.serverList.addItems(items)
 
-        self.getControl(800).setHeight((len(items) * 100) + 80)
+        self.getControl(800).setHeight((min(len(items), 9) * 100) + 80)
 
         self.setFocusId(self.SERVER_LIST_ID)
 

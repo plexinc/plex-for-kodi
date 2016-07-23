@@ -79,8 +79,12 @@ class HomeWindow(kodigui.BaseWindow):
 
     SECTION_LIST_ID = 101
     SERVER_BUTTON_ID = 201
+
     USER_BUTTON_ID = 202
+    USER_LIST_ID = 250
+
     SEARCH_BUTTON_ID = 203
+    SERVER_LIST_ID = 260
 
     HUB_AR16X9_00 = 400
     HUB_POSTER_01 = 401
@@ -167,6 +171,8 @@ class HomeWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         self.sectionList = kodigui.ManagedControlList(self, self.SECTION_LIST_ID, 7)
+        self.serverList = kodigui.ManagedControlList(self, self.SERVER_LIST_ID, 10)
+        self.userList = kodigui.ManagedControlList(self, self.USER_LIST_ID, 3)
 
         self.hubControls = (
             kodigui.ManagedControlList(self, self.HUB_AR16X9_00, 5),
@@ -212,6 +218,13 @@ class HomeWindow(kodigui.BaseWindow):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
 
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
+                if self.getFocusId() == self.USER_LIST_ID:
+                    self.setFocusId(self.USER_BUTTON_ID)
+                    return
+                elif self.getFocusId() == self.SERVER_LIST_ID:
+                    self.setFocusId(self.SERVER_BUTTON_ID)
+                    return
         except:
             util.ERROR()
 
@@ -221,9 +234,13 @@ class HomeWindow(kodigui.BaseWindow):
         if controlID == self.SECTION_LIST_ID:
             self.sectionClicked()
         elif controlID == self.SERVER_BUTTON_ID:
+            self.showServers()
+        elif controlID == self.SERVER_LIST_ID:
             self.selectServer()
         elif controlID == self.USER_BUTTON_ID:
-            self.userOptions()
+            self.showUsers()
+        elif controlID == self.USER_LIST_ID:
+            self.selectUser()
         elif 399 < controlID < 500:
             self.hubItemClicked(controlID)
 
@@ -493,28 +510,70 @@ class HomeWindow(kodigui.BaseWindow):
         elif section.type in ('artist', 'photo'):
             posters.SquaresWindow.open(section=section)
 
-    def selectServer(self):
-        servers = sorted([s for s in plexapp.SERVERMANAGER.serversByUuid.values() if s.isReachable()], key=lambda x: x.name.lower())
+    def showServers(self):
+        servers = sorted(
+            [s for s in plexapp.SERVERMANAGER.serversByUuid.values() if s.isReachable()],
+            key=lambda x: (x.owned and '0' or '1') + x.name.lower()
+        )
+        items = []
+        for s in servers:
+            item = kodigui.ManagedListItem(s.name, not s.owned and s.owner or '', data_source=s)
+            item.setProperty('secure', s.isSecure and '1' or '')
+            item.setProperty('current', plexapp.SERVERMANAGER.selectedServer == s and '1' or '')
+            items.append(item)
 
-        display = [s.name for s in servers]
-        idx = xbmcgui.Dialog().select('Select Server', display)
-        if idx < 0:
+        if len(items) > 1:
+            items[0].setProperty('first', '1')
+            items[-1].setProperty('last', '1')
+        else:
+            items[0].setProperty('only', '1')
+
+        self.serverList.reset()
+        self.serverList.addItems(items)
+
+        self.getControl(800).setHeight((len(items) * 100) + 80)
+
+        self.setFocusId(self.SERVER_LIST_ID)
+
+    def selectServer(self):
+        mli = self.serverList.getSelectedItem()
+        if not mli:
             return
-        server = servers[idx]
+
+        server = mli.dataSource
+        self.setFocusId(self.SERVER_BUTTON_ID)
+
         if plexapp.SERVERMANAGER.setSelectedServer(server, force=True):
             self.serverRefresh()
 
-    def userOptions(self):
-        options = []
+    def showUsers(self):
+        items = []
         if len(plexapp.ACCOUNT.homeUsers) > 1:
-            options.append(('switch', 'Switch User...'))
-        options.append(('signout', 'Sign Out'))
+            items.append(kodigui.ManagedListItem('Switch User', data_source='switch'))
+        # items.append(kodigui.ManagedListItem('Settings', data_source='settings'))
+        items.append(kodigui.ManagedListItem('Sign Out', data_source='signout'))
 
-        idx = xbmcgui.Dialog().select('User Options', [o[1] for o in options])
-        if idx < 0:
+        if len(items) > 1:
+            items[0].setProperty('first', '1')
+            items[-1].setProperty('last', '1')
+        else:
+            items[0].setProperty('only', '1')
+
+        self.userList.reset()
+        self.userList.addItems(items)
+
+        self.getControl(801).setHeight((len(items) * 66) + 80)
+
+        self.setFocusId(self.USER_LIST_ID)
+
+    def selectUser(self):
+        mli = self.userList.getSelectedItem()
+        if not mli:
             return
 
-        self.closeOption = options[idx][0]
+        self.closeOption = mli.dataSource
+        self.setFocusId(self.USER_BUTTON_ID)
+
         self.doClose()
 
     def finished(self):

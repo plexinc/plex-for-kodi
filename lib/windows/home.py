@@ -416,13 +416,19 @@ class HomeWindow(kodigui.BaseWindow):
             else:
                 util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
 
-    def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
-        title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
+    def createGrandparentedListItem(self, obj, thumb_w, thumb_h, with_grandparent_title=False):
+        if with_grandparent_title and obj.grandparentTitle and obj.title:
+            title = '{0} - {1}'.format(obj.grandparentTitle, obj.title)
+        else:
+            title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
-    def createParentedListItem(self, obj, thumb_w, thumb_h):
-        title = obj.parentTitle or obj.title or ''
+    def createParentedListItem(self, obj, thumb_w, thumb_h, with_parent_title=False):
+        if with_parent_title and obj.parentTitle and obj.title:
+            title = '{0} - {1}'.format(obj.parentTitle, obj.title)
+        else:
+            title = obj.parentTitle or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
@@ -448,11 +454,11 @@ class HomeWindow(kodigui.BaseWindow):
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
             return mli
         elif obj.type == 'album':
-            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM, with_parent_title=True)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli
         elif obj.type == 'track':
-            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli = self.createGrandparentedListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli
         elif obj.type in ('photo', 'photodirectory'):
@@ -460,7 +466,7 @@ class HomeWindow(kodigui.BaseWindow):
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
             return mli
         elif obj.type == 'clip':
-            mli = self.createSimpleListItem(obj, *self.THUMB_AR16X9_DIM)
+            mli = self.createGrandparentedListItem(obj, *self.THUMB_AR16X9_DIM, with_grandparent_title=True)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
             return mli
         elif obj.type == 'artist':

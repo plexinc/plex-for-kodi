@@ -444,6 +444,7 @@
                     <control type="button" id="202">
                         <width>40</width>
                         <height>40</height>
+                        <onright>204</onright>
                         <onleft>201</onleft>
                         <ondown>50</ondown>
                         <font>font12</font>
@@ -458,6 +459,25 @@
                 <visible>Player.HasAudio</visible>
                 <posx>438</posx>
                 <posy>0</posy>
+                <control type="button" id="204">
+                    <visible>Player.HasAudio</visible>
+                    <posx>-10</posx>
+                    <posy>38</posy>
+                    <width>220</width>
+                    <height>75</height>
+                    <onleft>202</onleft>
+                    <ondown>50</ondown>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>100</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label> </label>
+                </control>
                 <control type="image">
                     <posx>0</posx>
                     <posy>48</posy>
@@ -465,28 +485,58 @@
                     <height>42</height>
                     <texture>$INFO[Player.Art(thumb)]</texture>
                 </control>
-                <control type="label">
-                    <posx>53</posx>
-                    <posy>48</posy>
-                    <width>200</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <info>MusicPlayer.Artist</info>
+
+                <control type="group">
+                    <visible>!Control.HasFocus(204)</visible>
+                    <control type="label">
+                        <posx>53</posx>
+                        <posy>48</posy>
+                        <width>200</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <info>MusicPlayer.Artist</info>
+                    </control>
+                    <control type="label">
+                        <posx>53</posx>
+                        <posy>72</posy>
+                        <width>200</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <info>MusicPlayer.Title</info>
+                    </control>
                 </control>
-                <control type="label">
-                    <posx>53</posx>
-                    <posy>72</posy>
-                    <width>200</width>
-                    <height>20</height>
-                    <font>font10</font>
-                    <align>left</align>
-                    <aligny>center</aligny>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <info>MusicPlayer.Title</info>
+                <control type="group">
+                    <visible>Control.HasFocus(204)</visible>
+                    <control type="label">
+                        <posx>53</posx>
+                        <posy>48</posy>
+                        <width>200</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>FF000000</textcolor>
+                        <info>MusicPlayer.Artist</info>
+                    </control>
+                    <control type="label">
+                        <posx>53</posx>
+                        <posy>72</posy>
+                        <width>200</width>
+                        <height>20</height>
+                        <font>font10</font>
+                        <align>left</align>
+                        <aligny>center</aligny>
+                        <textcolor>FF000000</textcolor>
+                        <info>MusicPlayer.Title</info>
+                    </control>
                 </control>
+
                 <control type="progress">
                     <description>Progressbar</description>
                     <posx>0</posx>

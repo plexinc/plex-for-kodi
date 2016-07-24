@@ -25,6 +25,8 @@ class PrePlayWindow(kodigui.BaseWindow):
     RESUME_BUTTON_ID = 301
     PLAY_BUTTON_ID = 302
 
+    PLAYER_STATUS_BUTTON_ID = 204
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
@@ -64,6 +66,8 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:
             self.playVideo()
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
 
     def playVideo(self, resume=False):
         player.PLAYER.playVideo(self.video, resume)
@@ -137,3 +141,8 @@ class PrePlayWindow(kodigui.BaseWindow):
                 idx += 1
 
         self.extraListControl.addItems(items)
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w

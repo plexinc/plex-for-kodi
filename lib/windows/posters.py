@@ -44,6 +44,7 @@ class PostersWindow(kodigui.BaseWindow):
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
+    PLAYER_STATUS_BUTTON_ID = 204
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -87,6 +88,8 @@ class PostersWindow(kodigui.BaseWindow):
             self.showPanelClicked()
         elif controlID == self.KEY_LIST_ID:
             self.keyClicked()
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
 
     def onFocus(self, controlID):
         if controlID == self.KEY_LIST_ID:
@@ -263,6 +266,11 @@ class PostersWindow(kodigui.BaseWindow):
 
         if keys:
             self.setProperty('key', keys[0])
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w
 
 
 class SquaresWindow(PostersWindow):

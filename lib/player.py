@@ -261,7 +261,7 @@ class PlexPlayer(xbmc.Player):
         li.setInfo('video', {'mediatype': self.video.type})
         self.play(url, li)
 
-    def playAudio(self, track, window=None):
+    def playAudio(self, track, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)
         pobj = plexplayer.PlexAudioPlayer(track)
         url = pobj.build()['url']  # .streams[0]['url']
@@ -275,6 +275,8 @@ class PlexPlayer(xbmc.Player):
             'discnumber': str(track.parentIndex),
             'tracknumber': str(track.index)
         })
+        if fanart:
+            li.setArt({'fanart': fanart})
         self.play(url, li)
 
     def onPlayBackStarted(self):

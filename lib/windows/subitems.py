@@ -32,6 +32,7 @@ class ShowWindow(kodigui.BaseWindow):
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
+    PLAYER_STATUS_BUTTON_ID = 204
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -72,6 +73,8 @@ class ShowWindow(kodigui.BaseWindow):
             self.doClose()
         elif controlID == self.SUB_ITEM_LIST_ID:
             self.subItemListClicked()
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
 
     def subItemListClicked(self):
         mli = self.subItemListControl.getSelectedItem()
@@ -109,6 +112,11 @@ class ShowWindow(kodigui.BaseWindow):
                 idx += 1
 
         self.subItemListControl.addItems(items)
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w
 
 
 class ArtistWindow(ShowWindow):

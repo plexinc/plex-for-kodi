@@ -86,6 +86,8 @@ class HomeWindow(kodigui.BaseWindow):
     SEARCH_BUTTON_ID = 203
     SERVER_LIST_ID = 260
 
+    PLAYER_STATUS_BUTTON_ID = 204
+
     HUB_AR16X9_00 = 400
     HUB_POSTER_01 = 401
     HUB_POSTER_02 = 402
@@ -210,6 +212,11 @@ class HomeWindow(kodigui.BaseWindow):
             elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.SEARCH_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
+                if xbmc.getCondVisibility('Player.HasMedia + Control.IsVisible({0})'.format(self.PLAYER_STATUS_BUTTON_ID)):
+                    self.setFocusId(self.PLAYER_STATUS_BUTTON_ID)
+                else:
+                    self.setFocusId(self.SERVER_BUTTON_ID)
+            elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
             if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
                 self.checkSectionItem()
@@ -241,6 +248,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.showUsers()
         elif controlID == self.USER_LIST_ID:
             self.selectUser()
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
         elif 399 < controlID < 500:
             self.hubItemClicked(controlID)
 
@@ -575,6 +584,11 @@ class HomeWindow(kodigui.BaseWindow):
         self.setFocusId(self.USER_BUTTON_ID)
 
         self.doClose()
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w
 
     def finished(self):
         if self.task:

@@ -49,8 +49,15 @@ class MusicPlayerWindow(kodigui.BaseDialog):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.track = kwargs.get('track')
         self.album = kwargs.get('album')
-        self.duration = self.track.duration.asInt()
         self.selectedOffset = 0
+
+        if self.track:
+            self.duration = self.track.duration.asInt()
+        else:
+            try:
+                self.duration = player.PLAYER.getTotalTime() * 1000
+            except RuntimeError:  # Not playing
+                self.duration = 0
 
     def onFirstInit(self):
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
@@ -139,14 +146,21 @@ class MusicPlayerWindow(kodigui.BaseDialog):
         pass
 
     def setProperties(self):
-        self.setProperty(
-            'background',
-            self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
-        )
-        self.setProperty('thumb', self.track.thumb.asTranscodedImageURL(756, 756))
+        if self.track:
+            self.setProperty(
+                'background',
+                self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            )
+            self.setProperty('thumb', self.track.thumb.asTranscodedImageURL(756, 756))
+        else:
+            self.setProperty('background', xbmc.getInfoLabel('Player.Art(fanart)'))
+            self.setProperty('thumb', xbmc.getInfoLabel('Player.Art(thumb)'))
 
     def play(self):
+        if not self.track:
+            return
+
         if util.trackIsPlaying(self.track):
             return
 
-        player.PLAYER.playAudio(self.track, window=self)
+        player.PLAYER.playAudio(self.track, window=self, fanart=self.getProperty('background'))

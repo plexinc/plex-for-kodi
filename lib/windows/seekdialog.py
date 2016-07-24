@@ -123,6 +123,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.bigSeekSelected()
 
     def videoSettingsHaveChanged(self):
+        util.TEST(self.initialVideoSettings)
+        util.TEST(self.player.video.settings.prefOverrides)
         if (
             self.player.video.settings.prefOverrides != self.initialVideoSettings or
             self.player.video.selectedAudioStream() != self.initialAudioStream or

@@ -23,6 +23,9 @@ class BaseFunctions:
         # Not automatically called. Can be used by an external window manager
         pass
 
+    def onClosed(self):
+        pass
+
     @classmethod
     def open(cls, **kwargs):
         window = cls(cls.xmlFile, cls.path, cls.theme, cls.res, **kwargs)
@@ -40,6 +43,7 @@ class BaseFunctions:
     def modal(self):
         self.isOpen = True
         self.doModal()
+        self.onClosed()
         self.isOpen = False
 
     def mouseXTrans(self, val):

@@ -87,6 +87,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.player._playVideo(offset, seeking=self.seeking)
 
     def closeSeekDialog(self):
+        util.CRON.forceTick()
         if self.dialog:
             self.dialog.doClose()
 

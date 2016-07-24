@@ -385,10 +385,12 @@ class Cron(threading.Thread):
 
     def registerReceiver(self, receiver):
         if receiver not in self._receivers:
+            DEBUG_LOG('Cron: Receiver added: {0}'.format(receiver))
             self._receivers.append(receiver)
 
     def cancelReceiver(self, receiver):
         if receiver in self._receivers:
+            DEBUG_LOG('Cron: Receiver canceled: {0}'.format(receiver))
             self._receivers.pop(self._receivers.index(receiver))
 
 

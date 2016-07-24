@@ -20,6 +20,11 @@ def waitForThreads():
 
 
 def main():
+    with util.Cron(5):
+        _main()
+
+
+def _main():
     util.DEBUG_LOG('STARTED: {0}'.format(util.ADDON.getAddonInfo('version')))
     back = background.BackgroundWindow.create()
     background.setSplash()
@@ -64,6 +69,7 @@ def main():
     finally:
         player.PLAYER.close(shutdown=True)
         plexapp.APP.preShutdown()
+        util.CRON.stop()
         backgroundthread.BGThreader.shutdown()
         plexapp.APP.shutdown()
         waitForThreads()

@@ -65,9 +65,7 @@ class PlexInterface(plexapp.AppInterface):
     }
 
     def getPreference(self, pref, default=None):
-        if pref == 'burn_subtitles':
-            return ('always', 'image', 'auto')[util.getSetting('burn_subtitles', 0)]
-        elif pref == 'allow_insecure':
+        if pref == 'allow_insecure':
             return ('never', 'same_network', 'always')[util.getSetting('allow_insecure', 0)]
         else:
             return util.getSetting(pref, default)

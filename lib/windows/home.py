@@ -245,9 +245,9 @@ class HomeWindow(kodigui.BaseWindow):
         elif controlID == self.SERVER_LIST_ID:
             self.selectServer()
         elif controlID == self.USER_BUTTON_ID:
-            self.showUsers()
+            self.showUserMenu()
         elif controlID == self.USER_LIST_ID:
-            self.selectUser()
+            self.doUserOption()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
         elif 399 < controlID < 500:
@@ -561,11 +561,11 @@ class HomeWindow(kodigui.BaseWindow):
         if plexapp.SERVERMANAGER.setSelectedServer(server, force=True):
             self.serverRefresh()
 
-    def showUsers(self):
+    def showUserMenu(self):
         items = []
         if len(plexapp.ACCOUNT.homeUsers) > 1:
             items.append(kodigui.ManagedListItem('Switch User', data_source='switch'))
-        # items.append(kodigui.ManagedListItem('Settings', data_source='settings'))
+        items.append(kodigui.ManagedListItem('Settings', data_source='settings'))
         items.append(kodigui.ManagedListItem('Sign Out', data_source='signout'))
 
         if len(items) > 1:
@@ -581,15 +581,21 @@ class HomeWindow(kodigui.BaseWindow):
 
         self.setFocusId(self.USER_LIST_ID)
 
-    def selectUser(self):
+    def doUserOption(self):
         mli = self.userList.getSelectedItem()
         if not mli:
             return
 
-        self.closeOption = mli.dataSource
+        option = mli.dataSource
+
         self.setFocusId(self.USER_BUTTON_ID)
 
-        self.doClose()
+        if option == 'settings':
+            import settings
+            settings.SettingsWindow.open()
+        else:
+            self.closeOption = option
+            self.doClose()
 
     def showAudioPlayer(self):
         import musicplayer

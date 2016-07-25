@@ -113,6 +113,8 @@ class HomeWindow(kodigui.BaseWindow):
     HUB_SQUARE_21 = 421
     HUB_SQUARE_22 = 422
 
+    HUB_AR16X9_23 = 423
+
     HUBMAP = {
         # HOME
         'home.continue': {'index': 0, 'with_progress': True, 'with_art': True},
@@ -164,6 +166,7 @@ class HomeWindow(kodigui.BaseWindow):
         'video.random.decade': {'index': 17, 'ar16x9': True},
         'video.inprogress': {'index': 18, 'with_progress': True, 'ar16x9': True},
         'video.unwatched.random': {'index': 19, 'ar16x9': True},
+        'video.recentlyviewed': {'index': 23, 'ar16x9': True},
     }
 
     THUMB_POSTER_DIM = (287, 425)
@@ -208,9 +211,10 @@ class HomeWindow(kodigui.BaseWindow):
             kodigui.ManagedControlList(self, self.HUB_SQUARE_20, 5),
             kodigui.ManagedControlList(self, self.HUB_SQUARE_21, 5),
             kodigui.ManagedControlList(self, self.HUB_SQUARE_22, 5),
+            kodigui.ManagedControlList(self, self.HUB_AR16X9_23, 5),
         )
 
-        self.hubFocusIndexes = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 22, 13, 14, 15)
+        self.hubFocusIndexes = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 22, 13, 14, 15, 23)
 
         self.bottomItem = 0
         if self.serverRefresh():

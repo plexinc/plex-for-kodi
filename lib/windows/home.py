@@ -284,6 +284,10 @@ class HomeWindow(kodigui.BaseWindow):
 
     @busy.dialog()
     def serverRefresh(self):
+        backgroundthread.BGThreader.reset()
+        if self.task:
+            self.task.cancel()
+
         self.setProperty('hub.focus', '')
         self.displayServerAndUser()
         if not plexapp.SERVERMANAGER.selectedServer:

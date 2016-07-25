@@ -22,7 +22,8 @@ class Task:
 
 
 class BackgroundThreader:
-    def __init__(self):
+    def __init__(self, name=None):
+        self.name = name
         self._queue = Queue.LifoQueue()
         self._thread = None
         self._abort = False
@@ -36,11 +37,15 @@ class BackgroundThreader:
         except:
             util.ERROR()
 
+    def abort(self):
+        self._abort = True
+        return self
+
     def aborted(self):
         return self._abort or xbmc.abortRequested
 
     def start(self):
-        self._thread = threading.Thread(target=self._queueLoop, name='BACKGROUND-WORKER')
+        self._thread = threading.Thread(target=self._queueLoop, name='BACKGROUND-WORKER({0})'.format(self.name))
         self._thread.start()
 
     def _queueLoop(self):
@@ -52,22 +57,22 @@ class BackgroundThreader:
                 self._queue.task_done()
                 self._task = None
         except Queue.Empty:
-            util.DEBUG_LOG('Background queue: Empty')
+            util.DEBUG_LOG('Background queue ({0}): Empty'.format(self.name))
 
         self._queue = Queue.LifoQueue()
 
-        util.DEBUG_LOG('Background queue: Finished')
+        util.DEBUG_LOG('Background queue ({0}): Finished'.format(self.name))
 
     def shutdown(self):
-        self._abort = True
+        self.abort()
 
         if self._task:
             self._task.cancel()
 
         if self._thread and self._thread.isAlive():
-            util.DEBUG_LOG('Background thread: Waiting...')
+            util.DEBUG_LOG('Background thread ({0}): Waiting...'.format(self.name))
             self._thread.join()
-            util.DEBUG_LOG('Background thread: Done')
+            util.DEBUG_LOG('Background thread ({0}): Done'.format(self.name))
 
     def addTask(self, task):
         self._queue.put(task)
@@ -85,4 +90,27 @@ class BackgroundThreader:
     def working(self):
         return not self._queue.empty()
 
-BGThreader = BackgroundThreader()
+
+class ThreaderManager:
+    def __init__(self):
+        self.index = 0
+        self.abandoned = []
+        self.threader = BackgroundThreader(str(self.index))
+
+    def __getattr__(self, name):
+        return getattr(self.threader, name)
+
+    def reset(self):
+        if self.threader._queue.empty() and not self.threader._task:
+            return
+
+        self.index += 1
+        self.abandoned.append(self.threader.abort())
+        self.threader = BackgroundThreader(str(self.index))
+
+    def shutdown(self):
+        self.threader.shutdown()
+        for a in self.abandoned:
+            a.shutdown()
+
+BGThreader = ThreaderManager()

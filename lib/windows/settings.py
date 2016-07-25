@@ -68,6 +68,9 @@ class QualitySetting(BasicSetting):
     def optionLabels(self):
         return self.QUALITY
 
+    def optionIndex(self):
+        return 13 - self.get()
+
     def set(self, val):
         BasicSetting.set(self, 13 - val)
 
@@ -90,6 +93,14 @@ class OptionsSetting(BasicSetting):
 
     def optionLabels(self):
         return [o[1] for o in self.options]
+
+    def optionIndex(self):
+        val = self.get()
+        for i, o in enumerate(self.options):
+            if val == o[0]:
+                return i
+
+        return 0
 
 
 class Settings(object):
@@ -214,12 +225,8 @@ class SettingsWindow(kodigui.BaseWindow):
         for setting in settings:
             item = kodigui.ManagedListItem(setting.label, setting.type != 'BOOL' and setting.valueLabel() or '', data_source=setting)
             if setting.type == 'BOOL':
-                val = setting.get()
-                if val is True:
-                    item.setProperty('checkbox.checked', '1')
-
-                if val is False:
-                    item.setProperty('checkbox', '1')
+                item.setProperty('checkbox', '1')
+                item.setProperty('checkbox.checked', setting.get() and '1' or '')
 
             items.append(item)
 
@@ -232,8 +239,6 @@ class SettingsWindow(kodigui.BaseWindow):
             return
 
         setting = mli.dataSource
-
-        util.TEST(setting)
 
         if setting.type in ('LIST', 'OPTIONS'):
             self.fillList(setting)
@@ -271,18 +276,12 @@ class SettingsWindow(kodigui.BaseWindow):
 
         self.optionsList.reset()
         self.optionsList.addItems(items)
+        self.optionsList.selectItem(setting.optionIndex())
         self.setFocusId(self.OPTIONS_LIST_ID)
 
     def toggleBool(self, mli, setting):
         setting.set(not setting.get())
-        val = setting.get()
-        if val is True:
-            mli.setProperty('checkbox.checked', '1')
-            mli.setProperty('checkbox', '')
-
-        if val is False:
-            mli.setProperty('checkbox', '1')
-            mli.setProperty('checkbox.checked', '')
+        mli.setProperty('checkbox.checked', setting.get() and '1' or '')
 
 
 class SelectDialog(kodigui.BaseDialog, util.CronReceiver):

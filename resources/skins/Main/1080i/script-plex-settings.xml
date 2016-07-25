@@ -30,7 +30,7 @@
             <posy>0</posy>
             <control type="group">
                 <control type="group">
-                    <visible>!Control.HasFocus(125)</visible>
+                    <animation effect="slide" end="-297,0" time="200" tween="quadratic" easing="out" condition="Control.HasFocus(125)">Conditional</animation>
                     <control type="image">
                         <posx>843</posx>
                         <posy>135</posy>
@@ -48,25 +48,6 @@
                         <colordiffuse>32000000</colordiffuse>
                     </control>
                 </control>
-                <control type="group">
-                    <visible>Control.HasFocus(125)</visible>
-                    <control type="image">
-                        <posx>843</posx>
-                        <posy>135</posy>
-                        <width>780</width>
-                        <height>945</height>
-                        <texture>script.plex/white-square.png</texture>
-                        <colordiffuse>32111111</colordiffuse>
-                    </control>
-                    <control type="image">
-                        <posx>0</posx>
-                        <posy>810</posy>
-                        <width>1623</width>
-                        <height>270</height>
-                        <texture>script.plex/white-square.png</texture>
-                        <colordiffuse>32000000</colordiffuse>
-                    </control>
-                </control>
                 <control type="image">
                     <posx>843</posx>
                     <posy>810</posy>
@@ -76,8 +57,8 @@
                     <colordiffuse>32111111</colordiffuse>
                 </control>
                 <control type="image">
-                    <visible>Control.HasFocus(125)</visible>
-                    <posx>1623</posx>
+                    <animation effect="slide" end="-297,0" time="200" tween="quadratic" easing="out" condition="Control.HasFocus(125)">Conditional</animation>
+                    <posx>1920</posx>
                     <posy>135</posy>
                     <width>879</width>
                     <height>945</height>
@@ -178,6 +159,7 @@
                     <onleft>75</onleft>
                     <scrolltime>200</scrolltime>
                     <orientation>vertical</orientation>
+                    <pagecontrol>101</pagecontrol>
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout height="75">
                         <control type="group">
@@ -223,7 +205,7 @@
                                 <posy>0</posy>
                                 <width>45</width>
                                 <height>45</height>
-                                <texture border="10">script.plex/settings/checkbox.png</texture>
+                                <texture colordiffuse="EE000000" border="10">script.plex/settings/checkbox.png</texture>
                             </control>
                             <control type="image">
                                 <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
@@ -231,7 +213,7 @@
                                 <posy>0</posy>
                                 <width>45</width>
                                 <height>45</height>
-                                <texture border="10">script.plex/settings/checkbox-checked.png</texture>
+                                <texture>script.plex/settings/checkmark.png</texture>
                             </control>
                         </control>
                     </itemlayout>
@@ -289,7 +271,7 @@
                             </control>
                         </control>
                         <control type="group">
-                            <visible>!Control.HasFocus(100)</visible>
+                            <visible>!Control.HasFocus(100) + !Control.HasFocus(125)</visible>
                             <posx>88</posx>
                             <posy>40</posy>
                             <control type="label">
@@ -332,7 +314,7 @@
                                 <posy>0</posy>
                                 <width>45</width>
                                 <height>45</height>
-                                <texture border="10">script.plex/settings/checkbox.png</texture>
+                                <texture colordiffuse="EE000000" border="10">script.plex/settings/checkbox.png</texture>
                             </control>
                             <control type="image">
                                 <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
@@ -340,10 +322,28 @@
                                 <posy>0</posy>
                                 <width>45</width>
                                 <height>45</height>
-                                <texture border="10">script.plex/settings/checkbox-checked.png</texture>
+                                <texture>script.plex/settings/checkmark.png</texture>
                             </control>
                         </control>
                     </focusedlayout>
+                </control>
+
+                <control type="scrollbar" id="101">
+                    <visible>Control.IsVisible(100) + !Control.IsVisible(125)</visible>
+                    <left>1388</left>
+                    <top>40</top>
+                    <width>9</width>
+                    <height>525</height>
+                    <visible>true</visible>
+                    <texturesliderbackground colordiffuse="66000000" border="4">script.plex/white-square-rounded-4r.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="66FFFFFF" border="4">script.plex/white-square-rounded-4r.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFE5A00D" border="4">script.plex/white-square-rounded-4r.png</texturesliderbarfocus>
+                    <textureslidernib>-</textureslidernib>
+                    <textureslidernibfocus>-</textureslidernibfocus>
+                    <pulseonselect>false</pulseonselect>
+                    <orientation>vertical</orientation>
+                    <showonepage>false</showonepage>
+                    <onleft>151</onleft>
                 </control>
 
                 <control type="list" id="125">
@@ -357,6 +357,7 @@
                     <onleft>100</onleft>
                     <scrolltime>200</scrolltime>
                     <orientation>vertical</orientation>
+                    <pagecontrol>126</pagecontrol>
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout height="75">
                         <control type="group">
@@ -365,7 +366,7 @@
                             <control type="label">
                                 <posx>0</posx>
                                 <posy>0</posy>
-                                <width>594</width>
+                                <width>594</width>4
                                 <height>75</height>
                                 <font>font12</font>
                                 <align>left</align>
@@ -380,6 +381,18 @@
                                 <height>2</height>
                                 <texture>script.plex/white-square.png</texture>
                                 <colordiffuse>661F1F1F</colordiffuse>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <posx>637</posx>
+                            <posy>55</posy>
+                            <control type="image">
+                                <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>45</width>
+                                <height>45</height>
+                                <texture>script.plex/settings/checkmark.png</texture>
                             </control>
                         </control>
                     </itemlayout>
@@ -413,7 +426,37 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                         </control>
+                        <control type="group">
+                            <posx>637</posx>
+                            <posy>55</posy>
+                            <control type="image">
+                                <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>45</width>
+                                <height>45</height>
+                                <texture>script.plex/settings/checkmark.png</texture>
+                            </control>
+                        </control>
                     </focusedlayout>
+                </control>
+
+                <control type="scrollbar" id="126">
+                    <visible>Control.IsVisible(125)</visible>
+                    <left>2161</left>
+                    <top>40</top>
+                    <width>9</width>
+                    <height>525</height>
+                    <visible>true</visible>
+                    <texturesliderbackground colordiffuse="66000000" border="4">script.plex/white-square-rounded-4r.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="66FFFFFF" border="4">script.plex/white-square-rounded-4r.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFE5A00D" border="4">script.plex/white-square-rounded-4r.png</texturesliderbarfocus>
+                    <textureslidernib>-</textureslidernib>
+                    <textureslidernibfocus>-</textureslidernibfocus>
+                    <pulseonselect>false</pulseonselect>
+                    <orientation>vertical</orientation>
+                    <showonepage>false</showonepage>
+                    <onleft>151</onleft>
                 </control>
 
             </control>

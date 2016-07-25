@@ -109,6 +109,10 @@ class HomeWindow(kodigui.BaseWindow):
     HUB_AR16X9_18 = 418
     HUB_AR16X9_19 = 419
 
+    HUB_SQUARE_20 = 420
+    HUB_SQUARE_21 = 421
+    HUB_SQUARE_22 = 422
+
     HUBMAP = {
         # HOME
         'home.continue': {'index': 0, 'with_progress': True, 'with_art': True},
@@ -143,13 +147,17 @@ class HomeWindow(kodigui.BaseWindow):
         'music.recent.added': {'index': 9},
         'music.recent.artist': {'index': 10},
         'music.recent.genre': {'index': 11},
-        'music.popular': {'index': 12},
-        'music.videos.popular.new': {'index': 17},
-        'music.videos.recent.artists': {'index': 18},
+        'music.top.period': {'index': 12},
+        'music.popular': {'index': 20},
+        'music.recent.label': {'index': 21},
+        'music.touring': {'index': 22},
+        'music.videos.popular.new': {'index': 18},
+        'music.videos.recent.artists': {'index': 19},
         # PHOTO
         'photo.recent': {'index': 5},
         'photo.random.year': {'index': 9},
         'photo.random.decade': {'index': 10},
+        'photo.random.dayormonth': {'index': 11},
         # VIDEO
         'video.recent': {'index': 0, 'ar16x9': True},
         'video.random.year': {'index': 6, 'ar16x9': True},
@@ -197,7 +205,12 @@ class HomeWindow(kodigui.BaseWindow):
             kodigui.ManagedControlList(self, self.HUB_AR16X9_17, 5),
             kodigui.ManagedControlList(self, self.HUB_AR16X9_18, 5),
             kodigui.ManagedControlList(self, self.HUB_AR16X9_19, 5),
+            kodigui.ManagedControlList(self, self.HUB_SQUARE_20, 5),
+            kodigui.ManagedControlList(self, self.HUB_SQUARE_21, 5),
+            kodigui.ManagedControlList(self, self.HUB_SQUARE_22, 5),
         )
+
+        self.hubFocusIndexes = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 17, 18, 19, 20, 21, 22, 13, 14, 15)
 
         self.bottomItem = 0
         if self.serverRefresh():
@@ -255,7 +268,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
-            self.setProperty('hub.focus', str(controlID + 100))
+            self.setProperty('hub.focus', str(self.hubFocusIndexes[controlID - 400]))
 
         if controlID == self.SECTION_LIST_ID:
             self.checkSectionItem()

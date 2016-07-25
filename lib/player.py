@@ -60,6 +60,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.duration = 0
         self.offset = 0
         self.seeking = self.NO_SEEK
+        self.seekOnStart = 0
 
     def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
         self.seeking = seeking
@@ -92,6 +93,9 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.dialog.doClose()
 
     def onPlayBackStarted(self):
+        if self.seekOnStart:
+            self.player.seekTime(self.seekOnStart)
+
         subs = self.player.video.selectedSubtitleStream()
         if subs:
             xbmc.sleep(100)
@@ -125,6 +129,10 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.player.close()
 
     def onPlayBackSeek(self, time, offset):
+        if self.seekOnStart:
+            self.seekOnStart = 0
+            return
+
         self.seeking = self.SEEK_INIT
         self.player.control('pause')
         self.updateOffset()
@@ -252,7 +260,8 @@ class PlexPlayer(xbmc.Player):
 
     def _playVideo(self, offset=0, seeking=0):
         pobj = plexplayer.PlexPlayer(self.video, offset)
-        url = pobj.build().streamUrls[0]
+        meta = pobj.build()
+        url = meta.streamUrls[0]
         bifURL = pobj.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
@@ -260,6 +269,8 @@ class PlexPlayer(xbmc.Player):
         li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
         li.setInfo('video', {'mediatype': self.video.type})
         self.play(url, li)
+        if offset and not meta.isTranscoded:
+            self.handler.seekOnStart = meta.playStart
 
     def playAudio(self, track, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)

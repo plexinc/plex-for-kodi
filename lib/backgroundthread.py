@@ -49,7 +49,7 @@ class BackgroundThreader:
         self._thread.start()
 
     def _queueLoop(self):
-        util.DEBUG_LOG('Background queue: Active')
+        util.DEBUG_LOG('BGThreader: queue: Active')
         try:
             while not self.aborted():
                 self._task = self._queue.get_nowait()
@@ -57,11 +57,11 @@ class BackgroundThreader:
                 self._queue.task_done()
                 self._task = None
         except Queue.Empty:
-            util.DEBUG_LOG('Background queue ({0}): Empty'.format(self.name))
+            util.DEBUG_LOG('BGThreader: queue ({0}): Empty'.format(self.name))
 
         self._queue = Queue.LifoQueue()
 
-        util.DEBUG_LOG('Background queue ({0}): Finished'.format(self.name))
+        util.DEBUG_LOG('BGThreader: queue ({0}): Finished'.format(self.name))
 
     def shutdown(self):
         self.abort()
@@ -70,9 +70,9 @@ class BackgroundThreader:
             self._task.cancel()
 
         if self._thread and self._thread.isAlive():
-            util.DEBUG_LOG('Background thread ({0}): Waiting...'.format(self.name))
+            util.DEBUG_LOG('BGThreader: thread ({0}): Waiting...'.format(self.name))
             self._thread.join()
-            util.DEBUG_LOG('Background thread ({0}): Done'.format(self.name))
+            util.DEBUG_LOG('BGThreader: thread ({0}): Done'.format(self.name))
 
     def addTask(self, task):
         self._queue.put(task)

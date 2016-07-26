@@ -67,6 +67,7 @@ def _main():
     except:
         util.ERROR()
     finally:
+        background.setShutdown()
         player.PLAYER.close(shutdown=True)
         plexapp.APP.preShutdown()
         util.CRON.stop()

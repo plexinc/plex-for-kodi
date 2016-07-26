@@ -439,7 +439,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h, with_grandparent_title=False):
         if with_grandparent_title and obj.grandparentTitle and obj.title:
-            title = '{0} - {1}'.format(obj.grandparentTitle, obj.title)
+            title = u'{0} - {1}'.format(obj.grandparentTitle, obj.title)
         else:
             title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
@@ -447,7 +447,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def createParentedListItem(self, obj, thumb_w, thumb_h, with_parent_title=False):
         if with_parent_title and obj.parentTitle and obj.title:
-            title = '{0} - {1}'.format(obj.parentTitle, obj.title)
+            title = u'{0} - {1}'.format(obj.parentTitle, obj.title)
         else:
             title = obj.parentTitle or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)

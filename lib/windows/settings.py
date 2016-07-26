@@ -176,10 +176,13 @@ class SettingsWindow(kodigui.BaseWindow):
     def onAction(self, action):
         try:
             self.checkSection()
+            controlID = self.getFocusId()
             if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                 if self.getFocusId() == self.OPTIONS_LIST_ID:
                     self.setFocusId(self.SETTINGS_LIST_ID)
                     return
+            elif action == xbmcgui.ACTION_MOVE_RIGHT and controlID == 150:
+                self.editSetting(from_right=True)
         except:
             util.ERROR()
 
@@ -233,7 +236,7 @@ class SettingsWindow(kodigui.BaseWindow):
         self.settingsList.reset()
         self.settingsList.addItems(items)
 
-    def editSetting(self):
+    def editSetting(self, from_right=False):
         mli = self.settingsList.getSelectedItem()
         if not mli:
             return
@@ -242,7 +245,7 @@ class SettingsWindow(kodigui.BaseWindow):
 
         if setting.type in ('LIST', 'OPTIONS'):
             self.fillList(setting)
-        elif setting.type == 'BOOL':
+        elif setting.type == 'BOOL' and not from_right:
             self.toggleBool(mli, setting)
 
     def changeSetting(self):

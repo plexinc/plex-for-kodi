@@ -49,7 +49,7 @@ class BackgroundThreader:
         self._thread.start()
 
     def _queueLoop(self):
-        util.DEBUG_LOG('BGThreader: queue: Active')
+        util.DEBUG_LOG('BGThreader: queue{0}: Active'.format(self.name))
         try:
             while not self.aborted():
                 self._task = self._queue.get_nowait()

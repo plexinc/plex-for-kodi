@@ -67,6 +67,13 @@ class App(signalsmixin.SignalsMixin):
         if requestContext.callback:
             requestContext.callback(None, requestContext)
 
+    def delRequest(self, request):
+        requestID = request.getIdentity()
+        if requestID not in self.pendingRequests:
+            return
+
+        del self.pendingRequests[requestID]
+
     def addInitializer(self, name):
         self.initializers[name] = True
 
@@ -91,13 +98,21 @@ class App(signalsmixin.SignalsMixin):
             timer.cancel()
 
     def preShutdown(self):
+        import http
+        http.HttpRequest._cancel = True
+        if self.pendingRequests:
+            util.DEBUG_LOG('Closing down {0} App() requests'.format(len(self.pendingRequests)))
+            for p in self.pendingRequests.values():
+                if p:
+                    p.request.cancel()
+
         if self.timers:
             util.DEBUG_LOG('Canceling App() timers')
             self.cancelAllTimers()
 
     def shutdown(self):
         if self.timers:
-            util.DEBUG_LOG('Waiting for App() timers: Started')
+            util.DEBUG_LOG('Waiting for {0} App() timers: Started'.format(len(self.timers)))
 
             self.cancelAllTimers()
 

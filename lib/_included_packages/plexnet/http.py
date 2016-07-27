@@ -1,5 +1,6 @@
 import re
 import requests
+import socket
 import threading
 import urllib
 import mimetypes
@@ -38,14 +39,16 @@ class RequestContext(dict):
 
 
 class HttpRequest(object):
+    _cancel = False
+
     def __init__(self, url, method=None, forceCertificate=False):
         self.hasParams = '?' in url
         self.ignoreResponse = False
         self.session = requests.session()
+        self.currentResponse = None
         self.method = method
         self.url = url
         self.thread = None
-        self._cancel = False
 
         # Use our specific plex.direct CA cert if applicable to improve performance
         # if forceCertificate or url[:5] == "https":  # TODO: ---------------------------------------------------------------------------------IMPLEMENT
@@ -55,6 +58,10 @@ class HttpRequest(object):
         #     else:
         #         self.session.cert = os.path.join(certsPath, 'ca-bundle.crt')
 
+    def removeAsPending(self):
+        import plexapp
+        plexapp.APP.delRequest(self)
+
     def startAsync(self, *args, **kwargs):
         self.logRequest(kwargs.get('body'))
         self.thread = threading.Thread(target=self._startAsync, args=args, kwargs=kwargs, name='HTTP-ASYNC:{0}'.format(self.url))
@@ -62,6 +69,9 @@ class HttpRequest(object):
         return True
 
     def _startAsync(self, body=None, contentType=None, context=None):
+        if self._cancel:
+            return self.removeAsPending()
+
         try:
             if body is not None:
                 if not contentType:
@@ -69,17 +79,21 @@ class HttpRequest(object):
                 else:
                     self.session.headers.update({"Content-Type": mimetypes.guess_type(contentType)})
 
-                res = self.session.post(self.url, data=body, timeout=10)
+                res = self.session.post(self.url, data=body, timeout=10, stream=True)
             else:
-                res = self.session.get(self.url, timeout=10)
+                res = self.session.get(self.url, timeout=10, stream=True)
+
+            self.currentResponse = res
 
             if self._cancel:
-                return
+                return self.removeAsPending()
         except Exception, e:
             util.ERROR('Request failed', e)
-            return
+            return self.removeAsPending()
 
         self.onResponse(res, context)
+
+        self.removeAsPending()
 
     def getToStringWithTimeout(self, seconds=10):
         return self.getPostToStringWithTimeout(seconds)
@@ -89,12 +103,20 @@ class HttpRequest(object):
 
     def getPostToStringWithTimeout(self, seconds=10, body=None):
         # This is a blocking request, so make sure it uses a unique message port
+        if self._cancel:
+            return
+
         self.logRequest(body, seconds, False)
         try:
             if body is not None:
-                res = self.session.post(self.url, data=body, timeout=seconds)
+                res = self.session.post(self.url, data=body, timeout=seconds, stream=True)
             else:
-                res = self.session.get(self.url, timeout=seconds)
+                res = self.session.get(self.url, timeout=seconds, stream=True)
+
+            self.currentResponse = res
+
+            if self._cancel:
+                return
 
             util.LOG("Got a {0} from {1}".format(res.status_code, self.url))
             # self.event = msg
@@ -110,8 +132,28 @@ class HttpRequest(object):
     def getUrl(self):
         return self.url
 
+    def killSocket(self):
+        if not self.currentResponse:
+            return
+
+        try:
+            socket.fromfd(self.currentResponse.raw.fileno(), socket.AF_INET, socket.SOCK_STREAM).shutdown(socket.SHUT_RDWR)
+            return
+        except AttributeError:
+            pass
+        except Exception, e:
+            util.ERROR(err=e)
+
+        try:
+            self.currentResponse.raw._fp.fp._sock.shutdown(socket.SHUT_RDWR)
+        except AttributeError:
+            pass
+        except Exception, e:
+            util.ERROR(err=e)
+
     def cancel(self):
         self._cancel = True
+        self.killSocket()
 
     def addParam(self, encodedName, value):
         if self.hasParams:
@@ -152,6 +194,9 @@ class HttpRequest(object):
 class HttpResponse(object):
     def __init__(self, event):
         self.event = event
+        if self.event:
+            self.event.content  # force data to be read
+            self.event.close()
 
     def isSuccess(self):
         if not self.event:

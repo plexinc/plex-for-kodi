@@ -70,7 +70,7 @@
             <control type="group" id="50">
                 <posx>248</posx>
                 <posy>168</posy>
-                <defaultcontrol>100</defaultcontrol>
+                <defaultcontrol always="true">75</defaultcontrol>
                 <control type="list" id="75">
                     <posx>0</posx>
                     <posy>0</posy>
@@ -108,35 +108,43 @@
                         </control>
                     </itemlayout>
                     <focusedlayout height="75">
-                        <control type="image">
-                            <posx>0</posx>
-                            <posy>0</posy>
-                            <width>590</width>
-                            <height>155</height>
-                            <texture border="42">script.plex/drop-shadow.png</texture>
-                        </control>
-                        <control type="image">
-                            <visible>Control.HasFocus(75)</visible>
-                            <posx>40</posx>
-                            <posy>40</posy>
-                            <width>510</width>
-                            <height>75</height>
-                            <texture colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texture>
-                        </control>
-                        <control type="image">
-                            <visible>!Control.HasFocus(75)</visible>
-                            <posx>40</posx>
-                            <posy>40</posy>
-                            <width>510</width>
-                            <height>75</height>
-                            <texture colordiffuse="FFCC7B19" border="10">script.plex/white-square-rounded.png</texture>
-                        </control>
                         <control type="group">
-                            <posx>88</posx>
-                            <posy>40</posy>
-                            <control type="label">
+                            <visible>ControlGroup(50).HasFocus(0)</visible>
+                            <control type="image">
                                 <posx>0</posx>
                                 <posy>0</posy>
+                                <width>590</width>
+                                <height>155</height>
+                                <texture border="42">script.plex/drop-shadow.png</texture>
+                            </control>
+                            <control type="image">
+                                <visible>Control.HasFocus(75)</visible>
+                                <posx>40</posx>
+                                <posy>40</posy>
+                                <width>510</width>
+                                <height>75</height>
+                                <texture colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texture>
+                            </control>
+                            <control type="image">
+                                <visible>!Control.HasFocus(75)</visible>
+                                <posx>40</posx>
+                                <posy>40</posy>
+                                <width>510</width>
+                                <height>75</height>
+                                <texture colordiffuse="FFCC7B19" border="10">script.plex/white-square-rounded.png</texture>
+                            </control>
+                            <control type="image">
+                                <visible>!Control.HasFocus(75)</visible>
+                                <posx>512</posx>
+                                <posy>66</posy>
+                                <width>16</width>
+                                <height>23</height>
+                                <texture>script.plex/settings/expanded.png</texture>
+                                <colordiffuse>FF000000</colordiffuse>
+                            </control>
+                            <control type="label">
+                                <posx>88</posx>
+                                <posy>40</posy>
                                 <width>414</width>
                                 <height>75</height>
                                 <font>font12</font>
@@ -146,10 +154,23 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                         </control>
+                        <control type="label">
+                            <visible>!ControlGroup(50).HasFocus(0)</visible>
+                            <posx>88</posx>
+                            <posy>40</posy>
+                            <width>414</width>
+                            <height>75</height>
+                            <font>font12</font>
+                            <align>left</align>
+                            <aligny>center</aligny>
+                            <textcolor>FFFFFFFF</textcolor>
+                            <label>$INFO[ListItem.Label]</label>
+                        </control>
                     </focusedlayout>
                 </control>
 
                 <control type="list" id="100">
+                    <visible>IntegerGreaterThan(Container(100).NumItems,0)</visible>
                     <posx>604</posx>
                     <posy>0</posy>
                     <width>776</width>
@@ -243,6 +264,15 @@
                                 <width>696</width>
                                 <height>75</height>
                                 <texture colordiffuse="FFCC7B19" border="10">script.plex/white-square-rounded.png</texture>
+                            </control>
+                            <control type="image">
+                                <visible>Control.HasFocus(125)</visible>
+                                <posx>698</posx>
+                                <posy>66</posy>
+                                <width>16</width>
+                                <height>23</height>
+                                <texture>script.plex/settings/expanded.png</texture>
+                                <colordiffuse>FF000000</colordiffuse>
                             </control>
                             <control type="group">
                                 <posx>88</posx>
@@ -348,6 +378,7 @@
                 </control>
 
                 <control type="button" id="150">
+                    <visible>IntegerGreaterThan(Container(100).NumItems,0)</visible>
                     <width>10</width>
                     <height>10</height>
                     <onright>125</onright>
@@ -361,7 +392,9 @@
                 </control>
 
                 <control type="list" id="125">
-                    <visible allowhiddenfocus="true">Control.HasFocus(125)</visible>
+                    <visible allowhiddenfocus="true">Control.HasFocus(125) + IntegerGreaterThan(Container(100).NumItems,0)</visible>
+                    <enable>IntegerGreaterThan(Container(100).NumItems,0)</enable>
+
                     <posx>1383</posx>
                     <posy>0</posy>
                     <width>845</width>

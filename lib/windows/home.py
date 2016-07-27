@@ -56,6 +56,8 @@ class SectionHubsTask(backgroundthread.Task):
 
             try:
                 hubs = plexapp.SERVERMANAGER.selectedServer.hubs(section.key, count=10)
+                if self.isCanceled():
+                    return
                 self.callback(section, hubs)
             except plexnet.exceptions.BadRequest:
                 util.DEBUG_LOG('404 on section: {0}'.format(repr(section.title)))

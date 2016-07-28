@@ -561,7 +561,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             return
 
         data = response.getBodyXml()
-        if data:
+        if data is not None:
             serverAddress = context.serverAddress
             util.DEBUG_LOG("Received manual connection response for {0}".format(serverAddress))
 
@@ -586,6 +586,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             connections = json.loads(jstring)
             if isinstance(connections, list):
                 for conn in connections:
+                    conn = util.AttributeDict(conn)
                     if conn.connection:
                         manualConnections.append(conn)
 

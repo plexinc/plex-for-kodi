@@ -19,8 +19,8 @@ class Setting(object):
     label = None
     default = None
 
-    def translate(val):
-        return val
+    def translate(self, val):
+        return str(val)
 
     def get(self):
         return util.getSetting(self.ID, self.default)
@@ -103,11 +103,51 @@ class OptionsSetting(BasicSetting):
         return 0
 
 
+class InfoSetting(BasicSetting):
+    type = 'INFO'
+
+    def __init__(self, ID, label, info):
+        BasicSetting.__init__(self, ID, label, None)
+        self.info = info
+
+    def valueLabel(self):
+        return self.info
+
+
+class PlatformSetting(InfoSetting):
+    def __init__(self):
+        self.ID = 'platfom_version'
+        self.label = 'Platform Version'
+
+    def valueLabel(self):
+        try:
+            import platform
+            dist = platform. dist()
+            if dist and len(dist) > 1:
+                return u'{0} {1}'.format(dist[0], dist[1])
+
+            plat = platform.platform()
+            return u'{0} {1}'.format(plat[0], '.'.join(plat[1].split('.', 2)[:2]))
+        except:
+            util.ERROR()
+
+        return 'Unknown'
+
+
+class IPSetting(BasicSetting):
+    type = 'IP'
+
+
+class IntegerSetting(BasicSetting):
+    type = 'INTEGER'
+
+
 class Settings(object):
     SETTINGS = {
         'main': (
-            'Main',
-            ()
+            'Main', (
+                BoolSetting('auto_signin', 'Automatically Sign In', False),
+            )
         ),
         'audio': (
             'Audio',
@@ -127,21 +167,36 @@ class Settings(object):
                 OptionsSetting('burn_subtitles', 'Burn Subtitles', 'auto', (('auto', 'Auto'), ('image', 'Only Image Formats'), ('always', 'Always'))),
             )
         ),
+        'advanced': (
+            'Advanced', (
+                OptionsSetting(
+                    'allow_insecure', T(32032), 'never', (('never', T(32033)), ('same_network', T(32034)), ('always', T(32035)))
+                ),
+                BoolSetting('gdm_discovery', 'Server Discovery (GDM)', True),
+            )
+        ),
         'manual': (
-            'Manual Servers',
-            ()
+            'Manual Servers', (
+                IPSetting('manual_ip_0', 'Connection 1 IP', ''),
+                IntegerSetting('manual_port_0', 'Connection 1 Port', 32400),
+                IPSetting('manual_ip_1', 'Connection 2 IP', ''),
+                IntegerSetting('manual_port_1', 'Connection 2 Port', 32400)
+            )
         ),
         'privacy': (
             'Privacy',
             ()
         ),
         'about': (
-            'About',
-            ()
+            'About', (
+                InfoSetting('addon_version', 'Addon Version', util.ADDON.getAddonInfo('version')),
+                InfoSetting('kodi_version', 'Kodi Version', xbmc.getInfoLabel('System.BuildVersion')),
+                PlatformSetting(),
+            )
         ),
     }
 
-    SECTION_IDS = ('main', 'audio', 'video', 'subtitles', 'manual', 'privacy', 'about')
+    SECTION_IDS = ('main', 'video', 'subtitles', 'advanced', 'manual', 'about')
 
     def __getitem__(self, key):
         return self.SETTINGS[key]
@@ -208,6 +263,7 @@ class SettingsWindow(kodigui.BaseWindow):
 
         self.lastSection = mli.dataSource
         self.showSettings(self.lastSection)
+        self.setProperty('section.about', self.lastSection == 'about' and '1' or '')
         util.DEBUG_LOG('Settings: Changed section ({0})'.format(self.lastSection))
 
     def showSections(self):
@@ -247,6 +303,17 @@ class SettingsWindow(kodigui.BaseWindow):
             self.fillList(setting)
         elif setting.type == 'BOOL' and not from_right:
             self.toggleBool(mli, setting)
+        elif setting.type == 'IP':
+            result = xbmcgui.Dialog().input('Enter IP Address', setting.get(), xbmcgui.INPUT_IPADDRESS)
+            util.TEST(result)
+            setting.set(result)
+            mli.setLabel2(result)
+        elif setting.type == 'INTEGER':
+            result = xbmcgui.Dialog().input('Enter Port Number', str(setting.get()), xbmcgui.INPUT_NUMERIC)
+            if not result:
+                return
+            setting.set(int(result))
+            mli.setLabel2(result)
 
     def changeSetting(self):
         optionItem = self.optionsList.getSelectedItem()

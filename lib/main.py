@@ -34,7 +34,7 @@ def _main():
             if plex.init():
                 background.setSplash(False)
                 while not xbmc.abortRequested:
-                    if len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected:
+                    if not plexapp.ACCOUNT.isAuthenticated and (len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected):
                         if not userselect.start():
                             return
 
@@ -60,6 +60,8 @@ def _main():
                             util.DEBUG_LOG('Signing out...')
                             plexapp.ACCOUNT.signOut()
                             break
+                        elif hw.closeOption == 'switch':
+                            plexapp.ACCOUNT.isAuthenticated = False
                     finally:
                         del hw
             else:

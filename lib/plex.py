@@ -65,10 +65,20 @@ class PlexInterface(plexapp.AppInterface):
     }
 
     def getPreference(self, pref, default=None):
-        if pref == 'allow_insecure':
-            return ('never', 'same_network', 'always')[util.getSetting('allow_insecure', 0)]
+        if pref == 'manual_connections':
+            return self.getManualConnections()
         else:
             return util.getSetting(pref, default)
+
+    def getManualConnections(self):
+        conns = []
+        for i in range(2):
+            ip = util.getSetting('manual_ip_{0}'.format(i))
+            if not ip:
+                continue
+            port = util.getSetting('manual_port_{0}'.format(i), 32400)
+            conns.append({'connection': ip, 'port': port})
+        return json.dumps(conns)
 
     def setPreference(self, pref, value):
         util.setSetting(pref, value)

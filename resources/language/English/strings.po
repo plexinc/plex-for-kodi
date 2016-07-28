@@ -122,7 +122,7 @@ msgid "Burn Subtitles"
 msgstr ""
 
 msgctxt "#32032"
-msgid "Allow insecure connections"
+msgid "Allow Insecure Connections"
 msgstr ""
 
 msgctxt "#32033"
@@ -130,7 +130,7 @@ msgid "Never"
 msgstr ""
 
 msgctxt "#32034"
-msgid "Same network"
+msgid "On Same network"
 msgstr ""
 
 msgctxt "#32035"

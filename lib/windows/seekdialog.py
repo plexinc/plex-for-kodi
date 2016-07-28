@@ -55,7 +55,10 @@ class SeekDialog(kodigui.BaseDialog):
         return self.handler.player
 
     def trueOffset(self):
-        return self.baseOffset + self.offset
+        if self.handler.mode == self.handler.MODE_ABSOLUTE:
+            return self.offset
+        else:
+            return self.baseOffset + self.offset
 
     def onFirstInit(self):
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
@@ -123,8 +126,6 @@ class SeekDialog(kodigui.BaseDialog):
             self.bigSeekSelected()
 
     def videoSettingsHaveChanged(self):
-        util.TEST(self.initialVideoSettings)
-        util.TEST(self.player.video.settings.prefOverrides)
         if (
             self.player.video.settings.prefOverrides != self.initialVideoSettings or
             self.player.video.selectedAudioStream() != self.initialAudioStream or

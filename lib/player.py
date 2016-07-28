@@ -54,6 +54,9 @@ class SeekPlayerHandler(BasePlayerHandler):
     SEEK_INIT = 1
     SEEK_IN_PROGRESS = 2
 
+    MODE_ABSOLUTE = 0
+    MODE_RELATIVE = 1
+
     def __init__(self, player):
         self.player = player
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
@@ -61,6 +64,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.offset = 0
         self.seeking = self.NO_SEEK
         self.seekOnStart = 0
+        self.MODE = self.MODE_RELATIVE
 
     def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
         self.seeking = seeking
@@ -81,11 +85,22 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.dialog.update(self.offset, from_seek)
 
     def seek(self, offset):
+        if self.mode == self.MODE_ABSOLUTE:
+            self.offset = offset
+            util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
+            return self.seekAbsolute(offset)
+
         self.seeking = self.SEEK_IN_PROGRESS
         self.offset = offset
         # self.player.control('play')
         util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
         self.player._playVideo(offset, seeking=self.seeking)
+
+    def seekAbsolute(self, seek=None):
+        self.seekOnStart = seek or self.seekOnStart
+        if self.seekOnStart:
+            self.player.control('play')
+            self.player.seekTime(self.seekOnStart / 1000.0)
 
     def closeSeekDialog(self):
         util.CRON.forceTick()
@@ -93,8 +108,8 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.dialog.doClose()
 
     def onPlayBackStarted(self):
-        if self.seekOnStart:
-            self.player.seekTime(self.seekOnStart)
+        if self.mode == self.MODE_ABSOLUTE:
+            self.seekAbsolute()
 
         subs = self.player.video.selectedSubtitleStream()
         if subs:
@@ -269,8 +284,12 @@ class PlexPlayer(xbmc.Player):
         li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
         li.setInfo('video', {'mediatype': self.video.type})
         self.play(url, li)
+
         if offset and not meta.isTranscoded:
-            self.handler.seekOnStart = meta.playStart
+            self.handler.seekOnStart = meta.playStart * 1000
+            self.handler.mode = self.handler.MODE_ABSOLUTE
+        else:
+            self.handler.mode = self.handler.MODE_RELATIVE
 
     def playAudio(self, track, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)

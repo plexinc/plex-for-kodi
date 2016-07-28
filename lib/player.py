@@ -357,7 +357,8 @@ class PlexPlayer(xbmc.Player):
             return
 
         if self.handler.onPlayBackFailed():
-            xbmcgui.Dialog().ok('Failed', 'Playback failed')
+            util.showNotification('Playback Failed!')
+            # xbmcgui.Dialog().ok('Failed', 'Playback failed')
 
     def onVideoWindowOpened(self):
         util.DEBUG_LOG('Player: Video window opened')

@@ -304,16 +304,9 @@ class SettingsWindow(kodigui.BaseWindow):
         elif setting.type == 'BOOL' and not from_right:
             self.toggleBool(mli, setting)
         elif setting.type == 'IP':
-            result = xbmcgui.Dialog().input('Enter IP Address', setting.get(), xbmcgui.INPUT_IPADDRESS)
-            util.TEST(result)
-            setting.set(result)
-            mli.setLabel2(result)
+            self.editIP(mli, setting)
         elif setting.type == 'INTEGER':
-            result = xbmcgui.Dialog().input('Enter Port Number', str(setting.get()), xbmcgui.INPUT_NUMERIC)
-            if not result:
-                return
-            setting.set(int(result))
-            mli.setLabel2(result)
+            self.editInteger(mli, setting)
 
     def changeSetting(self):
         optionItem = self.optionsList.getSelectedItem()
@@ -352,6 +345,29 @@ class SettingsWindow(kodigui.BaseWindow):
     def toggleBool(self, mli, setting):
         setting.set(not setting.get())
         mli.setProperty('checkbox.checked', setting.get() and '1' or '')
+
+    def editIP(self, mli, setting):
+        current = setting.get()
+        edit = True
+        if current:
+            edit = xbmcgui.Dialog().yesno('Edit Or Clear', 'Edit IP address or clear the current setting?', nolabel='Clear', yeslabel='Edit')
+
+        if edit:
+            result = xbmcgui.Dialog().input('Enter IP Address', current, xbmcgui.INPUT_IPADDRESS)
+            if not result:
+                return
+        else:
+            result = ''
+
+        setting.set(result)
+        mli.setLabel2(result)
+
+    def editInteger(self, mli, setting):
+        result = xbmcgui.Dialog().input('Enter Port Number', str(setting.get()), xbmcgui.INPUT_NUMERIC)
+        if not result:
+            return
+        setting.set(int(result))
+        mli.setLabel2(result)
 
 
 class SelectDialog(kodigui.BaseDialog, util.CronReceiver):

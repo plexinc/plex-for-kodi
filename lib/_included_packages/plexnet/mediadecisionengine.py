@@ -261,7 +261,7 @@ class MediaDecisionEngine(object):
         height = choice.media.getVideoResolution()
         if height > maxResolution:
             util.LOG("MDE: Video height is greater than max allowed: {0} > {1}".format(height, maxResolution))
-            if height > 1088 and item.settings.GetGlobal("supports4k"):
+            if height > 1088 and item.settings.getGlobal("supports4k"):
                 util.LOG("MDE: Unsupported 4k media")
             return False
 
@@ -481,10 +481,12 @@ class MediaDecisionEngine(object):
         if videoStream is None or not plexapp.INTERFACE.getGlobal("supports4k"):
             return False
 
-        # Roku 4 only: H.265/HEVC (MKV, MP4, MOV); VP9 (.MKV)
-        if media.get('container') in ("mp4", "mov", "m4v", "mkv"):
-            isHEVC = (videoStream.codec == "hevc" and plexapp.INTERFACE.getGlobal("hevcSupport"))
-            isVP9 = (videoStream.codec == "vp9" and media.get('container') == "mkv" and plexapp.INTERFACE.getGlobal("vp9Support"))
-            return (isHEVC or isVP9)
+        # # Roku 4 only: H.265/HEVC (MKV, MP4, MOV); VP9 (.MKV)
+        # if media.get('container') in ("mp4", "mov", "m4v", "mkv"):
+        #     isHEVC = (videoStream.codec == "hevc" and plexapp.INTERFACE.getGlobal("hevcSupport"))
+        #     isVP9 = (videoStream.codec == "vp9" and media.get('container') == "mkv" and plexapp.INTERFACE.getGlobal("vp9Support"))
+        #     return (isHEVC or isVP9)
 
-        return False
+        # return False
+
+        return True

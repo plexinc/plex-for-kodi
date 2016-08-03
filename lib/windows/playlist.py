@@ -4,7 +4,15 @@ import kodigui
 
 from lib import util
 from lib import player
-import musicplayer
+
+
+class PlayerMonitor(xbmc.Player):
+    def init(self, callback):
+        self.callback = callback
+        return self
+
+    def onPlayBackStarted(self):
+        self.callback()
 
 
 class PlaylistWindow(kodigui.BaseDialog):
@@ -43,11 +51,14 @@ class PlaylistWindow(kodigui.BaseDialog):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.selectedOffset = 0
+        self.setDuration()
+        self.exitCommand = None
+
+    def setDuration(self):
         try:
             self.duration = player.PLAYER.getTotalTime() * 1000
         except RuntimeError:  # Not playing
             self.duration = 0
-        self.exitCommand = None
 
     def onFirstInit(self):
         self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 5)
@@ -57,6 +68,10 @@ class PlaylistWindow(kodigui.BaseDialog):
 
         self.fillPlaylist()
         self.setFocusId(self.PLAYLIST_LIST_ID)
+        self.playerMonitor = PlayerMonitor().init(self.onPlayBackStarted)
+
+    def onPlayBackStarted(self):
+        self.setDuration()
 
     def onAction(self, action):
         try:
@@ -134,23 +149,22 @@ class PlaylistWindow(kodigui.BaseDialog):
             self.selectionBox.setPosition(-50, 0)
         self.setProperty('time.selection', util.simplifiedTimeDisplay(int(self.selectedOffset)))
 
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
-
     def playlistListClicked(self):
         mli = self.playlistListControl.getSelectedItem()
         if not mli:
             return
 
-        w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, album=self.season)
-        del w
+        player.PLAYER.playselected(mli.pos())
 
     def createListItem(self, li):
         tag = li.getMusicInfoTag()
+        try:
+            thumb = li.getArt('thumb')  # Kodi 17
+        except:
+            thumb = ''
+
         mli = kodigui.ManagedListItem(
-            tag.getTitle() or li.getLabel(), thumbnailImage='', data_source=li
+            tag.getTitle() or li.getLabel(), thumbnailImage=thumb, data_source=li
         )
         mli.setProperty('track.number', str(tag.getTrack()))
         mli.setProperty('track.duration', util.simplifiedTimeDisplay(tag.getDuration() * 1000))
@@ -173,7 +187,7 @@ class PlaylistWindow(kodigui.BaseDialog):
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         for i in range(len(plist)):
             li = plist[i]
-            util.TEST(li.getArt('thumb'))
+            # util.TEST('')
             mli = self.createListItem(li)
             if mli:
                 mli.setProperty('index', str(idx))

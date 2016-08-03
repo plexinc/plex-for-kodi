@@ -150,19 +150,38 @@
                                 <texture>script.plex/indicators/playing-circle.png</texture>
                                 <colordiffuse>FFE5A00D</colordiffuse>
                             </control>
+                            <control type="image">
+                                <posx>63</posx>
+                                <posy>11</posy>
+                                <width>74</width>
+                                <height>74</height>
+                                <texture>$INFO[ListItem.Thumb]</texture>
+                                <aspectratio>scale</aspectratio>
+                            </control>
                             <control type="group">
-                                <posx>90</posx>
+                                <posx>168</posx>
                                 <posy>0</posy>
                                 <control type="label">
                                     <posx>0</posx>
-                                    <posy>0</posy>
+                                    <posy>15</posy>
                                     <width>723</width>
-                                    <height>100</height>
+                                    <height>30</height>
                                     <font>font10</font>
                                     <align>left</align>
                                     <aligny>center</aligny>
                                     <textcolor>FFFFFFFF</textcolor>
                                     <label>[B]$INFO[ListItem.Label][/B]</label>
+                                </control>
+                                <control type="label">
+                                    <posx>0</posx>
+                                    <posy>50</posy>
+                                    <width>723</width>
+                                    <height>30</height>
+                                    <font>font10</font>
+                                    <align>left</align>
+                                    <aligny>center</aligny>
+                                    <textcolor>B8FFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Property(artist)]$INFO[ListItem.Property(album), / ]</label>
                                 </control>
                             </control>
                             <control type="label">
@@ -180,7 +199,7 @@
                                 <visible>IsEmpty(ListItem.Property(is.footer))</visible>
                                 <posx>0</posx>
                                 <posy>97</posy>
-                                <width>930</width>
+                                <width>861</width>
                                 <height>2</height>
                                 <texture>script.plex/white-square.png</texture>
                                 <colordiffuse>40000000</colordiffuse>
@@ -216,19 +235,38 @@
                                     <texture>script.plex/indicators/playing-circle.png</texture>
                                     <colordiffuse>FFE5A00D</colordiffuse>
                                 </control>
+                                <control type="image">
+                                    <posx>103</posx>
+                                    <posy>11</posy>
+                                    <width>74</width>
+                                    <height>74</height>
+                                    <texture>$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
                                 <control type="group">
-                                    <posx>90</posx>
+                                    <posx>168</posx>
                                     <posy>0</posy>
                                     <control type="label">
                                         <posx>0</posx>
-                                        <posy>0</posy>
-                                        <width>654</width>
-                                        <height>76</height>
+                                        <posy>15</posy>
+                                        <width>723</width>
+                                        <height>30</height>
                                         <font>font10</font>
                                         <align>left</align>
                                         <aligny>center</aligny>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>[B]$INFO[ListItem.Label][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>50</posy>
+                                        <width>723</width>
+                                        <height>30</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>B8FFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Property(artist)]$INFO[ListItem.Property(album), / ]</label>
                                     </control>
                                 </control>
                                 <control type="label">
@@ -245,7 +283,7 @@
                                 <control type="image">
                                     <visible>IsEmpty(ListItem.Property(is.footer))</visible>
                                     <posx>0</posx>
-                                    <posy>73</posy>
+                                    <posy>97</posy>
                                     <width>861</width>
                                     <height>2</height>
                                     <texture>script.plex/white-square.png</texture>
@@ -293,19 +331,38 @@
                                     <texture>script.plex/indicators/playing-circle.png</texture>
                                     <colordiffuse>FF000000</colordiffuse>
                                 </control>
+                                <control type="image">
+                                    <posx>103</posx>
+                                    <posy>0</posy>
+                                    <width>100</width>
+                                    <height>100</height>
+                                    <texture>$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
                                 <control type="group">
-                                    <posx>140</posx>
+                                    <posx>235</posx>
                                     <posy>0</posy>
                                     <control type="label">
                                         <posx>0</posx>
-                                        <posy>0</posy>
+                                        <posy>16</posy>
                                         <width>669</width>
-                                        <height>76</height>
+                                        <height>30</height>
                                         <font>font12</font>
                                         <align>left</align>
                                         <aligny>center</aligny>
                                         <textcolor>DF000000</textcolor>
                                         <label>[B]$INFO[ListItem.Label][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>51</posy>
+                                        <width>669</width>
+                                        <height>30</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>98000000</textcolor>
+                                        <label>$INFO[ListItem.Property(artist)]$INFO[ListItem.Property(album), / ]</label>
                                     </control>
                                 </control>
                                 <control type="label">
@@ -451,8 +508,8 @@
 
             <control type="button" id="404">
                 <enable>MusicPlayer.HasPrevious</enable>
-                <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
-                <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
                 <posx>0</posx>
                 <posy>0</posy>
@@ -514,8 +571,8 @@
 
 
             <control type="button" id="410">
-                <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
-                <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
                 <posx>0</posx>
                 <posy>0</posy>
@@ -528,7 +585,6 @@
                 <label> </label>
             </control>
             <control type="button" id="411">
-                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />

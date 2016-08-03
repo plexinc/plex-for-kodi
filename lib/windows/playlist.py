@@ -1,79 +1,67 @@
 import xbmc
 import xbmcgui
 import kodigui
-import playlist
-from lib import colors
-from lib import player
+
 from lib import util
+from lib import player
+import musicplayer
 
 
-def timeDisplay(ms):
-    h = ms / 3600000
-    m = (ms % 3600000) / 60000
-    s = (ms % 60000) / 1000
-    return '{0:0>2}:{1:0>2}:{2:0>2}'.format(h, m, s)
-
-
-def simplifiedTimeDisplay(ms):
-    left, right = timeDisplay(ms).rsplit(':', 1)
-    left = left.lstrip('0:') or '0'
-    return left + ':' + right
-
-
-class MusicPlayerWindow(kodigui.BaseDialog):
-    xmlFile = 'script-plex-music_player.xml'
+class PlaylistWindow(kodigui.BaseDialog):
+    xmlFile = 'script-plex-music_current_playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
     res = '1080i'
     width = 1920
     height = 1080
 
-    MAIN_BUTTON_ID = 100
-    SEEK_IMAGE_ID = 200
+    LI_THUMB_DIM = (64, 64)
+    ALBUM_THUMB_DIM = (639, 639)
+
+    PLAYLIST_LIST_ID = 101
+
+    SEEK_BUTTON_ID = 500
+    SEEK_IMAGE_ID = 510
 
     POSITION_IMAGE_ID = 201
     SELECTION_INDICATOR = 202
     SELECTION_BOX = 203
 
+    SHUFFLE_BUTTON_ID = 402
     SETTINGS_BUTTON_ID = 403
     SKIP_BACK_BUTTON_ID = 405
     SKIP_FORWARD_BUTTON_ID = 408
     PLAYLIST_BUTTON_ID = 410
 
-    SEEK_IMAGE_WIDTH = 1920
+    SEEK_IMAGE_WIDTH = 819
 
     BAR_X = 0
     BAR_Y = 921
-    BAR_RIGHT = 1920
+    BAR_RIGHT = 819
     BAR_BOTTOM = 969
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
-        self.track = kwargs.get('track')
-        self.album = kwargs.get('album')
         self.selectedOffset = 0
-
-        if self.track:
-            self.duration = self.track.duration.asInt()
-        else:
-            try:
-                self.duration = player.PLAYER.getTotalTime() * 1000
-            except RuntimeError:  # Not playing
-                self.duration = 0
+        try:
+            self.duration = player.PLAYER.getTotalTime() * 1000
+        except RuntimeError:  # Not playing
+            self.duration = 0
+        self.exitCommand = None
 
     def onFirstInit(self):
+        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 5)
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
         self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
         self.selectionBox = self.getControl(self.SELECTION_BOX)
 
-        self.setProperties()
-        self.play()
-        self.setFocusId(406)
+        self.fillPlaylist()
+        self.setFocusId(self.PLAYLIST_LIST_ID)
 
     def onAction(self, action):
         try:
             controlID = self.getFocusId()
-            if controlID == self.MAIN_BUTTON_ID:
+            if controlID == self.SEEK_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
@@ -94,15 +82,15 @@ class MusicPlayerWindow(kodigui.BaseDialog):
         kodigui.BaseDialog.onAction(self, action)
 
     def onClick(self, controlID):
-        if controlID == self.SETTINGS_BUTTON_ID:
-            self.showSettings()
-        elif controlID == self.PLAYLIST_BUTTON_ID:
-            self.showPlaylist()
-        elif controlID == self.MAIN_BUTTON_ID:
+        if controlID == self.PLAYLIST_LIST_ID:
+            self.playlistListClicked()
+        elif controlID == self.SEEK_BUTTON_ID:
             xbmc.Player().seekTime(self.selectedOffset / 1000.0)
+        elif controlID == self.SHUFFLE_BUTTON_ID:
+            self.fillPlaylist()
 
     def onFocus(self, controlID):
-        if controlID == self.MAIN_BUTTON_ID:
+        if controlID == self.SEEK_BUTTON_ID:
             self.selectedOffset = xbmc.Player().getTime() * 1000
             self.updateSelectedProgress()
 
@@ -140,36 +128,57 @@ class MusicPlayerWindow(kodigui.BaseDialog):
         self.selectionIndicator.setPosition(w, 896)
         if w < 51:
             self.selectionBox.setPosition(-50 + (50 - w), 0)
-        elif w > 1869:
-            self.selectionBox.setPosition(-100 + (1920 - w), 0)
+        elif w > 768:
+            self.selectionBox.setPosition(-100 + (819 - w), 0)
         else:
             self.selectionBox.setPosition(-50, 0)
         self.setProperty('time.selection', util.simplifiedTimeDisplay(int(self.selectedOffset)))
 
-    def showSettings(self):
-        pass
-
-    def showPlaylist(self):
-        w = playlist.PlaylistWindow.open()
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
         del w
 
-    def setProperties(self):
-        if self.track:
-            self.setProperty(
-                'background',
-                self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
-            )
-            self.setProperty('thumb', self.track.thumb.asTranscodedImageURL(756, 756))
-        else:
-            self.setProperty('background', xbmc.getInfoLabel('Player.Art(fanart)'))
-            self.setProperty('thumb', xbmc.getInfoLabel('Player.Art(thumb)'))
-
-    def play(self):
-        if not self.track:
+    def playlistListClicked(self):
+        mli = self.playlistListControl.getSelectedItem()
+        if not mli:
             return
 
-        if util.trackIsPlaying(self.track):
-            return
+        w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, album=self.season)
+        del w
 
-        # player.PLAYER.playAudio(self.track, window=self, fanart=self.getProperty('background'))
-        player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=self.getProperty('background'))
+    def createListItem(self, li):
+        tag = li.getMusicInfoTag()
+        mli = kodigui.ManagedListItem(
+            tag.getTitle() or li.getLabel(), thumbnailImage='', data_source=li
+        )
+        mli.setProperty('track.number', str(tag.getTrack()))
+        mli.setProperty('track.duration', util.simplifiedTimeDisplay(tag.getDuration() * 1000))
+        mli.setProperty('artist', str(tag.getArtist()))
+        mli.setProperty('album', str(tag.getAlbum()))
+        mli.setProperty('disc', str(tag.getDisc()))
+        mli.setProperty('number', '{0:0>2}'.format(tag.getTrack()))
+        # util.TEST('{0} {1} {2} {3}'.format(tag.getArtist(), tag.getAlbum(), tag.getDisc(), tag.getTrack()))
+        # util.TEST('{0} {1} {2} {3}'.format(
+        #     xbmc.getInfoLabel('MusicPlayer.Artist'),
+        #     xbmc.getInfoLabel('MusicPlayer.Album'),
+        #     xbmc.getInfoLabel('MusicPlayer.DiscNumber'),
+        #     xbmc.getInfoLabel('MusicPlayer.TrackNumber'))
+        # )
+        return mli
+
+    def fillPlaylist(self):
+        items = []
+        idx = 0
+        plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
+        for i in range(len(plist)):
+            li = plist[i]
+            util.TEST(li.getArt('thumb'))
+            mli = self.createListItem(li)
+            if mli:
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                idx += 1
+
+        self.playlistListControl.reset()
+        self.playlistListControl.addItems(items)

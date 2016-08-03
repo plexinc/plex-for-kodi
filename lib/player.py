@@ -293,21 +293,36 @@ class PlexPlayer(xbmc.Player):
 
     def playAudio(self, track, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)
+        url, li = self.createTrackListItem(track, fanart)
+        self.play(url, li)
+
+    def playAlbum(self, album, startpos=-1, window=None, fanart=None):
+        self.handler = AudioPlayerHandler(self, window)
+        plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
+        plist.clear()
+        for track in album.tracks():
+            url, li = self.createTrackListItem(track, fanart)
+            plist.add(url, li)
+        util.TEST(repr(startpos))
+        self.play(plist, startpos=startpos)
+
+    def createTrackListItem(self, track, fanart=None):
         pobj = plexplayer.PlexAudioPlayer(track)
         url = pobj.build()['url']  # .streams[0]['url']
-        util.DEBUG_LOG('Playing URL: {0}'.format(url))
+        # util.DEBUG_LOG('Playing URL: {0}'.format(url))
         url += '&X-Plex-Platform=Chrome'
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.thumb.asTranscodedImageURL(256, 256))
         li.setInfo('music', {
             'artist': str(track.grandparentTitle),
             'title': str(track.title),
             'album': str(track.parentTitle),
-            'discnumber': str(track.parentIndex),
-            'tracknumber': str(track.index)
+            'discnumber': track.parentIndex.asInt(),
+            'tracknumber': track.index.asInt(),
+            'duration': int(track.duration.asInt() / 1000)
         })
         if fanart:
             li.setArt({'fanart': fanart})
-        self.play(url, li)
+        return (url, li)
 
     def onPlayBackStarted(self):
         self.started = True

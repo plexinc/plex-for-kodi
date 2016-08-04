@@ -77,7 +77,14 @@ class PlaylistWindow(kodigui.BaseDialog):
 
     def onFocus(self, controlID):
         if controlID == self.SEEK_BUTTON_ID:
-            self.selectedOffset = xbmc.Player().getTime() * 1000
+            try:
+                if player.PLAYER.isPlaying():
+                    self.selectedOffset = player.PLAYER.getTime() * 1000
+                else:
+                    self.selectedOffset = 0
+            except RuntimeError:
+                self.selectedOffset = 0
+
             self.updateSelectedProgress()
 
     def onPlayBackStarted(self):

@@ -377,6 +377,7 @@
             <posx>0</posx>
             <posy>940</posy>
             <control type="button" id="100">
+                <enable>Player.HasAudio</enable>
                 <hitrect x="0" y="-19" w="1920" h="48" />
                 <posx>0</posx>
                 <posy>0</posy>

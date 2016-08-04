@@ -303,7 +303,7 @@ class PlexPlayer(xbmc.Player):
         for track in album.tracks():
             url, li = self.createTrackListItem(track, fanart)
             plist.add(url, li)
-        util.TEST(repr(startpos))
+        xbmc.executebuiltin('PlayerControl(RandomOff)')
         self.play(plist, startpos=startpos)
 
     def createTrackListItem(self, track, fanart=None):

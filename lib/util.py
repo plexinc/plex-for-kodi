@@ -414,3 +414,11 @@ def trackIsPlaying(track):
         track.parentIndex,
         '{0:0>2}'.format(track.index)
     ))
+
+class PlayerMonitor(xbmc.Player):
+    def init(self, callback):
+        self.callback = callback
+        return self
+
+    def onPlayBackStarted(self):
+        self.callback()

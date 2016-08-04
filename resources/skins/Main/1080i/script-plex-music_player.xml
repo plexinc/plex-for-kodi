@@ -202,6 +202,7 @@
                     <posy>0</posy>
                     <width>125</width>
                     <height>101</height>
+                    <onup>100</onup>
                     <onright>402</onright>
                     <onleft>411</onleft>
                     <font>font12</font>

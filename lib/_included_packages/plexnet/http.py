@@ -49,6 +49,7 @@ class HttpRequest(object):
         self.method = method
         self.url = url
         self.thread = None
+        self.timer = None
 
         # Use our specific plex.direct CA cert if applicable to improve performance
         # if forceCertificate or url[:5] == "https":  # TODO: ---------------------------------------------------------------------------------IMPLEMENT
@@ -70,7 +71,7 @@ class HttpRequest(object):
 
     def _startAsync(self, body=None, contentType=None, context=None):
         if self._cancel:
-            return self.removeAsPending()
+            return
 
         try:
             if body is not None:
@@ -86,10 +87,13 @@ class HttpRequest(object):
             self.currentResponse = res
 
             if self._cancel:
-                return self.removeAsPending()
+                return
         except Exception, e:
             util.ERROR('Request failed', e)
-            return self.removeAsPending()
+            return
+
+        if self.timer:
+            self.timer.cancel()
 
         self.onResponse(res, context)
 
@@ -153,6 +157,7 @@ class HttpRequest(object):
 
     def cancel(self):
         self._cancel = True
+        self.removeAsPending()
         self.killSocket()
 
     def addParam(self, encodedName, value):

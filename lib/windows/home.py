@@ -69,6 +69,12 @@ class HomeSection(object):
     title = 'Home'
 
 
+class PlaylistsSection(object):
+    key = None
+    type = 'playlists'
+    title = 'Playlists'
+
+
 class HomeWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-home.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -394,6 +400,14 @@ class HomeWindow(kodigui.BaseWindow):
         homemli.setProperty('item', '1')
         items.append(homemli)
 
+        pl = plexapp.SERVERMANAGER.selectedServer.playlists()
+        if pl:
+            # util.TEST(pl[0].composite.asTranscodedImageURL(640, 360))
+            plli = kodigui.ManagedListItem('Playlists', thumbnailImage='script.plex/home/type/playlists.png', data_source=PlaylistsSection)
+            plli.setProperty('is.plaulists', '1')
+            plli.setProperty('item', '1')
+            items.append(plli)
+
         sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
 
         self.task = SectionHubsTask().setup([HomeSection] + sections, self.sectionHubsCallback)
@@ -550,7 +564,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def showServers(self):
         servers = sorted(
-            [s for s in plexapp.SERVERMANAGER.serversByUuid.values() if s.isReachable()],
+            [s for s in plexapp.SERVERMANAGER.getServers() if s.isReachable()],
             key=lambda x: (x.owned and '0' or '1') + x.name.lower()
         )
         items = []
@@ -563,7 +577,7 @@ class HomeWindow(kodigui.BaseWindow):
         if len(items) > 1:
             items[0].setProperty('first', '1')
             items[-1].setProperty('last', '1')
-        else:
+        elif items:
             items[0].setProperty('only', '1')
 
         self.serverList.reset()

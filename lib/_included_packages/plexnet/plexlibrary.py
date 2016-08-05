@@ -266,6 +266,16 @@ class FilterChoice(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
+
+@plexobjects.registerLibType
+class Playlist(plexobjects.PlexObject):
+    TYPE = 'Playlist'
+
+    def __repr__(self):
+        title = self.title.replace(' ', '.')[0:20]
+        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
+
+
 SECTION_TYPES = {
     MovieSection.TYPE: MovieSection,
     ShowSection.TYPE: ShowSection,

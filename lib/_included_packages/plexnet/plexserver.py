@@ -122,6 +122,12 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             hubs.append(Hub(elem, server=self))
         return hubs
 
+    def playlists(self):
+        try:
+            return plexobjects.listItems(self, '/playlists/all', bytag=True)
+        except exceptions.BadRequest:
+            return None
+
     @property
     def library(self):
         if self.platform == 'cloudsync':

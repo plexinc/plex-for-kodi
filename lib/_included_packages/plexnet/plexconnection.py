@@ -131,7 +131,7 @@ class PlexConnection(object):
                 not allowFallback and
                 server.hasSecureConnections() or
                 server.activeConnection and
-                server.activeConnection.state != server.STATE_REACHABLE and
+                server.activeConnection.state != self.STATE_REACHABLE and
                 server.activeConnection.isSecure
             ):
                 util.DEBUG_LOG("Invalid insecure connection test in progress")
@@ -151,11 +151,12 @@ class PlexConnection(object):
             self.request.cancel()
 
     def onReachabilityResponse(self, request, response, context):
+        self.hasPendingRequest = False
         # It's possible we may have a result pending before we were able
         # to cancel it, so we'll just ignore it.
 
-        if request.ignoreResponse:
-            return
+        # if request.ignoreResponse:
+        #     return
 
         if response.isSuccess():
             data = response.getBodyXml()

@@ -2,6 +2,7 @@ import threading
 import platform
 import uuid
 import sys
+import callback
 
 import signalsmixin
 import util
@@ -43,29 +44,29 @@ class App(signalsmixin.SignalsMixin):
         started = request.startAsync(body, contentType, context)
 
         if started:
-            id = request.getIdentity()
-            self.pendingRequests[id] = context
+            requestID = context.request.getIdentity()
+            self.pendingRequests[requestID] = context
 
-            # if context.timeout:
-            #     timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, context=context))
-            #     self.addTimer(timer)
+            if context.timeout:
+                request.timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, forcedArgs=[context]))
+                self.addTimer(request.timer)
         elif context.callback:
             context.callback(None, context)
 
         return started
 
     def onRequestTimeout(self, context):
-        requestContext = context
-        request = requestContext.request
-        requestID = request.getIdentity()
+        requestID = context.request.getIdentity()
 
-        request.cancel()
-        del self.pendingRequests[requestID]
+        if requestID not in self.pendingRequests:
+            return
 
-        util.WARN_LOG("Request to {0} timed out after {1} ms".format(request.url, requestContext.timeout))
+        context.request.cancel()
 
-        if requestContext.callback:
-            requestContext.callback(None, requestContext)
+        util.WARN_LOG("Request to {0} timed out after {1} ms".format(context.request.url, context.timeout))
+
+        if context.callback:
+            context.callback(None, context)
 
     def delRequest(self, request):
         requestID = request.getIdentity()
@@ -376,7 +377,7 @@ class Timer(object):
         self.thread.start()
 
     def run(self):
-        util.DEBUG_LOG('Timer {0}: STARTED'.format(repr(self.function)))
+        util.DEBUG_LOG('Timer {0}: {1}'.format(repr(self.function), self._reset and 'RESET'or 'STARTED'))
         while not self.event.isSet() and not self.shouldAbort():
             while not self.event.wait(self.timeout) and not self.shouldAbort():
                 self.function(*self.args, **self.kwargs)
@@ -389,6 +390,7 @@ class Timer(object):
         self.event.set()
 
     def reset(self):
+        self._reset = True
         self.cancel()
         if self.thread and self.thread.isAlive():
             self.thread.join()

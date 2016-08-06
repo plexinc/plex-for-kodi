@@ -11,6 +11,7 @@ from lib import colors
 import plexnet
 from plexnet import plexapp
 
+import playlists
 import posters
 import subitems
 import episodes
@@ -561,6 +562,8 @@ class HomeWindow(kodigui.BaseWindow):
             posters.PostersWindow.open(section=section)
         elif section.type in ('artist', 'photo'):
             posters.SquaresWindow.open(section=section)
+        elif section.type in ('playlists',):
+            playlists.PlaylistsWindow.open()
 
     def showServers(self):
         servers = sorted(

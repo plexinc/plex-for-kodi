@@ -275,6 +275,10 @@ class Playlist(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
+    def items(self):
+        path = '/playlists/{0}/items'.format(self.ratingKey)
+        return plexobjects.listItems(self.server, path)
+
 
 SECTION_TYPES = {
     MovieSection.TYPE: MovieSection,

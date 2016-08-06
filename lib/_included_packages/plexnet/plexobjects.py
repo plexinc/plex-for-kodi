@@ -302,9 +302,9 @@ def buildItem(server, elem, initpath, bytag=False, container=None):
     raise exceptions.UnknownType('Unknown library type: {0}'.format(libtype))
 
 
-def listItems(server, path, libtype=None, watched=None, bytag=False):
+def listItems(server, path, libtype=None, watched=None, bytag=False, data=None):
     items = []
-    data = server.query(path)
+    data = data or server.query(path)
     container = PlexContainer(data, path, server, '')
     for elem in data:
         if libtype and elem.attrib.get('type') != libtype:

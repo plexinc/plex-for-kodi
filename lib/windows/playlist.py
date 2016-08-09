@@ -5,10 +5,11 @@ import kodigui
 import musicplayer
 
 from lib import colors
+from lib import player
 from lib import util
 
 
-class PlaylistWindow(kodigui.BaseDialog):
+class PlaylistWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -27,7 +28,7 @@ class PlaylistWindow(kodigui.BaseDialog):
     PLAYLIST_LIST_ID = 101
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseDialog.__init__(self, *args, **kwargs)
+        kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.playlist = kwargs.get('playlist')
         self.exitCommand = None
 
@@ -47,7 +48,7 @@ class PlaylistWindow(kodigui.BaseDialog):
         except:
             util.ERROR()
 
-        kodigui.BaseDialog.onAction(self, action)
+        kodigui.BaseWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_LIST_ID:
@@ -61,15 +62,12 @@ class PlaylistWindow(kodigui.BaseDialog):
             return
 
         if self.playlist.playlistType == 'audio':
-            w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, playlist=self.playlist)
-        else:
-            w = None
+            self.showAudioPlayer(track=mli.dataSource, playlist=self.playlist)
+        elif self.playlist.playlistType == 'video':
+            player.PLAYER.playVideoPlaylist(playlist=self.playlist, startpos=mli.pos())
 
-        del w
-
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
+    def showAudioPlayer(self, **kwargs):
+        w = musicplayer.MusicPlayerWindow.open(**kwargs)
         del w
 
     def setProperties(self):

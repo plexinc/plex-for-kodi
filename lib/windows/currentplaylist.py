@@ -98,8 +98,6 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         mli = self.playlistListControl.getSelectedItem()
         if not mli:
             return
-        util.TEST(xbmc.getInfoLabel('MusicPlayer.PlaylistPosition'))
-        util.TEST(mli.pos())
         player.PLAYER.playselected(mli.pos())
 
     def createListItem(self, pi, idx):

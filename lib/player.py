@@ -1,3 +1,4 @@
+import base64
 import threading
 import xbmc
 import xbmcgui
@@ -53,6 +54,7 @@ class SeekPlayerHandler(BasePlayerHandler):
     NO_SEEK = 0
     SEEK_INIT = 1
     SEEK_IN_PROGRESS = 2
+    SEEK_PLAYLIST = 3
 
     MODE_ABSOLUTE = 0
     MODE_RELATIVE = 1
@@ -60,16 +62,49 @@ class SeekPlayerHandler(BasePlayerHandler):
     def __init__(self, player):
         self.player = player
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
+        self.playlist = None
+        self.playlistPos = 0
+        self.reset()
+
+    def reset(self):
         self.duration = 0
         self.offset = 0
         self.seeking = self.NO_SEEK
         self.seekOnStart = 0
-        self.MODE = self.MODE_RELATIVE
+        self.mode = self.MODE_RELATIVE
 
     def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
         self.seeking = seeking
         self.duration = duration
         self.dialog.setup(duration, offset, bif_url, title, title2)
+
+    def next(self):
+        if not self.playlist:
+            return False
+
+        self.playlistPos += 1
+        if self.playlistPos >= len(self.playlist.items()):
+            self.playlistPos = len(self.playlist.items()) - 1
+            return False
+
+        self.seeking = self.SEEK_PLAYLIST
+        self.player.playVideoPlaylist(self.playlist, self.playlistPos, handler=self)
+
+        return True
+
+    def prev(self):
+        if not self.playlist:
+            return False
+
+        self.playlistPos -= 1
+        if self.playlistPos < 0:
+            self.playlistPos = 0
+            return False
+
+        self.seeking = self.SEEK_PLAYLIST
+        self.player.playVideoPlaylist(self.playlist, self.playlistPos, handler=self)
+
+        return True
 
     def onSeekAborted(self):
         if self.seeking:
@@ -134,13 +169,20 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.closeSeekDialog()
 
     def onPlayBackStopped(self):
-        self.closeSeekDialog()
-        if not self.seeking == self.SEEK_IN_PROGRESS:
+        if self.seeking != self.SEEK_PLAYLIST:
+            self.closeSeekDialog()
+
+        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.player.close()
 
     def onPlayBackEnded(self):
-        self.closeSeekDialog()
-        if not self.seeking == self.SEEK_IN_PROGRESS:
+        if self.next():
+            return
+
+        if self.seeking != self.SEEK_PLAYLIST:
+            self.closeSeekDialog()
+
+        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.player.close()
 
     def onPlayBackSeek(self, time, offset):
@@ -213,6 +255,7 @@ class PlexPlayer(xbmc.Player):
         self.playerBackground = None
         self.seekStepsSetting = util.SettingControl('videoplayer.seeksteps', 'Seek steps', disable_value=[-10, 10])
         self.seekDelaySetting = util.SettingControl('videoplayer.seekdelay', 'Seek delay', disable_value=0)
+        self.thread = None
         if xbmc.getCondVisibility('Player.HasMedia'):
             self.started = True
 
@@ -291,6 +334,26 @@ class PlexPlayer(xbmc.Player):
         else:
             self.handler.mode = self.handler.MODE_RELATIVE
 
+    def playVideoPlaylist(self, playlist, startpos=-1, resume=True, handler=None):
+        if not handler:
+            self.handler = SeekPlayerHandler(self)
+        self.handler.playlistPos = startpos
+        self.handler.playlist = playlist
+        self.video = playlist.items()[startpos]
+        self.open()
+        self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0)
+
+    def createVideoListItem(self, video, index=0):
+        url = 'plugin://script.plex/play?{0}'.format(base64.urlsafe_b64encode(video.serialize()))
+        li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
+        li.setInfo('video', {
+            'mediatype': self.video.type,
+            'playcount': index,
+            'comment': 'PLEX-{0}'.format(video.ratingKey)
+        })
+
+        return url, li
+
     def playAudio(self, track, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)
         url, li = self.createTrackListItem(track, fanart)
@@ -308,7 +371,7 @@ class PlexPlayer(xbmc.Player):
         xbmc.executebuiltin('PlayerControl(RandomOff)')
         self.play(plist, startpos=startpos)
 
-    def playPlaylist(self, playlist, startpos=-1, window=None, fanart=None):
+    def playAudioPlaylist(self, playlist, startpos=-1, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         plist.clear()
@@ -325,9 +388,7 @@ class PlexPlayer(xbmc.Player):
         # url = pobj.build()['url']  # .streams[0]['url']
         # util.DEBUG_LOG('Playing URL: {0}'.format(url))
         # url += '&X-Plex-Platform=Chrome'
-        import binascii
-
-        url = 'plugin://script.plex?{0}'.format(binascii.hexlify(track.serialize()))
+        url = 'plugin://script.plex/play?{0}'.format(base64.urlsafe_b64encode(track.serialize()))
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(256, 256))
         li.setInfo('music', {
             'artist': str(track.grandparentTitle),
@@ -423,7 +484,9 @@ class PlexPlayer(xbmc.Player):
             self.handler.waitForStop()
 
     def monitor(self):
-        threading.Thread(target=self._monitor, name='PLAYER:MONITOR').start()
+        if not self.thread or not self.thread.isAlive():
+            self.thread = threading.Thread(target=self._monitor, name='PLAYER:MONITOR')
+            self.thread.start()
 
     def _monitor(self):
         with playerbackground.PlayerBackgroundContext(

@@ -23,8 +23,10 @@ class SeekDialog(kodigui.BaseDialog):
     SEEK_IMAGE_WIDTH = 1920
 
     SETTINGS_BUTTON_ID = 403
+    PREV_BUTTON_ID = 404
     SKIP_BACK_BUTTON_ID = 405
     SKIP_FORWARD_BUTTON_ID = 408
+    NEXT_BUTTON_ID = 409
 
     BAR_X = 0
     BAR_Y = 921
@@ -122,6 +124,10 @@ class SeekDialog(kodigui.BaseDialog):
             self.doClose()
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.showSettings()
+        elif controlID == self.PREV_BUTTON_ID:
+            self.handler.prev()
+        elif controlID == self.NEXT_BUTTON_ID:
+            self.handler.next()
         elif controlID == 500:
             self.bigSeekSelected()
 
@@ -169,6 +175,20 @@ class SeekDialog(kodigui.BaseDialog):
             self.setFocusId(self.MAIN_BUTTON_ID)
         else:
             self.setFocusId(400)
+
+        if self.handler.playlist:
+            if self.handler.playlistPos < len(self.handler.playlist.items()) - 1:
+                self.setProperty('has.next', '1')
+            else:
+                self.setProperty('has.next', '')
+
+            if self.handler.playlistPos > 0:
+                self.setProperty('has.prev', '1')
+            else:
+                self.setProperty('has.prev', '')
+        else:
+            self.setProperty('has.next', '')
+            self.setProperty('has.prev', '')
 
         self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)

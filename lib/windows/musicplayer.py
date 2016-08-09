@@ -111,4 +111,4 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         if self.album:
             player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=self.getProperty('background'))
         else:
-            player.PLAYER.playPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=self.getProperty('background'))
+            player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=self.getProperty('background'))

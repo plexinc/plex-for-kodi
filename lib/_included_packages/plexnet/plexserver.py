@@ -525,7 +525,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
         return server
 
-    def serialize(self):
+    def serialize(self, full=False):
         serverObj = {
             'name': self.name,
             'uuid': self.uuid,
@@ -533,103 +533,28 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             'connections': []
         }
 
-        for i in range(len(self.connections)):
-            conn = self.connections[i]
-            serverObj['connections'].append({
-                'sources': conn.sources,
-                'address': conn.address,
-                'isLocal': conn.isLocal,
-                'isSecure': conn.isSecure,
-                'token': conn.token
-            })
-            if conn == self.activeConnection:
-                serverObj['connections'][-1]['active'] = True
+        if full:
+            for conn in self.connections:
+                serverObj['connections'].append({
+                    'sources': conn.sources,
+                    'address': conn.address,
+                    'isLocal': conn.isLocal,
+                    'isSecure': conn.isSecure,
+                    'token': conn.token
+                })
+                if conn == self.activeConnection:
+                    serverObj['connections'][-1]['active'] = True
+        else:
+            serverObj['connections'] = [{
+                'sources': self.activeConnection.sources,
+                'address': self.activeConnection.address,
+                'isLocal': self.activeConnection.isLocal,
+                'isSecure': self.activeConnection.isSecure,
+                'token': self.activeConnection.token or self.getToken(),
+                'active': True
+            }]
 
         return json.dumps(serverObj)
-
-
-class PlexServerOld(plexresource.PlexResource):
-    def init(self, data):
-        plexresource.PlexResource.init(self, data)
-        self.server = self
-        self.session = http.Session()
-
-    def __repr__(self):
-        return '<{0}:{1}>'.format(self.__class__.__name__, self.baseuri)
-
-    def _connect(self):
-        try:
-            return self.query('/')
-        except Exception as err:
-            util.LOG('ERROR: {0} - {1}'.format(self.baseuri, err.message))
-            raise exceptions.NotFound('No server found at: {0}'.format(self.baseuri))
-
-    def library(self):
-        if self.platform == 'cloudsync':
-            return plexlibrary.Library(None, server=self)
-        else:
-            return plexlibrary.Library(self.query('/library/'), server=self)
-
-    def account(self):
-        data = self.query('/myplex/account')
-        import myplexaccount
-        return myplexaccount.MyPlexAccount(self, data)
-
-    # def clients(self):
-    #     items = []
-    #     for elem in self.query('/clients'):
-    #         items.append(Client(self, elem))
-    #     return items
-
-    # def client(self, name):
-    #     for elem in self.query('/clients'):
-    #         if elem.attrib.get('name').lower() == name.lower():
-    #             return Client(self, elem)
-    #     raise exceptions.NotFound('Unknown client name: %s' % name)
-
-    # def createPlayQueue(self, item):
-    #     return PlayQueue.create(self, item)
-
-    def playlists(self):
-        return util.listItems(self, '/playlists')
-
-    def playlist(self, title=None):  # noqa
-        for item in self.playlists():
-            if item.title == title:
-                return item
-        raise exceptions.NotFound('None playlist title: %s' % title)
-
-    def hubs(self, section=None, count=None):
-        hubs = []
-
-        q = '/hubs'
-        params = {}
-        if section:
-            q = '/hubs/sections/%s' % section
-
-        if count is not None:
-            params = {'count': count}
-
-        for elem in self.query(q, params=params):
-            hubs.append(Hub(elem, server=self))
-        return hubs
-
-    def search(self, query, mediatype=None):
-        """ Searching within a library section is much more powerful. """
-        items = plexobjects.listItems(self, '/search?query=%s' % compat.quote(query))
-        if mediatype:
-            return [item for item in items if item.type == mediatype]
-        return items
-
-    def sessions(self):
-        return plexobjects.listItems(self, '/status/sessions')
-
-    def query(self, path, method=None, token=None, **kwargs):
-        method = method or self.session.get
-        return self.connection.query(path, method, token, **kwargs)
-
-    def url(self, path):
-        return self.connection.getUrl(path, self.token)
 
 
 def dummyPlexServer():

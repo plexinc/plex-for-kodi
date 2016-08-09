@@ -190,6 +190,8 @@ class PlexObject(object):
         try:
             data = self.server.query(self.key)
         except Exception, e:
+            import traceback
+            traceback.print_exc()
             util.ERROR(err=e)
             self.initpath = self.key
             return
@@ -270,14 +272,19 @@ class PlexObject(object):
 
         return po
 
-    def serialize(self):
+    def serialize(self, full=False):
         import json
         odict = {}
-        for k, v in self.__dict__.items():
-            if k not in ('server', 'container', 'media', 'initpath', '_data') and v:
-                odict[k] = v
+        if full:
+            for k, v in self.__dict__.items():
+                if k not in ('server', 'container', 'media', 'initpath', '_data') and v:
+                    odict[k] = v
+        else:
+            odict['key'] = self.key
+            odict['type'] = self.type
+
         odict['initpath'] = '/none'
-        obj = {'obj': odict, 'server': self.server.serialize()}
+        obj = {'obj': odict, 'server': self.server.serialize(full=full)}
 
         return json.dumps(obj, cls=JEncoder)
 

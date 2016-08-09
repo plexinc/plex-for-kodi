@@ -2,66 +2,48 @@ import xbmc
 import xbmcgui
 import kodigui
 
+import musicplayer
+
+from lib import colors
 from lib import util
-from lib import player
 
 
 class PlaylistWindow(kodigui.BaseDialog):
-    xmlFile = 'script-plex-music_current_playlist.xml'
+    xmlFile = 'script-plex-playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
     res = '1080i'
     width = 1920
     height = 1080
 
-    LI_THUMB_DIM = (64, 64)
-    ALBUM_THUMB_DIM = (639, 639)
+    OPTIONS_GROUP_ID = 200
+    PLAYER_STATUS_BUTTON_ID = 204
+
+    LI_AR16X9_THUMB_DIM = (178, 100)
+    LI_SQUARE_THUMB_DIM = (100, 100)
+
+    ALBUM_THUMB_DIM = (630, 630)
 
     PLAYLIST_LIST_ID = 101
 
-    SEEK_BUTTON_ID = 500
-    SEEK_IMAGE_ID = 510
-
-    POSITION_IMAGE_ID = 201
-    SELECTION_INDICATOR = 202
-    SELECTION_BOX = 203
-
-    SHUFFLE_BUTTON_ID = 402
-    SETTINGS_BUTTON_ID = 403
-    SKIP_BACK_BUTTON_ID = 405
-    SKIP_FORWARD_BUTTON_ID = 408
-    PLAYLIST_BUTTON_ID = 410
-
-    SEEK_IMAGE_WIDTH = 819
-    SELECTION_BOX_WIDTH = 101
-    SELECTION_INDICATOR_Y = 896
-
-    BAR_X = 0
-    BAR_Y = 921
-    BAR_RIGHT = 819
-    BAR_BOTTOM = 969
-
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
-        self.selectedOffset = 0
-        self.setDuration()
+        self.playlist = kwargs.get('playlist')
         self.exitCommand = None
 
     def onFirstInit(self):
         self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 5)
-        self.setupSeekbar()
+        self.setProperties()
 
         self.fillPlaylist()
         self.setFocusId(self.PLAYLIST_LIST_ID)
 
     def onAction(self, action):
         try:
-            controlID = self.getFocusId()
-            if self.checkSeekActions(action, controlID):
-                return
-            elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
-                self.doClose()
-                return
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.setFocusId(self.OPTIONS_GROUP_ID)
+                    return
         except:
             util.ERROR()
 
@@ -70,136 +52,76 @@ class PlaylistWindow(kodigui.BaseDialog):
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_LIST_ID:
             self.playlistListClicked()
-        elif controlID == self.SEEK_BUTTON_ID:
-            self.seekButtonClicked()
-        elif controlID == self.SHUFFLE_BUTTON_ID:
-            self.fillPlaylist()
-
-    def onFocus(self, controlID):
-        if controlID == self.SEEK_BUTTON_ID:
-            try:
-                if player.PLAYER.isPlaying():
-                    self.selectedOffset = player.PLAYER.getTime() * 1000
-                else:
-                    self.selectedOffset = 0
-            except RuntimeError:
-                self.selectedOffset = 0
-
-            self.updateSelectedProgress()
-
-    def onPlayBackStarted(self):
-        self.setDuration()
-
-    def seekButtonClicked(self):
-        player.PLAYER.seekTime(self.selectedOffset / 1000.0)
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
 
     def playlistListClicked(self):
         mli = self.playlistListControl.getSelectedItem()
         if not mli:
             return
 
-        player.PLAYER.playselected(mli.pos())
+        if self.playlist.playlistType == 'audio':
+            w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, playlist=self.playlist)
+        else:
+            w = None
+
+        del w
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w
+
+    def setProperties(self):
+        self.setProperty(
+            'background',
+            self.playlist.composite.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+        )
+        self.setProperty('playlist.thumb', self.playlist.composite.asTranscodedImageURL(*self.ALBUM_THUMB_DIM))
+        self.setProperty('playlist.title', self.playlist.title)
+        self.setProperty('playlist.duration', util.durationToText(self.playlist.duration.asInt()))
 
     def createListItem(self, pi):
-        mli = kodigui.ManagedListItem(pi['title'], thumbnailImage=pi['thumbnail'], data_source=pi)
-        mli.setProperty('track.number', str(pi['track']))
-        mli.setProperty('track.duration', util.simplifiedTimeDisplay(pi['duration'] * 1000))
-        mli.setProperty('artist', pi['artist'][0])
-        mli.setProperty('album', pi['album'])
-        mli.setProperty('disc', str(pi['disc']))
-        mli.setProperty('number', '{0:0>2}'.format(pi['track']))
-        # util.TEST('{0} {1} {2} {3}'.format(tag.getArtist(), tag.getAlbum(), tag.getDisc(), tag.getTrack()))
-        # util.TEST('{0} {1} {2} {3}'.format(
-        #     xbmc.getInfoLabel('MusicPlayer.Artist'),
-        #     xbmc.getInfoLabel('MusicPlayer.Album'),
-        #     xbmc.getInfoLabel('MusicPlayer.DiscNumber'),
-        #     xbmc.getInfoLabel('MusicPlayer.TrackNumber'))
-        # )
+        if pi.type == 'track':
+            return self.createTrackListItem(pi)
+        elif pi.type == 'episode':
+            return self.createEpisodeListItem(pi)
+        elif pi.type in ('movie', 'clip'):
+            return self.createMovieListItem(pi)
+
+    def createTrackListItem(self, track):
+        label2 = '{0} / {1}'.format(track.grandparentTitle, track.parentTitle)
+        mli = kodigui.ManagedListItem(track.title, label2, thumbnailImage=track.defaultThumb.asTranscodedImageURL(*self.LI_SQUARE_THUMB_DIM), data_source=track)
+        mli.setProperty('track.duration', util.simplifiedTimeDisplay(track.duration.asInt()))
+        return mli
+
+    def createEpisodeListItem(self, episode):
+        label2 = '{0} / {1}'.format(episode.grandparentTitle, '{0}x{1:0>2}'.format(episode.parentIndex, episode.index))
+        mli = kodigui.ManagedListItem(episode.title, label2, thumbnailImage=episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=episode)
+        mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
+        mli.setProperty('video', '1')
+        mli.setProperty('watched', episode.isWatched and '1' or '')
+        return mli
+
+    def createMovieListItem(self, movie):
+        mli = kodigui.ManagedListItem(movie.title, movie.year, thumbnailImage=movie.art.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=movie)
+        mli.setProperty('track.duration', util.durationToShortText(movie.duration.asInt()))
+        mli.setProperty('video', '1')
+        mli.setProperty('watched', movie.isWatched and '1' or '')
         return mli
 
     def fillPlaylist(self):
         items = []
-        idx = 0
-        from lib import kodijsonrpc
-        for pi in kodijsonrpc.rpc.PlayList.GetItems(
-            playlistid=xbmc.PLAYLIST_MUSIC, properties=['title', 'artist', 'album', 'disc', 'track', 'thumbnail', 'duration']
-        )['items']:
+        idx = 1
+        for pi in self.playlist.items():
             # util.TEST('')
             mli = self.createListItem(pi)
             if mli:
-                mli.setProperty('index', str(idx))
+                mli.setProperty('track.number', str(idx))
+                mli.setProperty('plex.ID', 'PLEX-{0}'.format(pi.ratingKey))
+                mli.setProperty('file', '!NONE!')
                 items.append(mli)
                 idx += 1
 
         self.playlistListControl.reset()
         self.playlistListControl.addItems(items)
-
-    def setupSeekbar(self):
-        self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
-        self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
-        self.selectionBox = self.getControl(self.SELECTION_BOX)
-        self.selectionBoxHalf = self.SELECTION_BOX_WIDTH / 2
-        self.selectionBoxMax = self.SEEK_IMAGE_WIDTH
-        self.playerMonitor = util.PlayerMonitor().init(self.onPlayBackStarted)
-
-    def checkSeekActions(self, action, controlID):
-        if controlID == self.SEEK_BUTTON_ID:
-            if action == xbmcgui.ACTION_MOUSE_MOVE:
-                self.seekMouse(action)
-                return True
-            elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
-                self.seekForward(3000)
-                return True
-            elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
-                self.seekBack(3000)
-                return True
-            # elif action == xbmcgui.ACTION_MOVE_UP:
-            #     self.seekForward(60000)
-            # elif action == xbmcgui.ACTION_MOVE_DOWN:
-            #     self.seekBack(60000)
-
-    def setDuration(self):
-        try:
-            self.duration = player.PLAYER.getTotalTime() * 1000
-        except RuntimeError:  # Not playing
-            self.duration = 0
-
-    def seekForward(self, offset):
-        self.selectedOffset += offset
-        if self.selectedOffset > self.duration:
-            self.selectedOffset = self.duration
-
-        self.updateSelectedProgress()
-
-    def seekBack(self, offset):
-        self.selectedOffset -= offset
-        if self.selectedOffset < 0:
-            self.selectedOffset = 0
-
-        self.updateSelectedProgress()
-
-    def seekMouse(self, action):
-        x = self.mouseXTrans(action.getAmount1())
-        y = self.mouseXTrans(action.getAmount2())
-        if not (self.BAR_Y <= y <= self.BAR_BOTTOM):
-            return
-
-        if not (self.BAR_X <= x <= self.BAR_RIGHT):
-            return
-
-        self.selectedOffset = int((x - self.BAR_X) / float(self.SEEK_IMAGE_WIDTH) * self.duration)
-        self.updateSelectedProgress()
-
-    def updateSelectedProgress(self):
-        ratio = self.selectedOffset / float(self.duration)
-        w = int(ratio * self.SEEK_IMAGE_WIDTH)
-        self.seekbarControl.setWidth(w or 1)
-
-        self.selectionIndicator.setPosition(w, self.SELECTION_INDICATOR_Y)
-        if w < self.selectionBoxHalf - 3:
-            self.selectionBox.setPosition((-self.selectionBoxHalf + (self.selectionBoxHalf - w)) - 3, 0)
-        elif w > self.selectionBoxMax:
-            self.selectionBox.setPosition((-self.SELECTION_BOX_WIDTH + (self.SEEK_IMAGE_WIDTH - w)) + 3, 0)
-        else:
-            self.selectionBox.setPosition(-self.selectionBoxHalf, 0)
-        self.setProperty('time.selection', util.simplifiedTimeDisplay(int(self.selectedOffset)))

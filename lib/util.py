@@ -157,23 +157,23 @@ def durationToShortText(seconds):
     """
     days = int(seconds / 86400000)
     if days:
-        return '{0} day'.format(days)
+        return '{0} d'.format(days)
     left = seconds % 86400000
     hours = int(left / 3600000)
     if hours:
-        hours = '{0} hr '.format(hours)
+        hours = '{0} h '.format(hours)
     else:
         hours = ''
     left = left % 3600000
     mins = int(left / 60000)
     if mins:
-        return hours + '{0} min'.format(mins)
+        return hours + '{0} m'.format(mins)
     elif hours:
         return hours.rstrip()
     secs = int(left % 60000)
     if secs:
-        return '{0} sec'.format(secs)
-    return '0 sec'
+        return '{0} s'.format(secs)
+    return '0 s'
 
 
 def cleanLeadingZeros(text):
@@ -403,17 +403,8 @@ def getProgressImage(obj):
 
 
 def trackIsPlaying(track):
-    return xbmc.getCondVisibility((
-        'StringCompare(MusicPlayer.Artist,{0}) + ' +
-        'StringCompare(MusicPlayer.Album,{1}) + ' +
-        'StringCompare(MusicPlayer.DiscNumber,{2}) + ' +
-        'StringCompare(MusicPlayer.TrackNumber,{3})'
-    ).format(
-        track.grandparentTitle,
-        track.parentTitle,
-        track.parentIndex,
-        '{0:0>2}'.format(track.index)
-    ))
+    return xbmc.getCondVisibility('StringCompare(MusicPlayer.Comment,{0})'.format('PLEX-{0}'.format(track.ratingKey)))
+
 
 class PlayerMonitor(xbmc.Player):
     def init(self, callback):

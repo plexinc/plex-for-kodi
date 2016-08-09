@@ -3,7 +3,7 @@ from datetime import datetime
 import exceptions
 import util
 import plexapp
-
+import json
 
 # Search Types - Plex uses these to filter specific media types when searching.
 SEARCHTYPES = {
@@ -120,6 +120,14 @@ class PlexMediaItemList(PlexItemList):
         return self._items
 
 
+class JEncoder(json.JSONEncoder):
+    def default(self, o):
+        try:
+            return json.JSONEncoder.default(self, o)
+        except:
+            return None
+
+
 class PlexObject(object):
     def __init__(self, data, initpath=None, server=None, container=None):
         self.initpath = initpath
@@ -155,6 +163,10 @@ class PlexObject(object):
             util.LOG('Failed to set attribute: {0} ({1})'.format(attr, self.__class__))
 
         return a
+
+    def get(self, attr, default=''):
+        ret = self.__dict__.get(attr)
+        return ret is not None and ret or PlexValue(default, self)
 
     def init(self, data):
         pass
@@ -244,6 +256,30 @@ class PlexObject(object):
                 return None
 
         return server
+
+    @classmethod
+    def deSerialize(cls, jstring):
+        import plexserver
+        obj = json.loads(jstring)
+        server = plexserver.PlexServer.deSerialize(obj['server'])
+        server.identifier = None
+        ad = util.AttributeDict()
+        ad.attrib = obj['obj']
+        ad.find = lambda x: None
+        po = buildItem(server, ad, ad.initpath, container=server)
+
+        return po
+
+    def serialize(self):
+        import json
+        odict = {}
+        for k, v in self.__dict__.items():
+            if k not in ('server', 'container', 'media', 'initpath', '_data') and v:
+                odict[k] = v
+        odict['initpath'] = '/none'
+        obj = {'obj': odict, 'server': self.server.serialize()}
+
+        return json.dumps(obj, cls=JEncoder)
 
 
 class PlexContainer(PlexObject):

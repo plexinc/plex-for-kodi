@@ -5,6 +5,10 @@ import media
 
 
 class Audio(media.MediaItem):
+    def __init__(self, *args, **kwargs):
+        self._settings = None
+        media.MediaItem.__init__(self, *args, **kwargs)
+
     def _setData(self, data):
         for k, v in data.attrib.items():
             setattr(self, k, plexobjects.PlexValue(v, self))
@@ -127,3 +131,7 @@ class Track(Audio):
 
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)
+
+    @property
+    def defaultThumb(self):
+        return self.__dict__.get('thumb') or self.__dict__.get('parentThumb') or self.get('grandparentThumb')

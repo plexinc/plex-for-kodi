@@ -271,13 +271,20 @@ class FilterChoice(plexobjects.PlexObject):
 class Playlist(plexobjects.PlexObject):
     TYPE = 'Playlist'
 
+    def __init__(self, *args, **kwargs):
+        plexobjects.PlexObject.__init__(self, *args, **kwargs)
+        self._items = None
+
     def __repr__(self):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
     def items(self):
-        path = '/playlists/{0}/items'.format(self.ratingKey)
-        return plexobjects.listItems(self.server, path)
+        if not self._items:
+            path = '/playlists/{0}/items'.format(self.ratingKey)
+            self._items = plexobjects.listItems(self.server, path)
+
+        return self._items
 
 
 SECTION_TYPES = {

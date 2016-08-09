@@ -43,7 +43,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[Window.Property(artist.title)]</label>
+                    <label>$INFO[Window.Property(playlist.title)]</label>
                 </control>
                 <control type="label">
                     <posx>0</posx>
@@ -54,21 +54,21 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[Window.Property(album.title)]</label>
+                    <label>$INFO[Window.Property(playlist.duration)]</label>
                 </control>
                 <control type="image">
                     <posx>0</posx>
                     <posy>142</posy>
                     <width>630</width>
                     <height>630</height>
-                    <texture>$INFO[Window.Property(season.thumb)]</texture>
+                    <texture>$INFO[Window.Property(playlist.thumb)]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
             </control>
 
             <control type="grouplist" id="300">
                 <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
-                <defaultcontrol>301</defaultcontrol>
+                <defaultcontrol always="true">303</defaultcontrol>
                 <posx>50</posx>
                 <posy>784</posy>
                 <width>650</width>
@@ -127,12 +127,12 @@
                 <posx>750</posx>
                 <posy>0</posy>
                 <width>1170</width>
-                <height>945</height>
+                <height>1080</height>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
-                    <width>1380</width>
-                    <height>945</height>
+                    <width>1170</width>
+                    <height>1080</height>
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>20000000</colordiffuse>
                 </control>
@@ -149,17 +149,16 @@
                     <preloaditems>4</preloaditems>
                     <pagecontrol>152</pagecontrol>
                     <!-- ITEM LAYOUT ########################################## -->
-                    <itemlayout height="76">
+                    <itemlayout height="100">
                         <control type="group">
-                            <visible>IsEmpty(ListItem.Property(is.header))</visible>
                             <posx>120</posx>
                             <posy>24</posy>
                             <control type="label">
-                                <visible>!StringCompare(ListItem.Property(artist),MusicPlayer.Artist) | !StringCompare(ListItem.Property(album),MusicPlayer.Album) | !StringCompare(ListItem.Property(disc),MusicPlayer.DiscNumber) | !StringCompare(ListItem.Property(number),MusicPlayer.TrackNumber)</visible>
+                                <visible>!StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>50</width>
-                                <height>76</height>
+                                <height>100</height>
                                 <font>font10</font>
                                 <align>left</align>
                                 <aligny>center</aligny>
@@ -167,34 +166,101 @@
                                 <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                             </control>
                             <control type="image">
-                                <visible>StringCompare(ListItem.Property(artist),MusicPlayer.Artist) + StringCompare(ListItem.Property(album),MusicPlayer.Album) + StringCompare(ListItem.Property(disc),MusicPlayer.DiscNumber) + StringCompare(ListItem.Property(number),MusicPlayer.TrackNumber)</visible>
+                                <visible>StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                 <posx>0</posx>
-                                <posy>21</posy>
+                                <posy>32.5</posy>
                                 <width>35</width>
                                 <height>35</height>
                                 <texture>script.plex/indicators/playing-circle.png</texture>
                                 <colordiffuse>FFE5A00D</colordiffuse>
                             </control>
                             <control type="group">
-                                <posx>90</posx>
-                                <posy>0</posy>
-                                <control type="label">
-                                    <posx>0</posx>
+                                <visible>IsEmpty(ListItem.Property(video))</visible>
+                                <control type="image">
+                                    <posx>63</posx>
+                                    <posy>11</posy>
+                                    <width>74</width>
+                                    <height>74</height>
+                                    <texture>$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="group">
+                                    <posx>168</posx>
                                     <posy>0</posy>
-                                    <width>723</width>
-                                    <height>76</height>
-                                    <font>font10</font>
-                                    <align>left</align>
-                                    <aligny>center</aligny>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>[B]$INFO[ListItem.Label][/B]</label>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>15</posy>
+                                        <width>692</width>
+                                        <height>30</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>[B]$INFO[ListItem.Label][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>50</posy>
+                                        <width>692</width>
+                                        <height>30</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>B8FFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label2]</label>
+                                    </control>
+                                </control>
+                            </control>
+                            <control type="group">
+                                <visible>!IsEmpty(ListItem.Property(video))</visible>
+                                <control type="image">
+                                    <posx>63</posx>
+                                    <posy>11</posy>
+                                    <width>132</width>
+                                    <height>74</height>
+                                    <texture>$INFO[ListItem.Thumb]</texture>
+                                    <aspectratio>scale</aspectratio>
+                                </control>
+                                <control type="image">
+                                    <visible>IsEmpty(ListItem.Property(watched))</visible>
+                                    <posx>895</posx>
+                                    <posy>-1</posy>
+                                    <width>35</width>
+                                    <height>35</height>
+                                    <texture>script.plex/indicators/unwatched.png</texture>
+                                </control>
+                                <control type="group">
+                                    <posx>226</posx>
+                                    <posy>0</posy>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>15</posy>
+                                        <width>584</width>
+                                        <height>30</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>[B]$INFO[ListItem.Label][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>50</posy>
+                                        <width>584</width>
+                                        <height>30</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>B8FFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label2]</label>
+                                    </control>
                                 </control>
                             </control>
                             <control type="label">
                                 <posx>730</posx>
                                 <posy>0</posy>
                                 <width>200</width>
-                                <height>76</height>
+                                <height>100</height>
                                 <font>font10</font>
                                 <align>right</align>
                                 <aligny>center</aligny>
@@ -204,43 +270,28 @@
                             <control type="image">
                                 <visible>IsEmpty(ListItem.Property(is.footer))</visible>
                                 <posx>0</posx>
-                                <posy>73</posy>
+                                <posy>97</posy>
                                 <width>930</width>
                                 <height>2</height>
                                 <texture>script.plex/white-square.png</texture>
                                 <colordiffuse>40000000</colordiffuse>
                             </control>
                         </control>
-
-                        <control type="label">
-                            <visible>!IsEmpty(ListItem.Property(is.header))</visible>
-                            <posx>120</posx>
-                            <posy>24</posy>
-                            <width>400</width>
-                            <height>76</height>
-                            <font>font10</font>
-                            <align>left</align>
-                            <aligny>center</aligny>
-                            <textcolor>FFFFFFFF</textcolor>
-                            <label>[B][UPPERCASE]$INFO[ListItem.Label][/UPPERCASE][/B]</label>
-                        </control>
-
                     </itemlayout>
 
                     <!-- FOCUSED LAYOUT ####################################### -->
-                    <focusedlayout height="76">
+                    <focusedlayout height="100">
                         <control type="group">
-                            <visible>IsEmpty(ListItem.Property(is.header))</visible>
                             <control type="group">
                                 <visible>!Control.HasFocus(101)</visible>
                                 <posx>120</posx>
                                 <posy>24</posy>
                                 <control type="label">
-                                    <visible>!StringCompare(ListItem.Property(artist),MusicPlayer.Artist) | !StringCompare(ListItem.Property(album),MusicPlayer.Album) | !StringCompare(ListItem.Property(disc),MusicPlayer.DiscNumber) | !StringCompare(ListItem.Property(number),MusicPlayer.TrackNumber)</visible>
+                                    <visible>!StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <width>50</width>
-                                    <height>76</height>
+                                    <height>100</height>
                                     <font>font10</font>
                                     <align>left</align>
                                     <aligny>center</aligny>
@@ -248,34 +299,101 @@
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>StringCompare(ListItem.Property(artist),MusicPlayer.Artist) + StringCompare(ListItem.Property(album),MusicPlayer.Album) + StringCompare(ListItem.Property(disc),MusicPlayer.DiscNumber) + StringCompare(ListItem.Property(number),MusicPlayer.TrackNumber)</visible>
+                                    <visible>StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>0</posx>
-                                    <posy>21</posy>
+                                    <posy>32.5</posy>
                                     <width>35</width>
                                     <height>35</height>
                                     <texture>script.plex/indicators/playing-circle.png</texture>
                                     <colordiffuse>FFE5A00D</colordiffuse>
                                 </control>
                                 <control type="group">
-                                    <posx>90</posx>
-                                    <posy>0</posy>
-                                    <control type="label">
-                                        <posx>0</posx>
+                                    <visible>IsEmpty(ListItem.Property(video))</visible>
+                                    <control type="image">
+                                        <posx>63</posx>
+                                        <posy>11</posy>
+                                        <width>74</width>
+                                        <height>74</height>
+                                        <texture>$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <posx>168</posx>
                                         <posy>0</posy>
-                                        <width>723</width>
-                                        <height>76</height>
-                                        <font>font10</font>
-                                        <align>left</align>
-                                        <aligny>center</aligny>
-                                        <textcolor>FFFFFFFF</textcolor>
-                                        <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>15</posy>
+                                            <width>692</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FFFFFFFF</textcolor>
+                                            <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        </control>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>50</posy>
+                                            <width>692</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>B8FFFFFF</textcolor>
+                                            <label>$INFO[ListItem.Label2]</label>
+                                        </control>
+                                    </control>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(video))</visible>
+                                    <control type="image">
+                                        <posx>63</posx>
+                                        <posy>11</posy>
+                                        <width>132</width>
+                                        <height>74</height>
+                                        <texture>$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(watched))</visible>
+                                        <posx>895</posx>
+                                        <posy>-1</posy>
+                                        <width>35</width>
+                                        <height>35</height>
+                                        <texture>script.plex/indicators/unwatched.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <posx>226</posx>
+                                        <posy>0</posy>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>15</posy>
+                                            <width>584</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FFFFFFFF</textcolor>
+                                            <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        </control>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>50</posy>
+                                            <width>584</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>B8FFFFFF</textcolor>
+                                            <label>$INFO[ListItem.Label2]</label>
+                                        </control>
                                     </control>
                                 </control>
                                 <control type="label">
                                     <posx>730</posx>
                                     <posy>0</posy>
                                     <width>200</width>
-                                    <height>76</height>
+                                    <height>100</height>
                                     <font>font10</font>
                                     <align>right</align>
                                     <aligny>center</aligny>
@@ -285,7 +403,7 @@
                                 <control type="image">
                                     <visible>IsEmpty(ListItem.Property(is.footer))</visible>
                                     <posx>0</posx>
-                                    <posy>73</posy>
+                                    <posy>97</posy>
                                     <width>930</width>
                                     <height>2</height>
                                     <texture>script.plex/white-square.png</texture>
@@ -300,24 +418,32 @@
                                 <control type="image">
                                     <posx>-40</posx>
                                     <posy>-40</posy>
-                                    <width>1130</width>
-                                    <height>156</height>
+                                    <width>1124</width>
+                                    <height>180</height>
                                     <texture border="40">script.plex/square-rounded-shadow.png</texture>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
-                                    <width>1044</width>
-                                    <height>76</height>
-                                    <texture border="12">script.plex/white-square-rounded.png</texture>
+                                    <width>999</width>
+                                    <height>100</height>
+                                    <texture border="12">script.plex/white-square-left-rounded.png</texture>
                                     <colordiffuse>FFE5A00D</colordiffuse>
                                 </control>
+                                <control type="image">
+                                    <posx>999</posx>
+                                    <posy>0</posy>
+                                    <width>45</width>
+                                    <height>100</height>
+                                    <texture>script.plex/buttons/more-vertical.png</texture>
+                                    <colordiffuse>99FFFFFF</colordiffuse>
+                                </control>
                                 <control type="label">
-                                    <visible>!StringCompare(ListItem.Property(artist),MusicPlayer.Artist) | !StringCompare(ListItem.Property(album),MusicPlayer.Album) | !StringCompare(ListItem.Property(disc),MusicPlayer.DiscNumber) | !StringCompare(ListItem.Property(number),MusicPlayer.TrackNumber)</visible>
+                                    <visible>!StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>48</posx>
                                     <posy>0</posy>
                                     <width>50</width>
-                                    <height>76</height>
+                                    <height>100</height>
                                     <font>font12</font>
                                     <align>left</align>
                                     <aligny>center</aligny>
@@ -325,34 +451,102 @@
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>StringCompare(ListItem.Property(artist),MusicPlayer.Artist) + StringCompare(ListItem.Property(album),MusicPlayer.Album) + StringCompare(ListItem.Property(disc),MusicPlayer.DiscNumber) + StringCompare(ListItem.Property(number),MusicPlayer.TrackNumber)</visible>
+                                    <visible>StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>48</posx>
-                                    <posy>21</posy>
+                                    <posy>32.5</posy>
                                     <width>35</width>
                                     <height>35</height>
                                     <texture>script.plex/indicators/playing-circle.png</texture>
                                     <colordiffuse>FF000000</colordiffuse>
                                 </control>
                                 <control type="group">
-                                    <posx>140</posx>
-                                    <posy>0</posy>
-                                    <control type="label">
-                                        <posx>0</posx>
+                                    <visible>IsEmpty(ListItem.Property(video))</visible>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(video))</visible>
+                                        <posx>103</posx>
                                         <posy>0</posy>
-                                        <width>738</width>
-                                        <height>76</height>
-                                        <font>font12</font>
-                                        <align>left</align>
-                                        <aligny>center</aligny>
-                                        <textcolor>DF000000</textcolor>
-                                        <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        <width>100</width>
+                                        <height>100</height>
+                                        <texture>$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="group">
+                                        <posx>235</posx>
+                                        <posy>0</posy>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>16</posy>
+                                            <width>638</width>
+                                            <height>30</height>
+                                            <font>font12</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>DF000000</textcolor>
+                                            <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        </control>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>51</posy>
+                                            <width>638</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>98000000</textcolor>
+                                            <label>$INFO[ListItem.Label2]</label>
+                                        </control>
+                                    </control>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(video))</visible>
+                                    <control type="image">
+                                        <posx>103</posx>
+                                        <posy>0</posy>
+                                        <width>178</width>
+                                        <height>100</height>
+                                        <texture>$INFO[ListItem.Thumb]</texture>
+                                        <aspectratio>scale</aspectratio>
+                                    </control>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(watched))</visible>
+                                        <posx>951</posx>
+                                        <posy>0</posy>
+                                        <width>48</width>
+                                        <height>48</height>
+                                        <texture>script.plex/indicators/unwatched.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <posx>313</posx>
+                                        <posy>0</posy>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>16</posy>
+                                            <width>510</width>
+                                            <height>30</height>
+                                            <font>font12</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>DF000000</textcolor>
+                                            <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        </control>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>51</posy>
+                                            <width>510</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>98000000</textcolor>
+                                            <label>$INFO[ListItem.Label2]</label>
+                                        </control>
                                     </control>
                                 </control>
                                 <control type="label">
-                                    <posx>796</posx>
+                                    <posx>776</posx>
                                     <posy>0</posy>
                                     <width>200</width>
-                                    <height>76</height>
+                                    <height>100</height>
                                     <font>font12</font>
                                     <align>right</align>
                                     <aligny>center</aligny>
@@ -362,18 +556,6 @@
                             </control>
                         </control>
 
-                        <control type="label">
-                            <visible>!IsEmpty(ListItem.Property(is.header))</visible>
-                            <posx>120</posx>
-                            <posy>24</posy>
-                            <width>400</width>
-                            <height>76</height>
-                            <font>font10</font>
-                            <align>left</align>
-                            <aligny>center</aligny>
-                            <textcolor>FFFFFFFF</textcolor>
-                            <label>[B][UPPERCASE]$INFO[ListItem.Label][/UPPERCASE][/B]</label>
-                        </control>
                     </focusedlayout>
                 </control>
 
@@ -381,7 +563,7 @@
                     <left>1128</left>
                     <top>33</top>
                     <width>10</width>
-                    <height>874</height>
+                    <height>879</height>
                     <onleft>101</onleft>
                     <visible>true</visible>
                     <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
@@ -397,7 +579,6 @@
             </control>
         </control>
 
-
         <control type="group" id="200">
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
@@ -405,6 +586,7 @@
             <width>1920</width>
             <height>135</height>
             <control type="image">
+                <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
                 <visible>ControlGroup(200).HasFocus(0)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -437,15 +619,15 @@
                         <label> </label>
                     </control>
                 </control>
-                <!-- <control type="label">
+                <control type="label">
                     <width max="500">auto</width>
                     <height>40</height>
                     <font>font12</font>
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]MUSIC[/UPPERCASE]</label>
-                </control> -->
+                    <label>[UPPERCASE]Playlists[/UPPERCASE]</label>
+                </control>
                 <control type="group">
                     <width>40</width>
                     <height>40</height>

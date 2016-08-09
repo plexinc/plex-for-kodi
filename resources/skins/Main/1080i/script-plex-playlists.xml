@@ -486,7 +486,7 @@
                     <visible>Player.HasAudio</visible>
                     <posx>-10</posx>
                     <posy>38</posy>
-                    <width>220</width>
+                    <width>260</width>
                     <height>75</height>
                     <onleft>202</onleft>
                     <ondown>50</ondown>
@@ -514,7 +514,7 @@
                     <control type="label">
                         <posx>53</posx>
                         <posy>48</posy>
-                        <width>200</width>
+                        <width>187</width>
                         <height>20</height>
                         <font>font10</font>
                         <align>left</align>
@@ -525,7 +525,7 @@
                     <control type="label">
                         <posx>53</posx>
                         <posy>72</posy>
-                        <width>200</width>
+                        <width>187</width>
                         <height>20</height>
                         <font>font10</font>
                         <align>left</align>
@@ -539,7 +539,7 @@
                     <control type="label">
                         <posx>53</posx>
                         <posy>48</posy>
-                        <width>200</width>
+                        <width>187</width>
                         <height>20</height>
                         <font>font10</font>
                         <align>left</align>
@@ -550,7 +550,7 @@
                     <control type="label">
                         <posx>53</posx>
                         <posy>72</posy>
-                        <width>200</width>
+                        <width>187</width>
                         <height>20</height>
                         <font>font10</font>
                         <align>left</align>
@@ -564,7 +564,7 @@
                     <description>Progressbar</description>
                     <posx>0</posx>
                     <posy>102</posy>
-                    <width>200</width>
+                    <width>240</width>
                     <height>1</height>
                     <texturebg colordiffuse="9AFFFFFF">script.plex/white-square-1px.png</texturebg>
                     <lefttexture>-</lefttexture>

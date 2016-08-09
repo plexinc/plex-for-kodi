@@ -300,25 +300,44 @@ class PlexPlayer(xbmc.Player):
         self.handler = AudioPlayerHandler(self, window)
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         plist.clear()
+        index = 1
         for track in album.tracks():
-            url, li = self.createTrackListItem(track, fanart)
+            url, li = self.createTrackListItem(track, fanart, index=index)
             plist.add(url, li)
+            index += 1
         xbmc.executebuiltin('PlayerControl(RandomOff)')
         self.play(plist, startpos=startpos)
 
-    def createTrackListItem(self, track, fanart=None):
-        pobj = plexplayer.PlexAudioPlayer(track)
-        url = pobj.build()['url']  # .streams[0]['url']
+    def playPlaylist(self, playlist, startpos=-1, window=None, fanart=None):
+        self.handler = AudioPlayerHandler(self, window)
+        plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
+        plist.clear()
+        index = 1
+        for track in playlist.items():
+            url, li = self.createTrackListItem(track, fanart, index=index)
+            plist.add(url, li)
+            index += 1
+        xbmc.executebuiltin('PlayerControl(RandomOff)')
+        self.play(plist, startpos=startpos)
+
+    def createTrackListItem(self, track, fanart=None, index=0):
+        # pobj = plexplayer.PlexAudioPlayer(track)
+        # url = pobj.build()['url']  # .streams[0]['url']
         # util.DEBUG_LOG('Playing URL: {0}'.format(url))
-        url += '&X-Plex-Platform=Chrome'
-        li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.thumb.asTranscodedImageURL(256, 256))
+        # url += '&X-Plex-Platform=Chrome'
+        import binascii
+
+        url = 'plugin://script.plex?{0}'.format(binascii.hexlify(track.serialize()))
+        li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(256, 256))
         li.setInfo('music', {
             'artist': str(track.grandparentTitle),
             'title': str(track.title),
             'album': str(track.parentTitle),
             'discnumber': track.parentIndex.asInt(),
-            'tracknumber': track.index.asInt(),
-            'duration': int(track.duration.asInt() / 1000)
+            'tracknumber': track.get('index').asInt(),
+            'duration': int(track.duration.asInt() / 1000),
+            'playcount': index,
+            'comment': 'PLEX-{0}'.format(track.ratingKey)
         })
         if fanart:
             li.setArt({'fanart': fanart})

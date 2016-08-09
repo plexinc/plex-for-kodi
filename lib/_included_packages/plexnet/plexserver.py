@@ -6,6 +6,7 @@ import exceptions
 import compat
 import verlib
 import re
+import json
 from xml.etree import ElementTree
 
 import signalsmixin
@@ -484,6 +485,67 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         m = re.Search("^\w+:\/\/.+?(\/.+)", url)
         newUrl = m and m.group(1) or None
         return self.buildUrl(newUrl or url, includeToken)
+
+    @classmethod
+    def deSerialize(cls, jstring):
+        try:
+            serverObj = json.loads(jstring)
+        except:
+            util.ERROR()
+            util.ERROR_LOG("Failed to deserialize PlexServer JSON")
+            return
+
+        import plexconnection
+
+        server = createPlexServerForName(serverObj['uuid'], serverObj['name'])
+        server.owned = bool(serverObj.get('owned'))
+        server.sameNetwork = serverObj.get('sameNetwork')
+
+        hasSecureConn = False
+        for i in range(len(serverObj.get('connections', []))):
+            conn = serverObj['connections'][i]
+            if conn['address'][:5] == "https":
+                hasSecureConn = True
+                break
+
+        for i in range(len(serverObj.get('connections', []))):
+            conn = serverObj['connections'][i]
+            isFallback = hasSecureConn and conn['address'][:5] != "https"
+            sources = plexconnection.PlexConnection.SOURCE_BY_VAL[conn['sources']]
+            connection = plexconnection.PlexConnection(sources, conn['address'], conn['isLocal'], conn['token'], isFallback)
+
+            # Keep the secure connection on top
+            if connection.isSecure:
+                server.connections.insert(0, connection)
+            else:
+                server.connections.append(connection)
+
+            if conn.get('active'):
+                server.activeConnection = connection
+
+        return server
+
+    def serialize(self):
+        serverObj = {
+            'name': self.name,
+            'uuid': self.uuid,
+            'owned': self.owned,
+            'connections': []
+        }
+
+        for i in range(len(self.connections)):
+            conn = self.connections[i]
+            serverObj['connections'].append({
+                'sources': conn.sources,
+                'address': conn.address,
+                'isLocal': conn.isLocal,
+                'isSecure': conn.isSecure,
+                'token': conn.token
+            })
+            if conn == self.activeConnection:
+                serverObj['connections'][-1]['active'] = True
+
+        return json.dumps(serverObj)
 
 
 class PlexServerOld(plexresource.PlexResource):

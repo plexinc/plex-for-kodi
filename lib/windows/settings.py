@@ -215,6 +215,7 @@ class SettingsWindow(kodigui.BaseWindow):
     OPTIONS_LIST_ID = 125
 
     CLOSE_BUTTON_ID = 201
+    PLAYER_STATUS_BUTTON_ID = 204
 
     def onFirstInit(self):
         self.settings = Settings()
@@ -252,6 +253,8 @@ class SettingsWindow(kodigui.BaseWindow):
             self.changeSetting()
         elif controlID == self.CLOSE_BUTTON_ID:
             self.doClose()
+        elif controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
 
     def checkSection(self):
         mli = self.sectionList.getSelectedItem()
@@ -265,6 +268,11 @@ class SettingsWindow(kodigui.BaseWindow):
         self.showSettings(self.lastSection)
         self.setProperty('section.about', self.lastSection == 'about' and '1' or '')
         util.DEBUG_LOG('Settings: Changed section ({0})'.format(self.lastSection))
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w
 
     def showSections(self):
         items = []

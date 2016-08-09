@@ -2,6 +2,8 @@ import xbmc
 import xbmcgui
 import kodigui
 
+import playlist
+
 from lib import util
 from lib import colors
 
@@ -18,10 +20,10 @@ class PlaylistsWindow(kodigui.BaseWindow):
 
     THUMB_DIMS = {
         'audio': {
-            'item.thumb': (215, 215)
+            'item.thumb': (270, 270)
         },
         'video': {
-            'item.thumb': (215, 215)
+            'item.thumb': (610, 344)
         }
     }
 
@@ -81,9 +83,7 @@ class PlaylistsWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        util.TEST(mli.dataSource.items())
-
-        w = None  # TODO: Implement
+        w = playlist.PlaylistWindow.open(playlist=mli.dataSource)
 
         try:
             if w.exitCommand == 'HOME':

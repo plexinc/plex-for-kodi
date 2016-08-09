@@ -10,6 +10,8 @@
     <extension point="xbmc.python.script" library="default.py">
         <provides>video</provides>
     </extension>
+    <extension point="xbmc.python.pluginsource" library="plugin.py">
+    </extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plex Media Player for Kodi</summary>
         <description lang="en">Plex Media Player for Kodi</description>

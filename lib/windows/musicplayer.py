@@ -1,7 +1,7 @@
 import xbmc
 import xbmcgui
 import kodigui
-import playlist
+import currentplaylist
 from lib import colors
 from lib import player
 from lib import util
@@ -20,7 +20,7 @@ def simplifiedTimeDisplay(ms):
     return left + ':' + right
 
 
-class MusicPlayerWindow(playlist.PlaylistWindow):
+class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
     xmlFile = 'script-plex-music_player.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -38,6 +38,7 @@ class MusicPlayerWindow(playlist.PlaylistWindow):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.track = kwargs.get('track')
+        self.playlist = kwargs.get('playlist')
         self.album = kwargs.get('album')
         self.selectedOffset = 0
 
@@ -79,11 +80,17 @@ class MusicPlayerWindow(playlist.PlaylistWindow):
         pass
 
     def showPlaylist(self):
-        w = playlist.PlaylistWindow.open()
+        w = currentplaylist.CurrentPlaylistWindow.open()
         del w
 
     def setProperties(self):
-        if self.track:
+        if self.playlist:
+            self.setProperty(
+                'background',
+                self.playlist.composite.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            )
+            self.setProperty('thumb', self.playlist.composite.asTranscodedImageURL(756, 756))
+        elif self.track:
             self.setProperty(
                 'background',
                 self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
@@ -101,4 +108,7 @@ class MusicPlayerWindow(playlist.PlaylistWindow):
             return
 
         # player.PLAYER.playAudio(self.track, window=self, fanart=self.getProperty('background'))
-        player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=self.getProperty('background'))
+        if self.album:
+            player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=self.getProperty('background'))
+        else:
+            player.PLAYER.playPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=self.getProperty('background'))

@@ -5,9 +5,10 @@ import sys
 import callback
 
 import signalsmixin
+import simpleobjects
 import util
 
-Res = util.Res
+Res = simpleobjects.Res
 
 APP = None
 INTERFACE = None
@@ -150,31 +151,31 @@ class AppInterface(object):
     def setQualities(self):
         # Calculate the max quality based on 4k support
         if self._globals.get("supports4k"):
-            maxQuality = util.AttributeDict({
+            maxQuality = simpleobjects.AttributeDict({
                 'height': 2160,
                 'maxHeight': 2160,
                 'origHeight': 1080
             })
             maxResolution = self._globals.get("Is4k") and "4k" or "1080p"
         else:
-            maxQuality = util.AttributeDict({
+            maxQuality = simpleobjects.AttributeDict({
                 'height': 1080,
                 'maxHeight': 1088
             })
             maxResolution = "1080p"
 
         self._globals['qualities'] = [
-            util.AttributeDict({'title': "Original", 'index': 13, 'maxBitrate': 200000}),
-            util.AttributeDict({'title': "20 Mbps " + maxResolution, 'index': 12, 'maxBitrate': 20000}),
-            util.AttributeDict({'title': "12 Mbps " + maxResolution, 'index': 11, 'maxBitrate': 12000}),
-            util.AttributeDict({'title': "10 Mbps " + maxResolution, 'index': 10, 'maxBitrate': 10000}),
-            util.AttributeDict({'title': "8 Mbps " + maxResolution, 'index': 9, 'maxBitrate': 8000}),
-            util.AttributeDict({'title': "4 Mbps 720p", 'index': 8, 'maxBitrate': 4000, 'maxHeight': 720}),
-            util.AttributeDict({'title': "3 Mbps 720p", 'index': 7, 'maxBitrate': 3000, 'maxHeight': 720}),
-            util.AttributeDict({'title': "2 Mbps 720p", 'index': 6, 'maxBitrate': 2000, 'maxHeight': 720}),
-            util.AttributeDict({'title': "1.5 Mbps 480p", 'index': 5, 'maxBitrate': 1500, 'maxHeight': 480}),
-            util.AttributeDict({'title': "720 Kbps", 'index': 4, 'maxBitrate': 720, 'maxHeight': 360}),
-            util.AttributeDict({'title': "320 Kbps", 'index': 3, 'maxBitrate': 320, 'maxHeight': 360}),
+            simpleobjects.AttributeDict({'title': "Original", 'index': 13, 'maxBitrate': 200000}),
+            simpleobjects.AttributeDict({'title': "20 Mbps " + maxResolution, 'index': 12, 'maxBitrate': 20000}),
+            simpleobjects.AttributeDict({'title': "12 Mbps " + maxResolution, 'index': 11, 'maxBitrate': 12000}),
+            simpleobjects.AttributeDict({'title': "10 Mbps " + maxResolution, 'index': 10, 'maxBitrate': 10000}),
+            simpleobjects.AttributeDict({'title': "8 Mbps " + maxResolution, 'index': 9, 'maxBitrate': 8000}),
+            simpleobjects.AttributeDict({'title': "4 Mbps 720p", 'index': 8, 'maxBitrate': 4000, 'maxHeight': 720}),
+            simpleobjects.AttributeDict({'title': "3 Mbps 720p", 'index': 7, 'maxBitrate': 3000, 'maxHeight': 720}),
+            simpleobjects.AttributeDict({'title': "2 Mbps 720p", 'index': 6, 'maxBitrate': 2000, 'maxHeight': 720}),
+            simpleobjects.AttributeDict({'title': "1.5 Mbps 480p", 'index': 5, 'maxBitrate': 1500, 'maxHeight': 480}),
+            simpleobjects.AttributeDict({'title': "720 Kbps", 'index': 4, 'maxBitrate': 720, 'maxHeight': 360}),
+            simpleobjects.AttributeDict({'title': "320 Kbps", 'index': 3, 'maxBitrate': 320, 'maxHeight': 360}),
             maxQuality
         ]
 

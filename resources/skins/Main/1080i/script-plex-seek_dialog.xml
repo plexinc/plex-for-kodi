@@ -7,18 +7,9 @@
     </coordinates>
     <!-- <zorder>100</zorder> -->
     <controls>
-        <control type="image">
-            <posx>0</posx>
-            <posy>0</posy>
-            <width>1920</width>
-            <height>140</height>
-            <texture>script.plex/white-square.png</texture>
-            <colordiffuse>A0000000</colordiffuse>
-        </control>
-
         <control type="group">
             <posx>0</posx>
-            <posy>940</posy>
+            <posy>0</posy>
             <control type="image">
                 <posx>0</posx>
                 <posy>0</posy>
@@ -26,6 +17,35 @@
                 <height>140</height>
                 <texture>script.plex/white-square.png</texture>
                 <colordiffuse>A0000000</colordiffuse>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>940</posy>
+                <width>1920</width>
+                <height>140</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>A0000000</colordiffuse>
+            </control>
+        </control>
+        <control type="group">
+            <visible>Window.IsActive(seekbar)</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>140</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>FF000000</colordiffuse>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>940</posy>
+                <width>1920</width>
+                <height>140</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>FF000000</colordiffuse>
             </control>
         </control>
 

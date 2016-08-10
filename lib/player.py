@@ -43,6 +43,9 @@ class BasePlayerHandler(object):
     def onVideoOSD(self):
         pass
 
+    def onSeekOSD(self):
+        pass
+
     def tick(self):
         pass
 
@@ -203,6 +206,11 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.player.close()
         return True
 
+    def onSeekOSD(self):
+        if self.dialog.isOpen:
+            self.closeSeekDialog()
+            self.showSeekDialog()
+
     def onVideoWindowClosed(self):
         self.closeSeekDialog()
         if not self.seeking:
@@ -250,6 +258,7 @@ class PlexPlayer(xbmc.Player):
         self.started = False
         self.video = None
         self.hasOSD = False
+        self.hasSeekOSD = False
         self.xbmcMonitor = xbmc.Monitor()
         self.handler = BasePlayerHandler(self)
         self.playerBackground = None
@@ -477,6 +486,13 @@ class PlexPlayer(xbmc.Player):
         except:
             util.ERROR()
 
+    def onSeekOSD(self):
+        util.DEBUG_LOG('Player: Seek OSD opened')
+        try:
+            self.handler.onSeekOSD()
+        except:
+            util.ERROR()
+
     def stopAndWait(self):
         if self.isPlayingVideo():
             util.DEBUG_LOG('Player (Recording): Stopping for external wait')
@@ -510,6 +526,13 @@ class PlexPlayer(xbmc.Player):
                                     self.onVideoOSD()
                             else:
                                 self.hasOSD = False
+
+                            if xbmc.getCondVisibility('Window.IsActive(seekbar)'):
+                                if not self.hasSeekOSD:
+                                    self.hasSeekOSD = True
+                                    self.onSeekOSD()
+                            else:
+                                self.hasSeekOSD = False
 
                             if xbmc.getCondVisibility('VideoPlayer.IsFullscreen'):
                                 if not hasFullScreened:

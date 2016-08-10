@@ -46,6 +46,11 @@ class BaseFunctions:
         self.onClosed()
         self.isOpen = False
 
+    def activate(self):
+        if not self._winID:
+            self._winID = xbmcgui.getCurrentWindowId()
+        xbmc.executebuiltin('ReplaceWindow({0})'.format(self._winID))
+
     def mouseXTrans(self, val):
         return int((val / self.getWidth()) * self.width)
 
@@ -106,6 +111,7 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
 
     def show(self):
         self._closing = False
+        self.isOpen = True
         xbmcgui.WindowXML.show(self)
 
     def onClosed(self):

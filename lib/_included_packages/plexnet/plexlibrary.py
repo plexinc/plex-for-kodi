@@ -269,7 +269,7 @@ class FilterChoice(plexobjects.PlexObject):
 
 @plexobjects.registerLibType
 class Playlist(plexobjects.PlexObject):
-    TYPE = 'Playlist'
+    TYPE = 'playlist'
 
     def __init__(self, *args, **kwargs):
         plexobjects.PlexObject.__init__(self, *args, **kwargs)
@@ -285,6 +285,10 @@ class Playlist(plexobjects.PlexObject):
             self._items = plexobjects.listItems(self.server, path)
 
         return self._items
+
+    @property
+    def defaultThumb(self):
+        return self.composite
 
 
 SECTION_TYPES = {

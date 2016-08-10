@@ -164,6 +164,7 @@
                     <posy>0</posy>
                     <width>2430</width>
                     <height>240</height>
+                    <onleft>100</onleft>
                     <onup>200</onup>
                     <ondown>400</ondown>
                     <scrolltime>200</scrolltime>
@@ -238,10 +239,10 @@
 
                             <control type="group">
                                 <visible>Control.HasFocus(101)</visible>
-                                <animation effect="zoom" start="86" end="100" time="100" center="149.5,67.5" reversible="false">Focus</animation>
-                                <animation effect="zoom" start="100" end="86" time="100" center="149.5,67.5" reversible="false">UnFocus</animation>
-                                <posx>12.5</posx>
-                                <posy>0</posy>
+                                <animation effect="zoom" start="80" end="100" time="100" center="151,74" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="100" end="80" time="100" center="151,74" reversible="false">UnFocus</animation>
+                                <posx>1</posx>
+                                <posy>-5.5</posy>
                                 <width>275</width>
                                 <height>135</height>
                                 <control type="group">
@@ -249,15 +250,15 @@
                                     <control type="image">
                                         <posx>-40</posx>
                                         <posy>-40</posy>
-                                        <width>355</width>
-                                        <height>215</height>
+                                        <width>378</width>
+                                        <height>226</height>
                                         <texture border="42">script.plex/drop-shadow.png</texture>
                                     </control>
                                     <control type="image">
                                         <posx>1</posx>
                                         <posy>1</posy>
-                                        <width>273</width>
-                                        <height>133</height>
+                                        <width>296</width>
+                                        <height>144</height>
                                         <texture border="10">script.plex/white-square-rounded.png</texture>
                                         <colordiffuse>FF1F1F1F</colordiffuse>
                                     </control>
@@ -265,36 +266,38 @@
                                         <animation effect="fade" end="0" reversible="false">UnFocus</animation>
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>275</width>
-                                        <height>135</height>
+                                        <width>298</width>
+                                        <height>146</height>
                                         <texture border="10">script.plex/white-square-rounded.png</texture>
                                         <colordiffuse>FFE5A00D</colordiffuse>
                                     </control>
                                     <control type="image">
-                                        <posx>97.5</posx>
-                                        <posy>27.5</posy>
-                                        <width>80</width>
-                                        <height>80</height>
+                                        <posx>99</posx>
+                                        <posy>23</posy>
+                                        <width>100</width>
+                                        <height>100</height>
                                         <texture>$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
                                 </control>
                                 <control type="group">
                                     <visible>!IsEmpty(ListItem.Property(is.home))</visible>
+                                    <posx>93</posx>
+                                    <posy>17</posy>
                                     <control type="image">
-                                        <posx>88.5</posx>
-                                        <posy>18.5</posy>
-                                        <width>98</width>
-                                        <height>98</height>
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>112</width>
+                                        <height>112</height>
                                         <texture>script.plex/home/type/home.png</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
                                     <control type="image">
                                         <animation effect="fade" end="0" reversible="false">UnFocus</animation>
-                                        <posx>48.5</posx>
-                                        <posy>-21.5</posy>
-                                        <width>180</width>
-                                        <height>180</height>
+                                        <posx>-40</posx>
+                                        <posy>-40</posy>
+                                        <width>192</width>
+                                        <height>192</height>
                                         <texture>script.plex/home/type/home-selected.png</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
@@ -314,7 +317,7 @@
                                     <width>238</width>
                                     <height>117</height>
                                     <texture border="10">script.plex/white-square-rounded.png</texture>
-                                    <colordiffuse>FF1F1F1F</colordiffuse>
+                                    <colordiffuse>FFCC7B19</colordiffuse>
                                 </control>
                                 <control type="image">
                                     <visible>IsEmpty(ListItem.Property(is.home))</visible>
@@ -332,6 +335,7 @@
                                     <width>90</width>
                                     <height>90</height>
                                     <texture>script.plex/home/type/home.png</texture>
+                                    <colordiffuse>FFCC7B19</colordiffuse>
                                     <aspectratio>keep</aspectratio>
                                 </control>
                             </control>
@@ -5780,7 +5784,7 @@
             <height>135</height>
             <control type="image">
                 <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                <visible>ControlGroup(200).HasFocus(0)</visible>
+                <visible>ControlGroup(200).HasFocus(0) + !IsEmpty(Window.Property(off.sections))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
@@ -5789,6 +5793,8 @@
                 <colordiffuse>C0000000</colordiffuse>
             </control>
             <control type="button" id="203">
+                <animation effect="zoom" start="100" end="177" time="100" center="80,67.5" reversible="false">Focus</animation>
+                <animation effect="zoom" start="177" end="100" time="100" center="80,67.5" reversible="false">UnFocus</animation>
                 <posx>60</posx>
                 <posy>47.5</posy>
                 <width>40</width>
@@ -5796,7 +5802,7 @@
                 <ondown>50</ondown>
                 <font>font12</font>
                 <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search.png</texturefocus>
+                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search-focus.png</texturefocus>
                 <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/search.png</texturenofocus>
                 <label> </label>
             </control>

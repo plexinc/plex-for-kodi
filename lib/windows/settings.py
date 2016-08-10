@@ -213,6 +213,7 @@ class SettingsWindow(kodigui.BaseWindow):
     SECTION_LIST_ID = 75
     SETTINGS_LIST_ID = 100
     OPTIONS_LIST_ID = 125
+    TOP_GROUP_ID = 200
 
     CLOSE_BUTTON_ID = 201
     PLAYER_STATUS_BUTTON_ID = 204
@@ -236,6 +237,9 @@ class SettingsWindow(kodigui.BaseWindow):
             if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                 if self.getFocusId() == self.OPTIONS_LIST_ID:
                     self.setFocusId(self.SETTINGS_LIST_ID)
+                    return
+                elif not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.TOP_GROUP_ID)):
+                    self.setFocusId(self.TOP_GROUP_ID)
                     return
             elif action == xbmcgui.ACTION_MOVE_RIGHT and controlID == 150:
                 self.editSetting(from_right=True)
@@ -311,9 +315,9 @@ class SettingsWindow(kodigui.BaseWindow):
             self.fillList(setting)
         elif setting.type == 'BOOL' and not from_right:
             self.toggleBool(mli, setting)
-        elif setting.type == 'IP':
+        elif setting.type == 'IP' and not from_right:
             self.editIP(mli, setting)
-        elif setting.type == 'INTEGER':
+        elif setting.type == 'INTEGER' and not from_right:
             self.editInteger(mli, setting)
 
     def changeSetting(self):

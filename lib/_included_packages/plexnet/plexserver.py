@@ -125,7 +125,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
     def playlists(self):
         try:
-            return plexobjects.listItems(self, '/playlists/all', bytag=True)
+            return plexobjects.listItems(self, '/playlists/all')
         except exceptions.BadRequest:
             return None
 

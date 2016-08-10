@@ -88,13 +88,13 @@ class PlaylistWindow(kodigui.BaseWindow):
             return self.createMovieListItem(pi)
 
     def createTrackListItem(self, track):
-        label2 = '{0} / {1}'.format(track.grandparentTitle, track.parentTitle)
+        label2 = u'{0} / {1}'.format(track.grandparentTitle, track.parentTitle)
         mli = kodigui.ManagedListItem(track.title, label2, thumbnailImage=track.defaultThumb.asTranscodedImageURL(*self.LI_SQUARE_THUMB_DIM), data_source=track)
         mli.setProperty('track.duration', util.simplifiedTimeDisplay(track.duration.asInt()))
         return mli
 
     def createEpisodeListItem(self, episode):
-        label2 = '{0} / {1}'.format(episode.grandparentTitle, '{0}x{1:0>2}'.format(episode.parentIndex, episode.index))
+        label2 = u'{0} \u2022 {1}'.format(episode.grandparentTitle, u'S{0} \u2022 E{1}'.format(episode.parentIndex, episode.index))
         mli = kodigui.ManagedListItem(episode.title, label2, thumbnailImage=episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=episode)
         mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
         mli.setProperty('video', '1')

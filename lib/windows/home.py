@@ -11,6 +11,7 @@ from lib import colors
 import plexnet
 from plexnet import plexapp
 
+import playlist
 import playlists
 import posters
 import subitems
@@ -71,7 +72,7 @@ class HomeSection(object):
 
 
 class PlaylistsSection(object):
-    key = None
+    key = False
     type = 'playlists'
     title = 'Playlists'
 
@@ -132,7 +133,8 @@ class HomeWindow(kodigui.BaseWindow):
         'home.movies.recent': {'index': 4},
         'home.music.recent': {'index': 5},
         'home.videos.recent': {'index': 6, 'ar16x9': True},
-        'home.photos.recent': {'index': 9},
+        'home.playlists': {'index': 9},
+        'home.photos.recent': {'index': 10},
         # SHOW
         'tv.ondeck': {'index': 1},
         'tv.recentlyaired': {'index': 2},
@@ -244,7 +246,7 @@ class HomeWindow(kodigui.BaseWindow):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
-            if action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOUSE_MOVE):
+            if controlID == self.SECTION_LIST_ID:
                 self.checkSectionItem()
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
@@ -328,6 +330,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.photoClicked(mli.dataSource)
         elif mli.dataSource.TYPE in ('photodirectory'):
             self.photoDirectoryClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('playlist'):
+            self.playlistClicked(mli.dataSource)
 
     def playableClicked(self, playable):
         w = preplay.PrePlayWindow.open(video=playable)
@@ -357,17 +361,22 @@ class HomeWindow(kodigui.BaseWindow):
         w = posters.SquaresWindow.open(section=photodirectory)
         del w
 
+    def playlistClicked(self, pl):
+        w = playlist.PlaylistWindow.open(playlist=pl)
+        del w
+
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
         if not item:
             return
 
-        if item.getProperty('item'):
-            if item.dataSource != self.lastSection:
-                self.lastSection = item.dataSource
-                self.sectionChanged(item.dataSource)
-        else:
+        if not item.getProperty('item'):
             self.sectionList.selectItem(self.bottomItem)
+            item = self.sectionList[self.bottomItem]
+
+        if item.dataSource != self.lastSection:
+            self.lastSection = item.dataSource
+            self.sectionChanged(item.dataSource)
 
     def displayServerAndUser(self):
         self.setProperty('user.name', plexapp.ACCOUNT.title or plexapp.ACCOUNT.username)
@@ -507,7 +516,7 @@ class HomeWindow(kodigui.BaseWindow):
             mli = self.createGrandparentedListItem(obj, *self.THUMB_AR16X9_DIM, with_grandparent_title=True)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
             return mli
-        elif obj.type == 'artist':
+        elif obj.type in ('artist', 'playlist'):
             mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli

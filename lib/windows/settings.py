@@ -124,14 +124,28 @@ class PlatformSetting(InfoSetting):
             import platform
             dist = platform. dist()
             if dist and len(dist) > 1:
-                return u'{0} {1}'.format(dist[0], dist[1])
-
-            plat = platform.platform()
-            return u'{0} {1}'.format(plat[0], '.'.join(plat[1].split('.', 2)[:2]))
+                plat = u'{0} {1}'.format(dist[0], dist[1])
+            else:
+                plat = platform.platform()
+                plat = u'{0} {1}'.format(plat[0], '.'.join(plat[1].split('.', 2)[:2]))
         except:
             util.ERROR()
 
-        return 'Unknown'
+        if not plat:
+            if xbmc.getCondVisibility('System.Platform.Linux'):
+                plat = 'Linux'
+            elif xbmc.getCondVisibility('System.Platform.Linux.RaspberryPi'):
+                plat = 'Linux (RPi)'
+            elif xbmc.getCondVisibility('System.Platform.Linux.Windows'):
+                plat = 'Windows'
+            elif xbmc.getCondVisibility('System.Platform.OSX'):
+                plat = 'OSX'
+            elif xbmc.getCondVisibility('System.Platform.Darwin'):
+                plat = 'Darwin'
+            elif xbmc.getCondVisibility('System.Platform.Linux.Android'):
+                plat = 'Android'
+
+        return plat or 'Unknown'
 
 
 class IPSetting(BasicSetting):
@@ -194,6 +208,7 @@ class Settings(object):
                 InfoSetting('addon_version', 'Addon Version', util.ADDON.getAddonInfo('version')),
                 InfoSetting('kodi_version', 'Kodi Version', xbmc.getInfoLabel('System.BuildVersion')),
                 PlatformSetting(),
+                InfoSetting('screen_res', 'Screen Resolution', xbmc.getInfoLabel('System.ScreenResolution'))
             )
         ),
     }

@@ -157,7 +157,7 @@ class MediaDecisionEngine(object):
                 numVideoStreams = numVideoStreams + 1
 
                 if stream.codec == "h264" or (
-                    stream.codec == "hevc" and item.settings.getGlobal("hevcSupport")
+                    stream.codec == "hevc" and item.settings.getPreference("allow_hevc", False)
                 ) or (
                     stream.codec == "vp9" and item.settings.getGlobal("vp9Support")
                 ):
@@ -261,7 +261,7 @@ class MediaDecisionEngine(object):
         height = choice.media.getVideoResolution()
         if height > maxResolution:
             util.LOG("MDE: Video height is greater than max allowed: {0} > {1}".format(height, maxResolution))
-            if height > 1088 and item.settings.getGlobal("supports4k"):
+            if height > 1088 and item.settings.getPreference("allow_4k", True):
                 util.LOG("MDE: Unsupported 4k media")
             return False
 
@@ -297,7 +297,7 @@ class MediaDecisionEngine(object):
         if True:  # container in ("mp4", "mov", "m4v", "mkv"):
             util.LOG("MDE: {0} container looks OK, checking streams".format(container))
 
-            isHEVC = videoCodec == "hevc" and item.settings.getGlobal("hevcSupport")
+            isHEVC = videoCodec == "hevc" and item.settings.getPreference("allow_hevc", False)
             isVP9 = videoCodec == "vp9" and container == "mkv" and item.settings.getGlobal("vp9Support")
 
             if videoCodec != "h264" and videoCodec != "mpeg4" and not isHEVC and not isVP9:
@@ -478,12 +478,12 @@ class MediaDecisionEngine(object):
         return 0
 
     def isSupported4k(self, media, videoStream):
-        if videoStream is None or not plexapp.INTERFACE.getGlobal("supports4k"):
+        if videoStream is None or not plexapp.INTERFACE.getPreference("allow_4k", True):
             return False
 
         # # Roku 4 only: H.265/HEVC (MKV, MP4, MOV); VP9 (.MKV)
         # if media.get('container') in ("mp4", "mov", "m4v", "mkv"):
-        #     isHEVC = (videoStream.codec == "hevc" and plexapp.INTERFACE.getGlobal("hevcSupport"))
+        #     isHEVC = (videoStream.codec == "hevc" and plexapp.INTERFACE.getPreference("allow_hevc"))
         #     isVP9 = (videoStream.codec == "vp9" and media.get('container') == "mkv" and plexapp.INTERFACE.getGlobal("vp9Support"))
         #     return (isHEVC or isVP9)
 

@@ -40,8 +40,6 @@ class PlexInterface(plexapp.AppInterface):
         'model': 'Unknown',
         'friendlyName': 'Kodi Plex Addon',
         'supports1080p60': True,
-        'supports4k': False,
-        'hevcSupport': True,
         'vp9Support': True,
         'transcodeVideoQualities': [
             "10", "20", "30", "30", "40", "60", "60", "75", "100", "60", "75", "90", "100", "100"
@@ -105,6 +103,9 @@ class PlexInterface(plexapp.AppInterface):
         pass
 
     def getGlobal(self, glbl, default=None):
+        if glbl == 'transcodeVideoResolutions':
+            maxres = self.getPreference('allow_4k', True) and plexapp.Res((3840, 2160)) or plexapp.Res((1920, 1080))
+            self._globals['transcodeVideoResolutions'][-5:] = [maxres] * 5
         return self._globals.get(glbl, default)
 
     def getCapabilities(self):
@@ -167,7 +168,10 @@ class PlexInterface(plexapp.AppInterface):
         qualityIndex = self.getQualityIndex(quality_type)
 
         if qualityIndex >= 9:
-            return allow4k and 2160 or 1088
+            if self.getPreference('allow_4k', True):
+                return allow4k and 2160 or 1088
+            else:
+                return 1088
         elif qualityIndex >= 6:
             return 720
         elif qualityIndex >= 5:

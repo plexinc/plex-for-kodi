@@ -159,7 +159,9 @@ class Settings(object):
                 QualitySetting('remote_quality', 'Remote Quality', 0),
                 QualitySetting('online_quality', 'Online Quality', 0),
                 BoolSetting('playback_directplay', 'Allow Direct Play', True),
-                BoolSetting('playback_remux', 'Allow Direct Stream', True)
+                BoolSetting('playback_remux', 'Allow Direct Stream', True),
+                BoolSetting('allow_4k', 'Allow 4K', True),
+                BoolSetting('allow_hevc', 'Allow HEVC (h265)', False)
             )
         ),
         'subtitles': (

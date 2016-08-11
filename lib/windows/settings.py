@@ -131,6 +131,8 @@ class PlatformSetting(InfoSetting):
         except:
             util.ERROR()
 
+        plat = plat.strip()
+
         if not plat:
             if xbmc.getCondVisibility('System.Platform.Linux'):
                 plat = 'Linux'

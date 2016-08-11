@@ -134,7 +134,7 @@ class PlatformSetting(InfoSetting):
         plat = plat.strip()
 
         if not plat:
-            if xbmc.getCondVisibility('System.Platform.Linux.Android'):
+            if xbmc.getCondVisibility('System.Platform.Android'):
                 plat = 'Android'
             elif xbmc.getCondVisibility('System.Platform.OSX'):
                 plat = 'OSX'
@@ -144,7 +144,7 @@ class PlatformSetting(InfoSetting):
                 plat = 'Linux (RPi)'
             elif xbmc.getCondVisibility('System.Platform.Linux'):
                 plat = 'Linux'
-            elif xbmc.getCondVisibility('System.Platform.Linux.Windows'):
+            elif xbmc.getCondVisibility('System.Platform.Windows'):
                 plat = 'Windows'
 
         return plat or 'Unknown'
@@ -210,7 +210,7 @@ class Settings(object):
                 InfoSetting('addon_version', 'Addon Version', util.ADDON.getAddonInfo('version')),
                 InfoSetting('kodi_version', 'Kodi Version', xbmc.getInfoLabel('System.BuildVersion')),
                 PlatformSetting(),
-                InfoSetting('screen_res', 'Screen Resolution', xbmc.getInfoLabel('System.ScreenResolution'))
+                InfoSetting('screen_res', 'Screen Resolution', xbmc.getInfoLabel('System.ScreenResolution').split('-')[0].strip())
             )
         ),
     }

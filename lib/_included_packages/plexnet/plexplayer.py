@@ -5,10 +5,10 @@ import mediadecisionengine
 
 
 class PlexPlayer(object):
-    def __init__(self, item, seekValue=0):
+    def __init__(self, item, seekValue=0, forceUpdate=False):
         self.item = item
         self.seekValue = seekValue
-        self.choice = mediadecisionengine.MediaDecisionEngine().chooseMedia(item)
+        self.choice = mediadecisionengine.MediaDecisionEngine().chooseMedia(item, forceUpdate=forceUpdate)
         if self.choice:
             self.media = self.choice.media
 

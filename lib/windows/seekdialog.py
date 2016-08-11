@@ -147,7 +147,7 @@ class SeekDialog(kodigui.BaseDialog):
     def showSettings(self):
         playersettings.showDialog(self.player.video)
         if self.videoSettingsHaveChanged():
-            self.handler.seek(self.trueOffset())
+            self.handler.seek(self.trueOffset(), settings_changed=True)
             self.doClose()
 
     def setBigSeekShift(self):

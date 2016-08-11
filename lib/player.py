@@ -122,8 +122,8 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.dialog.show()
         self.dialog.update(self.offset, from_seek)
 
-    def seek(self, offset):
-        if self.mode == self.MODE_ABSOLUTE:
+    def seek(self, offset, settings_changed=False):
+        if self.mode == self.MODE_ABSOLUTE and not settings_changed:
             self.offset = offset
             util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
             return self.seekAbsolute(offset)
@@ -132,7 +132,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.offset = offset
         # self.player.control('play')
         util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
-        self.player._playVideo(offset, seeking=self.seeking)
+        self.player._playVideo(offset, seeking=self.seeking, force_update=settings_changed)
 
     def seekAbsolute(self, seek=None):
         self.seekOnStart = seek or self.seekOnStart
@@ -319,14 +319,14 @@ class PlexPlayer(xbmc.Player):
         self.started = False
         xbmc.Player.play(self, *args, **kwargs)
 
-    def playVideo(self, video, resume=False):
+    def playVideo(self, video, resume=False, force_update=False):
         self.handler = SeekPlayerHandler(self)
         self.video = video
         self.open()
-        self._playVideo(resume and video.viewOffset.asInt() or 0)
+        self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)
 
-    def _playVideo(self, offset=0, seeking=0):
-        pobj = plexplayer.PlexPlayer(self.video, offset)
+    def _playVideo(self, offset=0, seeking=0, force_update=False):
+        pobj = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
         meta = pobj.build()
         url = meta.streamUrls[0]
         bifURL = pobj.getBifUrl()

@@ -289,6 +289,18 @@ class PlayerSettingsInterface(object):
         else:
             return INTERFACE.getPreference(key, default)
 
+    def getMaxResolution(self, quality_type, allow4k=False):
+        qualityIndex = self.getQualityIndex(quality_type)
+
+        if qualityIndex >= 9:
+            return allow4k and 2160 or 1088
+        elif qualityIndex >= 6:
+            return 720
+        elif qualityIndex >= 5:
+            return 480
+        else:
+            return 360
+
 
 class DumbInterface(AppInterface):
     _prefs = {}

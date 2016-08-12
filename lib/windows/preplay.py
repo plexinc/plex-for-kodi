@@ -21,7 +21,9 @@ class PrePlayWindow(kodigui.BaseWindow):
     EXTRA_DIM = (374, 210)
     PREVIEW_DIM = (343, 193)
 
-    EXTRA_LIST_ID = 101
+    EXTRA_LIST_ID = 400
+    RELATED_LIST_ID = 401
+
     OPTIONS_GROUP_ID = 200
     PROGRESS_IMAGE_ID = 500
 
@@ -38,6 +40,8 @@ class PrePlayWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
+        self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
+
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
         self.setup()
         # import xbmc
@@ -72,6 +76,15 @@ class PrePlayWindow(kodigui.BaseWindow):
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
 
+    def onFocus(self, controlID):
+        if 399 < controlID < 500:
+            self.setProperty('hub.focus', str(controlID - 400))
+
+        if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
+            self.setProperty('on.extras', '')
+        elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
+            self.setProperty('on.extras', '1')
+
     def playVideo(self, resume=False):
         player.PLAYER.playVideo(self.video, resume)
 
@@ -88,6 +101,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         self.video.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.setInfo()
         self.fillExtras()
+        self.fillRelated()
 
     def setInfo(self):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
@@ -153,6 +167,22 @@ class PrePlayWindow(kodigui.BaseWindow):
                 idx += 1
 
         self.extraListControl.addItems(items)
+
+    def fillRelated(self):
+        items = []
+        idx = 0
+        related = self.video.related()
+        if not related:
+            return
+
+        for rel in related[0].items:
+            mli = self.createListItem(rel)
+            if mli:
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                idx += 1
+
+        self.relatedListControl.addItems(items)
 
     def showAudioPlayer(self):
         import musicplayer

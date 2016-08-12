@@ -4,6 +4,7 @@ import plexmedia
 import plexstream
 import exceptions
 import compat
+import plexlibrary
 
 
 class PlexVideoItemList(plexobjects.PlexItemList):
@@ -134,6 +135,7 @@ class PlayableVideo(Video):
         Video._setData(self, data)
         if self.isFullObject():
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
+            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server)
 
 
 @plexobjects.registerLibType

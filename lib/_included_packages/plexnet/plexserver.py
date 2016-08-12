@@ -22,20 +22,6 @@ TOTAL_QUERIES = 0
 DEFAULT_BASEURI = 'http://localhost:32400'
 
 
-class Hub(plexobjects.PlexObject):
-    def init(self, data):
-        self.items = []
-        container = plexobjects.PlexContainer(data, self.key, self.server, '')
-        for elem in data:
-            try:
-                self.items.append(plexobjects.buildItem(self.server, elem, '/hubs', container=container))
-            except exceptions.UnknownType:
-                util.DEBUG_LOG('Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type')))
-
-    def __repr__(self):
-        return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
-
-
 class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     TYPE = 'PLEXSERVER'
 
@@ -120,7 +106,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             params = {'count': count}
 
         for elem in self.query(q, params=params):
-            hubs.append(Hub(elem, server=self))
+            hubs.append(plexlibrary.Hub(elem, server=self))
         return hubs
 
     def playlists(self):

@@ -291,6 +291,22 @@ class Playlist(plexobjects.PlexObject):
         return self.composite
 
 
+class Hub(plexobjects.PlexObject):
+    TYPE = "Hub"
+
+    def init(self, data):
+        self.items = []
+        container = plexobjects.PlexContainer(data, self.key, self.server, '')
+        for elem in data:
+            try:
+                self.items.append(plexobjects.buildItem(self.server, elem, '/hubs', container=container))
+            except exceptions.UnknownType:
+                util.DEBUG_LOG('Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type')))
+
+    def __repr__(self):
+        return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
+
+
 SECTION_TYPES = {
     MovieSection.TYPE: MovieSection,
     ShowSection.TYPE: ShowSection,

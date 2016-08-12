@@ -23,6 +23,7 @@ class PrePlayWindow(kodigui.BaseWindow):
 
     EXTRA_LIST_ID = 400
     RELATED_LIST_ID = 401
+    ROLES_LIST_ID = 403
 
     OPTIONS_GROUP_ID = 200
     PROGRESS_IMAGE_ID = 500
@@ -41,6 +42,7 @@ class PrePlayWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
         self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
+        self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
 
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
         self.setup()
@@ -102,6 +104,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         self.setInfo()
         self.fillExtras()
         self.fillRelated()
+        self.fillRoles()
 
     def setInfo(self):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
@@ -183,6 +186,22 @@ class PrePlayWindow(kodigui.BaseWindow):
                 idx += 1
 
         self.relatedListControl.addItems(items)
+
+    def fillRoles(self):
+        items = []
+        idx = 0
+        roles = self.video.roles()
+        if not roles:
+            return
+
+        for role in roles:
+            mli = self.createListItem(role)
+            if mli:
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                idx += 1
+
+        self.rolesListControl.addItems(items)
 
     def showAudioPlayer(self):
         import musicplayer

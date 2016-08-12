@@ -7,6 +7,7 @@ import kodigui
 from lib import util
 from lib import backgroundthread
 from lib import colors
+from lib import player
 
 import plexnet
 from plexnet import plexapp
@@ -293,6 +294,9 @@ class HomeWindow(kodigui.BaseWindow):
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
             self.setProperty('off.sections', '1')
 
+    def showBusy(self, on=True):
+        self.setProperty('busy', on and '1' or '')
+
     @busy.dialog()
     def serverRefresh(self):
         backgroundthread.BGThreader.reset()
@@ -332,6 +336,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.photoDirectoryClicked(mli.dataSource)
         elif mli.dataSource.TYPE in ('playlist'):
             self.playlistClicked(mli.dataSource)
+        elif mli.dataSource.TYPE in ('clip'):
+            player.PLAYER.playVideo(mli.dataSource)
 
     def playableClicked(self, playable):
         w = preplay.PrePlayWindow.open(video=playable)
@@ -450,18 +456,27 @@ class HomeWindow(kodigui.BaseWindow):
     def _showHubs(self, section=None):
         self.clearHubs()
 
+        if section.key is False:
+            self.showBusy(False)
+            return
+
+        self.showBusy(True)
+
         hubs = self.sectionHubs.get(section.key)
         if not hubs:
             if self.task:
                 self.task.moveUpSection(section)
             return
 
-        for hub in hubs:
-            if hub.hubIdentifier in self.HUBMAP:
-                util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
-                self.showHub(hub, **self.HUBMAP[hub.hubIdentifier])
-            else:
-                util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+        try:
+            for hub in hubs:
+                if hub.hubIdentifier in self.HUBMAP:
+                    util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+                    self.showHub(hub, **self.HUBMAP[hub.hubIdentifier])
+                else:
+                    util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+        finally:
+            self.showBusy(False)
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h, with_grandparent_title=False):
         if with_grandparent_title and obj.grandparentTitle and obj.title:

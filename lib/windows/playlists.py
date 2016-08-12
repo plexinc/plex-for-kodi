@@ -2,6 +2,7 @@ import xbmc
 import xbmcgui
 import kodigui
 
+import busy
 import playlist
 
 from lib import util
@@ -101,6 +102,7 @@ class PlaylistsWindow(kodigui.BaseWindow):
         )
         return mli
 
+    @busy.dialog()
     def fill(self):
         items = {
             'audio': [],

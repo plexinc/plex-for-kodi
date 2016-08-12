@@ -61,7 +61,7 @@
                     <posy>142</posy>
                     <width>420</width>
                     <height>630</height>
-                    <texture>$INFO[Window.Property(season.thumb)]</texture>
+                    <texture fallback="script.plex/thumb_fallbacks/show.png">$INFO[Window.Property(season.thumb)]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
             </control>

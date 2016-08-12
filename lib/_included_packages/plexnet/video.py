@@ -6,6 +6,25 @@ import exceptions
 import compat
 
 
+class PlexVideoItemList(plexobjects.PlexItemList):
+    def __init__(self, data, initpath=None, server=None, container=None):
+        self._data = data
+        self._initpath = initpath
+        self._server = server
+        self._container = container
+        self._items = None
+
+    @property
+    def items(self):
+        if self._items is None:
+            if self._data is not None:
+                self._items = [plexobjects.buildItem(self._server, elem, self._initpath, container=self._container) for elem in self._data]
+            else:
+                self._items = []
+
+        return self._items
+
+
 class Video(media.MediaItem):
     TYPE = None
 
@@ -108,12 +127,21 @@ class Video(media.MediaItem):
         # path = "/video/:/transcode/universal/" + command + "?session=" + AppSettings().GetGlobal("clientIdentifier")
 
 
-@plexobjects.registerLibType
-class Movie(Video):
-    TYPE = 'movie'
+class PlayableVideo(Video):
+    TYPE = None
 
     def _setData(self, data):
         Video._setData(self, data)
+        if self.isFullObject():
+            self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
+
+
+@plexobjects.registerLibType
+class Movie(PlayableVideo):
+    TYPE = 'movie'
+
+    def _setData(self, data):
+        PlayableVideo._setData(self, data)
         if self.isFullObject():
             self.collections = plexobjects.PlexItemList(data, media.Collection, media.Collection.TYPE, server=self.server)
             self.countries = plexobjects.PlexItemList(data, media.Country, media.Country.TYPE, server=self.server)
@@ -237,11 +265,11 @@ class Season(Video):
 
 
 @plexobjects.registerLibType
-class Episode(Video):
+class Episode(PlayableVideo):
     TYPE = 'episode'
 
     def _setData(self, data):
-        Video._setData(self, data)
+        PlayableVideo._setData(self, data)
         if self.isFullObject():
             self.directors = plexobjects.PlexItemList(data, media.Director, media.Director.TYPE, server=self.server)
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
@@ -294,8 +322,13 @@ class Episode(Video):
 
 
 @plexobjects.registerLibType
-class Clip(Video):
+class Clip(PlayableVideo):
     TYPE = 'clip'
+
+    def _setData(self, data):
+        PlayableVideo._setData(self, data)
+        if self.isFullObject():
+            self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
     @property
     def isWatched(self):

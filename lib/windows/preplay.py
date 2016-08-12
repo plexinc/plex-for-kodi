@@ -1,6 +1,9 @@
 import xbmc
 import xbmcgui
 import kodigui
+
+import busy
+
 from lib import colors
 from lib import util
 from lib import player
@@ -15,6 +18,7 @@ class PrePlayWindow(kodigui.BaseWindow):
     height = 1080
 
     THUMB_POSTER_DIM = (347, 518)
+    EXTRA_DIM = (374, 210)
     PREVIEW_DIM = (343, 193)
 
     EXTRA_LIST_ID = 101
@@ -35,8 +39,7 @@ class PrePlayWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
-        self.setInfo()
-        self.fillExtras()
+        self.setup()
         # import xbmc
         # xbmc.sleep(100)
         # if self.video.viewOffset.asInt():
@@ -73,14 +76,20 @@ class PrePlayWindow(kodigui.BaseWindow):
         player.PLAYER.playVideo(self.video, resume)
 
     def extrasListClicked(self):
-        mli = self.seasonListControl.getSelectedItem()
+        mli = self.extraListControl.getSelectedItem()
         if not mli:
             return
 
-    def setInfo(self):
-        util.DEBUG_LOG('PrePlay: Showing video info: {0}'.format(self.video))
-        self.video.reload()
+        player.PLAYER.playVideo(mli.dataSource)
 
+    @busy.dialog()
+    def setup(self):
+        util.DEBUG_LOG('PrePlay: Showing video info: {0}'.format(self.video))
+        self.video.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.setInfo()
+        self.fillExtras()
+
+    def setInfo(self):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
@@ -126,14 +135,17 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.setProperty('hide.resume', '1')
 
     def createListItem(self, obj):
-        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM), data_source=obj)
+        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=obj)
         return mli
 
     def fillExtras(self):
-        return
         items = []
         idx = 0
-        for extra in self.video.extras():
+        extras = self.video.extras()
+        if not extras:
+            return
+
+        for extra in extras:
             mli = self.createListItem(extra)
             if mli:
                 mli.setProperty('index', str(idx))

@@ -5,6 +5,7 @@ import kodigui
 from lib import colors
 from lib import util
 
+import busy
 import episodes
 
 
@@ -101,6 +102,7 @@ class ShowWindow(kodigui.BaseWindow):
         )
         return mli
 
+    @busy.dialog()
     def fill(self):
         items = []
         idx = 0
@@ -108,6 +110,7 @@ class ShowWindow(kodigui.BaseWindow):
             mli = self.createListItem(season)
             if mli:
                 mli.setProperty('index', str(idx))
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
                 items.append(mli)
                 idx += 1
 
@@ -122,6 +125,7 @@ class ShowWindow(kodigui.BaseWindow):
 class ArtistWindow(ShowWindow):
     xmlFile = 'script-plex-artist.xml'
 
+    @busy.dialog()
     def fill(self):
         self.mediaItem.reload()
         self.setProperty('artist.title', self.mediaItem.title)
@@ -134,6 +138,7 @@ class ArtistWindow(ShowWindow):
             if mli:
                 mli.setProperty('index', str(idx))
                 mli.setProperty('year', album.year)
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
                 items.append(mli)
                 idx += 1
 

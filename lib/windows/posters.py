@@ -6,6 +6,7 @@ import kodigui
 from lib import colors
 from lib import util
 
+import busy
 import subitems
 import preplay
 import photos
@@ -222,6 +223,7 @@ class PostersWindow(kodigui.BaseWindow):
         else:
             self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
 
+    @busy.dialog()
     def fillShows(self):
         items = []
         keys = []

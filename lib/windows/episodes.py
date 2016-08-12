@@ -5,6 +5,7 @@ import kodigui
 from lib import colors
 from lib import util
 
+import busy
 import preplay
 import musicplayer
 
@@ -108,6 +109,7 @@ class EpisodesWindow(kodigui.BaseWindow):
         mli.setProperty('watched', obj.isWatched and '1' or '')
         return mli
 
+    @busy.dialog()
     def fillEpisodes(self):
         items = []
         idx = 0
@@ -154,6 +156,7 @@ class AlbumWindow(EpisodesWindow):
         mli.setProperty('track.duration', util.simplifiedTimeDisplay(obj.duration.asInt()))
         return mli
 
+    @busy.dialog()
     def fillEpisodes(self):
         items = []
         idx = 0

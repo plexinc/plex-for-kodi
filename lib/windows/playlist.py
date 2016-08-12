@@ -2,6 +2,7 @@ import xbmc
 import xbmcgui
 import kodigui
 
+import busy
 import musicplayer
 
 from lib import colors
@@ -108,6 +109,7 @@ class PlaylistWindow(kodigui.BaseWindow):
         mli.setProperty('watched', movie.isWatched and '1' or '')
         return mli
 
+    @busy.dialog()
     def fillPlaylist(self):
         items = []
         idx = 1

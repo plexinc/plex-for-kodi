@@ -97,7 +97,7 @@
                     <posy>0</posy>
                     <width>519</width>
                     <height>519</height>
-                    <texture background="true">$INFO[Window.Property(thumb)]</texture>
+                    <texture background="true" fallback="script.plex/thumb_fallbacks/music.png">$INFO[Window.Property(thumb)]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
                 <control type="label">

@@ -185,10 +185,10 @@ class PlexObject(object):
         import requests
         self.server.query('%s/refresh' % self.key, method=requests.put)
 
-    def reload(self):
+    def reload(self, **kwargs):
         """ Reload the data for this object from PlexServer XML. """
         try:
-            data = self.server.query(self.key)
+            data = self.server.query(self.key, params=kwargs)
         except Exception, e:
             import traceback
             traceback.print_exc()

@@ -2,6 +2,8 @@ import xbmc
 import xbmcgui
 import kodigui
 
+import busy
+
 from lib import util
 from lib import player
 from lib import kodijsonrpc
@@ -116,6 +118,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         mli.setProperty('file', pi['file'])
         return mli
 
+    @busy.dialog()
     def fillPlaylist(self):
         items = []
         idx = 1

@@ -26,7 +26,7 @@ class PrePlayWindow(kodigui.BaseWindow):
     ROLES_LIST_ID = 403
 
     OPTIONS_GROUP_ID = 200
-    PROGRESS_IMAGE_ID = 500
+    PROGRESS_IMAGE_ID = 250
 
     HOME_BUTTON_ID = 201
     RESUME_BUTTON_ID = 301
@@ -55,11 +55,10 @@ class PrePlayWindow(kodigui.BaseWindow):
 
     def onAction(self, action):
         try:
-            if action == xbmcgui.ACTION_CONTEXT_MENU:
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
-
         except:
             util.ERROR()
 
@@ -71,6 +70,8 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.doClose()
         elif controlID == self.EXTRA_LIST_ID:
             self.extrasListClicked()
+        elif controlID == self.RELATED_LIST_ID:
+            self.relatedListClicked()
         elif controlID == self.RESUME_BUTTON_ID:
             self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:
@@ -97,14 +98,36 @@ class PrePlayWindow(kodigui.BaseWindow):
 
         player.PLAYER.playVideo(mli.dataSource)
 
+    def relatedListClicked(self):
+        mli = self.relatedListControl.getSelectedItem()
+        if not mli:
+            return
+
+        self.playableClicked(mli.dataSource)
+
+    def playableClicked(self, playable):
+        w = PrePlayWindow.open(video=playable)
+
+        try:
+            if w.exitCommand == 'HOME':
+                self.exitCommand = 'HOME'
+                self.doClose()
+        finally:
+            del w
+
     @busy.dialog()
     def setup(self):
         util.DEBUG_LOG('PrePlay: Showing video info: {0}'.format(self.video))
+        if self.video.type == 'episode':
+            self.setProperty('preview.yes', '1')
+        elif self.video.type == 'movie':
+            self.setProperty('preview.no', '1')
+
         self.video.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.setInfo()
         self.fillExtras()
-        self.fillRelated()
-        self.fillRoles()
+        hasPrev = self.fillRelated(False)
+        self.fillRoles(hasPrev)
 
     def setInfo(self):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
@@ -158,11 +181,10 @@ class PrePlayWindow(kodigui.BaseWindow):
     def fillExtras(self):
         items = []
         idx = 0
-        extras = self.video.extras()
-        if not extras:
-            return
+        if not self.video.extras:
+            return False
 
-        for extra in extras:
+        for extra in self.video.extras():
             mli = self.createListItem(extra)
             if mli:
                 mli.setProperty('index', str(idx))
@@ -170,38 +192,43 @@ class PrePlayWindow(kodigui.BaseWindow):
                 idx += 1
 
         self.extraListControl.addItems(items)
+        return True
 
-    def fillRelated(self):
+    def fillRelated(self, has_prev=False):
         items = []
         idx = 0
-        related = self.video.related()
-        if not related:
-            return
+        if not self.video.related:
+            return has_prev
 
-        for rel in related[0].items:
+        self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
+
+        for rel in self.video.related()[0].items:
             mli = self.createListItem(rel)
             if mli:
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))
                 items.append(mli)
                 idx += 1
 
         self.relatedListControl.addItems(items)
+        return True
 
-    def fillRoles(self):
+    def fillRoles(self, has_prev=False):
         items = []
         idx = 0
-        roles = self.video.roles()
-        if not roles:
-            return
+        if not self.video.roles:
+            return has_prev
 
-        for role in roles:
-            mli = self.createListItem(role)
-            if mli:
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                idx += 1
+        self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')
+
+        for role in self.video.roles():
+            mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=role)
+            mli.setProperty('index', str(idx))
+            items.append(mli)
+            idx += 1
 
         self.rolesListControl.addItems(items)
+        return True
 
     def showAudioPlayer(self):
         import musicplayer

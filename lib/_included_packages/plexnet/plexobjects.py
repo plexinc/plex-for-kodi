@@ -89,7 +89,7 @@ class PlexItemList(object):
 
         return self._items
 
-    def __call__(self):
+    def __call__(self, *args):
         return self.items
 
     def __len__(self):

@@ -27,14 +27,14 @@
         </control>
 
         <control type="group" id="50">
-            <animation effect="slide" end="0,-200" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras))">Conditional</animation>
+            <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras))">Conditional</animation>
 
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
-                <effect type="slide" end="0,-600" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-500" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
-                <effect type="slide" end="0,-300" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-500" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <posx>0</posx>
@@ -98,20 +98,47 @@
                 <posy>0</posy>
                 <width>1920</width>
                 <height>600</height>
-                <control type="image">
-                    <visible>IsEmpty(Window.Property(preview))</visible>
-                    <posx>60</posx>
-                    <posy>0</posy>
-                    <width>347</width>
-                    <height>518</height>
-                    <texture background="true">$INFO[Window.Property(thumb)]</texture>
-                    <aspectratio>scale</aspectratio>
+                <control type="group">
+                    <visible>!IsEmpty(Window.Property(preview.no))</visible>
+                    <control type="image">
+                        <posx>60</posx>
+                        <posy>0</posy>
+                        <width>347</width>
+                        <height>518</height>
+                        <texture background="true">script.plex/thumb_fallbacks/movie.png</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
+                    <control type="image">
+                        <posx>60</posx>
+                        <posy>0</posy>
+                        <width>347</width>
+                        <height>518</height>
+                        <texture background="true">$INFO[Window.Property(thumb)]</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
                 </control>
 
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(preview))</visible>
+                    <visible>!IsEmpty(Window.Property(preview.yes))</visible>
                     <posx>60</posx>
                     <posy>0</posy>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>347</width>
+                        <height>315</height>
+                        <texture background="true">script.plex/thumb_fallbacks/show.png</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>323</posy>
+                        <width>347</width>
+                        <height>195</height>
+                        <texture colordiffuse="FF111111">script.plex/white-square.png</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
+
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>
@@ -262,13 +289,22 @@
                     <textcolor>FFFFFFFF</textcolor>
                     <label>$INFO[Window.Property(summary)]</label>
                 </control>
-                <control type="image" id="500">
+                <control type="image" id="250">
                     <posx>-1</posx>
                     <posy>557</posy>
                     <width>1</width>
                     <height>8</height>
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>FFCC7B19</colordiffuse>
+                </control>
+                <control type="image">
+                    <visible>!Control.IsVisible(500)</visible>
+                    <posx>0</posx>
+                    <posy>565</posy>
+                    <width>1920</width>
+                    <height>2</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
                 </control>
             </control>
 
@@ -451,7 +487,7 @@
                     <width>1920</width>
                     <height>520</height>
                     <control type="image">
-                        <visible>false</visible>
+                        <visible>!IsEmpty(Window.Property(divider.401))</visible>
                         <posx>60</posx>
                         <posy>0</posy>
                         <width>1800</width>
@@ -599,7 +635,7 @@
                                             <posx>0</posx>
                                             <posy>427</posy>
                                             <width>287</width>
-                                            <height>30</height>
+                                            <height>34</height>
                                             <font>font12</font>
                                             <align>center</align>
                                             <textcolor>FFFFFFFF</textcolor>
@@ -677,9 +713,9 @@
                     <width>1920</width>
                     <height>400</height>
                     <control type="image">
-                        <visible>false</visible>
+                        <visible>!IsEmpty(Window.Property(divider.403))</visible>
                         <posx>60</posx>
-                        <posy>0</posy>
+                        <posy>20</posy>
                         <width>1800</width>
                         <height>2</height>
                         <texture>script.plex/white-square.png</texture>
@@ -687,7 +723,7 @@
                     </control>
                     <control type="label">
                         <posx>60</posx>
-                        <posy>0</posy>
+                        <posy>20</posy>
                         <width>1000</width>
                         <height>80</height>
                         <font>font12</font>
@@ -698,7 +734,7 @@
                     </control>
                     <control type="list" id="403">
                         <posx>0</posx>
-                        <posy>16</posy>
+                        <posy>36</posy>
                         <width>1920</width>
                         <height>400</height>
                         <onup>401</onup>
@@ -719,7 +755,7 @@
                                         <posy>0</posy>
                                         <width>244</width>
                                         <height>244</height>
-                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <texture diffuse="script.plex/masks/role.png">script.plex/thumb_fallbacks/role.png</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -733,11 +769,11 @@
                                         <posx>0</posx>
                                         <posy>245</posy>
                                         <width>244</width>
-                                        <height>30</height>
+                                        <height>64</height>
                                         <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
-                                        <label>$INFO[ListItem.Label]</label>
+                                        <label>$INFO[ListItem.Label][CR]$INFO[ListItem.Label2]</label>
                                     </control>
                                 </control>
                             </control>
@@ -769,7 +805,7 @@
                                             <posy>0</posy>
                                             <width>287</width>
                                             <height>287</height>
-                                            <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                            <texture diffuse="script.plex/masks/role.png">script.plex/thumb_fallbacks/role.png</texture>
                                         </control>
                                         <control type="image">
                                             <posx>0</posx>
@@ -783,11 +819,11 @@
                                             <posx>0</posx>
                                             <posy>288</posy>
                                             <width>287</width>
-                                            <height>30</height>
+                                            <height>70</height>
                                             <font>font12</font>
                                             <align>center</align>
                                             <textcolor>FFFFFFFF</textcolor>
-                                            <label>$INFO[ListItem.Label]</label>
+                                            <label>$INFO[ListItem.Label][CR]$INFO[ListItem.Label2]</label>
                                         </control>
                                     </control>
                                     <control type="image">
@@ -808,7 +844,7 @@
                                         <posy>0</posy>
                                         <width>244</width>
                                         <height>244</height>
-                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <texture diffuse="script.plex/masks/role.png">script.plex/thumb_fallbacks/role.png</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -822,11 +858,11 @@
                                         <posx>0</posx>
                                         <posy>245</posy>
                                         <width>244</width>
-                                        <height>30</height>
+                                        <height>64</height>
                                         <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
-                                        <label>$INFO[ListItem.Label]</label>
+                                        <label>$INFO[ListItem.Label][CR]$INFO[ListItem.Label2]</label>
                                     </control>
                                 </control>
                             </control>
@@ -837,6 +873,7 @@
         </control>
 
         <control type="group" id="200">
+            <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
@@ -844,7 +881,7 @@
             <height>135</height>
             <control type="image">
                 <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                <visible>ControlGroup(200).HasFocus(0) + false</visible>
+                <visible>ControlGroup(200).HasFocus(0) + !IsEmpty(Window.Property(on.extras))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>

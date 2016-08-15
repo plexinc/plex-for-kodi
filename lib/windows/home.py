@@ -23,47 +23,26 @@ import busy
 
 
 class SectionHubsTask(backgroundthread.Task):
-    def setup(self, sections, callback):
-        self.sections = sections
+    def setup(self, section, callback):
+        self.section = section
         self.callback = callback
-        self.lock = threading.Lock()
         return self
 
-    def moveUpSection(self, section):
-        if section not in self.sections:
+    def run(self):
+        if self.isCanceled():
             return
 
-        self.lock.acquire()
+        if not plexapp.SERVERMANAGER.selectedServer:
+            # Could happen during sign-out for instance
+            return
+
         try:
-            if section not in self.sections:  # In case it was removed before the lock was acquired
-                return
-            self.sections.pop(self.sections.index(section))
-            self.sections.insert(0, section)
-        finally:
-            self.lock.release()
-
-    def run(self):
-        while self.sections:
-            self.lock.acquire()
-            try:
-                section = self.sections.pop(0)
-            finally:
-                self.lock.release()
-
+            hubs = plexapp.SERVERMANAGER.selectedServer.hubs(self.section.key, count=10)
             if self.isCanceled():
                 return
-
-            if not plexapp.SERVERMANAGER.selectedServer:
-                # Could happen during sign-out for instance
-                return
-
-            try:
-                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(section.key, count=10)
-                if self.isCanceled():
-                    return
-                self.callback(section, hubs)
-            except plexnet.exceptions.BadRequest:
-                util.DEBUG_LOG('404 on section: {0}'.format(repr(section.title)))
+            self.callback(self.section, hubs)
+        except plexnet.exceptions.BadRequest:
+            util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
 
 
 class HomeSection(object):
@@ -188,7 +167,7 @@ class HomeWindow(kodigui.BaseWindow):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.lastSection = HomeSection
-        self.task = None
+        self.tasks = None
         self.closeOption = None
         self.hubControls = None
         self.backgroundSet = False
@@ -300,8 +279,9 @@ class HomeWindow(kodigui.BaseWindow):
     @busy.dialog()
     def serverRefresh(self):
         backgroundthread.BGThreader.reset()
-        if self.task:
-            self.task.cancel()
+        if self.tasks:
+            for task in self.tasks:
+                task.cancel()
 
         self.setProperty('hub.focus', '')
         self.displayServerAndUser()
@@ -426,8 +406,8 @@ class HomeWindow(kodigui.BaseWindow):
 
         sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
 
-        self.task = SectionHubsTask().setup([HomeSection] + sections, self.sectionHubsCallback)
-        backgroundthread.BGThreader.addTask(self.task)
+        self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection] + sections]
+        backgroundthread.BGThreader.addTasks(self.tasks)
 
         for section in sections:
             mli = kodigui.ManagedListItem(section.title, thumbnailImage='script.plex/home/type/{0}.png'.format(section.type), data_source=section)
@@ -464,8 +444,8 @@ class HomeWindow(kodigui.BaseWindow):
 
         hubs = self.sectionHubs.get(section.key)
         if not hubs:
-            if self.task:
-                self.task.moveUpSection(section)
+            # if self.task:
+            #     self.task.moveUpSection(section)
             return
 
         try:
@@ -667,5 +647,6 @@ class HomeWindow(kodigui.BaseWindow):
         del w
 
     def finished(self):
-        if self.task:
-            self.task.cancel()
+        if self.tasks:
+            for task in self.tasks:
+                task.cancel()

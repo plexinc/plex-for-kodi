@@ -2,6 +2,7 @@ import threading
 import xbmc
 import plex
 from plexnet import plexapp
+from plexnet import threadutils
 from windows import background, userselect, home
 import player
 import backgroundthread
@@ -13,10 +14,14 @@ def waitForThreads():
     for t in threading.enumerate():
         if t != threading.currentThread():
             if t.isAlive():
+                util.DEBUG_LOG('Waiting on: {0}...'.format(t.name))
                 if isinstance(t, threading._Timer):
                     t.cancel()
-                util.DEBUG_LOG('Waiting on: {0}...'.format(t.name))
-                t.join()
+                    t.join()
+                elif isinstance(t, threadutils.KillableThread):
+                    t.kill(force_and_wait=True)
+                else:
+                    t.join()
 
 
 def main():

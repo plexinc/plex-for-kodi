@@ -1,7 +1,7 @@
-import threading
 import Queue
 import xbmc
 import util
+from plexnet import threadutils
 
 
 class Task:
@@ -21,10 +21,10 @@ class Task:
         return self._canceled or xbmc.abortRequested
 
 
-class BackgroundThreader:
-    def __init__(self, name=None):
+class BackgroundWorker:
+    def __init__(self, queue, name=None):
+        self._queue = queue
         self.name = name
-        self._queue = Queue.LifoQueue()
         self._thread = None
         self._abort = False
         self._task = None
@@ -45,11 +45,17 @@ class BackgroundThreader:
         return self._abort or xbmc.abortRequested
 
     def start(self):
-        self._thread = threading.Thread(target=self._queueLoop, name='BACKGROUND-WORKER({0})'.format(self.name))
+        if self._thread and self._thread.isAlive():
+            return
+
+        self._thread = threadutils.KillableThread(target=self._queueLoop, name='BACKGROUND-WORKER({0})'.format(self.name))
         self._thread.start()
 
     def _queueLoop(self):
-        util.DEBUG_LOG('BGThreader: queue{0}: Active'.format(self.name))
+        if self._queue.empty():
+            return
+
+        util.DEBUG_LOG('BGThreader: ({0}): Active'.format(self.name))
         try:
             while not self.aborted():
                 self._task = self._queue.get_nowait()
@@ -57,11 +63,7 @@ class BackgroundThreader:
                 self._queue.task_done()
                 self._task = None
         except Queue.Empty:
-            util.DEBUG_LOG('BGThreader: queue ({0}): Empty'.format(self.name))
-
-        self._queue = Queue.LifoQueue()
-
-        util.DEBUG_LOG('BGThreader: queue ({0}): Finished'.format(self.name))
+            util.DEBUG_LOG('BGThreader ({0}): Idle'.format(self.name))
 
     def shutdown(self):
         self.abort()
@@ -74,21 +76,51 @@ class BackgroundThreader:
             self._thread.join()
             util.DEBUG_LOG('BGThreader: thread ({0}): Done'.format(self.name))
 
+    def working(self):
+        return self._thread and self._thread.isAlive()
+
+
+class BackgroundThreader:
+    def __init__(self, name=None, worker_count=8):
+        self.name = name
+        self._queue = Queue.Queue()
+        self._abort = False
+        self.workers = [BackgroundWorker(self._queue, 'queue.{0}:worker.{1}'.format(self.name, x)) for x in range(worker_count)]
+
+    def abort(self):
+        self._abort = True
+        for w in self.workers:
+            w.abort()
+        return self
+
+    def aborted(self):
+        return self._abort or xbmc.abortRequested
+
+    def shutdown(self):
+        self.abort()
+
+        for w in self.workers:
+            w.shutdown()
+
     def addTask(self, task):
         self._queue.put(task)
-
-        if not self._thread or not self._thread.isAlive():
-            self.start()
+        util.TEST(self._queue.qsize())
+        self.startWorkers()
 
     def addTasks(self, tasks):
-        for t in reversed(tasks):
+        for t in tasks:
             self._queue.put(t)
+        self.startWorkers()
 
-        if not self._thread or not self._thread.isAlive():
-            self.start()
+    def startWorkers(self):
+        for w in self.workers:
+            w.start()
 
     def working(self):
-        return not self._queue.empty()
+        return not self._queue.empty() or self.hasTask()
+
+    def hasTask(self):
+        return any([w.working() for w in self.workers])
 
 
 class ThreaderManager:
@@ -101,7 +133,7 @@ class ThreaderManager:
         return getattr(self.threader, name)
 
     def reset(self):
-        if self.threader._queue.empty() and not self.threader._task:
+        if self.threader._queue.empty() and not self.threader.hasTask():
             return
 
         self.index += 1

@@ -238,7 +238,7 @@ class MyPlexAccount(object):
 
         request = myplexrequest.MyPlexRequest("/users/sign_in.xml")
         context = request.createRequestContext("sign_in", callback.Callable(self.onAccountResponse))
-        context.timeout = self.isOffline and 10000 or 1000
+        context.timeout = self.isOffline and 1000 or 10000
         plexapp.APP.startRequest(request, context, {})
 
     def updateHomeUsers(self):

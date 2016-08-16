@@ -414,7 +414,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             self.transcodeServer = None
             for server in self.getServers():
                 if not server.synced and server.isReachable() and self.compareServers(self.transcodeServer, server) < 0:
-                    if not transcodeSupport or server[transcodeSupport]:
+                    if not transcodeSupport or server.transcodeSupport:
                         self.transcodeServer = server
 
             if self.transcodeServer:

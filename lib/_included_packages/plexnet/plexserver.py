@@ -59,6 +59,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         self.name = None
         self.platform = None
         self.versionNorm = None
+        self.transcodeSupport = False
 
         if data is None:
             return
@@ -71,6 +72,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         self.name = data.attrib.get('name')
         self.platform = data.attrib.get('platform')
         self.versionNorm = util.normalizedVersion(data.attrib.get('productVersion'))
+        self.transcodeSupport = data.attrib.get('transcodeSupport') == '1'
 
     def __eq__(self, other):
         if not other:
@@ -471,6 +473,9 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         m = re.Search("^\w+:\/\/.+?(\/.+)", url)
         newUrl = m and m.group(1) or None
         return self.buildUrl(newUrl or url, includeToken)
+
+    def hasHubs(self):
+        return self.platform != 'cloudsync'
 
     @classmethod
     def deSerialize(cls, jstring):

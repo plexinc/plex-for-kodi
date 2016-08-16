@@ -20,6 +20,7 @@ def resetBaseHeaders():
         'X-Plex-Version': X_PLEX_VERSION,
         'X-Plex-Device': X_PLEX_DEVICE,
         'X-Plex-Client-Identifier': X_PLEX_IDENTIFIER,
+        'Accept-Encoding': 'gzip,deflate'
     }
 
 # Core Settings

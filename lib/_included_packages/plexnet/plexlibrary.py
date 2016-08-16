@@ -89,7 +89,10 @@ class LibrarySection(plexobjects.PlexObject):
         return plexobjects.findItem(self.server, path, title)
 
     def all(self):
-        return plexobjects.listItems(self.server, '/library/sections/%s/all' % self.key)
+        if self.key.startswith('/'):
+            return plexobjects.listItems(self.server, '{0}/all'.format(self.key))
+        else:
+            return plexobjects.listItems(self.server, '/library/sections/{0}/all'.format(self.key))
 
     def onDeck(self):
         return plexobjects.listItems(self.server, '/library/sections/%s/onDeck' % self.key)

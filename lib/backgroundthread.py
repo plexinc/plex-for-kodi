@@ -1,12 +1,17 @@
 import Queue
+import heapq
 import xbmc
 import util
 from plexnet import threadutils
 
 
 class Task:
-    def __init__(self):
+    def __init__(self, priority=None):
+        self._priority = priority
         self._canceled = False
+
+    def __cmp__(self, other):
+        return self._priority - other._priority
 
     def start(self):
         BGThreader.addTask(self)
@@ -19,6 +24,24 @@ class Task:
 
     def isCanceled(self):
         return self._canceled or xbmc.abortRequested
+
+
+class MutablePriorityQueue(Queue.PriorityQueue):
+    def _get(self, heappop=heapq.heappop):
+            self.queue.sort()
+            return heappop(self.queue)
+
+    def lowest(self):
+        """Return the lowest priority item in the queue (not reliable!)."""
+        self.mutex.acquire()
+        try:
+            l = self.queue and min(self.queue) or None
+        except:
+            l = None
+            util.ERROR()
+        finally:
+            self.mutex.release()
+        return l
 
 
 class BackgroundWorker:
@@ -83,9 +106,14 @@ class BackgroundWorker:
 class BackgroundThreader:
     def __init__(self, name=None, worker_count=8):
         self.name = name
-        self._queue = Queue.Queue()
+        self._queue = MutablePriorityQueue()
         self._abort = False
+        self._priority = -1
         self.workers = [BackgroundWorker(self._queue, 'queue.{0}:worker.{1}'.format(self.name, x)) for x in range(worker_count)]
+
+    def _nextPriority(self):
+        self._priority += 1
+        return self._priority
 
     def abort(self):
         self._abort = True
@@ -103,12 +131,13 @@ class BackgroundThreader:
             w.shutdown()
 
     def addTask(self, task):
+        task._priority = self._nextPriority()
         self._queue.put(task)
-        util.TEST(self._queue.qsize())
         self.startWorkers()
 
     def addTasks(self, tasks):
         for t in tasks:
+            t._priority = self._nextPriority()
             self._queue.put(t)
         self.startWorkers()
 
@@ -121,6 +150,12 @@ class BackgroundThreader:
 
     def hasTask(self):
         return any([w.working() for w in self.workers])
+
+    def moveToFront(self, qitem):
+        lowest = self._queue.lowest()
+        if not lowest:
+            return
+        qitem._priority = lowest._priority - 1
 
 
 class ThreaderManager:

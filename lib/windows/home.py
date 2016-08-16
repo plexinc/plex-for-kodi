@@ -1,5 +1,3 @@
-import threading
-
 import xbmc
 import xbmcgui
 
@@ -379,7 +377,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def sectionChanged(self, section):
         self.setProperty('hub.focus', '')
-        util.DEBUG_LOG('Section chaged: {0}'.format(repr(section.title)))
+        util.DEBUG_LOG('Section chaged ({0}): {1}'.format(section.key, repr(section.title)))
         self.showHubs(section)
 
     def sectionHubsCallback(self, section, hubs):
@@ -444,8 +442,10 @@ class HomeWindow(kodigui.BaseWindow):
 
         hubs = self.sectionHubs.get(section.key)
         if not hubs:
-            # if self.task:
-            #     self.task.moveUpSection(section)
+            for task in self.tasks:
+                if task.section == section:
+                    backgroundthread.BGThreader.moveToFront(task)
+                    break
             return
 
         try:

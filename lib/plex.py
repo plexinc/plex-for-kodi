@@ -158,11 +158,11 @@ class PlexInterface(plexapp.AppInterface):
 
     def getQualityIndex(self, qualityType):
         if qualityType == self.QUALITY_LOCAL:
-            return self.getPreference("local_quality", 0)
+            return self.getPreference("local_quality", 13)
         elif qualityType == self.QUALITY_ONLINE:
-            return self.getPreference("online_quality", 0)
+            return self.getPreference("online_quality", 8)
         else:
-            return self.getPreference("remote_quality", 0)
+            return self.getPreference("remote_quality", 13)
 
     def getMaxResolution(self, quality_type, allow4k=False):
         qualityIndex = self.getQualityIndex(quality_type)

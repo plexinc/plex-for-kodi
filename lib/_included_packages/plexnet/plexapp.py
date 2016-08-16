@@ -233,11 +233,11 @@ class AppInterface(object):
 
     def getQualityIndex(self, qualityType):
         if qualityType == self.QUALITY_LOCAL:
-            return self.getPreference("local_quality", 0)
+            return self.getPreference("local_quality", 13)
         elif qualityType == self.QUALITY_ONLINE:
-            return self.getPreference("online_quality", 0)
+            return self.getPreference("online_quality", 8)
         else:
-            return self.getPreference("remote_quality", 0)
+            return self.getPreference("remote_quality", 13)
 
     def settingsGetMaxResolution(self, qualityType, allow4k):
         qualityIndex = self.getQualityIndex(qualityType)
@@ -277,11 +277,11 @@ class PlayerSettingsInterface(object):
 
     def getQualityIndex(self, qualityType):
         if qualityType == INTERFACE.QUALITY_LOCAL:
-            return self.getPreference("local_quality", 0)
+            return self.getPreference("local_quality", 13)
         elif qualityType == INTERFACE.QUALITY_ONLINE:
-            return self.getPreference("online_quality", 0)
+            return self.getPreference("online_quality", 8)
         else:
-            return self.getPreference("remote_quality", 0)
+            return self.getPreference("remote_quality", 13)
 
     def getPreference(self, key, default=None):
         if key in self.prefOverrides:

@@ -171,9 +171,9 @@ class Settings(object):
         ),
         'video': (
             'Video', (
-                QualitySetting('local_quality', 'Local Quality', 0),
-                QualitySetting('remote_quality', 'Remote Quality', 0),
-                QualitySetting('online_quality', 'Online Quality', 0),
+                QualitySetting('local_quality', 'Local Quality', 13),
+                QualitySetting('remote_quality', 'Remote Quality', 8),
+                QualitySetting('online_quality', 'Online Quality', 13),
                 BoolSetting('playback_directplay', 'Allow Direct Play', True),
                 BoolSetting('playback_remux', 'Allow Direct Stream', True),
                 BoolSetting('allow_4k', 'Allow 4K', True),

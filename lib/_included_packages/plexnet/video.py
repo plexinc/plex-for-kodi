@@ -209,11 +209,11 @@ class Show(Video):
         return self.viewedLeafCount == self.leafCount
 
     def seasons(self):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = self.key
         return plexobjects.listItems(self.server, path, Season.TYPE)
 
     def season(self, title):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = self.key
         return plexobjects.findItem(self.server, path, title)
 
     def episodes(self, watched=None):
@@ -246,11 +246,11 @@ class Season(Video):
         return self.viewedLeafCount == self.leafCount
 
     def episodes(self, watched=None):
-        childrenKey = '/library/metadata/%s/children' % self.ratingKey
-        return plexobjects.listItems(self.server, childrenKey, watched=watched)
+        path = self.key
+        return plexobjects.listItems(self.server, path, watched=watched)
 
     def episode(self, title):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = self.key
         return plexobjects.findItem(self.server, path, title)
 
     def get(self, title):

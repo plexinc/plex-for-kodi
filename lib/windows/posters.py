@@ -5,6 +5,7 @@ import kodigui
 
 from lib import colors
 from lib import util
+from lib import player
 
 import busy
 import subitems
@@ -155,6 +156,8 @@ class PostersWindow(kodigui.BaseWindow):
     def showPhoto(self, photo):
         if isinstance(photo, plexnet.photo.Photo):
             w = photos.PhotoWindow.open(photo=photo)
+        elif photo.TYPE == 'clip':
+            player.PLAYER.playVideo(photo)
         else:
             w = SquaresWindow.open(section=photo)
             self.onChildWindowClosed(w)

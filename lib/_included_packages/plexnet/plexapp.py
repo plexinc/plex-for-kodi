@@ -6,6 +6,7 @@ import callback
 
 import signalsmixin
 import simpleobjects
+import nowplayingmanager
 import util
 
 Res = simpleobjects.Res
@@ -35,6 +36,7 @@ class App(signalsmixin.SignalsMixin):
         self.pendingRequests = {}
         self.initializers = {}
         self.timers = []
+        self.nowplayingmanager = nowplayingmanager.NowPlayingManager()
 
     def addTimer(self, timer):
         self.timers.append(timer)
@@ -416,10 +418,18 @@ class Timer(object):
         if self.thread.isAlive():
             self.thread.join()
 
+    def isExpired(self):
+        return self.event.isSet()
+
 TIMER = Timer
 
 
 def createTimer(timeout, function, repeat=False, *args, **kwargs):
+    if isinstance(function, basestring):
+        def dummy(*args, **kwargs):
+            pass
+        dummy.__name__ = function
+        function = dummy
     timer = TIMER(timeout / 1000.0, function, repeat=repeat, *args, **kwargs)
     return timer
 

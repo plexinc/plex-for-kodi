@@ -477,6 +477,10 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     def hasHubs(self):
         return self.platform != 'cloudsync'
 
+    @property
+    def address(self):
+        return self.activeConnection.address
+
     @classmethod
     def deSerialize(cls, jstring):
         try:

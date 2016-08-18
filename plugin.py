@@ -3,8 +3,8 @@ import xbmcplugin
 import xbmcgui
 import sys
 import base64
-from lib import _included_packages, plex, util  # noqa
-from plexnet import audio, plexplayer # noqa
+from lib import _included_packages, plex, util
+from plexnet import audio, plexplayer
 
 HANDLE = int(sys.argv[1])
 

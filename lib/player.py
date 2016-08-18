@@ -1,5 +1,6 @@
 import base64
 import threading
+
 import xbmc
 import xbmcgui
 import kodijsonrpc
@@ -7,11 +8,17 @@ import colors
 from windows import seekdialog, playerbackground
 import util
 from plexnet import plexplayer
+from plexnet import plexapp
 
 
 class BasePlayerHandler(object):
     def __init__(self, player):
         self.player = player
+        self.baseOffset = 0
+        self.timelineType = None
+        self.lastTimelineState = None
+        self.ignoreTimelines = False
+        self.playQueue = None
 
     def onPlayBackStarted(self):
         pass
@@ -28,7 +35,7 @@ class BasePlayerHandler(object):
     def onPlayBackEnded(self):
         pass
 
-    def onPlayBackSeek(self, time, offset):
+    def onPlayBackSeek(self, stime, offset):
         pass
 
     def onPlayBackFailed(self):
@@ -46,11 +53,55 @@ class BasePlayerHandler(object):
     def onSeekOSD(self):
         pass
 
+    def onMonitorInit(self):
+        pass
+
     def tick(self):
         pass
 
     def close(self):
         pass
+
+    @property
+    def trueTime(self):
+        return self.baseOffset + self.player.currentTime
+
+    def getCurrentItem(self):
+        if self.player.playerObject:
+            return self.player.playerObject.item
+        return None
+
+    def shouldSendTimeline(self, item):
+        return item.ratingKey and item.getServer()
+
+    def updateNowPlaying(self, force=False, refreshQueue=False, state=None):
+        if self.ignoreTimelines:
+            return
+
+        item = self.getCurrentItem()
+
+        if not item:
+            return
+
+        if not self.shouldSendTimeline(item):
+            return
+
+        state = state or self.player.playState
+        # Avoid duplicates
+        if state == self.lastTimelineState and not force:
+            return
+
+        self.lastTimelineState = state
+        # self.timelineTimer.reset()
+
+        time = int(self.trueTime * 1000)
+
+        # self.trigger("progress", [m, item, time])
+
+        if refreshQueue and self.playQueue:
+            self.playQueue.refreshOnTimeline = True
+
+        plexapp.APP.nowplayingmanager.updatePlaybackState(self.timelineType, self.player.playerObject, state, time, self.playQueue)
 
 
 class SeekPlayerHandler(BasePlayerHandler):
@@ -63,20 +114,23 @@ class SeekPlayerHandler(BasePlayerHandler):
     MODE_RELATIVE = 1
 
     def __init__(self, player):
-        self.player = player
+        BasePlayerHandler.__init__(self, player)
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
         self.playlist = None
         self.playlistPos = 0
+        self.timelineType = 'video'
         self.reset()
 
     def reset(self):
         self.duration = 0
         self.offset = 0
+        self.baseOffset = 0
         self.seeking = self.NO_SEEK
         self.seekOnStart = 0
         self.mode = self.MODE_RELATIVE
 
     def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
+        self.baseOffset = offset / 1000.0
         self.seeking = seeking
         self.duration = duration
         self.dialog.setup(duration, offset, bif_url, title, title2)
@@ -119,8 +173,8 @@ class SeekPlayerHandler(BasePlayerHandler):
         if xbmc.getCondVisibility('Player.showinfo'):
             xbmc.executebuiltin('Action(Info)')
         self.updateOffset()
-        self.dialog.show()
         self.dialog.update(self.offset, from_seek)
+        self.dialog.show()
 
     def seek(self, offset, settings_changed=False):
         if self.mode == self.MODE_ABSOLUTE and not settings_changed:
@@ -146,6 +200,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.dialog.doClose()
 
     def onPlayBackStarted(self):
+        self.updateNowPlaying()
         if self.mode == self.MODE_ABSOLUTE:
             self.seekAbsolute()
 
@@ -169,16 +224,19 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.seeking = self.NO_SEEK
 
     def onPlayBackResumed(self):
+        self.updateNowPlaying()
         self.closeSeekDialog()
 
     def onPlayBackStopped(self):
+        self.updateNowPlaying()
         if self.seeking != self.SEEK_PLAYLIST:
             self.closeSeekDialog()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
-            self.player.close()
+            self.player.closeBackground()
 
     def onPlayBackEnded(self):
+        self.updateNowPlaying()
         if self.next():
             return
 
@@ -186,9 +244,12 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.closeSeekDialog()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
-            self.player.close()
+            self.player.closeBackground()
 
-    def onPlayBackSeek(self, time, offset):
+    def onPlayBackPaused(self):
+        self.updateNowPlaying()
+
+    def onPlayBackSeek(self, stime, offset):
         if self.seekOnStart:
             self.seekOnStart = 0
             return
@@ -203,7 +264,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackFailed(self):
         self.seeking = self.NO_SEEK
-        self.player.close()
+        self.player.closeBackground()
         return True
 
     def onSeekOSD(self):
@@ -213,9 +274,10 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onVideoWindowClosed(self):
         self.closeSeekDialog()
+        util.DEBUG_LOG('Video window closed - Seeking={0}'.format(self.seeking))
         if not self.seeking:
             self.player.stop()
-            self.player.close()
+            self.player.closeBackground()
 
     def onVideoOSD(self):
         # xbmc.executebuiltin('Dialog.Close(seekbar,true)')  # Doesn't work :)
@@ -223,6 +285,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.showSeekDialog()
 
     def tick(self):
+        self.updateNowPlaying(force=True)
         self.dialog.tick()
 
     def close(self):
@@ -233,11 +296,72 @@ class AudioPlayerHandler(BasePlayerHandler):
     def __init__(self, player, window=None):
         BasePlayerHandler.__init__(self, player)
         self.window = window
+        self.timelineType = 'music'
+        if self.player.isPlayingAudio():
+            self.extractTrackInfo()
+
+    def extractTrackInfo(self):
+        plexID = None
+        for x in range(10):  # Wait a sec (if necessary) for this to become available
+            try:
+                item = kodijsonrpc.rpc.Player.GetItem(playerid=xbmc.PLAYLIST_MUSIC, properties=['comment'])['item']
+                plexID = item['comment']
+            except:
+                util.ERROR()
+
+            if plexID:
+                break
+            xbmc.sleep(100)
+
+        if not plexID:
+            return
+
+        if not plexID.startswith('PLEX-'):
+            return
+
+        util.DEBUG_LOG('Extracting track info from comment')
+        try:
+            data = plexID.split(':', 1)[-1]
+            from plexnet import plexobjects
+            track = plexobjects.PlexObject.deSerialize(base64.urlsafe_b64decode(data.encode('utf-8')))
+            pobj = plexplayer.PlexAudioPlayer(track)
+            self.player.playerObject = pobj
+        except:
+            util.ERROR()
+
+    @property
+    def trueTime(self):
+        try:
+            return self.player.getTime()
+        except:
+            return self.player.currentTime
+
+    def stampCurrentTime(self):
+        try:
+            self.player.currentTime = self.player.getTime()
+        except RuntimeError:  # Not playing
+            pass
+
+    def onMonitorInit(self):
+        self.extractTrackInfo()
+        self.updateNowPlaying(state='playing')
+
+    def onPlayBackStarted(self):
+        self.extractTrackInfo()
+        self.updateNowPlaying(state='playing')
+
+    def onPlayBackResumed(self):
+        self.updateNowPlaying(state='playing')
+
+    def onPlayBackPaused(self):
+        self.updateNowPlaying(state='paused')
 
     def onPlayBackStopped(self):
+        self.updateNowPlaying(state='stopped')
         self.closeWindow()
 
     def onPlayBackEnded(self):
+        self.updateNowPlaying(state='stopped')
         self.closeWindow()
 
     def onPlayBackFailed(self):
@@ -251,8 +375,17 @@ class AudioPlayerHandler(BasePlayerHandler):
         del self.window
         self.window = None
 
+    def tick(self):
+        self.stampCurrentTime()
+        self.updateNowPlaying(force=True)
+
 
 class PlexPlayer(xbmc.Player):
+    STATE_STOPPED = "stopped"
+    STATE_PLAYING = "playing"
+    STATE_PAUSED = "paused"
+    STATE_BUFFERING = "buffering"
+
     def init(self):
         self._closed = False
         self.started = False
@@ -260,28 +393,40 @@ class PlexPlayer(xbmc.Player):
         self.hasOSD = False
         self.hasSeekOSD = False
         self.xbmcMonitor = xbmc.Monitor()
-        self.handler = BasePlayerHandler(self)
         self.playerBackground = None
+        self.handler = AudioPlayerHandler(self)
+        self.playerObject = None
+        self.currentTime = 0
         self.seekStepsSetting = util.SettingControl('videoplayer.seeksteps', 'Seek steps', disable_value=[-10, 10])
         self.seekDelaySetting = util.SettingControl('videoplayer.seekdelay', 'Seek delay', disable_value=0)
         self.thread = None
         if xbmc.getCondVisibility('Player.HasMedia'):
             self.started = True
+        self.open()
 
         return self
 
     def open(self):
         self._closed = False
+        if self.video:
+            self.playerBackground = playerbackground.PlayerBackground.create(
+                background=self.video.art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
+            )
         self.monitor()
 
     def close(self, shutdown=False):
         self._closed = True
+
+    def closeBackground(self):
         if self.playerBackground:
             self.playerBackground.close()
 
     def reset(self):
+        self.video = None
         self.started = False
-        self.handler = None
+        self.playerObject = None
+        self.handler = AudioPlayerHandler(self)
+        self.currentTime = 0
 
     def control(self, cmd):
         if cmd == 'play':
@@ -294,6 +439,17 @@ class PlexPlayer(xbmc.Player):
             if not xbmc.getCondVisibility('Player.Paused'):
                 util.DEBUG_LOG('Player - Control:  Pausing')
                 xbmc.executebuiltin('PlayerControl(Play)')
+
+    @property
+    def playState(self):
+        if xbmc.getCondVisibility('Player.Playing'):
+            return self.STATE_PLAYING
+        elif xbmc.getCondVisibility('Player.Caching'):
+            return self.STATE_BUFFERING
+        elif xbmc.getCondVisibility('Player.Paused'):
+            return self.STATE_PAUSED
+
+        return self.STATE_STOPPED
 
     def videoIsFullscreen(self):
         return xbmc.getCondVisibility('VideoPlayer.IsFullscreen')
@@ -326,10 +482,10 @@ class PlexPlayer(xbmc.Player):
         self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)
 
     def _playVideo(self, offset=0, seeking=0, force_update=False):
-        pobj = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
-        meta = pobj.build()
+        self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
+        meta = self.playerObject.build()
         url = meta.streamUrls[0]
-        bifURL = pobj.getBifUrl()
+        bifURL = self.playerObject.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
         url += '&X-Plex-Platform=Chrome'
@@ -399,7 +555,8 @@ class PlexPlayer(xbmc.Player):
         # url = pobj.build()['url']  # .streams[0]['url']
         # util.DEBUG_LOG('Playing URL: {0}'.format(url))
         # url += '&X-Plex-Platform=Chrome'
-        url = 'plugin://script.plex/play?{0}'.format(base64.urlsafe_b64encode(track.serialize()))
+        data = base64.urlsafe_b64encode(track.serialize())
+        url = 'plugin://script.plex/play?{0}'.format(data)
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(256, 256))
         li.setInfo('music', {
             'artist': str(track.grandparentTitle),
@@ -409,7 +566,7 @@ class PlexPlayer(xbmc.Player):
             'tracknumber': track.get('index').asInt(),
             'duration': int(track.duration.asInt() / 1000),
             'playcount': index,
-            'comment': 'PLEX-{0}'.format(track.ratingKey)
+            'comment': 'PLEX-{0}:{1}'.format(track.ratingKey, data)
         })
         if fanart:
             li.setArt({'fanart': fanart})
@@ -507,60 +664,78 @@ class PlexPlayer(xbmc.Player):
             self.thread.start()
 
     def _monitor(self):
-        with playerbackground.PlayerBackgroundContext(
-            background=self.video.art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
-        ) as self.playerBackground:
-            with self.seekDelaySetting.suspend():
-                with self.seekStepsSetting.suspend():
-                    while not xbmc.abortRequested and not self._closed:
-                        # Monitor loop
-                        if self.isPlayingVideo():
-                            util.DEBUG_LOG('Player: Monitoring')
+        try:
+            while not xbmc.abortRequested and not self._closed:
+                if not self.isPlaying():
+                    util.DEBUG_LOG('Player: Idling...')
 
+                while not self.isPlaying() and not xbmc.abortRequested and not self._closed:
+                    self.xbmcMonitor.waitForAbort(0.1)
+
+                if self.isPlayingVideo():
+                    util.DEBUG_LOG('Monitoring video...')
+                    self._videoMonitor()
+                elif self.isPlayingAudio():
+                    util.DEBUG_LOG('Monitoring audio...')
+                    self._audioMonitor()
+
+            self.handler.close()
+            self.close()
+            util.DEBUG_LOG('Player: Closed')
+        finally:
+            if self.playerBackground:
+                self.playerBackground.close()
+
+    def _videoMonitor(self):
+        with self.seekDelaySetting.suspend():
+            with self.seekStepsSetting.suspend():
+                hasFullScreened = False
+
+                ct = 0
+                while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
+                    self.currentTime = self.getTime()
+                    self.xbmcMonitor.waitForAbort(0.1)
+                    if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
+                        if not self.hasOSD:
+                            self.hasOSD = True
+                            self.onVideoOSD()
+                    else:
+                        self.hasOSD = False
+
+                    if xbmc.getCondVisibility('Window.IsActive(seekbar)'):
+                        if not self.hasSeekOSD:
+                            self.hasSeekOSD = True
+                            self.onSeekOSD()
+                    else:
+                        self.hasSeekOSD = False
+
+                    if xbmc.getCondVisibility('VideoPlayer.IsFullscreen'):
+                        if not hasFullScreened:
+                            hasFullScreened = True
+                            self.onVideoWindowOpened()
+                    elif hasFullScreened and not xbmc.getCondVisibility('Window.IsVisible(busydialog)'):
                         hasFullScreened = False
+                        self.onVideoWindowClosed()
 
+                    ct += 1
+                    if ct > 9:
                         ct = 0
-                        while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
-                            self.xbmcMonitor.waitForAbort(0.1)
-                            if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
-                                if not self.hasOSD:
-                                    self.hasOSD = True
-                                    self.onVideoOSD()
-                            else:
-                                self.hasOSD = False
+                        self.handler.tick()
 
-                            if xbmc.getCondVisibility('Window.IsActive(seekbar)'):
-                                if not self.hasSeekOSD:
-                                    self.hasSeekOSD = True
-                                    self.onSeekOSD()
-                            else:
-                                self.hasSeekOSD = False
+                if hasFullScreened:
+                    self.onVideoWindowClosed()
 
-                            if xbmc.getCondVisibility('VideoPlayer.IsFullscreen'):
-                                if not hasFullScreened:
-                                    hasFullScreened = True
-                                    self.onVideoWindowOpened()
-                            elif hasFullScreened and not xbmc.getCondVisibility('Window.IsVisible(busydialog)'):
-                                hasFullScreened = False
-                                self.onVideoWindowClosed()
+    def _audioMonitor(self):
+        self.started = True
+        self.handler.onMonitorInit()
+        ct = 0
+        while self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
+            self.currentTime = self.getTime()
+            self.xbmcMonitor.waitForAbort(0.1)
 
-                            ct += 1
-                            if ct > 9:
-                                ct = 0
-                                self.handler.tick()
-
-                        if hasFullScreened:
-                            self.onVideoWindowClosed()
-
-                        # Idle loop
-                        if not self.isPlayingVideo():
-                            util.DEBUG_LOG('Player: Idling...')
-
-                        while not self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
-                            self.xbmcMonitor.waitForAbort(0.1)
-
-        self.handler.close()
-        self.close()
-        util.DEBUG_LOG('Player: Closed')
+            ct += 1
+            if ct > 9:
+                ct = 0
+                self.handler.tick()
 
 PLAYER = PlexPlayer().init()

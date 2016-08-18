@@ -396,7 +396,6 @@ class HomeWindow(kodigui.BaseWindow):
 
         pl = plexapp.SERVERMANAGER.selectedServer.playlists()
         if pl:
-            # util.TEST(pl[0].composite.asTranscodedImageURL(640, 360))
             plli = kodigui.ManagedListItem('Playlists', thumbnailImage='script.plex/home/type/playlists.png', data_source=PlaylistsSection)
             plli.setProperty('is.playlists', '1')
             plli.setProperty('item', '1')
@@ -404,8 +403,9 @@ class HomeWindow(kodigui.BaseWindow):
 
         sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
 
-        self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection] + sections]
-        backgroundthread.BGThreader.addTasks(self.tasks)
+        if plexapp.SERVERMANAGER.selectedServer.hasHubs():
+            self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection] + sections]
+            backgroundthread.BGThreader.addTasks(self.tasks)
 
         for section in sections:
             mli = kodigui.ManagedListItem(section.title, thumbnailImage='script.plex/home/type/{0}.png'.format(section.type), data_source=section)
@@ -607,8 +607,6 @@ class HomeWindow(kodigui.BaseWindow):
 
         if plexapp.SERVERMANAGER.setSelectedServer(server, force=True):
             self.serverRefresh()
-
-        util.TEST(server.connections[0].__dict__)
 
     def showUserMenu(self):
         items = []

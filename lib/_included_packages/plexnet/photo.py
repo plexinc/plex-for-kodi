@@ -41,7 +41,7 @@ class PhotoDirectory(media.MediaItem):
     TYPE = 'photodirectory'
 
     def all(self):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = self.key
         return plexobjects.listItems(self.server, path)
 
 

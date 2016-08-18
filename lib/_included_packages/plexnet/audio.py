@@ -31,11 +31,11 @@ class Artist(Audio):
             self.similar = plexobjects.PlexItemList(data, media.Similar, media.Similar.TYPE, server=self.server)
 
     def albums(self):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = '%s/children' % self.key
         return plexobjects.listItems(self.server, path, Album.TYPE)
 
     def album(self, title):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = '%s/children' % self.key
         return plexobjects.findItem(self.server, path, title)
 
     def tracks(self, watched=None):
@@ -68,11 +68,11 @@ class Album(Audio):
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
 
     def tracks(self, watched=None):
-        childrenKey = '/library/metadata/%s/children' % self.ratingKey
-        return plexobjects.listItems(self.server, childrenKey, watched=watched)
+        path = '%s/children' % self.key
+        return plexobjects.listItems(self.server, path, watched=watched)
 
     def track(self, title):
-        path = '/library/metadata/%s/children' % self.ratingKey
+        path = '%s/children' % self.key
         return plexobjects.findItem(self.server, path, title)
 
     def get(self, title):

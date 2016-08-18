@@ -154,7 +154,7 @@
                             <posx>120</posx>
                             <posy>24</posy>
                             <control type="label">
-                                <visible>!StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
+                                <visible>!SubString(MusicPlayer.Comment,ListItem.Property(plex.ID):,Left) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>50</width>
@@ -166,7 +166,7 @@
                                 <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                             </control>
                             <control type="image">
-                                <visible>StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
+                                <visible>SubString(MusicPlayer.Comment,ListItem.Property(plex.ID):,Left) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                 <posx>0</posx>
                                 <posy>32.5</posy>
                                 <width>35</width>
@@ -287,7 +287,7 @@
                                 <posx>120</posx>
                                 <posy>24</posy>
                                 <control type="label">
-                                    <visible>!StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
+                                    <visible>!SubString(MusicPlayer.Comment,ListItem.Property(plex.ID):,Left) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <width>50</width>
@@ -299,7 +299,7 @@
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
+                                    <visible>SubString(MusicPlayer.Comment,ListItem.Property(plex.ID):,Left) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>0</posx>
                                     <posy>32.5</posy>
                                     <width>35</width>
@@ -439,7 +439,7 @@
                                     <colordiffuse>99FFFFFF</colordiffuse>
                                 </control>
                                 <control type="label">
-                                    <visible>!StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
+                                    <visible>!SubString(MusicPlayer.Comment,ListItem.Property(plex.ID):,Left) + ![StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>48</posx>
                                     <posy>0</posy>
                                     <width>50</width>
@@ -451,7 +451,7 @@
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>StringCompare(ListItem.Property(plex.ID),MusicPlayer.Comment) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
+                                    <visible>SubString(MusicPlayer.Comment,ListItem.Property(plex.ID):,Left) | [StringCompare(ListItem.Property(file),Player.Filenameandpath) + StringCompare(ListItem.Property(playlist.position),MusicPlayer.PlaylistPosition)]</visible>
                                     <posx>48</posx>
                                     <posy>32.5</posy>
                                     <width>35</width>

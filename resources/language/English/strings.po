@@ -136,3 +136,51 @@ msgstr ""
 msgctxt "#32035"
 msgid "Always"
 msgstr ""
+
+msgctxt "#32201"
+msgid "Trailer"
+msgstr ""
+
+msgctxt "#32202"
+msgid "Deleted Scene"
+msgstr ""
+
+msgctxt "#32203"
+msgid "Interview"
+msgstr ""
+
+msgctxt "#32204"
+msgid "Music Video"
+msgstr ""
+
+msgctxt "#32205"
+msgid "Behind the Scenes"
+msgstr ""
+
+msgctxt "#32206"
+msgid "Scene"
+msgstr ""
+
+msgctxt "#32207"
+msgid "Live Music Video"
+msgstr ""
+
+msgctxt "#32208"
+msgid "Lyric Music Video"
+msgstr ""
+
+msgctxt "#32209"
+msgid "Concert"
+msgstr ""
+
+msgctxt "#32210"
+msgid "Featurette"
+msgstr ""
+
+msgctxt "#32211"
+msgid "Short"
+msgstr ""
+
+msgctxt "#32212"
+msgid "Other"
+msgstr ""

@@ -49,7 +49,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.bigSeekOffset = 0
         self.title = ''
         self.title2 = ''
-        self.fromSeek = False
+        self.fromSeek = 0
         self.initialized = False
 
     @property
@@ -252,7 +252,12 @@ class SeekDialog(kodigui.BaseDialog):
         self.update()
 
     def update(self, offset=None, from_seek=False):
-        self.fromSeek = from_seek
+        if from_seek:
+            self.fromSeek = time.time()
+        else:
+            if time.time() - self.fromSeek > 0.5:
+                self.fromSeek = 0
+
         if offset is not None:
             self.offset = offset
             self.selectedOffset = self.trueOffset()

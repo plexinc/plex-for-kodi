@@ -10,7 +10,7 @@ class PlexRequest(http.HttpRequest):
     def __init__(self, server, path, method=None):
         server = server or plexserver.dummyPlexServer()
 
-        http.HttpRequest.__init__(self, server.buildUrl(path), method)
+        http.HttpRequest.__init__(self, server.buildUrl(path, includeToken=True), method)
 
         self.server = server
         self.path = path

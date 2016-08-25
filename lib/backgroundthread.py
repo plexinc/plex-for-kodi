@@ -139,6 +139,20 @@ class BackgroundThreader:
         for t in tasks:
             t._priority = self._nextPriority()
             self._queue.put(t)
+
+        self.startWorkers()
+
+    def addTasksToFront(self, tasks):
+        lowest = self.getLowestPrority()
+        if lowest is None:
+            return self.addTasks(tasks)
+
+        p = lowest - len(tasks)
+        for t in tasks:
+            t._priority = p
+            self._queue.put(t)
+            p += 1
+
         self.startWorkers()
 
     def startWorkers(self):
@@ -151,11 +165,19 @@ class BackgroundThreader:
     def hasTask(self):
         return any([w.working() for w in self.workers])
 
-    def moveToFront(self, qitem):
+    def getLowestPrority(self):
         lowest = self._queue.lowest()
         if not lowest:
+            return None
+
+        return lowest._priority
+
+    def moveToFront(self, qitem):
+        lowest = self.getLowestPrority()
+        if lowest is None:
             return
-        qitem._priority = lowest._priority - 1
+
+        qitem._priority = lowest - 1
 
 
 class ThreaderManager:

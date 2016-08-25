@@ -144,6 +144,8 @@ def durationToText(seconds):
     mins = int(left / 60000)
     if mins:
         return hours + '{0} min{1}'.format(mins, mins > 1 and 's' or '')
+    elif hours:
+        return hours.rstrip()
     secs = int(left % 60000)
     if secs:
         return '{0} sec{1}'.format(secs, secs > 1 and 's' or '')

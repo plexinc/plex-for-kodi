@@ -6,6 +6,7 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import player
+from lib import backgroundthread
 
 import busy
 import subitems
@@ -27,6 +28,73 @@ MOVE_SET = frozenset(
     )
 )
 
+THUMB_POSTER_DIM = (287, 425)
+THUMB_AR16X9_DIM = (619, 348)
+THUMB_SQUARE_DIM = (425, 425)
+
+TYPE_KEYS = {
+    'episode': {
+        'fallback': 'show',
+        'thumb_dim': THUMB_POSTER_DIM,
+    },
+    'season': {
+        'fallback': 'show',
+        'thumb_dim': THUMB_POSTER_DIM
+    },
+    'movie': {
+        'fallback': 'movie',
+        'thumb_dim': THUMB_POSTER_DIM
+    },
+    'show': {
+        'fallback': 'show',
+        'thumb_dim': THUMB_POSTER_DIM
+    },
+    'album': {
+        'fallback': 'music',
+        'thumb_dim': THUMB_SQUARE_DIM
+    },
+    'artist': {
+        'fallback': 'music',
+        'thumb_dim': THUMB_SQUARE_DIM
+    },
+    'track': {
+        'fallback': 'music',
+        'thumb_dim': THUMB_SQUARE_DIM
+    },
+    'photo': {
+        'fallback': 'photo',
+        'thumb_dim': THUMB_SQUARE_DIM
+    },
+    'clip': {
+        'fallback': 'movie16x9',
+        'thumb_dim': THUMB_AR16X9_DIM
+    },
+}
+
+
+class ChunkRequestTask(backgroundthread.Task):
+    def setup(self, section, start, size, callback):
+        self.section = section
+        self.start = start
+        self.size = size
+        self.callback = callback
+        return self
+
+    def contains(self, pos):
+        return self.start <= pos <= (self.start + self.size)
+
+    def run(self):
+        if self.isCanceled():
+            return
+
+        try:
+            items = self.section.all(self.start, self.size)
+            if self.isCanceled():
+                return
+            self.callback(items, self.start)
+        except plexnet.exceptions.BadRequest:
+            util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
+
 
 class PostersWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-posters.xml'
@@ -35,10 +103,6 @@ class PostersWindow(kodigui.BaseWindow):
     res = '1080i'
     width = 1920
     height = 1080
-
-    THUMB_POSTER_DIM = (287, 425)
-    THUMB_AR16X9_DIM = (619, 348)
-    THUMB_SQUARE_DIM = (425, 425)
 
     POSTERS_PANEL_ID = 101
     KEY_LIST_ID = 151
@@ -53,14 +117,24 @@ class PostersWindow(kodigui.BaseWindow):
         self.section = kwargs.get('section')
         self.keyItems = {}
         self.firstOfKeyItems = {}
+        self.tasks = []
+        self.backgroundSet = False
         self.exitCommand = None
+
+    def doClose(self):
+        for task in self.tasks:
+            task.cancel()
+        kodigui.BaseWindow.doClose(self)
 
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
 
         self.setTitle()
-        self.fillShows()
+        if self.section.TYPE in ('photo', 'photodirectory'):
+            self.fillPhotos()
+        else:
+            self.fillShows()
         self.setFocusId(self.POSTERS_PANEL_ID)
 
     def onAction(self, action):
@@ -77,6 +151,8 @@ class PostersWindow(kodigui.BaseWindow):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+
+            self.updateItem()
 
         except:
             util.ERROR()
@@ -170,91 +246,110 @@ class PostersWindow(kodigui.BaseWindow):
         finally:
             del w
 
-    def createGrandparentedListItem(self, obj, thumb_w, thumb_h):
-        title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
-        return mli, obj.titleSort or title
-
-    def createParentedListItem(self, obj, thumb_w, thumb_h):
-        title = obj.parentTitle or obj.title or ''
-        mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
-        return mli, obj.titleSort or title
-
-    def createSimpleListItem(self, obj, thumb_w, thumb_h):
-        mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
-        return mli, obj.titleSort or obj.title
-
-    def createListItem(self, obj):
-        if obj.type == 'episode':
-            mli, titleSort = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-        elif obj.type == 'season':
-            mli, titleSort = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-        elif obj.type == 'movie':
-            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
-        elif obj.type == 'show':
-            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-        elif obj.type == 'album':
-            mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-        elif obj.type == 'artist':
-            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-        elif obj.type == 'track':
-            mli, titleSort = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-        elif obj.type in ('photo', 'photodirectory'):
-            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
-        elif obj.type == 'clip':
-            mli, titleSort = self.createSimpleListItem(obj, *self.THUMB_AR16X9_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
-        else:
-            util.DEBUG_LOG('Unhandled item: {0}'.format(obj.type))
-            return None, None
-
-        return mli, titleSort
-
     def setTitle(self):
         if self.section.TYPE == 'artist':
             self.setProperty('screen.title', 'MUSIC')
+        elif self.section.TYPE == 'photo':
+            self.setProperty('screen.title', 'PHOTOS')
         else:
             self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
 
+    def updateItem(self, mli=None):
+        mli = mli or self.showPanelControl.getSelectedItem()
+        if not mli or mli.dataSource:
+            return
+
+        for task in self.tasks:
+            if task.contains(mli.pos()):
+                util.DEBUG_LOG('Moving task to front: {0}'.format(task))
+                backgroundthread.BGThreader.moveToFront(task)
+                break
+
+    def setBackground(self, items):
+        if self.backgroundSet:
+            return
+        self.backgroundSet = True
+
+        item = random.choice(items)
+        self.setProperty('background', item.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+
     @busy.dialog()
     def fillShows(self):
+        items = []
+        jitems = []
+        self.keyItems = {}
+        self.firstOfKeyItems = {}
+        totalSize = 0
+
+        jumpList = self.section.jumpList()
+        idx = 0
+        fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
+
+        for ji in jumpList:
+            mli = kodigui.ManagedListItem(ji.title, data_source=ji.key)
+            mli.setProperty('key', ji.key)
+            self.keyItems[ji.key] = mli
+            jitems.append(mli)
+            totalSize += ji.size.asInt()
+
+            for x in range(ji.size.asInt()):
+                mli = kodigui.ManagedListItem('')
+                mli.setProperty('key', ji.key)
+                mli.setProperty('thumb.fallback', fallback)
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                if not x:  # i.e. first item
+                    self.firstOfKeyItems[ji.key] = mli
+                idx += 1
+
+        self.showPanelControl.addItems(items)
+        self.keyListControl.addItems(jitems)
+
+        if jumpList:
+            self.setProperty('key', jumpList[0].key)
+
+        tasks = []
+        for start in range(0, totalSize, 500):
+            tasks.append(ChunkRequestTask().setup(self.section, start, 500, self.chunkCallback))
+
+        self.tasks = tasks
+        backgroundthread.BGThreader.addTasksToFront(tasks)
+
+    @busy.dialog()
+    def fillPhotos(self):
         items = []
         keys = []
         self.firstOfKeyItems = {}
         idx = 0
 
-        shows = self.section.all()
-        if not shows:
+        photos = self.section.all()
+        if not photos:
             return
 
-        show = random.choice(shows)
-        self.setProperty('background', show.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        photo = random.choice(photos)
+        self.setProperty('background', photo.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
+        fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        for show in shows:
-            mli, titleSort = self.createListItem(show)
-            if mli:
-                mli.setProperty('index', str(idx))
-                key = titleSort[0].upper()
-                if key not in KEYS:
-                    key = '#'
-                if key not in keys:
-                    self.firstOfKeyItems[key] = mli
-                    keys.append(key)
-                mli.setProperty('key', str(key))
-                items.append(mli)
-                idx += 1
+        for photo in photos:
+            title = photo.title
+            mli = kodigui.ManagedListItem(title, thumbnailImage=photo.defaultThumb.asTranscodedImageURL(*thumbDim), data_source=photo)
+            mli.setProperty('thumb.fallback', fallback)
+            mli.setProperty('index', str(idx))
+
+            key = title[0].upper()
+            if key not in KEYS:
+                key = '#'
+            if key not in keys:
+                self.firstOfKeyItems[key] = mli
+                keys.append(key)
+            mli.setProperty('key', str(key))
+            items.append(mli)
+            idx += 1
 
         litems = []
         self.keyItems = {}
-        for key in sorted(keys):
+        for key in keys:
             mli = kodigui.ManagedListItem(key, data_source=key)
             mli.setProperty('key', key)
             self.keyItems[key] = mli
@@ -265,6 +360,17 @@ class PostersWindow(kodigui.BaseWindow):
 
         if keys:
             self.setProperty('key', keys[0])
+
+    def chunkCallback(self, items, start):
+        pos = start
+        self.setBackground(items)
+        thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
+        for obj in items:
+            mli = self.showPanelControl[pos]
+            mli.setLabel(obj.defaultTitle or '')
+            mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+            mli.dataSource = obj
+            pos += 1
 
     def showAudioPlayer(self):
         import musicplayer

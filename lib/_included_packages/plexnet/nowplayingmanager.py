@@ -166,7 +166,6 @@ class NowPlayingManager(object):
 
         # It's possible with timers and in player seeking for the time to be greater than the
         # duration, which causes a 400, so in that case we'll set the time to the duration.
-
         duration = timeline.item.duration.asInt()
         if time > duration:
             time = duration

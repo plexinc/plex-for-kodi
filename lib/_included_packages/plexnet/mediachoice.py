@@ -38,7 +38,7 @@ class MediaChoice(object):
             for streamType in ("videoStream", "audioStream", "subtitleStream"):
                 attr = getattr(self, streamType)
                 if attr:
-                    util.LOG("Choice {0}: {1}".format(streamType, attr))
+                    util.LOG("Choice {0}: {1}".format(streamType, repr(attr)))
         else:
             util.WARN_LOG("Could not create media choice for invalid media")
 

@@ -88,11 +88,24 @@ class LibrarySection(plexobjects.PlexObject):
         path = '/library/sections/%s/all' % self.key
         return plexobjects.findItem(self.server, path, title)
 
-    def all(self):
+    def all(self, start=None, size=None):
         if self.key.startswith('/'):
-            return plexobjects.listItems(self.server, '{0}/all'.format(self.key))
+            path = '{0}/all'.format(self.key)
         else:
-            return plexobjects.listItems(self.server, '/library/sections/{0}/all'.format(self.key))
+            path = '/library/sections/{0}/all'.format(self.key)
+
+        if size is not None:
+            path += '?X-Plex-Container-Start={0}&X-Plex-Container-Size={1}'.format(start, size)
+
+        return plexobjects.listItems(self.server, path)
+
+    def jumpList(self):
+        if self.key.startswith('/'):
+            path = '{0}/firstCharacter'.format(self.key)
+        else:
+            path = '/library/sections/{0}/firstCharacter'.format(self.key)
+
+        return plexobjects.listItems(self.server, path, bytag=True)
 
     def onDeck(self):
         return plexobjects.listItems(self.server, '/library/sections/%s/onDeck' % self.key)
@@ -262,7 +275,7 @@ class PhotoSection(LibrarySection):
 
 
 @plexobjects.registerLibType
-class FilterChoice(plexobjects.PlexObject):
+class Generic(plexobjects.PlexObject):
     TYPE = 'Directory'
 
     def __repr__(self):

@@ -67,6 +67,10 @@ class Album(Audio):
         if self.isFullObject():
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
 
+    @property
+    def defaultTitle(self):
+        return self.parentTitle or self.title
+
     def tracks(self, watched=None):
         path = '%s/children' % self.key
         return plexobjects.listItems(self.server, path, watched=watched)
@@ -107,6 +111,10 @@ class Track(Audio):
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
+
+    @property
+    def defaultTitle(self):
+        return self.parentTitle or self.title
 
     @property
     def settings(self):

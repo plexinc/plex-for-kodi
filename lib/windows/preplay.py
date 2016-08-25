@@ -3,6 +3,7 @@ import xbmcgui
 import kodigui
 
 import busy
+import opener
 
 from lib import colors
 from lib import util
@@ -69,9 +70,9 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.exitCommand = 'HOME'
             self.doClose()
         elif controlID == self.EXTRA_LIST_ID:
-            self.extrasListClicked()
+            self.openItem(self.extraListControl)
         elif controlID == self.RELATED_LIST_ID:
-            self.relatedListClicked()
+            self.openItem(self.relatedListControl)
         elif controlID == self.RESUME_BUTTON_ID:
             self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:
@@ -91,29 +92,16 @@ class PrePlayWindow(kodigui.BaseWindow):
     def playVideo(self, resume=False):
         player.PLAYER.playVideo(self.video, resume)
 
-    def extrasListClicked(self):
-        mli = self.extraListControl.getSelectedItem()
+    def openItem(self, control):
+        mli = control.getSelectedItem()
         if not mli:
             return
 
-        player.PLAYER.playVideo(mli.dataSource)
+        command = opener.open(mli.dataSource)
 
-    def relatedListClicked(self):
-        mli = self.relatedListControl.getSelectedItem()
-        if not mli:
-            return
-
-        self.playableClicked(mli.dataSource)
-
-    def playableClicked(self, playable):
-        w = PrePlayWindow.open(video=playable)
-
-        try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
-                self.doClose()
-        finally:
-            del w
+        if command == 'HOME':
+            self.exitCommand = 'HOME'
+            self.doClose()
 
     @busy.dialog()
     def setup(self):
@@ -135,7 +123,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
         self.setProperty('summary', self.video.summary)
 
-        directors = u' / '.join([d.tag for d in self.video.directors()])
+        directors = u' / '.join([d.tag for d in self.video.directors()][:5])
         directorsLabel = len(self.video.directors) > 1 and u'DIRECTORS' or u'DIRECTOR'
         self.setProperty('directors', directors and u'{0}    {1}'.format(directorsLabel, directors) or '')
 
@@ -145,22 +133,26 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.setProperty('info', 'Season {0} Episode {1}'.format(self.video.parentIndex, self.video.index))
             self.setProperty('date', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime('%B %d, %Y')))
 
-            writers = u' / '.join([w.tag for w in self.video.writers()])
+            writers = u' / '.join([w.tag for w in self.video.writers()][:5])
             writersLabel = len(self.video.writers) > 1 and u'WRITERS' or u'WRITER'
             self.setProperty('writers', writers and u'{0}    {1}'.format(writersLabel, writers) or '')
+            self.setProperty('related.header', 'Related Shows')
         elif self.video.type == 'movie':
             self.setProperty('thumb', self.video.thumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
-            genres = u' / '.join([g.tag for g in self.video.genres()])
+            genres = u' / '.join([g.tag for g in self.video.genres()][:3])
             self.setProperty('info', genres)
             self.setProperty('date', self.video.year)
             self.setProperty('content.rating', self.video.contentRating)
 
-            cast = u' / '.join([r.tag for r in self.video.roles()])
+            cast = u' / '.join([r.tag for r in self.video.roles()][:5])
             castLabel = 'CAST'
             self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
+            self.setProperty('related.header', 'Related Movies')
 
         stars = self.video.rating and str(int(round((self.video.rating.asFloat() / 10) * 5))) or None
         self.setProperty('rating', stars and stars or '')
+
+        self.setProperty('imdb', self.video.rating)
 
         sas = self.video.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')

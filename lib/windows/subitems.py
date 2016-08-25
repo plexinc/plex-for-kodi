@@ -7,6 +7,7 @@ from lib import util
 
 import busy
 import episodes
+import opener
 
 
 class ShowWindow(kodigui.BaseWindow):
@@ -19,8 +20,12 @@ class ShowWindow(kodigui.BaseWindow):
 
     THUMB_DIMS = {
         'show': {
-            'main.thumb': (300, 444),
-            'item.thumb': (250, 370)
+            'main.thumb': (347, 518),
+            'item.thumb': (198, 295)
+        },
+        'episode': {
+            'main.thumb': (347, 518),
+            'item.thumb': (198, 295)
         },
         'artist': {
             'main.thumb': (519, 519),
@@ -28,12 +33,23 @@ class ShowWindow(kodigui.BaseWindow):
         }
     }
 
-    SUB_ITEM_LIST_ID = 101
+    ROLES_DIM = (374, 210)
+
+    SUB_ITEM_LIST_ID = 400
+
+    RELATED_LIST_ID = 401
+    ROLES_LIST_ID = 403
 
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
     PLAYER_STATUS_BUTTON_ID = 204
+
+    PROGRESS_IMAGE_ID = 250
+
+    INFO_BUTTON_ID = 301
+    PLAY_BUTTON_ID = 302
+    MORE_BUTTON_ID = 303
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -42,15 +58,61 @@ class ShowWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
+        self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
+        self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
+        self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
+
+        self.mediaItem.reload(includeRelated=1, includeRelatedCount=10)
+
+        self.setProperties()
+        self.fill()
+        hasPrev = self.fillRelated(False)
+        self.fillRoles(hasPrev)
+
+        self.setFocusId(self.PLAY_BUTTON_ID)
+
+    def setProperties(self):
+
+        self.setProperty('title', self.mediaItem.title)
         self.setProperty('summary', self.mediaItem.summary)
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
             self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
+        self.setProperty('duration', util.durationToText(self.mediaItem.duration.asInt()))
+        self.setProperty('info', '')
+        self.setProperty('date', self.mediaItem.year)
 
-        self.fill()
-        self.setFocusId(self.SUB_ITEM_LIST_ID)
+        self.setProperty('related.header', 'Related Shows')
+
+        if self.mediaItem.creator:
+            self.setProperty('directors', u'CREATOR    {0}'.format(self.mediaItem.creator))
+        elif self.mediaItem.studio:
+            self.setProperty('directors', u'STUDIO    {0}'.format(self.mediaItem.studio))
+
+        cast = u' / '.join([r.tag for r in self.mediaItem.roles()][:5])
+        castLabel = 'CAST'
+        self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
+
+        genres = self.mediaItem.genres()
+        self.setProperty('info', genres and (u' / '.join([g.tag for g in genres][:3])) or '')
+
+        self.setProperty('content.rating', self.mediaItem.contentRating)
+
+        stars = self.mediaItem.rating and str(int(round((self.mediaItem.rating.asFloat() / 10) * 5))) or None
+        self.setProperty('rating', stars and stars or '')
+
+        self.setProperty('imdb', self.mediaItem.rating)
+
+        sas = self.mediaItem.selectedAudioStream()
+        self.setProperty('audio', sas and sas.getTitle() or 'None')
+
+        sss = self.mediaItem.selectedSubtitleStream()
+        self.setProperty('subtitles', sss and sss.getTitle() or 'None')
+
+        width = (int((self.mediaItem.viewedLeafCount.asInt() / self.mediaItem.leafCount.asFloat()) * self.width)) or 1
+        self.progressImageControl.setWidth(width)
 
     def onAction(self, action):
         try:
@@ -76,6 +138,28 @@ class ShowWindow(kodigui.BaseWindow):
             self.subItemListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.RELATED_LIST_ID:
+            self.relatedClicked()
+
+    def onFocus(self, controlID):
+        if 399 < controlID < 500:
+            self.setProperty('hub.focus', str(controlID - 400))
+
+        if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
+            self.setProperty('on.extras', '')
+        elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
+            self.setProperty('on.extras', '1')
+
+    def relatedClicked(self):
+        mli = self.relatedListControl.getSelectedItem()
+        if not mli:
+            return
+
+        command = opener.open(mli.dataSource)
+
+        if command == 'HOME':
+            self.exitCommand = 'HOME'
+            self.doClose()
 
     def subItemListClicked(self):
         mli = self.subItemListControl.getSelectedItem()
@@ -116,6 +200,42 @@ class ShowWindow(kodigui.BaseWindow):
 
         self.subItemListControl.addItems(items)
 
+    def fillRelated(self, has_prev=False):
+        items = []
+        idx = 0
+        if not self.mediaItem.related:
+            return has_prev
+
+        self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
+
+        for rel in self.mediaItem.related()[0].items:
+            mli = self.createListItem(rel)
+            if mli:
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                idx += 1
+
+        self.relatedListControl.addItems(items)
+        return True
+
+    def fillRoles(self, has_prev=False):
+        items = []
+        idx = 0
+        if not self.mediaItem.roles:
+            return has_prev
+
+        self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')
+
+        for role in self.mediaItem.roles():
+            mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.ROLES_DIM), data_source=role)
+            mli.setProperty('index', str(idx))
+            items.append(mli)
+            idx += 1
+
+        self.rolesListControl.addItems(items)
+        return True
+
     def showAudioPlayer(self):
         import musicplayer
         w = musicplayer.MusicPlayerWindow.open()
@@ -124,6 +244,24 @@ class ShowWindow(kodigui.BaseWindow):
 
 class ArtistWindow(ShowWindow):
     xmlFile = 'script-plex-artist.xml'
+
+    SUB_ITEM_LIST_ID = 101
+
+    def onFirstInit(self):
+        self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
+
+        self.setProperties()
+        self.fill()
+
+        self.setFocusId(self.SUB_ITEM_LIST_ID)
+
+    def setProperties(self):
+        self.setProperty('summary', self.mediaItem.summary)
+        self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
+        self.setProperty(
+            'background',
+            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+        )
 
     @busy.dialog()
     def fill(self):

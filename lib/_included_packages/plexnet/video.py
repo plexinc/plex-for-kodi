@@ -167,19 +167,19 @@ class Movie(PlayableVideo):
     @property
     def videoStreams(self):
         if self._videoStreams is None:
-            self._videoStreams = self._findStreams('videostream')
+            self._videoStreams = self._findStreams(plexstream.PlexStream.TYPE_VIDEO)
         return self._videoStreams
 
     @property
     def audioStreams(self):
         if self._audioStreams is None:
-            self._audioStreams = self._findStreams('audiostream')
+            self._audioStreams = self._findStreams(plexstream.PlexStream.TYPE_AUDIO)
         return self._audioStreams
 
     @property
     def subtitleStreams(self):
         if self._subtitleStreams is None:
-            self._subtitleStreams = self._findStreams('subtitlestream')
+            self._subtitleStreams = self._findStreams(plexstream.PlexStream.TYPE_SUBTITLE)
         return self._subtitleStreams
 
     @property
@@ -203,6 +203,7 @@ class Show(Video):
         if self.isFullObject():
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server)
+            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server)
 
     @property
     def isWatched(self):
@@ -240,6 +241,14 @@ class Show(Video):
 @plexobjects.registerLibType
 class Season(Video):
     TYPE = 'season'
+
+    @property
+    def defaultTitle(self):
+        return self.parentTitle or self.title
+
+    @property
+    def unViewedLeafCount(self):
+        return self.leafCount - self.viewedLeafCount
 
     @property
     def isWatched(self):
@@ -286,6 +295,10 @@ class Episode(PlayableVideo):
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
+
+    @property
+    def defaultTitle(self):
+        return self.grandparentTitle or self.parentTitle or self.title
 
     @property
     def defaultThumb(self):

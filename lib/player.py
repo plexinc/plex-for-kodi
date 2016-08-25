@@ -491,7 +491,14 @@ class PlexPlayer(xbmc.Player):
         url += '&X-Plex-Platform=Chrome'
         li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
         vtype = self.video.type if self.video.vtype in ('movie', 'episode', 'musicvideo') else 'video'
-        li.setInfo('video', {'mediatype': vtype})
+        li.setInfo('video', {
+            'mediatype': vtype,
+            'title': self.video.title,
+            'episode': self.video.index.asInt(),
+            'season': self.video.parentIndex.asInt(),
+            'year': self.video.year.asInt(),
+            'plot': self.video.summary,
+        })
         self.play(url, li)
 
         if offset and not meta.isTranscoded:
@@ -516,6 +523,11 @@ class PlexPlayer(xbmc.Player):
         li.setInfo('video', {
             'mediatype': vtype,
             'playcount': index,
+            'title': video.title,
+            'episode': video.index.asInt(),
+            'season': video.parentIndex.asInt(),
+            'year': video.year.asInt(),
+            'plot': video.summary,
             'comment': 'PLEX-{0}'.format(video.ratingKey)
         })
 

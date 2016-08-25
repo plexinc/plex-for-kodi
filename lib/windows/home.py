@@ -5,19 +5,14 @@ import kodigui
 from lib import util
 from lib import backgroundthread
 from lib import colors
-from lib import player
 
 import plexnet
 from plexnet import plexapp
 
-import playlist
 import playlists
 import posters
-import subitems
-import episodes
-import preplay
-import photos
 import busy
+import opener
 
 
 class SectionHubsTask(backgroundthread.Task):
@@ -298,56 +293,7 @@ class HomeWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        if mli.dataSource.TYPE in ('episode', 'movie'):
-            self.playableClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('show'):
-            self.showClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('artist'):
-            self.artistClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('season'):
-            self.seasonClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('album'):
-            self.albumClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('photo'):
-            self.photoClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('photodirectory'):
-            self.photoDirectoryClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('playlist'):
-            self.playlistClicked(mli.dataSource)
-        elif mli.dataSource.TYPE in ('clip'):
-            player.PLAYER.playVideo(mli.dataSource)
-
-    def playableClicked(self, playable):
-        w = preplay.PrePlayWindow.open(video=playable)
-        del w
-
-    def showClicked(self, show):
-        w = subitems.ShowWindow.open(media_item=show)
-        del w
-
-    def artistClicked(self, artist):
-        w = subitems.ArtistWindow.open(media_item=artist)
-        del w
-
-    def seasonClicked(self, season):
-        w = episodes.EpisodesWindow.open(season=season)
-        del w
-
-    def albumClicked(self, album):
-        w = episodes.AlbumWindow.open(season=album)
-        del w
-
-    def photoClicked(self, photo):
-        w = photos.PhotoWindow.open(photo=photo)
-        del w
-
-    def photoDirectoryClicked(self, photodirectory):
-        w = posters.SquaresWindow.open(section=photodirectory)
-        del w
-
-    def playlistClicked(self, pl):
-        w = playlist.PlaylistWindow.open(playlist=pl)
-        del w
+        opener.open(mli.dataSource)
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()

@@ -200,6 +200,33 @@
                         <texture>script.plex/stars/$INFO[Window.Property(rating)].png</texture>
                     </control>
                 </control>
+
+                <control type="grouplist">
+                    <visible>!IsEmpty(Window.Property(imdb))</visible>
+                    <posx>1660</posx>
+                    <posy>70</posy>
+                    <width>200</width>
+                    <height>32</height>
+                    <align>right</align>
+                    <itemgap>15</itemgap>
+                    <orientation>horizontal</orientation>
+                    <usecontrolcoords>true</usecontrolcoords>
+                    <control type="image">
+                        <posy>2</posy>
+                        <width>63</width>
+                        <height>30</height>
+                        <texture>script.plex/indicators/imdb.png</texture>
+                    </control>
+                    <control type="label">
+                        <width>auto</width>
+                        <height>30</height>
+                        <font>font12</font>
+                        <align>left</align>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>$INFO[Window.Property(imdb)]</label>
+                    </control>
+                </control>
+
                 <control type="label">
                     <visible>!IsEmpty(Window.Property(directors))</visible>
                     <posx>466</posx>
@@ -342,7 +369,7 @@
                     </control>
                     <control type="list" id="400">
                         <posx>0</posx>
-                        <posy>14</posy>
+                        <posy>18</posy>
                         <width>1920</width>
                         <height>430</height>
                         <onup>300</onup>
@@ -375,7 +402,7 @@
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
-                                        <posy>169</posy>
+                                        <posy>177</posy>
                                         <width>299</width>
                                         <height>54</height>
                                         <font>font10</font>
@@ -413,7 +440,7 @@
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
-                                        <posy>169</posy>
+                                        <posy>177</posy>
                                         <width>299</width>
                                         <height>54</height>
                                         <font>font10</font>
@@ -459,7 +486,7 @@
                                         </control>
                                         <control type="textbox">
                                             <posx>0</posx>
-                                            <posy>169</posy>
+                                            <posy>177</posy>
                                             <width>299</width>
                                             <height>54</height>
                                             <font>font10</font>
@@ -504,7 +531,7 @@
                         <align>left</align>
                         <aligny>center</aligny>
                         <textcolor>FFFFFFFF</textcolor>
-                        <label>[UPPERCASE]RELATED MOVIES[/UPPERCASE]</label>
+                        <label>[UPPERCASE]$INFO[Window.Property(related.header)][/UPPERCASE]</label>
                     </control>
                     <control type="list" id="401">
                         <posx>0</posx>
@@ -562,7 +589,7 @@
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
-                                        <posy>361</posy>
+                                        <posy>369</posy>
                                         <width>244</width>
                                         <height>30</height>
                                         <font>font10</font>
@@ -633,7 +660,7 @@
                                         </control>
                                         <control type="textbox">
                                             <posx>0</posx>
-                                            <posy>427</posy>
+                                            <posy>435</posy>
                                             <width>287</width>
                                             <height>34</height>
                                             <font>font12</font>
@@ -693,7 +720,7 @@
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
-                                        <posy>361</posy>
+                                        <posy>369</posy>
                                         <width>244</width>
                                         <height>30</height>
                                         <font>font10</font>
@@ -711,7 +738,7 @@
                     <visible>IntegerGreaterThan(Container(403).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
                     <defaultcontrol>403</defaultcontrol>
                     <width>1920</width>
-                    <height>400</height>
+                    <height>410</height>
                     <control type="image">
                         <visible>!IsEmpty(Window.Property(divider.403))</visible>
                         <posx>60</posx>
@@ -736,7 +763,7 @@
                         <posx>0</posx>
                         <posy>36</posy>
                         <width>1920</width>
-                        <height>400</height>
+                        <height>410</height>
                         <onup>401</onup>
                         <ondown>404</ondown>
                         <scrolltime>200</scrolltime>
@@ -767,7 +794,7 @@
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
-                                        <posy>245</posy>
+                                        <posy>253</posy>
                                         <width>244</width>
                                         <height>64</height>
                                         <font>font10</font>
@@ -817,7 +844,7 @@
                                         </control>
                                         <control type="textbox">
                                             <posx>0</posx>
-                                            <posy>288</posy>
+                                            <posy>296</posy>
                                             <width>287</width>
                                             <height>70</height>
                                             <font>font12</font>
@@ -856,7 +883,7 @@
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
-                                        <posy>245</posy>
+                                        <posy>253</posy>
                                         <width>244</width>
                                         <height>64</height>
                                         <font>font10</font>

@@ -128,6 +128,15 @@ class JEncoder(json.JSONEncoder):
             return None
 
 
+def asFullObject(func):
+    def wrap(self, *args, **kwargs):
+        if not self.isFullObject():
+            self.reload()
+        return func(self, *args, **kwargs)
+
+    return wrap
+
+
 class PlexObject(object):
     def __init__(self, data, initpath=None, server=None, container=None):
         self.initpath = initpath
@@ -178,6 +187,10 @@ class PlexObject(object):
         return self.server.activeConnection.address
 
     @property
+    def defaultTitle(self):
+        return self.title
+
+    @property
     def defaultThumb(self):
         return self.__dict__.get('thumb') and self.thumb or PlexValue('', self)
 
@@ -188,7 +201,7 @@ class PlexObject(object):
     def reload(self, **kwargs):
         """ Reload the data for this object from PlexServer XML. """
         try:
-            data = self.server.query(self.key, params=kwargs)
+            data = self.server.query('/library/metadata/{0}'.format(self.ratingKey), params=kwargs)
         except Exception, e:
             import traceback
             traceback.print_exc()

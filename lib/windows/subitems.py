@@ -8,6 +8,7 @@ from lib import util
 import busy
 import episodes
 import opener
+import info
 
 
 class ShowWindow(kodigui.BaseWindow):
@@ -140,6 +141,8 @@ class ShowWindow(kodigui.BaseWindow):
             self.showAudioPlayer()
         elif controlID == self.RELATED_LIST_ID:
             self.relatedClicked()
+        elif controlID == self.INFO_BUTTON_ID:
+            self.infoButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -177,6 +180,17 @@ class ShowWindow(kodigui.BaseWindow):
                 self.doClose()
         finally:
             del w
+
+    def infoButtonClicked(self):
+        genres = u' / '.join([g.tag for g in util.removeDups(self.mediaItem.genres())][:6])
+        info.InfoWindow.open(
+            title=self.mediaItem.title,
+            sub_title=genres,
+            thumb=self.mediaItem.defaultThumb,
+            info=self.mediaItem.summary,
+            background=self.getProperty('background'),
+            is_square=bool(isinstance(self, ArtistWindow))
+        )
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(

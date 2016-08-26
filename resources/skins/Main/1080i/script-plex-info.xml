@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <window>
-    <defaultcontrol>100</defaultcontrol>
+    <defaultcontrol>152</defaultcontrol>
     <coordinates>
         <system>1</system>
         <posx>0</posx>
@@ -49,7 +49,7 @@
                     <width>519</width>
                     <height>519</height>
                     <texture>$INFO[Window.Property(thumb)]</texture>
-                    <aspectratio aligny="top">scale</aspectratio>
+                    <aspectratio aligny="top">keep</aspectratio>
                 </control>
                 <control type="label">
                     <posx>579</posx>
@@ -76,12 +76,29 @@
                 <control type="textbox">
                     <posx>579</posx>
                     <posy>157</posy>
+                    <pagecontrol>152</pagecontrol>
                     <width>1190</width>
                     <height>718</height>
                     <font>font13</font>
                     <align>left</align>
                     <textcolor>FFDDDDDD</textcolor>
                     <label>$INFO[Window.Property(info)]</label>
+                </control>
+                <control type="scrollbar" id="152">
+                    <left>1794</left>
+                    <top>157</top>
+                    <width>6</width>
+                    <height>718</height>
+                    <visible>true</visible>
+                    <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square.png</texturesliderbarfocus>
+                    <textureslidernib>-</textureslidernib>
+                    <textureslidernibfocus>-</textureslidernibfocus>
+                    <pulseonselect>false</pulseonselect>
+                    <orientation>vertical</orientation>
+                    <showonepage>false</showonepage>
+                    <onleft>204</onleft>
                 </control>
             </control>
         </control>
@@ -103,8 +120,8 @@
                     <posy>38</posy>
                     <width>260</width>
                     <height>75</height>
-                    <onleft>202</onleft>
-                    <ondown>50</ondown>
+                    <ondown>152</ondown>
+                    <onright>152</onright>
                     <font>font12</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <focusedcolor>FF000000</focusedcolor>

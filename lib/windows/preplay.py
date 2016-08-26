@@ -4,6 +4,7 @@ import kodigui
 
 import busy
 import opener
+import info
 
 from lib import colors
 from lib import util
@@ -32,6 +33,7 @@ class PrePlayWindow(kodigui.BaseWindow):
     HOME_BUTTON_ID = 201
     RESUME_BUTTON_ID = 301
     PLAY_BUTTON_ID = 302
+    INFO_BUTTON_ID = 304
 
     PLAYER_STATUS_BUTTON_ID = 204
 
@@ -79,6 +81,8 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.playVideo()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.INFO_BUTTON_ID:
+            self.infoButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -88,6 +92,16 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+    def infoButtonClicked(self):
+        info.InfoWindow.open(
+            title=self.video.title,
+            sub_title=self.getProperty('info'),
+            thumb=self.video.type == 'episode' and self.video.thumb or self.video.defaultThumb,
+            info=self.video.summary,
+            background=self.getProperty('background'),
+            is_square=self.video.type == 'episode'
+        )
 
     def playVideo(self, resume=False):
         player.PLAYER.playVideo(self.video, resume)

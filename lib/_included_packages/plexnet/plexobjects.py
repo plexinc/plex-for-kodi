@@ -314,6 +314,7 @@ class BasePlaylist(PlexObject):
         self._items = None
         self._shuffle = None
         self.pos = 0
+        self.startShuffled = False
 
     def __getitem__(self, idx):
         if self._shuffle:
@@ -376,8 +377,8 @@ class BasePlaylist(PlexObject):
 
 
 class TempPlaylist(BasePlaylist):
-    def __init__(self, items):
-        BasePlaylist.__init__(self, None)
+    def __init__(self, items, server):
+        BasePlaylist.__init__(self, None, server=server)
         self._items = items
 
 

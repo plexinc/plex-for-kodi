@@ -65,7 +65,8 @@ class PlaylistWindow(kodigui.BaseWindow):
         if self.playlist.playlistType == 'audio':
             self.showAudioPlayer(track=mli.dataSource, playlist=self.playlist)
         elif self.playlist.playlistType == 'video':
-            player.PLAYER.playVideoPlaylist(playlist=self.playlist, startpos=mli.pos())
+            self.playlist.pos = mli.pos()
+            player.PLAYER.playVideoPlaylist(playlist=self.playlist)
 
     def showAudioPlayer(self, **kwargs):
         w = musicplayer.MusicPlayerWindow.open(**kwargs)

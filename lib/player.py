@@ -549,7 +549,11 @@ class PlexPlayer(xbmc.Player):
             url, li = self.createTrackListItem(track, fanart, index=index)
             plist.add(url, li)
             index += 1
-        xbmc.executebuiltin('PlayerControl(RandomOff)')
+        if playlist.startShuffled:
+            plist.shuffle()
+            xbmc.executebuiltin('PlayerControl(RandomOn)')
+        else:
+            xbmc.executebuiltin('PlayerControl(RandomOff)')
         self.play(plist, startpos=startpos)
 
     def createTrackListItem(self, track, fanart=None, index=0):

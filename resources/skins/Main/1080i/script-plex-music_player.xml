@@ -38,7 +38,7 @@
             <posy>90</posy>
             <width>756</width>
             <height>756</height>
-            <texture>$INFO[Window.Property(thumb)]</texture>
+            <texture>$INFO[Player.Art(thumb)]</texture>
         </control>
 
         <control type="group">

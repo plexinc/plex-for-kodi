@@ -284,19 +284,15 @@ class Generic(plexobjects.PlexObject):
 
 
 @plexobjects.registerLibType
-class Playlist(plexobjects.PlexObject):
+class Playlist(plexobjects.BasePlaylist):
     TYPE = 'playlist'
-
-    def __init__(self, *args, **kwargs):
-        plexobjects.PlexObject.__init__(self, *args, **kwargs)
-        self._items = None
 
     def __repr__(self):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
     def items(self):
-        if not self._items:
+        if self._items is None:
             path = '/playlists/{0}/items'.format(self.ratingKey)
             self._items = plexobjects.listItems(self.server, path)
 

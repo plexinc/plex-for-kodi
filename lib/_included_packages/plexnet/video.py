@@ -231,9 +231,6 @@ class Show(Video):
     def unwatched(self):
         return self.episodes(watched=False)
 
-    def get(self, title):
-        return self.episode(title)
-
     def refresh(self):
         self.server.query('/library/metadata/%s/refresh' % self.ratingKey)
 
@@ -261,9 +258,6 @@ class Season(Video):
     def episode(self, title):
         path = self.key
         return plexobjects.findItem(self.server, path, title)
-
-    def get(self, title):
-        return self.episode(title)
 
     def show(self):
         return plexobjects.listItems(self.server, self.parentKey)[0]

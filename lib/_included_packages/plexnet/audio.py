@@ -46,9 +46,6 @@ class Artist(Audio):
         path = '/library/metadata/%s/allLeaves' % self.ratingKey
         return plexobjects.findItem(self.server, path, title)
 
-    def get(self, title):
-        return self.track(title)
-
     def isFullObject(self):
         # plex bug? http://bit.ly/1Sc2J3V
         fixed_key = self.key.replace('/children', '')
@@ -78,9 +75,6 @@ class Album(Audio):
     def track(self, title):
         path = '%s/children' % self.key
         return plexobjects.findItem(self.server, path, title)
-
-    def get(self, title):
-        return self.track(title)
 
     def isFullObject(self):
         # plex bug? http://bit.ly/1Sc2J3V

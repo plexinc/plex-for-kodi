@@ -4,6 +4,7 @@ import exceptions
 import util
 import plexapp
 import json
+import random
 
 # Search Types - Plex uses these to filter specific media types when searching.
 SEARCHTYPES = {
@@ -201,7 +202,10 @@ class PlexObject(object):
     def reload(self, **kwargs):
         """ Reload the data for this object from PlexServer XML. """
         try:
-            data = self.server.query('/library/metadata/{0}'.format(self.ratingKey), params=kwargs)
+            if self.get('ratingKey'):
+                data = self.server.query('/library/metadata/{0}'.format(self.ratingKey), params=kwargs)
+            else:
+                data = self.server.query(self.key, params=kwargs)
         except Exception, e:
             import traceback
             traceback.print_exc()
@@ -302,20 +306,85 @@ class PlexObject(object):
         return json.dumps(obj, cls=JEncoder)
 
 
+class BasePlaylist(PlexObject):
+    TYPE = 'baseplaylist'
+
+    def __init__(self, *args, **kwargs):
+        PlexObject.__init__(self, *args, **kwargs)
+        self._items = None
+        self._shuffle = None
+        self.pos = 0
+
+    def __getitem__(self, idx):
+        if self._shuffle:
+            return self.items()[self._shuffle[idx]]
+        else:
+            return self.items()[idx]
+
+    def __iter__(self):
+        if self._shuffle:
+            for i in self._shuffle:
+                yield self.items()[i]
+        else:
+            for i in self.items():
+                yield i
+
+    def __len__(self):
+        return len(self.items())
+
+    def items(self):
+        return self._items or []
+
+    def hasNext(self):
+        return self.pos < len(self.items()) - 1
+
+    def hasPrev(self):
+        return self.pos > 0
+
+    def next(self):
+        if not self.hasNext():
+            return False
+
+        self.pos += 1
+        return True
+
+    def prev(self):
+        if not self.hasPrev():
+            return False
+
+        self.pos -= 1
+        return True
+
+    def current(self):
+        return self[self.pos]
+
+    def shuffle(self, on=True, first=False):
+        if on and self.items():
+            self._shuffle = range(len(self._items))
+            random.shuffle(self._shuffle)
+            if not first:
+                self.pos = self._shuffle.index(self.pos)
+        else:
+            if self._shuffle:
+                self.pos = self._shuffle[self.pos]
+            if not first:
+                self._shuffle = None
+
+    @property
+    def isShuffled(self):
+        return bool(self._shuffle)
+
+
+class TempPlaylist(BasePlaylist):
+    def __init__(self, items):
+        BasePlaylist.__init__(self, None)
+        self._items = items
+
+
 class PlexContainer(PlexObject):
     def __init__(self, data, initpath=None, server=None, address=None):
         PlexObject.__init__(self, data, initpath, server)
         self.setAddress(address)
-
-    def __getitem__(self, idx):
-        return self.resources[idx]
-
-    def __iter__(self):
-        for i in self.resources:
-            yield i
-
-    def __len__(self):
-        return len(self.resources)
 
     def setAddress(self, address):
         if address != "/" and address.endswith("/"):
@@ -341,6 +410,16 @@ class PlexServerContainer(PlexContainer):
         PlexContainer.__init__(self, data, initpath, server, address)
         import plexserver
         self.resources = [plexserver.PlexServer(elem) for elem in data]
+
+    def __getitem__(self, idx):
+        return self.resources[idx]
+
+    def __iter__(self):
+        for i in self.resources:
+            yield i
+
+    def __len__(self):
+        return len(self.resources)
 
 
 def findItem(server, path, title):

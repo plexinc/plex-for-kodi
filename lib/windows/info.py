@@ -10,6 +10,8 @@ class InfoWindow(kodigui.BaseWindow):
     width = 1920
     height = 1080
 
+    PLAYER_STATUS_BUTTON_ID = 204
+
     THUMB_DIM_POSTER = (519, 469)
     THUMB_DIM_SQUARE = (519, 519)
 
@@ -30,3 +32,12 @@ class InfoWindow(kodigui.BaseWindow):
         self.setProperty('thumb', self.thumb.asTranscodedImageURL(*self.thumbDim))
         self.setProperty('info', self.info)
         self.setProperty('background', self.background)
+
+    def onClick(self, controlID):
+        if controlID == self.PLAYER_STATUS_BUTTON_ID:
+            self.showAudioPlayer()
+
+    def showAudioPlayer(self):
+        import musicplayer
+        w = musicplayer.MusicPlayerWindow.open()
+        del w

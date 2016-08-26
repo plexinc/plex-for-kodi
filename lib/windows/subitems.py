@@ -4,6 +4,9 @@ import kodigui
 
 from lib import colors
 from lib import util
+from lib import player
+
+from plexnet import plexobjects
 
 import busy
 import episodes
@@ -50,7 +53,8 @@ class ShowWindow(kodigui.BaseWindow):
 
     INFO_BUTTON_ID = 301
     PLAY_BUTTON_ID = 302
-    MORE_BUTTON_ID = 303
+    SHUFFLE_BUTTON_ID = 303
+    MORE_BUTTON_ID = 304
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -143,6 +147,10 @@ class ShowWindow(kodigui.BaseWindow):
             self.relatedClicked()
         elif controlID == self.INFO_BUTTON_ID:
             self.infoButtonClicked()
+        elif controlID == self.PLAY_BUTTON_ID:
+            self.playButtonClicked()
+        elif controlID == self.SHUFFLE_BUTTON_ID:
+            self.shuffleButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -191,6 +199,14 @@ class ShowWindow(kodigui.BaseWindow):
             background=self.getProperty('background'),
             is_square=bool(isinstance(self, ArtistWindow))
         )
+
+    def playButtonClicked(self, shuffle=False):
+        pl = plexobjects.TempPlaylist(self.mediaItem.episodes())
+        pl.shuffle(shuffle, first=True)
+        player.PLAYER.playVideoPlaylist(playlist=pl)
+
+    def shuffleButtonClicked(self):
+        self.playButtonClicked(shuffle=True)
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(

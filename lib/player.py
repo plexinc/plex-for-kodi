@@ -117,7 +117,6 @@ class SeekPlayerHandler(BasePlayerHandler):
         BasePlayerHandler.__init__(self, player)
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
         self.playlist = None
-        self.playlistPos = 0
         self.timelineType = 'video'
         self.reset()
 
@@ -136,30 +135,20 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.dialog.setup(duration, offset, bif_url, title, title2)
 
     def next(self):
-        if not self.playlist:
-            return False
-
-        self.playlistPos += 1
-        if self.playlistPos >= len(self.playlist.items()):
-            self.playlistPos = len(self.playlist.items()) - 1
+        if not self.playlist or not self.playlist.next():
             return False
 
         self.seeking = self.SEEK_PLAYLIST
-        self.player.playVideoPlaylist(self.playlist, self.playlistPos, handler=self)
+        self.player.playVideoPlaylist(self.playlist, handler=self)
 
         return True
 
     def prev(self):
-        if not self.playlist:
-            return False
-
-        self.playlistPos -= 1
-        if self.playlistPos < 0:
-            self.playlistPos = 0
+        if not self.playlist or not self.playlist.prev():
             return False
 
         self.seeking = self.SEEK_PLAYLIST
-        self.player.playVideoPlaylist(self.playlist, self.playlistPos, handler=self)
+        self.player.playVideoPlaylist(self.playlist, handler=self)
 
         return True
 
@@ -490,10 +479,11 @@ class PlexPlayer(xbmc.Player):
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
         url += '&X-Plex-Platform=Chrome'
         li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
-        vtype = self.video.type if self.video.vtype in ('movie', 'episode', 'musicvideo') else 'video'
+        vtype = self.video.type if self.video.type in ('movie', 'episode', 'musicvideo') else 'video'
         li.setInfo('video', {
             'mediatype': vtype,
             'title': self.video.title,
+            'tvshowtitle': self.video.grandparentTitle,
             'episode': self.video.index.asInt(),
             'season': self.video.parentIndex.asInt(),
             'year': self.video.year.asInt(),
@@ -507,12 +497,11 @@ class PlexPlayer(xbmc.Player):
         else:
             self.handler.mode = self.handler.MODE_RELATIVE
 
-    def playVideoPlaylist(self, playlist, startpos=-1, resume=True, handler=None):
+    def playVideoPlaylist(self, playlist, resume=True, handler=None):
         if not handler:
             self.handler = SeekPlayerHandler(self)
-        self.handler.playlistPos = startpos
         self.handler.playlist = playlist
-        self.video = playlist.items()[startpos]
+        self.video = playlist.current()
         self.open()
         self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0)
 
@@ -524,6 +513,7 @@ class PlexPlayer(xbmc.Player):
             'mediatype': vtype,
             'playcount': index,
             'title': video.title,
+            'tvshowtitle': video.grandparentTitle,
             'episode': video.index.asInt(),
             'season': video.parentIndex.asInt(),
             'year': video.year.asInt(),

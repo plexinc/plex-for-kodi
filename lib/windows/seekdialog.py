@@ -22,6 +22,7 @@ class SeekDialog(kodigui.BaseDialog):
     BIF_IMAGE_ID = 300
     SEEK_IMAGE_WIDTH = 1920
 
+    SHUFFLE_BUTTON_ID = 402
     SETTINGS_BUTTON_ID = 403
     PREV_BUTTON_ID = 404
     SKIP_BACK_BUTTON_ID = 405
@@ -124,6 +125,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.doClose()
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.showSettings()
+        elif controlID == self.SHUFFLE_BUTTON_ID:
+            self.shuffleButtonClicked()
         elif controlID == self.PREV_BUTTON_ID:
             self.handler.prev()
         elif controlID == self.NEXT_BUTTON_ID:
@@ -143,6 +146,11 @@ class SeekDialog(kodigui.BaseDialog):
             return True
 
         return False
+
+    def shuffleButtonClicked(self):
+        if self.handler.playlist:
+            self.handler.playlist.shuffle(not self.handler.playlist.isShuffled)
+            self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
 
     def showSettings(self):
         playersettings.showDialog(self.player.video)
@@ -177,15 +185,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.setFocusId(400)
 
         if self.handler.playlist:
-            if self.handler.playlistPos < len(self.handler.playlist.items()) - 1:
-                self.setProperty('has.next', '1')
-            else:
-                self.setProperty('has.next', '')
-
-            if self.handler.playlistPos > 0:
-                self.setProperty('has.prev', '1')
-            else:
-                self.setProperty('has.prev', '')
+            self.setProperty('has.next', self.handler.playlist.hasNext() and '1' or '')
+            self.setProperty('has.prev', self.handler.playlist.hasPrev() and '1' or '')
         else:
             self.setProperty('has.next', '')
             self.setProperty('has.prev', '')
@@ -193,6 +194,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)
         self.setProperty('video.title2', self.title2)
+        self.setProperty('is.show', (self.player.video.type == 'episode') and '1' or '')
+        self.setProperty('has.playlist', self.handler.playlist and '1' or '')
+        self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
         self.setProperty('time.duration', util.timeDisplay(self.duration))
         self.updateCurrent()
 
@@ -242,6 +246,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.title = title
         self.title2 = title2
         self.setProperty('video.title', title)
+        self.setProperty('is.show', (self.player.video.type == 'episode') and '1' or '')
+        self.setProperty('has.playlist', self.handler.playlist and '1' or '')
+        self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
         self.baseOffset = offset
         self.offset = 0
         self.duration = duration

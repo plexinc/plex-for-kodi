@@ -13,6 +13,7 @@ import subitems
 import preplay
 import photos
 import plexnet
+import musicplayer
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -112,6 +113,11 @@ class PostersWindow(kodigui.BaseWindow):
     HOME_BUTTON_ID = 201
     PLAYER_STATUS_BUTTON_ID = 204
 
+    PLAY_BUTTON_ID = 301
+    SHUFFLE_BUTTON_ID = 302
+    MORE_BUTTON_ID = 303
+    VIEWTYPE_BUTTON_ID = 304
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.section = kwargs.get('section')
@@ -168,6 +174,10 @@ class PostersWindow(kodigui.BaseWindow):
             self.keyClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.PLAY_BUTTON_ID:
+            self.playButtonClicked()
+        elif controlID == self.SHUFFLE_BUTTON_ID:
+            self.shuffleButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.KEY_LIST_ID:
@@ -202,6 +212,28 @@ class PostersWindow(kodigui.BaseWindow):
         self.showPanelControl.selectItem(mli.pos())
         self.setFocusId(self.POSTERS_PANEL_ID)
         self.setProperty('key', li.dataSource)
+
+    def playButtonClicked(self, shuffle=False):
+        items = [i.dataSource for i in self.showPanelControl]
+
+        if self.section.TYPE in ('movie', 'show'):
+            if self.section.TYPE == 'movie':
+                pl = plexnet.plexobjects.TempPlaylist(items, self.section.getServer())
+            elif self.section.TYPE == 'show':
+                pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
+            else:
+                return
+
+            pl.shuffle(shuffle, first=True)
+            player.PLAYER.playVideoPlaylist(playlist=pl)
+        elif self.section.TYPE == 'artist':
+            # pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
+            # pl.startShuffled = shuffle
+            # musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
+            pass
+
+    def shuffleButtonClicked(self):
+        self.playButtonClicked(shuffle=True)
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()

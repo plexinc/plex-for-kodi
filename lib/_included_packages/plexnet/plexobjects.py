@@ -376,6 +376,62 @@ class BasePlaylist(PlexObject):
         return bool(self._shuffle)
 
 
+class TempLeafedPlaylist(BasePlaylist):
+    TYPE = 'baseplaylist'
+
+    def __init__(self, items, server):
+        BasePlaylist.__init__(self, None, server=server)
+        self._items = items
+        self._alls = {}
+        self._numbers = []
+        self._currentAll = None
+        self._setupItems()
+
+    def _setupItems(self):
+        for pi, it in enumerate(self._items):
+            self._numbers += [(pi, ci) for ci in range(it.leafCount.asInt())]
+
+    def _getPos(self, idx):
+        if self._shuffle:
+            return self._shuffle[idx]
+        else:
+            return self._numbers[idx]
+
+    def __getitem__(self, idx):
+        pi, ci = self._getPos(idx)
+        return self._getAll(pi)[ci]
+
+    def __iter__(self):
+        if self._shuffle:
+            for pi, ci in self._shuffle:
+                yield self._getAll(pi)[ci]
+        else:
+            for pi, ci in self._numbers:
+                yield self._getAll(pi)[ci]
+
+    def _getAll(self, index):
+        if index not in self._alls:
+            self._alls[index] = self.items()[index].all()
+
+        return self._alls[index]
+
+    def __len__(self):
+        return len(self._numbers)
+
+    def shuffle(self, on=True, first=False):
+        cPos = self._getPos(self.pos)
+        if on and self.items():
+            self._shuffle = self._numbers[:]
+            random.shuffle(self._shuffle)
+            if not first:
+                self.pos = self._shuffle.index(cPos)
+        else:
+            if self._shuffle:
+                self.pos = self._numbers.index(cPos)
+            if not first:
+                self._shuffle = None
+
+
 class TempPlaylist(BasePlaylist):
     def __init__(self, items, server):
         BasePlaylist.__init__(self, None, server=server)

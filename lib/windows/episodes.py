@@ -4,6 +4,9 @@ import kodigui
 
 from lib import colors
 from lib import util
+from lib import player
+
+from plexnet import plexobjects
 
 import busy
 import preplay
@@ -27,6 +30,10 @@ class EpisodesWindow(kodigui.BaseWindow):
 
     HOME_BUTTON_ID = 201
     PLAYER_STATUS_BUTTON_ID = 204
+
+    PLAY_BUTTON_ID = 301
+    SHUFFLE_BUTTON_ID = 302
+    MORE_BUTTON_ID = 303
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -69,6 +76,18 @@ class EpisodesWindow(kodigui.BaseWindow):
             self.episodePanelClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.PLAY_BUTTON_ID:
+            self.playButtonClicked()
+        elif controlID == self.SHUFFLE_BUTTON_ID:
+            self.shuffleButtonClicked()
+
+    def playButtonClicked(self, shuffle=False):
+        pl = plexobjects.TempPlaylist(self.season.all(), self.season.getServer())
+        pl.shuffle(shuffle, first=True)
+        player.PLAYER.playVideoPlaylist(playlist=pl)
+
+    def shuffleButtonClicked(self):
+        self.playButtonClicked(shuffle=True)
 
     def episodePanelClicked(self):
         mli = self.episodePanelControl.getSelectedItem()
@@ -130,6 +149,11 @@ class EpisodesWindow(kodigui.BaseWindow):
 
 class AlbumWindow(EpisodesWindow):
     xmlFile = 'script-plex-album.xml'
+
+    def playButtonClicked(self, shuffle=False):
+        pl = plexobjects.TempPlaylist(self.season.all(), self.season.getServer())
+        pl.startShuffled = shuffle
+        musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
 
     def episodePanelClicked(self):
         mli = self.episodePanelControl.getSelectedItem()

@@ -86,7 +86,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         return not self.__eq__(other)
 
     def __str__(self):
-        return "<PlexServer {0} owned: {1} uuid: {2} version: {3}>".format(self.name, self.owned, self.uuid, self.versionNorm)
+        return "<PlexServer {0} owned: {1} uuid: {2} version: {3}>".format(repr(self.name), self.owned, self.uuid, self.versionNorm)
 
     def __repr__(self):
         return self.__str__()
@@ -252,7 +252,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if not force and self.activeConnection and self.activeConnection.state != plexresource.ResourceConnection.STATE_UNKNOWN:
             return
 
-        util.LOG('Updating reachability for {0}: connections={1}, allowFallback={2}'.format(self.name, len(self.connections), allowFallback))
+        util.LOG('Updating reachability for {0}: connections={1}, allowFallback={2}'.format(repr(self.name), len(self.connections), allowFallback))
 
         epoch = time.time()
         retrySeconds = 60
@@ -287,7 +287,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if connection.isSecure:
             self.pendingSecureRequests -= 1
 
-        util.DEBUG_LOG("Reachability result for {0}: {1} is {2}".format(self.name, connection.address, connection.state))
+        util.DEBUG_LOG("Reachability result for {0}: {1} is {2}".format(repr(self.name), connection.address, connection.state))
 
         # Noneate active connection if the state is unreachable
         if self.activeConnection and self.activeConnection.state != plexresource.ResourceConnection.STATE_REACHABLE:
@@ -307,7 +307,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             if best.isSecure or self.pendingSecureRequests <= 0:
                 self.activeConnection = best
             else:
-                util.DEBUG_LOG("Found a good connection for {0}, but holding out for better".format(self.name))
+                util.DEBUG_LOG("Found a good connection for {0}, but holding out for better".format(repr(self.name)))
 
         if self.pendingReachabilityRequests <= 0:
             # Retest the server with fallback enabled. hasFallback will only
@@ -319,7 +319,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             else:
                 self.trigger("completed:reachability")
 
-        util.LOG("Active connection for {0} is {1}".format(self.name, self.activeConnection))
+        util.LOG("Active connection for {0} is {1}".format(repr(self.name), self.activeConnection))
 
         import plexservermanager
         plexservermanager.MANAGER.updateReachabilityResult(self, bool(self.activeConnection))
@@ -349,7 +349,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
                     hasSecureConn = True
                 toKeep.append(conn)
             else:
-                util.DEBUG_LOG("Removed connection for {0} after updating connections for {1}".format(self.name, source))
+                util.DEBUG_LOG("Removed connection for {0} after updating connections for {1}".format(repr(self.name), source))
                 if conn == self.activeConnection:
                     util.DEBUG_LOG("Active connection lost")
                     self.activeConnection = None

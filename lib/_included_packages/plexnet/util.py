@@ -25,7 +25,7 @@ def resetBaseHeaders():
 
 # Core Settings
 PROJECT = 'PlexNet'                                 # name provided to plex server
-VERSION = '0.0.0a1'                                  # version of this api
+VERSION = '0.0.0a1'                                 # version of this api
 TIMEOUT = 10                                        # request timeout
 X_PLEX_CONTAINER_SIZE = 50                          # max results to return in a single search page
 
@@ -156,5 +156,10 @@ def bitrateToString(bits):
 
 
 def normalizedVersion(ver):
-    ver = '.'.join(ver.split('.')[:4]).rsplit('-', 1)[0]  # Clean the version i.e. Turn 1.2.3.4-asdf8 into 1.2.3.4
-    return verlib.suggest_normalized_version(ver)
+    try:
+        modv = '.'.join(ver.split('.')[:4]).rsplit('-', 1)[0]  # Clean the version i.e. Turn 1.2.3.4-asdf8 into 1.2.3.4
+        return verlib.suggest_normalized_version(modv)
+    except:
+        if ver:
+            ERROR()
+        return verlib.suggest_normalized_version('0.0.0')

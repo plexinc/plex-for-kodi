@@ -19,7 +19,7 @@ class PlexRequest(http.HttpRequest):
 
     def onResponse(self, event, context):
         if context.get('completionCallback'):
-            result = plexresult.PlexResult(self.server, self.path)
+            result = plexresult.PlexResult(self.server, self.server.address)
             result.setResponse(event)
             context['completionCallback'](self, result, context)
 

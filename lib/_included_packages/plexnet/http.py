@@ -74,7 +74,11 @@ class HttpRequest(object):
             return
 
         try:
-            if body is not None:
+            if self.method == 'PUT':
+                res = self.session.put(self.url, timeout=10, stream=True)
+            elif self.method == 'DELETE':
+                res = self.session.delete(self.url, timeout=10, stream=True)
+            elif body is not None:
                 if not contentType:
                     self.session.headers.update({"Content-Type": "application/x-www-form-urlencoded"})
                 else:

@@ -138,7 +138,56 @@ def asFullObject(func):
     return wrap
 
 
-class PlexObject(object):
+class Checks:
+    def isLibraryItem(self):
+        util.TEST(self.key)
+        return "/library/metadata" in self.get('key', '') or ("/playlists/" in self.get('key', '') and self.get("type", "") == "playlist")
+
+    def isVideoItem(self):
+        return False
+
+    def isMusicItem(self):
+        return False
+
+    def isOnlineItem(self):
+        return self.isChannelItem() or self.isMyPlexItem() or self.isVevoItem() or self.isIvaItem()
+
+    def isMyPlexItem(self):
+        return self.container.server.TYPE == 'MYPLEXSERVER' or self.container.identifier == 'com.plexapp.plugins.myplex'
+
+    def isChannelItem(self):
+        identifier = self.getIdentifier() or "com.plexapp.plugins.library"
+        return not self.isLibraryItem() and not self.isMyPlexItem() and identifier != "com.plexapp.plugins.library"
+
+    def isVevoItem(self):
+        return 'vevo://' in self.guid
+
+    def isIvaItem(self):
+        return 'iva://' in self.guid
+
+    def isGracenoteCollection(self):
+        return False
+
+    def isIPhoto(self):
+        return (self.title == "iPhoto" or self.container.title == "iPhoto" or (self.mediaType == "Image" or self.mediaType == "Movie"))
+
+    def isDirectory(self):
+        return self.name == "Directory" or self.name == "Playlist"
+
+    def isPhotoOrDirectoryItem(self):
+        return self.type == "photoalbum"  # or self.isPhotoItem()
+
+    def isMusicOrDirectoryItem(self):
+        return False
+
+    def isVideoOrDirectoryItem(self):
+        return False
+
+    def isSettings(self):
+        return False
+
+
+class PlexObject(object, Checks):
     def __init__(self, data, initpath=None, server=None, container=None):
         self.initpath = initpath
         self.key = None
@@ -155,6 +204,7 @@ class PlexObject(object):
         self.init(data)
 
     def _setData(self, data):
+        self.name = data.tag
         for k, v in data.attrib.items():
             setattr(self, k, PlexValue(v, self))
 
@@ -215,6 +265,22 @@ class PlexObject(object):
 
         self.initpath = self.key
         self._setData(data[0])
+
+    def getLibrarySectionId(self):
+        ID = self.get('librarySectionID')
+
+        if not ID:
+            ID = self.container.get("librarySectionID", '')
+
+        return ID
+
+    def getLibrarySectionUuid(self):
+        uuid = self.get("uuid") or self.get("librarySectionUUID")
+
+        if not uuid:
+            uuid = self.container.get("librarySectionUUID", "")
+
+        return uuid
 
     def _findLocation(self, data):
         elem = data.find('Location')

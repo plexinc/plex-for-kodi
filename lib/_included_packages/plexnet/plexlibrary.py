@@ -20,7 +20,7 @@ class Library(plexobjects.PlexObject):
             stype = elem.attrib['type']
             if stype in SECTION_TYPES:
                 cls = SECTION_TYPES[stype]
-                items.append(cls(elem, initpath=path, server=self.server))
+                items.append(cls(elem, initpath=path, server=self.server, container=self))
         return items
 
     def section(self, title=None):
@@ -84,10 +84,6 @@ class LibrarySection(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<%s:%s>' % (self.__class__.__name__, title.encode('utf8'))
 
-    def get(self, title):
-        path = '/library/sections/%s/all' % self.key
-        return plexobjects.findItem(self.server, path, title)
-
     def all(self, start=None, size=None):
         if self.key.startswith('/'):
             path = '{0}/all'.format(self.key)
@@ -107,6 +103,7 @@ class LibrarySection(plexobjects.PlexObject):
 
         return plexobjects.listItems(self.server, path, bytag=True)
 
+    @property
     def onDeck(self):
         return plexobjects.listItems(self.server, '/library/sections/%s/onDeck' % self.key)
 

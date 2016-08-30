@@ -377,6 +377,7 @@ class PlexPlayer(xbmc.Player):
 
     def init(self):
         self._closed = False
+        self._nextItem = None
         self.started = False
         self.video = None
         self.hasOSD = False
@@ -489,6 +490,7 @@ class PlexPlayer(xbmc.Player):
             'year': self.video.year.asInt(),
             'plot': self.video.summary,
         })
+        self.stopAndWait()
         self.play(url, li)
 
         if offset and not meta.isTranscoded:
@@ -526,6 +528,7 @@ class PlexPlayer(xbmc.Player):
     def playAudio(self, track, window=None, fanart=None):
         self.handler = AudioPlayerHandler(self, window)
         url, li = self.createTrackListItem(track, fanart)
+        self.stopAndWait()
         self.play(url, li)
 
     def playAlbum(self, album, startpos=-1, window=None, fanart=None):
@@ -538,6 +541,7 @@ class PlexPlayer(xbmc.Player):
             plist.add(url, li)
             index += 1
         xbmc.executebuiltin('PlayerControl(RandomOff)')
+        self.stopAndWait()
         self.play(plist, startpos=startpos)
 
     def playAudioPlaylist(self, playlist, startpos=-1, window=None, fanart=None):
@@ -554,6 +558,7 @@ class PlexPlayer(xbmc.Player):
             xbmc.executebuiltin('PlayerControl(RandomOn)')
         else:
             xbmc.executebuiltin('PlayerControl(RandomOff)')
+        self.stopAndWait()
         self.play(plist, startpos=startpos)
 
     def createTrackListItem(self, track, fanart=None, index=0):
@@ -659,10 +664,13 @@ class PlexPlayer(xbmc.Player):
             util.ERROR()
 
     def stopAndWait(self):
-        if self.isPlayingVideo():
-            util.DEBUG_LOG('Player (Recording): Stopping for external wait')
+        if self.isPlaying():
+            util.DEBUG_LOG('Player: Stopping and waiting...')
             self.stop()
-            self.handler.waitForStop()
+            while not self.xbmcMonitor.waitForAbort(0.1) and self.isPlaying():
+                pass
+            self.xbmcMonitor.waitForAbort(0.2)
+            util.DEBUG_LOG('Player: Stopping and waiting...Done')
 
     def monitor(self):
         if not self.thread or not self.thread.isAlive():

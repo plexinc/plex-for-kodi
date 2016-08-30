@@ -17,34 +17,6 @@ METADATA_RELATED_OTHER = 12
 
 
 class MediaItem(plexobjects.PlexObject):
-    def isLibraryItem(self):
-        return True
-
-    def isVideoItem(self):
-        return False
-
-    def isMusicItem(self):
-        return False
-
-    def isOnlineItem(self):
-        return self.isChannelItem() or self.isMyPlexItem() or self.isVevoItem() or self.isIvaItem()
-
-    def isMyPlexItem(self):
-        return self.container.server.TYPE == 'MYPLEXSERVER' or self.container.identifier == 'com.plexapp.plugins.myplex'
-
-    def isChannelItem(self):
-        identifier = self.getIdentifier() or "com.plexapp.plugins.library"
-        return not self.isLibraryItem() and not self.isMyPlexItem() and identifier != "com.plexapp.plugins.library"
-
-    def isVevoItem(self):
-        return 'vevo://' in self.guid
-
-    def isIvaItem(self):
-        return 'iva://' in self.guid
-
-    def sIPhoto(self):
-        return (self.title == "iPhoto" or self.container.title == "iPhoto" or (self.mediaType == "Image" or self.mediaType == "Movie"))
-
     def getIdentifier(self):
         identifier = self.identifier
 

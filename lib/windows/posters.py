@@ -13,7 +13,7 @@ import subitems
 import preplay
 import photos
 import plexnet
-import musicplayer
+from plexnet import playqueue
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -227,10 +227,27 @@ class PostersWindow(kodigui.BaseWindow):
             pl.shuffle(shuffle, first=True)
             player.PLAYER.playVideoPlaylist(playlist=pl)
         elif self.section.TYPE == 'artist':
+            class ObjectWrapper(object):
+                def __init__(self, item):
+                    self._item = item
+
+                def __getattr__(self, name):
+                    return getattr(self._item, name)
+
+                def getAbsolutePath(self, key):
+                    return '/library/sections/{0}/all'.format(key)
+
+            pqItem = ObjectWrapper(self.section)
+            # if self.sectisFolderView:
+            #     pqItem.type = pqItem.get("type") or pqItem.container.get("viewGroup")
+            # else:
+            #     pqItem.type = pqItem.type
+            pqItem.name = "Directory"
+            pqItem.isLibraryPQ = True
+            pq = playqueue.createPlayQueueForItem(pqItem)
             # pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
             # pl.startShuffled = shuffle
             # musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
-            pass
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)

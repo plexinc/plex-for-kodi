@@ -8,6 +8,7 @@ class PlexResult(http.HttpResponse):
         self.address = address
         self.container = None
         self.parsed = None
+        self.items = []
 
     def setResponse(self, event):
         self.event = event
@@ -22,6 +23,10 @@ class PlexResult(http.HttpResponse):
             data = self.getBodyXml()
             if data is not None:
                 self.container = plexobjects.PlexServerContainer(data, initpath=self.address, server=self.server, address=self.address)
+
+                for node in data:
+                    self.addItem(self.container, node)
+
                 self.parsed = True
 
         return self.parsed
@@ -34,6 +39,24 @@ class PlexResult(http.HttpResponse):
 
         if data is not None:
             self.container = plexobjects.PlexServerContainer(data, initpath=self.address, server=self.server, address=self.address)
+
+            for node in data:
+                self.addItem(self.container, node)
+
             self.parsed = True
 
         return self.parsed
+
+    def addItem(self, container, node):
+        item = plexobjects.PlexObject(node, server=self.container.server, container=self.container)
+
+        # TODO(rob): handle channel settings. We should be able to utilize
+        # the settings component with some modifications.
+        if not item.isSettings():
+            self.items.append(item)
+        else:
+            # Decrement the size and total size if applicable
+            if self.container.get("size"):
+                self.container.size = plexobjects.PlexValue(str(self.container.size.asInt() - 1))
+            if self.container.get("totalSize"):
+                self.container.totalSize = plexobjects.PlexValue(str(self.container.totalSize.asInt() - 1))

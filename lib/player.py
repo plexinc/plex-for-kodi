@@ -10,6 +10,8 @@ import util
 from plexnet import plexplayer
 from plexnet import plexapp
 
+from plexnet import signalsmixin
+
 
 class BasePlayerHandler(object):
     def __init__(self, player):
@@ -360,8 +362,11 @@ class AudioPlayerHandler(BasePlayerHandler):
 
         # Now swap the track to the correct position. This seems to be the only way to update the kodi playlist position to the current track's new position
         if swap:
+            kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=0, position2=swap)
             for x in range(swap):
-                kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=x, position2=x+1)
+                kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=x, position2=x + 1)
+
+        self.player.trigger('playlist.changed')
 
     def updatePlayQueue(self, delay=False):
         if not self.playQueue:
@@ -429,7 +434,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.updateNowPlaying(force=True)
 
 
-class PlexPlayer(xbmc.Player):
+class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     STATE_STOPPED = "stopped"
     STATE_PLAYING = "playing"
     STATE_PAUSED = "paused"

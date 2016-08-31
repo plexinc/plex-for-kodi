@@ -30,6 +30,8 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
     SELECTION_BOX = 203
 
     SHUFFLE_BUTTON_ID = 402
+    SHUFFLE_OFF_REMOTE_BUTTON_ID = 422
+    SHUFFLE_ON_REMOTE_BUTTON_ID = 432
     SETTINGS_BUTTON_ID = 403
     SKIP_BACK_BUTTON_ID = 405
     SKIP_FORWARD_BUTTON_ID = 408
@@ -51,11 +53,18 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         self.exitCommand = None
 
     def onFirstInit(self):
-        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 5)
+        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 9)
         self.setupSeekbar()
 
         self.fillPlaylist()
+        self.selectPlayingItem()
         self.setFocusId(self.PLAYLIST_LIST_ID)
+
+        if player.PLAYER.handler.playQueue:
+            self.setProperty('pq.isremote', player.PLAYER.handler.playQueue.isRemote and '1' or '')
+            self.setProperty('pq.isshuffled', player.PLAYER.handler.playQueue.isShuffled and '1' or '')
+
+        player.PLAYER.on('playlist.changed', self.playQueueCallback)
 
     def onAction(self, action):
         try:
@@ -77,6 +86,8 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
             self.seekButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.fillPlaylist()
+        elif controlID in (self.SHUFFLE_OFF_REMOTE_BUTTON_ID, self.SHUFFLE_ON_REMOTE_BUTTON_ID):
+            player.PLAYER.handler.playQueue.setShuffle()
 
     def onFocus(self, controlID):
         if controlID == self.SEEK_BUTTON_ID:
@@ -92,6 +103,33 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
 
     def onPlayBackStarted(self):
         self.setDuration()
+
+    def selectPlayingItem(self):
+        for mli in self.playlistListControl:
+            if xbmc.getCondVisibility('SubString(MusicPlayer.Comment,{0},Left)'.format(mli.dataSource['comment'].split(':', 1)[0])):
+                self.playlistListControl.selectItem(mli.pos())
+                break
+
+    def playQueueCallback(self, **kwargs):
+        self.setProperty('pq.isshuffled', player.PLAYER.handler.playQueue.isShuffled and '1' or '')
+        mli = self.playlistListControl.getSelectedItem()
+        pi = mli.dataSource
+        plexID = pi['comment'].split(':', 1)[0]
+        viewPos = self.playlistListControl.getViewPosition()
+
+        self.fillPlaylist()
+
+        for ni in self.playlistListControl:
+            if ni.dataSource['comment'].split(':', 1)[0] == plexID:
+                self.playlistListControl.selectItem(ni.pos())
+                break
+
+        xbmc.sleep(100)
+
+        newViewPos = self.playlistListControl.getViewPosition()
+        if viewPos != newViewPos:
+            diff = newViewPos - viewPos
+            self.playlistListControl.shiftView(diff, True)
 
     def seekButtonClicked(self):
         player.PLAYER.seekTime(self.selectedOffset / 1000.0)

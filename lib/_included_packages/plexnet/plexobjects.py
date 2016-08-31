@@ -140,7 +140,6 @@ def asFullObject(func):
 
 class Checks:
     def isLibraryItem(self):
-        util.TEST(self.key)
         return "/library/metadata" in self.get('key', '') or ("/playlists/" in self.get('key', '') and self.get("type", "") == "playlist")
 
     def isVideoItem(self):
@@ -374,6 +373,8 @@ class PlexObject(object, Checks):
 
 class BasePlaylist(PlexObject):
     TYPE = 'baseplaylist'
+
+    isRemote = False
 
     def __init__(self, *args, **kwargs):
         PlexObject.__init__(self, *args, **kwargs)

@@ -1,5 +1,6 @@
 import re
 import urllib
+import time
 
 import plexapp
 import plexrequest
@@ -159,6 +160,9 @@ def createPlayQueueForItem(item, children=None, options=None):
 
 
 class PlayQueue(signalsmixin.SignalsMixin):
+
+    isRemote = True
+
     def __init__(self, server, contentType, options=None):
         signalsmixin.SignalsMixin.__init__(self)
         self.id = None
@@ -181,12 +185,21 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.allowSkipNext = True
         self.allowAddToQueue = True
 
+        self.refreshOnTimeline = False
+
         self.server = server
         self.type = contentType
-        self.items = []
+        self._items = []
         self.options = options or util.AttributeDict()
 
         self.usage = None
+
+        self.refreshTimer = None
+
+        self.canceled = False
+        self.initialized = False
+
+        self.composite = plexobjects.PlexValue('', parent=self)
 
         # Add a few default options for specific PQ types
         if self.type == "audio":
@@ -194,7 +207,17 @@ class PlayQueue(signalsmixin.SignalsMixin):
         elif self.type == "photo":
             self.setRepeat(True)
 
-    def onRefreshTimer(self, timer):
+    def waitForInitialization(self):
+        start = time.time()
+        while not self.canceled and not self.initialized:
+            if time.time() - start > util.TIMEOUT:
+                return self.initialized
+            time.sleep(0.1)
+
+        return self.initialized
+
+    def onRefreshTimer(self):
+        self.refreshTimer = None
         self.refresh(True, False)
 
     def refresh(self, force=True, delay=False):
@@ -217,15 +240,18 @@ class PlayQueue(signalsmixin.SignalsMixin):
                 # accurate selected IDs) from PMS.
 
                 if not self.refreshTimer:
-                    timer = plexapp.createTimer(5000, self.onRefreshTimer)
-                    plexapp.APP.addTimer(timer)
+                    self.refreshTimer = plexapp.createTimer(5000, self.onRefreshTimer)
+                    plexapp.APP.addTimer(self.refreshTimer)
             else:
                 request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id))
                 self.addRequestOptions(request)
                 context = request.createRequestContext("refresh", callback.Callable(self.onResponse))
                 plexapp.APP.startRequest(request, context)
 
-    def setShuffle(self, shuffle):
+    def setShuffle(self, shuffle=None):
+        if shuffle is None:
+            shuffle = not self.isShuffled
+
         if self.isShuffled == shuffle:
             return
 
@@ -249,10 +275,10 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.isRepeat = repeat
 
     def moveItemUp(self, item):
-        for index in range(1, len(self.items)):
-            if self.items[index].get("playQueueItemID") == item.get("playQueueItemID"):
+        for index in range(1, len(self._items)):
+            if self._items[index].get("playQueueItemID") == item.get("playQueueItemID"):
                 if index > 1:
-                    after = self.items[index - 2]
+                    after = self._items[index - 2]
                 else:
                     after = None
 
@@ -263,9 +289,9 @@ class PlayQueue(signalsmixin.SignalsMixin):
         return False
 
     def moveItemDown(self, item):
-        for index in range(len(self.items) - 1):
-            if self.items[index].get("playQueueItemID") == item.get("playQueueItemID"):
-                after = self.items[index + 1]
+        for index in range(len(self._items) - 1):
+            if self._items[index].get("playQueueItemID") == item.get("playQueueItemID"):
+                after = self._items[index + 1]
                 self.swapItem(index)
                 self.moveItem(item, after)
                 return True
@@ -284,11 +310,11 @@ class PlayQueue(signalsmixin.SignalsMixin):
         plexapp.APP.startRequest(request, context)
 
     def swapItem(self, index, delta=1):
-        before = self.items[index]
-        after = self.items[index + delta]
+        before = self._items[index]
+        after = self._items[index + delta]
 
-        self.items[index] = after
-        self.items[index + delta] = before
+        self._items[index] = after
+        self._items[index + delta] = before
 
     def removeItem(self, item):
         request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id) + "/items/" + item.get("playQueueItemID", "-1"), "DELETE")
@@ -308,7 +334,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def onResponse(self, request, response, context):
         # Close any loading modal regardless of response status
         # Application().closeLoadingModal()
-
+        util.DEBUG_LOG('playQueue: Received response')
         if response.parseResponse():
             self.container = response.container
             # Handle an empty PQ if we have specified an pqEmptyCallable
@@ -324,7 +350,18 @@ class PlayQueue(signalsmixin.SignalsMixin):
             self.totalSize = response.container.playQueueTotalCount.asInt()
             self.windowSize = len(response.items)
             self.version = response.container.playQueueVersion.asInt()
-            self.items = response.items
+
+            itemsChanged = False
+            if len(response.items) == len(self._items):
+                for i in range(len(self._items)):
+                    if self._items[i] != response.items[i]:
+                        itemsChanged = True
+                        break
+            else:
+                itemsChanged = True
+
+            if itemsChanged:
+                self._items = response.items
 
             # Process any forced limitations
             self.allowSeek = (response.container.get("allowSeek", "") != "0")
@@ -349,8 +386,8 @@ class PlayQueue(signalsmixin.SignalsMixin):
             self.deriveIsMixed()
 
             # lastItem = None  # Not used
-            for index in range(len(self.items)):
-                item = self.items[index]
+            for index in range(len(self._items)):
+                item = self._items[index]
 
                 if not playQueueOffset and item.playQueueItemID.asInt() == pmsSelectedId:
                     playQueueOffset = response.container.playQueueSelectedItemOffset.asInt() - index + 1
@@ -362,14 +399,14 @@ class PlayQueue(signalsmixin.SignalsMixin):
                         if pqIndex < 1:
                             pqIndex = pqIndex + self.totalSize
 
-                        self.items[i].playQueueIndex = plexobjects.PlexValue(str(pqIndex))
+                        self._items[i].playQueueIndex = plexobjects.PlexValue(str(pqIndex), parent=self._items[i])
 
                 if playQueueOffset:
                     pqIndex = playQueueOffset + index
                     if pqIndex > self.totalSize:
                         pqIndex = pqIndex - self.totalSize
 
-                    item.playQueueIndex = plexobjects.PlexValue(str(pqIndex))
+                    item.playQueueIndex = plexobjects.PlexValue(str(pqIndex), parent=item)
 
                 # If we found the item that we believe is selected: we should
                 # continue to treat it as selected.
@@ -391,7 +428,11 @@ class PlayQueue(signalsmixin.SignalsMixin):
             # Create usage limitations
             self.usage = UsageFactory.createUsage(self)
 
+            self.initialized = True
             self.trigger("change")
+
+            if itemsChanged:
+                self.trigger("items.changed")
 
     def onInitResponse(self, request, response, context):
         util.DEBUG_LOG('playQueue: Received initial response')
@@ -452,7 +493,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
             self.isMixed = False
 
         lastItem = None
-        for item in self.items:
+        for item in self._items:
             if not self.isMixed:
                 if not item.get("parentKey"):
                     self.isMixed = True
@@ -460,6 +501,16 @@ class PlayQueue(signalsmixin.SignalsMixin):
                     self.isMixed = lastItem and item.get("parentKey") != lastItem.get("parentKey")
 
                 lastItem = item
+
+    def items(self):
+        return self._items
+
+    def current(self):
+        for item in self.items():
+            if item.playQueueItemID.asInt() == self.selectedId:
+                return item
+
+        return None
 
 
 def createRemotePlayQueue(item, contentType, options):
@@ -557,7 +608,6 @@ def createRemotePlayQueue(item, contentType, options):
     if options.key:
         request.addParam("key", options.key)
 
-    request.addParam('X-Plex-Client-Identifier', '335f4408-f558-46ba-b145-648ce32a26d9')
     # Add options we pass every time querying PQs
     obj.addRequestOptions(request)
 

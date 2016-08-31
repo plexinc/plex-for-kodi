@@ -30,6 +30,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
 
     SEEK_BUTTON_ID = 100
     SEEK_IMAGE_ID = 200
+    SHUFFLE_REMOTE_BUTTON_ID = 422
 
     SEEK_IMAGE_WIDTH = 1920
 
@@ -75,6 +76,8 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
             self.showPlaylist()
         elif controlID == self.SEEK_BUTTON_ID:
             self.seekButtonClicked()
+        elif controlID == self.SHUFFLE_REMOTE_BUTTON_ID:
+            self.playlist.setShuffle()
 
     def showSettings(self):
         pass
@@ -99,6 +102,8 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         else:
             self.setProperty('background', xbmc.getInfoLabel('Player.Art(fanart)'))
             self.setProperty('thumb', xbmc.getInfoLabel('Player.Art(thumb)'))
+
+        self.setProperty('pq.isRemote', (self.playlist and self.playlist.isRemote) and '1' or '')
 
     def play(self):
         if not self.track:

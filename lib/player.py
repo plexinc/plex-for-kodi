@@ -293,7 +293,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         plexID = None
         for x in range(10):  # Wait a sec (if necessary) for this to become available
             try:
-                item = kodijsonrpc.rpc.Player.GetItem(playerid=xbmc.PLAYLIST_MUSIC, properties=['comment'])['item']
+                item = kodijsonrpc.rpc.Player.GetItem(playerid=0, properties=['comment'])['item']
                 plexID = item['comment']
             except:
                 util.ERROR()
@@ -315,8 +315,65 @@ class AudioPlayerHandler(BasePlayerHandler):
             track = plexobjects.PlexObject.deSerialize(base64.urlsafe_b64decode(data.encode('utf-8')))
             pobj = plexplayer.PlexAudioPlayer(track)
             self.player.playerObject = pobj
+            self.updatePlayQueueTrack(track)
         except:
             util.ERROR()
+
+    def setPlayQueue(self, pq):
+        self.playQueue = pq
+        pq.on('items.changed', self.playQueueCallback)
+
+    def playQueueCallback(self, **kwargs):
+        plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
+        # plist.clear()
+        try:
+            citem = kodijsonrpc.rpc.Player.GetItem(playerid=0, properties=['comment'])['item']
+            plexID = citem['comment'].split(':', 1)[0]
+        except:
+            util.ERROR()
+            return
+
+        current = plist.getposition()
+        size = plist.size()
+
+        # Remove everything but the current track
+        for x in range(size - 1, current, -1):
+            kodijsonrpc.rpc.Playlist.Remove(playlistid=xbmc.PLAYLIST_MUSIC, position=x)
+        for x in range(current):
+            kodijsonrpc.rpc.Playlist.Remove(playlistid=xbmc.PLAYLIST_MUSIC, position=0)
+
+        swap = 0
+        for idx, track in enumerate(self.playQueue.items()):
+            tid = 'PLEX-{0}'.format(track.ratingKey)
+            if tid == plexID:
+                # Save the position of the current track in the pq
+                swap = idx
+                continue
+
+            url, li = self.player.createTrackListItem(track, index=idx + 1)
+
+            plist.add(url, li)
+
+        plist[0].setInfo('music', {
+            'playcount': swap + 1,
+        })
+
+        # Now swap the track to the correct position. This seems to be the only way to update the kodi playlist position to the current track's new position
+        if swap:
+            for x in range(swap):
+                kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=x, position2=x+1)
+
+    def updatePlayQueue(self, delay=False):
+        if not self.playQueue:
+            return
+
+        self.playQueue.refresh(delay=delay)
+
+    def updatePlayQueueTrack(self, track):
+        if not self.playQueue:
+            return
+
+        self.playQueue.selectedId = track.playQueueItemID or None
 
     @property
     def trueTime(self):
@@ -336,6 +393,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.updateNowPlaying(state='playing')
 
     def onPlayBackStarted(self):
+        self.updatePlayQueue(delay=True)
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
@@ -346,10 +404,12 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.updateNowPlaying(state='paused')
 
     def onPlayBackStopped(self):
+        self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.closeWindow()
 
     def onPlayBackEnded(self):
+        self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.closeWindow()
 
@@ -553,11 +613,15 @@ class PlexPlayer(xbmc.Player):
             url, li = self.createTrackListItem(track, fanart, index=index)
             plist.add(url, li)
             index += 1
-        if playlist.startShuffled:
-            plist.shuffle()
-            xbmc.executebuiltin('PlayerControl(RandomOn)')
+
+        if playlist.isRemote:
+            self.handler.setPlayQueue(playlist)
         else:
-            xbmc.executebuiltin('PlayerControl(RandomOff)')
+            if playlist.startShuffled:
+                plist.shuffle()
+                xbmc.executebuiltin('PlayerControl(RandomOn)')
+            else:
+                xbmc.executebuiltin('PlayerControl(RandomOff)')
         self.stopAndWait()
         self.play(plist, startpos=startpos)
 

@@ -13,6 +13,7 @@ import subitems
 import preplay
 import photos
 import plexnet
+import musicplayer
 from plexnet import playqueue
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -247,7 +248,12 @@ class PostersWindow(kodigui.BaseWindow):
             pq = playqueue.createPlayQueueForItem(pqItem)
             # pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
             # pl.startShuffled = shuffle
-            # musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
+            util.DEBUG_LOG('waiting for playQueue to initialize')
+            if pq.waitForInitialization():
+                util.DEBUG_LOG('playQueue initialized: {0}'.format(pq))
+                musicplayer.MusicPlayerWindow.open(track=pq.current(), playlist=pq)
+            else:
+                util.DEBUG_LOG('playQueue timed out wating for initialization')
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)

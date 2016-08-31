@@ -3,10 +3,10 @@
 import plexrequest
 
 
-class MyPlexRequest(plexrequest.PlexRequest):
+class MyPlexRequest(plexrequest.PlexServerRequest):
     def __init__(self, path):
         import myplexserver
-        plexrequest.PlexRequest.__init__(self, myplexserver.MyPlexServer(), path)
+        plexrequest.PlexServerRequest.__init__(self, myplexserver.MyPlexServer(), path)
 
         # Make sure we're always getting XML
         self.addHeader("Accept", "application/xml")

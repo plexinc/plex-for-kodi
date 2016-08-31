@@ -35,3 +35,11 @@ class PlexRequest(http.HttpRequest):
         response.parseFakeXMLResponse(data)
 
         return response
+
+
+class PlexServerRequest(PlexRequest):
+    def onResponse(self, event, context):
+        if context.get('completionCallback'):
+            result = plexresult.PlexServerResult(self.server, self.server.address)
+            result.setResponse(event)
+            context['completionCallback'](self, result, context)

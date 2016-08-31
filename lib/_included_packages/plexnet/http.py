@@ -45,6 +45,7 @@ class HttpRequest(object):
         self.hasParams = '?' in url
         self.ignoreResponse = False
         self.session = requests.session()
+        self.session.headers = util.BASE_HEADERS
         self.currentResponse = None
         self.method = method
         self.url = url

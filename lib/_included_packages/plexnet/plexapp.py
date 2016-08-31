@@ -397,7 +397,7 @@ class Timer(object):
             while not self.event.wait(self.timeout) and not self.shouldAbort():
                 self.function(*self.args, **self.kwargs)
                 if not self.repeat:
-                    break
+                    return
 
         util.DEBUG_LOG('Timer {0}: FINISHED'.format(repr(self.function)))
 

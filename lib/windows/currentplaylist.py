@@ -30,8 +30,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
     SELECTION_BOX = 203
 
     SHUFFLE_BUTTON_ID = 402
-    SHUFFLE_OFF_REMOTE_BUTTON_ID = 422
-    SHUFFLE_ON_REMOTE_BUTTON_ID = 432
+    SHUFFLE_REMOTE_BUTTON_ID = 422
     SETTINGS_BUTTON_ID = 403
     SKIP_BACK_BUTTON_ID = 405
     SKIP_FORWARD_BUTTON_ID = 408
@@ -86,7 +85,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
             self.seekButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.fillPlaylist()
-        elif controlID in (self.SHUFFLE_OFF_REMOTE_BUTTON_ID, self.SHUFFLE_ON_REMOTE_BUTTON_ID):
+        elif controlID == self.SHUFFLE_REMOTE_BUTTON_ID:
             player.PLAYER.handler.playQueue.setShuffle()
 
     def onFocus(self, controlID):

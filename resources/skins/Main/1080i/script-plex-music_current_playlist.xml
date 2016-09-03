@@ -16,13 +16,33 @@
                 <height>1080</height>
                 <texture>script.plex/home/background-fallback.jpg</texture>
             </control>
+            <control type="group">
+                <visible>false</visible>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <fadetime>1000</fadetime>
+                    <texture background="true">$INFO[Player.Art(fanart)]</texture>
+                </control>
+                <control type="image">
+                    <visible>!IsEmpty(Player.Art(fanart))</visible>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>D0404040</colordiffuse>
+                </control>
+            </control>
             <control type="image">
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
                 <height>1080</height>
                 <fadetime>1000</fadetime>
-                <texture  background="true">$INFO[Window.Property(background)]</texture>
+                <texture background="true">$INFO[Player.Art(landscape)]</texture>
             </control>
         </control>
 

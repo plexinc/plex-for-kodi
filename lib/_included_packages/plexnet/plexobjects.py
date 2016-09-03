@@ -244,6 +244,10 @@ class PlexObject(object, Checks):
     def defaultThumb(self):
         return self.__dict__.get('thumb') and self.thumb or PlexValue('', self)
 
+    @property
+    def defaultArt(self):
+        return self.__dict__.get('art') and self.art or PlexValue('', self)
+
     def refresh(self):
         import requests
         self.server.query('%s/refresh' % self.key, method=requests.put)
@@ -446,8 +450,9 @@ class BasePlaylist(PlexObject):
 class TempLeafedPlaylist(BasePlaylist):
     TYPE = 'baseplaylist'
 
-    def __init__(self, items, server):
+    def __init__(self, items, server, media_item=None):
         BasePlaylist.__init__(self, None, server=server)
+        self._mediaItem = media_item
         self._items = items
         self._alls = {}
         self._numbers = []
@@ -467,6 +472,11 @@ class TempLeafedPlaylist(BasePlaylist):
     def __getitem__(self, idx):
         pi, ci = self._getPos(idx)
         return self._getAll(pi)[ci]
+
+    def __getattr__(self, name):
+        if not self._mediaItem:
+            return BasePlaylist.__getattr__(self, name)
+        return getattr(self._mediaItem, name)
 
     def __iter__(self):
         if self._shuffle:
@@ -500,9 +510,27 @@ class TempLeafedPlaylist(BasePlaylist):
 
 
 class TempPlaylist(BasePlaylist):
-    def __init__(self, items, server):
+    def __init__(self, items, server, media_item=None):
         BasePlaylist.__init__(self, None, server=server)
         self._items = items
+        self._mediaItem = media_item
+
+    def __getattr__(self, name):
+        if not self._mediaItem:
+            return BasePlaylist.__getattr__(self, name)
+        return getattr(self._mediaItem, name)
+
+    def get(self, name, default=''):
+        if not self._mediaItem:
+            return BasePlaylist.get(self, name, default)
+
+        return self._mediaItem.get(name, default)
+
+    @property
+    def defaultArt(self):
+        if not self._mediaItem:
+            return BasePlaylist.defaultArt(self)
+        return self._mediaItem.defaultArt
 
 
 class PlexContainer(PlexObject):

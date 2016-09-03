@@ -9,7 +9,6 @@ class Audio(media.MediaItem):
         self._settings = None
         media.MediaItem.__init__(self, *args, **kwargs)
 
-
     def __eq__(self, other):
         return self.ratingKey == other.ratingKey
 
@@ -135,9 +134,6 @@ class Track(Audio):
     def thumbUrl(self):
         return self.server.url(self.parentThumb)
 
-    def transcodedThumbURL(self, w=400, h=400):
-        return self.server.getImageTranscodeURL(self.parentThumb, w, h)
-
     def album(self):
         return plexobjects.listItems(self.server, self.parentKey)[0]
 
@@ -150,3 +146,7 @@ class Track(Audio):
     @property
     def defaultThumb(self):
         return self.__dict__.get('thumb') or self.__dict__.get('parentThumb') or self.get('grandparentThumb')
+
+    @property
+    def defaultArt(self):
+        return self.__dict__.get('art') or self.get('grandparentArt')

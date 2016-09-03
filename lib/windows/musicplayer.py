@@ -87,22 +87,6 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         del w
 
     def setProperties(self):
-        if self.playlist:
-            self.setProperty(
-                'background',
-                self.playlist.composite.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
-            )
-            self.setProperty('thumb', self.playlist.composite.asTranscodedImageURL(756, 756))
-        elif self.track:
-            self.setProperty(
-                'background',
-                self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
-            )
-            self.setProperty('thumb', self.track.thumb.asTranscodedImageURL(756, 756))
-        else:
-            self.setProperty('background', xbmc.getInfoLabel('Player.Art(fanart)'))
-            self.setProperty('thumb', xbmc.getInfoLabel('Player.Art(thumb)'))
-
         self.setProperty('pq.isRemote', (self.playlist and self.playlist.isRemote) and '1' or '')
 
     def play(self):
@@ -112,8 +96,11 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         if util.trackIsPlaying(self.track):
             return
 
+        fanart = None
+        if self.playlist:
+            fanart = self.playlist.get('composite') or self.playlist.defaultArt
         # player.PLAYER.playAudio(self.track, window=self, fanart=self.getProperty('background'))
         if self.album:
-            player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=self.getProperty('background'))
+            player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=fanart)
         else:
-            player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=self.getProperty('background'))
+            player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=fanart)

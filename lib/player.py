@@ -362,8 +362,8 @@ class AudioPlayerHandler(BasePlayerHandler):
 
         # Now swap the track to the correct position. This seems to be the only way to update the kodi playlist position to the current track's new position
         if swap:
-            kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=0, position2=swap)
-            for x in range(swap):
+            kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=0, position2=swap + 1)
+            for x in range(swap + 1):
                 kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=x, position2=x + 1)
 
         self.player.trigger('playlist.changed')
@@ -647,6 +647,11 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'duration': int(track.duration.asInt() / 1000),
             'playcount': index,
             'comment': 'PLEX-{0}:{1}'.format(track.ratingKey, data)
+        })
+        art = fanart or track.defaultArt
+        li.setArt({
+            'fanart': art.asTranscodedImageURL(1920, 1080),
+            'landscape': art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
         })
         if fanart:
             li.setArt({'fanart': fanart})

@@ -287,7 +287,7 @@ class ArtistWindow(ShowWindow):
         self.setFocusId(self.SUB_ITEM_LIST_ID)
 
     def playButtonClicked(self, shuffle=False):
-        pl = plexobjects.TempPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
+        pl = plexobjects.TempPlaylist(self.mediaItem.all(), self.mediaItem.getServer(), self.mediaItem)
         pl.startShuffled = shuffle
         musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
 

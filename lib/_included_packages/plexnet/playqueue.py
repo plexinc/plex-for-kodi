@@ -343,8 +343,9 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def onResponse(self, request, response, context):
         # Close any loading modal regardless of response status
         # Application().closeLoadingModal()
-        util.DEBUG_LOG('playQueue: Received response - {0} items'.format(len(response.items)))
+        util.DEBUG_LOG('playQueue: Received response')
         if response.parseResponse():
+            util.DEBUG_LOG('playQueue: {0} items'.format(len(response.items)))
             self.container = response.container
             # Handle an empty PQ if we have specified an pqEmptyCallable
             if self.options and self.options.pqEmptyCallable:

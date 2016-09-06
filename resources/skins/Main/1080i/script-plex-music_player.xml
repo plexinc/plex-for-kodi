@@ -228,7 +228,6 @@
                     <font>font12</font>
                     <texturefocus>-</texturefocus>
                     <texturenofocus>-</texturenofocus>
-                    <onclick>PlayerControl(Repeat)</onclick>
                     <label> </label>
                 </control>
                 <control type="group">

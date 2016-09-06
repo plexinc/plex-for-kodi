@@ -74,9 +74,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         kodigui.BaseDialog.onAction(self, action)
 
     def onClick(self, controlID):
-        if controlID == self.SETTINGS_BUTTON_ID:
-            self.showSettings()
-        elif controlID == self.PLAYLIST_BUTTON_ID:
+        if controlID == self.PLAYLIST_BUTTON_ID:
             self.showPlaylist()
         elif controlID == self.SEEK_BUTTON_ID:
             self.seekButtonClicked()
@@ -118,9 +116,6 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
                 return
 
         xbmc.executebuiltin('PlayerControl(Next)')
-
-    def showSettings(self):
-        pass
 
     def showPlaylist(self):
         w = currentplaylist.CurrentPlaylistWindow.open()

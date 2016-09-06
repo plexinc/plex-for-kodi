@@ -29,11 +29,11 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
     SELECTION_INDICATOR = 202
     SELECTION_BOX = 203
 
+    REPEAT_BUTTON_ID = 401
     SHUFFLE_BUTTON_ID = 402
     SHUFFLE_REMOTE_BUTTON_ID = 422
-    SETTINGS_BUTTON_ID = 403
-    SKIP_BACK_BUTTON_ID = 405
-    SKIP_FORWARD_BUTTON_ID = 408
+    SKIP_PREV_BUTTON_ID = 404
+    SKIP_NEXT_BUTTON_ID = 409
     PLAYLIST_BUTTON_ID = 410
 
     SEEK_IMAGE_WIDTH = 819
@@ -59,10 +59,9 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         self.selectPlayingItem()
         self.setFocusId(self.PLAYLIST_LIST_ID)
 
-        if player.PLAYER.handler.playQueue:
-            self.setProperty('pq.isremote', player.PLAYER.handler.playQueue.isRemote and '1' or '')
-            self.setProperty('pq.isshuffled', player.PLAYER.handler.playQueue.isShuffled and '1' or '')
-
+        self.updateProperties()
+        if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue.isRemote:
+            player.PLAYER.handler.playQueue.on('change', self.updateProperties)
         player.PLAYER.on('playlist.changed', self.playQueueCallback)
 
     def onAction(self, action):
@@ -87,6 +86,12 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
             self.fillPlaylist()
         elif controlID == self.SHUFFLE_REMOTE_BUTTON_ID:
             player.PLAYER.handler.playQueue.setShuffle()
+        elif controlID == self.REPEAT_BUTTON_ID:
+            self.repeatButtonClicked()
+        elif controlID == self.SKIP_PREV_BUTTON_ID:
+            self.skipPrevButtonClicked()
+        elif controlID == self.SKIP_NEXT_BUTTON_ID:
+            self.skipNextButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.SEEK_BUTTON_ID:
@@ -102,6 +107,36 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
 
     def onPlayBackStarted(self):
         self.setDuration()
+
+    def repeatButtonClicked(self):
+        if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue:
+            if xbmc.getCondVisibility('Playlist.IsRepeatOne'):
+                xbmc.executebuiltin('PlayerControl(RepeatOff)')
+            elif player.PLAYER.handler.playQueue.isRepeat:
+                player.PLAYER.handler.playQueue.setRepeat(False)
+                player.PLAYER.handler.playQueue.refresh(force=True)
+                xbmc.executebuiltin('PlayerControl(RepeatOne)')
+            else:
+                player.PLAYER.handler.playQueue.setRepeat(True)
+                player.PLAYER.handler.playQueue.refresh(force=True)
+        else:
+            xbmc.executebuiltin('PlayerControl(Repeat)')
+
+    def skipPrevButtonClicked(self):
+        if not xbmc.getCondVisibility('MusicPlayer.HasPrevious') and player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue:
+            util.DEBUG_LOG('MusicPlayer: No previous in Kodi playlist - refreshing remote PQ')
+            if not player.PLAYER.handler.playQueue.refresh(force=True, wait=True):
+                return
+
+        xbmc.executebuiltin('PlayerControl(Previous)')
+
+    def skipNextButtonClicked(self):
+        if not xbmc.getCondVisibility('MusicPlayer.HasNext') and player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue.isRemote:
+            util.DEBUG_LOG('MusicPlayer: No next in Kodi playlist - refreshing remote PQ')
+            if not player.PLAYER.handler.playQueue.refresh(force=True, wait=True):
+                return
+
+        xbmc.executebuiltin('PlayerControl(Next)')
 
     def selectPlayingItem(self):
         for mli in self.playlistListControl:
@@ -241,3 +276,15 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         else:
             self.selectionBox.setPosition(-self.selectionBoxHalf, 0)
         self.setProperty('time.selection', util.simplifiedTimeDisplay(int(self.selectedOffset)))
+
+    def updateProperties(self, **kwargs):
+        pq = player.PLAYER.handler.playQueue
+        if pq:
+            if pq.isRemote:
+                self.setProperty('pq.isRemote', '1')
+                self.setProperty('pq.hasnext', pq.allowSkipNext and '1' or '')
+                self.setProperty('pq.hasprev', pq.allowSkipPrev and '1' or '')
+                self.setProperty('pq.repeat', pq.isRepeat and '1' or '')
+                self.setProperty('pq.shuffled', pq.isShuffled and '1' or '')
+            else:
+                self.setProperties(('pq.isRemote', 'pq.hasnext', 'pq.hasprev', 'pq.repeat', 'pq.shuffled'), '')

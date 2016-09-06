@@ -44,7 +44,7 @@ class App(signalsmixin.SignalsMixin):
     def startRequest(self, request, context, body=None, contentType=None):
         context.request = request
 
-        started = request.startAsync(body, contentType, context)
+        started = request.startAsync(body=body, contentType=contentType, context=context)
 
         if started:
             requestID = context.request.getIdentity()

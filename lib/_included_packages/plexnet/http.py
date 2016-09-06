@@ -73,7 +73,6 @@ class HttpRequest(object):
     def _startAsync(self, body=None, contentType=None, context=None):
         if self._cancel:
             return
-
         try:
             if self.method == 'PUT':
                 res = self.session.put(self.url, timeout=10, stream=True)
@@ -85,7 +84,7 @@ class HttpRequest(object):
                 else:
                     self.session.headers.update({"Content-Type": mimetypes.guess_type(contentType)})
 
-                res = self.session.post(self.url, data=body, timeout=10, stream=True)
+                res = self.session.post(self.url, data=body or None, timeout=10, stream=True)
             else:
                 res = self.session.get(self.url, timeout=10, stream=True)
 
@@ -195,7 +194,7 @@ class HttpRequest(object):
         # Log the real request method
         method = self.method
         if not method:
-            method = body and "POST" or "GET"
+            method = body is not None and "POST" or "GET"
         util.LOG(
             "Starting request: {0} {1} (async={2} timeout={3})".format(method, re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', self.url), async, timeout)
         )

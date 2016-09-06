@@ -146,8 +146,8 @@ def createPlayQueueForItem(item, children=None, options=None):
         return None
 
     obj.item = item
-    if not options:
-        options = PlayOptions()
+
+    options = PlayOptions(options or {})
 
     if obj.canCreateRemotePlayQueue():
         return createRemotePlayQueue(item, contentType, options)
@@ -180,10 +180,10 @@ class PlayQueue(signalsmixin.SignalsMixin):
         # Forced limitations
         self.allowShuffle = False
         self.allowSeek = True
-        self.allowRepeat = True
-        self.allowSkipPrev = True
-        self.allowSkipNext = True
-        self.allowAddToQueue = True
+        self.allowRepeat = False
+        self.allowSkipPrev = False
+        self.allowSkipNext = False
+        self.allowAddToQueue = False
 
         self.refreshOnTimeline = False
 
@@ -200,12 +200,16 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.initialized = False
 
         self.composite = plexobjects.PlexValue('', parent=self)
+        self.defaultArt = plexobjects.PlexValue('', parent=self)
 
         # Add a few default options for specific PQ types
         if self.type == "audio":
             self.options.includeRelated = True
         elif self.type == "photo":
             self.setRepeat(True)
+
+    def get(self, name):
+        return getattr(self, name, plexobjects.PlexValue('', parent=self))
 
     def waitForInitialization(self):
         start = time.time()
@@ -220,11 +224,13 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.refreshTimer = None
         self.refresh(True, False)
 
-    def refresh(self, force=True, delay=False):
+    def refresh(self, force=True, delay=False, wait=False):
         # Ignore refreshing local PQs
         if self.isLocal():
             return
 
+        if wait:
+            self.initialized = False
         # We refresh our play queue if the caller insists or if we only have a
         # portion of our play queue loaded. In particular, this means that we don't
         # refresh the play queue if we're asked to refresh because a new track is
@@ -247,6 +253,9 @@ class PlayQueue(signalsmixin.SignalsMixin):
                 self.addRequestOptions(request)
                 context = request.createRequestContext("refresh", callback.Callable(self.onResponse))
                 plexapp.APP.startRequest(request, context)
+
+        if wait:
+            return self.waitForInitialization()
 
     def setShuffle(self, shuffle=None):
         if shuffle is None:
@@ -334,7 +343,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def onResponse(self, request, response, context):
         # Close any loading modal regardless of response status
         # Application().closeLoadingModal()
-        util.DEBUG_LOG('playQueue: Received response')
+        util.DEBUG_LOG('playQueue: Received response - {0} items'.format(len(response.items)))
         if response.parseResponse():
             self.container = response.container
             # Handle an empty PQ if we have specified an pqEmptyCallable
@@ -364,13 +373,13 @@ class PlayQueue(signalsmixin.SignalsMixin):
                 self._items = response.items
 
             # Process any forced limitations
-            self.allowSeek = (response.container.get("allowSeek", "") != "0")
+            self.allowSeek = response.container.allowSeek.asBool()
             self.allowShuffle = (
-                self.totalSize > 1 and response.container.get("allowShuffle", "") != "0" and not response.container.playQueueLastAddedItemID
+                self.totalSize > 1 and response.container.allowShuffle.asBool() and not response.container.playQueueLastAddedItemID
             )
-            self.allowRepeat = (response.container.get("allowRepeat", "") != "0")
-            self.allowSkipPrev = (self.totalSize > 1 and response.container.get("allowSkipPrevious", "") != "0")
-            self.allowSkipNext = (self.totalSize > 1 and response.container.get("allowSkipNext", "") != "0")
+            self.allowRepeat = response.container.allowRepeat.asBool()
+            self.allowSkipPrev = self.totalSize > 1 and response.container.allowSkipPrevious.asBool()
+            self.allowSkipNext = self.totalSize > 1 and response.container.allowSkipNext.asBool()
 
             # Figure out the selected track index and offset. PMS tries to make some
             # of this easy, but it might not realize that we've advanced to a new
@@ -433,16 +442,6 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
             if itemsChanged:
                 self.trigger("items.changed")
-
-    def onInitResponse(self, request, response, context):
-        util.DEBUG_LOG('playQueue: Received initial response')
-        if not response.parseResponse():
-            return
-
-        for item in response.items:
-            if item.type == 'track' and self.type == 'audio':
-                createPlayQueueForId(item.id, play_queue=self)
-                return
 
     def isWindowed(self):
         return (not self.isLocal() and (self.totalSize > self.windowSize or self.forcedWindow))
@@ -524,9 +523,10 @@ def createRemotePlayQueue(item, contentType, options):
     path = None
 
     if not options.key:
-        if item.onDeck and len(item.onDeck) > 0:
-            options.key = item.onDeck[0].getAbsolutePath("key")
-        elif not item.isDirectory():
+        # if item.onDeck and len(item.onDeck) > 0:
+        #     options.key = item.onDeck[0].getAbsolutePath("key")
+        # el
+        if not item.isDirectory():
             options.key = item.get("key")
 
     # If we're asked to play unwatched, ignore the option unless we are unwatched.
@@ -590,7 +590,7 @@ def createRemotePlayQueue(item, contentType, options):
                 path = regex.sub("\1" + convert[key] + "=", path)
 
         util.DEBUG_LOG("playQueue path: " + str(path))
-        uri = urllib.quote_plus(uri + itemType + "/" + path)
+        uri = uri + itemType + "/" + urllib.quote_plus(path)
 
     util.DEBUG_LOG("playQueue uri: " + str(uri))
 
@@ -599,10 +599,14 @@ def createRemotePlayQueue(item, contentType, options):
 
     request.addParam(not options.isPlaylist and "uri" or "playlistID", uri)
     request.addParam("type", contentType)
+    request.addParam('X-Plex-Client-Identifier', plexapp.INTERFACE.getGlobal('clientIdentifier'))
 
     # Add options we pass once during PQ creation
     if options.shuffle:
         request.addParam("shuffle", "1")
+        options.key = None
+    else:
+        request.addParam("shuffle", "0")
         options.key = None
 
     if options.key:
@@ -611,19 +615,14 @@ def createRemotePlayQueue(item, contentType, options):
     # Add options we pass every time querying PQs
     obj.addRequestOptions(request)
 
-    context = request.createRequestContext("create", callback.Callable(obj.onInitResponse))
-    plexapp.APP.startRequest(request, context)
+    context = request.createRequestContext("create", callback.Callable(obj.onResponse))
+    plexapp.APP.startRequest(request, context, body='')
 
     return obj
 
 
-def createPlayQueueForId(id, server=None, contentType=None, play_queue=None):
-    if play_queue:
-        obj = play_queue
-        server = play_queue.server
-    else:
-        obj = PlayQueue(server, contentType)
-
+def createPlayQueueForId(id, server=None, contentType=None):
+    obj = PlayQueue(server, contentType)
     obj.id = id
 
     request = plexrequest.PlexRequest(server, "/playQueues/" + str(id))

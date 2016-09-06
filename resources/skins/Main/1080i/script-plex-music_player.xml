@@ -231,53 +231,59 @@
                     <onclick>PlayerControl(Repeat)</onclick>
                     <label> </label>
                 </control>
-                <control type="image">
-                    <visible>!Control.HasFocus(401) + !Playlist.IsRepeat + !Playlist.IsRepeatOne</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>125</width>
-                    <height>101</height>
-                    <texture colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texture>
+                <control type="group">
+                    <visible>!Control.HasFocus(401)</visible>
+                    <control type="image">
+                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeatOne</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-one.png</texture>
+                    </control>
                 </control>
-                <control type="image">
-                    <visible>Control.HasFocus(401) + !Playlist.IsRepeat + !Playlist.IsRepeatOne</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>125</width>
-                    <height>101</height>
-                    <texture colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texture>
-                </control>
-                <control type="image">
-                    <visible>!Control.HasFocus(401) + Playlist.IsRepeat</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>125</width>
-                    <height>101</height>
-                    <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat.png</texture>
-                </control>
-                <control type="image">
-                    <visible>Control.HasFocus(401) + Playlist.IsRepeat</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>125</width>
-                    <height>101</height>
-                    <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-focus.png</texture>
-                </control>
-                <control type="image">
-                    <visible>!Control.HasFocus(401) + Playlist.IsRepeatOne</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>125</width>
-                    <height>101</height>
-                    <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-one.png</texture>
-                </control>
-                <control type="image">
-                    <visible>Control.HasFocus(401) + Playlist.IsRepeatOne</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>125</width>
-                    <height>101</height>
-                    <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-one-focus.png</texture>
+                <control type="group">
+                    <visible>Control.HasFocus(401)</visible>
+                    <control type="image">
+                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-focus.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeatOne</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-one-focus.png</texture>
+                    </control>
                 </control>
             </control>
 
@@ -301,23 +307,68 @@
                 <label> </label>
             </control>
 
-            <control type="button" id="422">
+            <control type="group" id="432">
                 <visible>!IsEmpty(Window.Property(pq.isremote))</visible>
-                <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
-                <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
-                <hitrect x="28" y="28" w="69" h="45" />
-                <posx>30</posx>
-                <posy>0</posy>
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false" condition="Control.HasFocus(422)">Conditional</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false" condition="!Control.HasFocus(422)">Conditional</animation>
                 <width>125</width>
                 <height>101</height>
-                <font>font12</font>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texturefocus>
-                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
-                <label> </label>
+                <control type="button" id="422">
+                    <hitrect x="28" y="28" w="69" h="45" />
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>125</width>
+                    <height>101</height>
+                    <onup>100</onup>
+                    <onright>404</onright>
+                    <onleft>401</onleft>
+                    <font>font12</font>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <label> </label>
+                </control>
+                <control type="group">
+                    <visible>IsEmpty(Window.Property(pq.shuffled))</visible>
+                    <control type="image">
+                        <visible>!Control.HasFocus(422)</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Control.HasFocus(422)</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texture>
+                    </control>
+                </control>
+                <control type="group">
+                    <visible>!IsEmpty(Window.Property(pq.shuffled))</visible>
+                    <control type="image">
+                        <visible>!Control.HasFocus(422)</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/shuffle.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Control.HasFocus(422)</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/shuffle-focus.png</texture>
+                    </control>
+                </control>
             </control>
 
             <control type="button" id="404">
-                <enable>MusicPlayer.HasPrevious</enable>
+                <enable>MusicPlayer.HasPrevious | !IsEmpty(Window.Property(pq.hasprevious))</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -328,7 +379,6 @@
                 <font>font12</font>
                 <texturefocus flipx="true" colordiffuse="FFE5A00D">script.plex/buttons/next-focus.png</texturefocus>
                 <texturenofocus flipx="true" colordiffuse="99FFFFFF">script.plex/buttons/next.png</texturenofocus>
-                <onclick>PlayerControl(Previous)</onclick>
                 <label> </label>
             </control>
             <control type="togglebutton" id="406">
@@ -364,7 +414,7 @@
                 <label> </label>
             </control>
             <control type="button" id="409">
-                <enable>MusicPlayer.HasNext</enable>
+                <enable>MusicPlayer.HasNext | !IsEmpty(Window.Property(pq.hasnext))</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -375,7 +425,6 @@
                 <font>font12</font>
                 <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/next-focus.png</texturefocus>
                 <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/next.png</texturenofocus>
-                <onclick>PlayerControl(Next)</onclick>
                 <label> </label>
             </control>
 

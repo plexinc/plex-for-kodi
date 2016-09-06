@@ -236,7 +236,7 @@ class PostersWindow(kodigui.BaseWindow):
                     return getattr(self._item, name)
 
                 def getAbsolutePath(self, key):
-                    return '/library/sections/{0}/all'.format(key)
+                    return '/library/sections/{0}/all'.format(self._item.key)
 
             pqItem = ObjectWrapper(self.section)
             # if self.sectisFolderView:
@@ -245,7 +245,7 @@ class PostersWindow(kodigui.BaseWindow):
             #     pqItem.type = pqItem.type
             pqItem.name = "Directory"
             pqItem.isLibraryPQ = True
-            pq = playqueue.createPlayQueueForItem(pqItem)
+            pq = playqueue.createPlayQueueForItem(pqItem, options={'shuffle': shuffle})
             # pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
             # pl.startShuffled = shuffle
             util.DEBUG_LOG('waiting for playQueue to initialize')

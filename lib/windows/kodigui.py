@@ -64,6 +64,15 @@ class BaseFunctions:
     def generate(self):
         return None
 
+    def setProperties(self, prop_list, val_list_or_val):
+        if isinstance(val_list_or_val, list) or isinstance(val_list_or_val, tuple):
+            val_list = val_list_or_val
+        else:
+            val_list = [val_list_or_val] * len(prop_list)
+
+        for prop, val in zip(prop_list, val_list):
+            self.setProperty(prop, val)
+
 
 class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
     def __init__(self, *args, **kwargs):

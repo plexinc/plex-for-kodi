@@ -339,18 +339,17 @@ class AudioPlayerHandler(BasePlayerHandler):
         size = plist.size()
 
         # Remove everything but the current track
-        for x in range(size - 1, current, -1):
+        for x in range(size - 1, current, -1):  # First everything with a greater position
             kodijsonrpc.rpc.Playlist.Remove(playlistid=xbmc.PLAYLIST_MUSIC, position=x)
-        for x in range(current):
+        for x in range(current):  # Then anything with a lesser position
             kodijsonrpc.rpc.Playlist.Remove(playlistid=xbmc.PLAYLIST_MUSIC, position=0)
 
-        swap = 0
+        swap = None
         for idx, track in enumerate(self.playQueue.items()):
             tid = 'PLEX-{0}'.format(track.ratingKey)
             if tid == plexID:
                 # Save the position of the current track in the pq
                 swap = idx
-                continue
 
             url, li = self.player.createTrackListItem(track, index=idx + 1)
 
@@ -361,10 +360,9 @@ class AudioPlayerHandler(BasePlayerHandler):
         })
 
         # Now swap the track to the correct position. This seems to be the only way to update the kodi playlist position to the current track's new position
-        if swap:
+        if swap is not None:
             kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=0, position2=swap + 1)
-            for x in range(swap + 1):
-                kodijsonrpc.rpc.Playlist.Swap(playlistid=xbmc.PLAYLIST_MUSIC, position1=x, position2=x + 1)
+            kodijsonrpc.rpc.Playlist.Remove(playlistid=xbmc.PLAYLIST_MUSIC, position=0)
 
         self.player.trigger('playlist.changed')
 

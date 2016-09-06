@@ -2,7 +2,6 @@ import xbmc
 import xbmcgui
 import kodigui
 import currentplaylist
-from lib import colors
 from lib import player
 from lib import util
 
@@ -31,6 +30,9 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
     SEEK_BUTTON_ID = 100
     SEEK_IMAGE_ID = 200
     SHUFFLE_REMOTE_BUTTON_ID = 422
+    REPEAT_BUTTON_ID = 401
+    SKIP_PREV_BUTTON_ID = 404
+    SKIP_NEXT_BUTTON_ID = 409
 
     SEEK_IMAGE_WIDTH = 1920
 
@@ -49,10 +51,12 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
             self.setDuration()
 
     def onFirstInit(self):
+        if self.playlist and self.playlist.isRemote:
+            self.playlist.on('change', self.updateProperties)
         self.setupSeekbar()
         self.selectionBoxMax = self.SEEK_IMAGE_WIDTH - (self.selectionBoxHalf - 3)
 
-        self.setProperties()
+        self.updateProperties()
         self.play()
         self.setFocusId(406)
 
@@ -78,6 +82,42 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
             self.seekButtonClicked()
         elif controlID == self.SHUFFLE_REMOTE_BUTTON_ID:
             self.playlist.setShuffle()
+        elif controlID == self.REPEAT_BUTTON_ID:
+            self.repeatButtonClicked()
+        elif controlID == self.SKIP_PREV_BUTTON_ID:
+            self.skipPrevButtonClicked()
+        elif controlID == self.SKIP_NEXT_BUTTON_ID:
+            self.skipNextButtonClicked()
+
+    def repeatButtonClicked(self):
+        if self.playlist and self.playlist.isRemote:
+            if xbmc.getCondVisibility('Playlist.IsRepeatOne'):
+                xbmc.executebuiltin('PlayerControl(RepeatOff)')
+            elif self.playlist.isRepeat:
+                self.playlist.setRepeat(False)
+                self.playlist.refresh(force=True)
+                xbmc.executebuiltin('PlayerControl(RepeatOne)')
+            else:
+                self.playlist.setRepeat(True)
+                self.playlist.refresh(force=True)
+        else:
+            xbmc.executebuiltin('PlayerControl(Repeat)')
+
+    def skipPrevButtonClicked(self):
+        if not xbmc.getCondVisibility('MusicPlayer.HasPrevious') and self.playlist and self.playlist.isRemote:
+            util.DEBUG_LOG('MusicPlayer: No previous in Kodi playlist - refreshing remote PQ')
+            if not self.playlist.refresh(force=True, wait=True):
+                return
+
+        xbmc.executebuiltin('PlayerControl(Previous)')
+
+    def skipNextButtonClicked(self):
+        if not xbmc.getCondVisibility('MusicPlayer.HasNext') and self.playlist and self.playlist.isRemote:
+            util.DEBUG_LOG('MusicPlayer: No next in Kodi playlist - refreshing remote PQ')
+            if not self.playlist.refresh(force=True, wait=True):
+                return
+
+        xbmc.executebuiltin('PlayerControl(Next)')
 
     def showSettings(self):
         pass
@@ -86,8 +126,16 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         w = currentplaylist.CurrentPlaylistWindow.open()
         del w
 
-    def setProperties(self):
-        self.setProperty('pq.isRemote', (self.playlist and self.playlist.isRemote) and '1' or '')
+    def updateProperties(self, **kwargs):
+        if self.playlist:
+            if self.playlist.isRemote:
+                self.setProperty('pq.isRemote', '1')
+                self.setProperty('pq.hasnext', self.playlist.allowSkipNext and '1' or '')
+                self.setProperty('pq.hasprev', self.playlist.allowSkipPrev and '1' or '')
+                self.setProperty('pq.repeat', self.playlist.isRepeat and '1' or '')
+                self.setProperty('pq.shuffled', self.playlist.isShuffled and '1' or '')
+            else:
+                self.setProperties(('pq.isRemote', 'pq.hasnext', 'pq.hasprev', 'pq.repeat', 'pq.shuffled'), '')
 
     def play(self):
         if not self.track:

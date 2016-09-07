@@ -1,11 +1,10 @@
-from lib import player
-
 import preplay
 import subitems
 import episodes
 import photos
 import posters
 import playlist
+import videoplayer
 
 
 def open(obj):
@@ -26,7 +25,7 @@ def open(obj):
     elif obj.TYPE in ('playlist'):
         return playlistClicked(obj)
     elif obj.TYPE in ('clip'):
-        return player.PLAYER.playVideo(obj)
+        videoplayer.play(video=obj)
 
 
 def handleOpen(winclass, **kwargs):

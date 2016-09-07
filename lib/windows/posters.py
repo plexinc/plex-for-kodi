@@ -14,6 +14,7 @@ import preplay
 import photos
 import plexnet
 import musicplayer
+import videoplayer
 from plexnet import playqueue
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -215,19 +216,7 @@ class PostersWindow(kodigui.BaseWindow):
         self.setProperty('key', li.dataSource)
 
     def playButtonClicked(self, shuffle=False):
-        items = [i.dataSource for i in self.showPanelControl]
-
-        if self.section.TYPE in ('movie', 'show'):
-            if self.section.TYPE == 'movie':
-                pl = plexnet.plexobjects.TempPlaylist(items, self.section.getServer())
-            elif self.section.TYPE == 'show':
-                pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
-            else:
-                return
-
-            pl.shuffle(shuffle, first=True)
-            player.PLAYER.playVideoPlaylist(playlist=pl)
-        elif self.section.TYPE == 'artist':
+        if self.section.TYPE in ('movie', 'show', 'artist'):
             class ObjectWrapper(object):
                 def __init__(self, item):
                     self._item = item
@@ -249,9 +238,12 @@ class PostersWindow(kodigui.BaseWindow):
             # pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
             # pl.startShuffled = shuffle
             util.DEBUG_LOG('waiting for playQueue to initialize')
-            if pq.waitForInitialization():
+            if busy.widthDialog(pq.waitForInitialization, None):
                 util.DEBUG_LOG('playQueue initialized: {0}'.format(pq))
-                musicplayer.MusicPlayerWindow.open(track=pq.current(), playlist=pq)
+                if self.section.TYPE == 'audio':
+                    musicplayer.MusicPlayerWindow.open(track=pq.current(), playlist=pq)
+                else:
+                    videoplayer.play(play_queue=pq)
             else:
                 util.DEBUG_LOG('playQueue timed out wating for initialization')
 
@@ -288,7 +280,7 @@ class PostersWindow(kodigui.BaseWindow):
         if isinstance(photo, plexnet.photo.Photo):
             w = photos.PhotoWindow.open(photo=photo)
         elif photo.TYPE == 'clip':
-            player.PLAYER.playVideo(photo)
+            videoplayer.play(video=photo)
         else:
             w = SquaresWindow.open(section=photo)
             self.onChildWindowClosed(w)

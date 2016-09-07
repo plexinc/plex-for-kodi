@@ -4,9 +4,9 @@ import kodigui
 
 import busy
 import musicplayer
+import videoplayer
 
 from lib import colors
-from lib import player
 from lib import util
 
 
@@ -66,7 +66,7 @@ class PlaylistWindow(kodigui.BaseWindow):
             self.showAudioPlayer(track=mli.dataSource, playlist=self.playlist)
         elif self.playlist.playlistType == 'video':
             self.playlist.pos = mli.pos()
-            player.PLAYER.playVideoPlaylist(playlist=self.playlist)
+            videoplayer.play(play_queue=self.playlist)
 
     def showAudioPlayer(self, **kwargs):
         w = musicplayer.MusicPlayerWindow.open(**kwargs)

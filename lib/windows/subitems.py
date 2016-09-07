@@ -4,7 +4,6 @@ import kodigui
 
 from lib import colors
 from lib import util
-from lib import player
 
 from plexnet import plexobjects
 
@@ -13,6 +12,7 @@ import episodes
 import opener
 import info
 import musicplayer
+import videoplayer
 
 
 class ShowWindow(kodigui.BaseWindow):
@@ -204,7 +204,7 @@ class ShowWindow(kodigui.BaseWindow):
     def playButtonClicked(self, shuffle=False):
         pl = plexobjects.TempPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
         pl.shuffle(shuffle, first=True)
-        player.PLAYER.playVideoPlaylist(playlist=pl)
+        videoplayer.play(play_queue=pl)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)

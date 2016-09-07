@@ -4,6 +4,7 @@ import xbmc
 import xbmcgui
 import kodigui
 import playersettings
+
 from lib import util
 
 
@@ -28,6 +29,7 @@ class SeekDialog(kodigui.BaseDialog):
     SKIP_BACK_BUTTON_ID = 405
     SKIP_FORWARD_BUTTON_ID = 408
     NEXT_BUTTON_ID = 409
+    PLAYLIST_BUTTON_ID = 410
 
     BAR_X = 0
     BAR_Y = 921
@@ -64,6 +66,13 @@ class SeekDialog(kodigui.BaseDialog):
             return self.baseOffset + self.offset
 
     def onFirstInit(self):
+        try:
+            self._onFirstInit()
+        except RuntimeError:
+            util.ERROR(hide_tb=True)
+            self.started = False
+
+    def _onFirstInit(self):
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
         self.positionControl = self.getControl(self.POSITION_IMAGE_ID)
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
@@ -71,12 +80,12 @@ class SeekDialog(kodigui.BaseDialog):
         self.selectionBox = self.getControl(203)
         self.bigSeekControl = kodigui.ManagedControlList(self, 500, 12)
         self.initialized = True
-        self.setProperties()
+        self.updateProperties()
         self.videoSettingsHaveChanged()
         self.update()
 
     def onReInit(self):
-        self.setProperties()
+        self.updateProperties()
         self.videoSettingsHaveChanged()
         self.updateProgress()
 
@@ -131,6 +140,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.handler.prev()
         elif controlID == self.NEXT_BUTTON_ID:
             self.handler.next()
+        elif controlID == self.PLAYLIST_BUTTON_ID:
+            PlaylistDialog.open(handler=self.handler)
         elif controlID == 500:
             self.bigSeekSelected()
 
@@ -178,7 +189,7 @@ class SeekDialog(kodigui.BaseDialog):
         xbmc.sleep(100)
         self.updateBigSeek()
 
-    def setProperties(self):
+    def updateProperties(self):
         if self.fromSeek:
             self.setFocusId(self.MAIN_BUTTON_ID)
         else:
@@ -302,3 +313,68 @@ class SeekDialog(kodigui.BaseDialog):
             return
 
         self.updateCurrent()
+
+
+class PlaylistDialog(kodigui.BaseDialog):
+    xmlFile = 'script-plex-video_current_playlist.xml'
+    path = util.ADDON.getAddonInfo('path')
+    theme = 'Main'
+    res = '1080i'
+    width = 1920
+    height = 1080
+
+    LI_AR16X9_THUMB_DIM = (178, 100)
+    LI_SQUARE_THUMB_DIM = (100, 100)
+
+    PLAYLIST_LIST_ID = 101
+
+    def __init__(self, *args, **kwargs):
+        kodigui.BaseDialog.__init__(self, *args, **kwargs)
+        self.handler = kwargs.get('handler')
+        self.playlist = self.handler.playlist
+
+    def onFirstInit(self):
+        self.handler.player.on('session.ended', self.sessionEnded)
+        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 5)
+        self.fillPlaylist()
+        self.setFocusId(self.PLAYLIST_LIST_ID)
+
+    def sessionEnded(self, **kwargs):
+        self.doClose()
+
+    def createListItem(self, pi):
+        if pi.type == 'episode':
+            return self.createEpisodeListItem(pi)
+        elif pi.type in ('movie', 'clip'):
+            return self.createMovieListItem(pi)
+
+    def createEpisodeListItem(self, episode):
+        label2 = u'{0} \u2022 {1}'.format(episode.grandparentTitle, u'S{0} \u2022 E{1}'.format(episode.parentIndex, episode.index))
+        mli = kodigui.ManagedListItem(episode.title, label2, thumbnailImage=episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=episode)
+        mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
+        mli.setProperty('video', '1')
+        mli.setProperty('watched', episode.isWatched and '1' or '')
+        return mli
+
+    def createMovieListItem(self, movie):
+        mli = kodigui.ManagedListItem(movie.title, movie.year, thumbnailImage=movie.art.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=movie)
+        mli.setProperty('track.duration', util.durationToShortText(movie.duration.asInt()))
+        mli.setProperty('video', '1')
+        mli.setProperty('watched', movie.isWatched and '1' or '')
+        return mli
+
+    def fillPlaylist(self):
+        items = []
+        idx = 1
+        for pi in self.playlist.items():
+            # util.TEST('')
+            mli = self.createListItem(pi)
+            if mli:
+                mli.setProperty('track.number', str(idx))
+                mli.setProperty('plex.ID', 'PLEX-{0}'.format(pi.ratingKey))
+                mli.setProperty('file', '!NONE!')
+                items.append(mli)
+                idx += 1
+
+        self.playlistListControl.reset()
+        self.playlistListControl.addItems(items)

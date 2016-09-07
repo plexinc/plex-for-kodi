@@ -48,7 +48,7 @@ class PlexResult(http.HttpResponse):
         return self.parsed
 
     def addItem(self, container, node):
-        if node.attrib.get('type') in ('track',) and node.tag != 'PlayQueue':
+        if node.attrib.get('type') in ('track', 'movie', 'episode') and node.tag != 'PlayQueue':
             item = plexobjects.buildItem(self.server, node, self.address, container=self.container)
         else:
             item = plexobjects.PlexObject(node, server=self.container.server, container=self.container)

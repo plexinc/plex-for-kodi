@@ -5,7 +5,7 @@ import xbmc
 import xbmcgui
 import kodijsonrpc
 import colors
-from windows import seekdialog, playerbackground
+from windows import seekdialog
 import util
 from plexnet import plexplayer
 from plexnet import plexapp
@@ -224,7 +224,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.closeSeekDialog()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
-            self.player.closeBackground()
+            self.sessionEnded()
 
     def onPlayBackEnded(self):
         self.updateNowPlaying()
@@ -235,7 +235,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.closeSeekDialog()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
-            self.player.closeBackground()
+            self.sessionEnded()
 
     def onPlayBackPaused(self):
         self.updateNowPlaying()
@@ -254,8 +254,9 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.offset = int(self.player.getTime() * 1000)
 
     def onPlayBackFailed(self):
+        if self.seeking != self.SEEK_PLAYLIST:
+            self.sessionEnded()
         self.seeking = self.NO_SEEK
-        self.player.closeBackground()
         return True
 
     def onSeekOSD(self):
@@ -268,7 +269,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         util.DEBUG_LOG('Video window closed - Seeking={0}'.format(self.seeking))
         if not self.seeking:
             self.player.stop()
-            self.player.closeBackground()
+            self.sessionEnded()
 
     def onVideoOSD(self):
         # xbmc.executebuiltin('Dialog.Close(seekbar,true)')  # Doesn't work :)
@@ -281,6 +282,9 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def close(self):
         self.closeSeekDialog()
+
+    def sessionEnded(self):
+        self.player.trigger('session.ended')
 
 
 class AudioPlayerHandler(BasePlayerHandler):
@@ -446,7 +450,6 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.hasOSD = False
         self.hasSeekOSD = False
         self.xbmcMonitor = xbmc.Monitor()
-        self.playerBackground = None
         self.handler = AudioPlayerHandler(self)
         self.playerObject = None
         self.currentTime = 0
@@ -461,18 +464,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def open(self):
         self._closed = False
-        if self.video:
-            self.playerBackground = playerbackground.PlayerBackground.create(
-                background=self.video.art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
-            )
         self.monitor()
 
     def close(self, shutdown=False):
         self._closed = True
-
-    def closeBackground(self):
-        if self.playerBackground:
-            self.playerBackground.close()
 
     def reset(self):
         self.video = None
@@ -769,8 +764,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             self.close()
             util.DEBUG_LOG('Player: Closed')
         finally:
-            if self.playerBackground:
-                self.playerBackground.close()
+            self.trigger('session.ended')
 
     def _videoMonitor(self):
         with self.seekDelaySetting.suspend():

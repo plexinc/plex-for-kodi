@@ -200,7 +200,6 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.initialized = False
 
         self.composite = plexobjects.PlexValue('', parent=self)
-        self.defaultArt = plexobjects.PlexValue('', parent=self)
 
         # Add a few default options for specific PQ types
         if self.type == "audio":
@@ -210,6 +209,10 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
     def get(self, name):
         return getattr(self, name, plexobjects.PlexValue('', parent=self))
+
+    @property
+    def defaultArt(self):
+        return self.current().defaultArt
 
     def waitForInitialization(self):
         start = time.time()
@@ -256,6 +259,9 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
         if wait:
             return self.waitForInitialization()
+
+    def shuffle(self, shuffle=None):
+        self.setShuffle(shuffle)
 
     def setShuffle(self, shuffle=None):
         if shuffle is None:
@@ -446,6 +452,28 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
     def isWindowed(self):
         return (not self.isLocal() and (self.totalSize > self.windowSize or self.forcedWindow))
+
+    def hasNext(self):
+        return self.allowSkipNext or -1 < self.items().index(self.current()) < len(self.items()) - 1
+
+    def hasPrev(self):
+        return self.allowSkipPrev or self.items().index(self.current()) > 0
+
+    def next(self):
+        if not self.hasNext():
+            return None
+        pos = self.items().index(self.current()) + 1
+        item = self.items()[pos]
+        self.selectedId = item.playQueueItemID.asInt()
+        return item
+
+    def prev(self):
+        if not self.hasPrev():
+            return None
+        pos = self.items().index(self.current()) - 1
+        item = self.items()[pos]
+        self.selectedId = item.playQueueItemID.asInt()
+        return item
 
     def __eq__(self, other):
         if not other:

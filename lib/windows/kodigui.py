@@ -86,7 +86,6 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
         self._winID = xbmcgui.getCurrentWindowId()
         if self.started:
             self.onReInit()
-
         else:
             self.started = True
             self.onFirstInit()

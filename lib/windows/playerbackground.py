@@ -14,14 +14,24 @@ class PlayerBackground(kodigui.BaseWindow):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.background = kwargs.get('background', '')
+        self._closedSet = False
 
     def onFirstInit(self):
         self.setProperty('background', self.background)
+
+    def onReInit(self):
+        if self._closedSet:
+            self._closedSet = False
+            self.doClose()
 
     @contextlib.contextmanager
     def asContext(self):
         self.show()
         yield
+        self.doClose()
+
+    def setClosed(self):
+        self._closedSet = True
         self.doClose()
 
 

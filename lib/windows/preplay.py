@@ -5,10 +5,10 @@ import kodigui
 import busy
 import opener
 import info
+import videoplayer
 
 from lib import colors
 from lib import util
-from lib import player
 
 
 class PrePlayWindow(kodigui.BaseWindow):
@@ -104,7 +104,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         )
 
     def playVideo(self, resume=False):
-        player.PLAYER.playVideo(self.video, resume)
+        videoplayer.play(video=self.video, resume=resume)
 
     def openItem(self, control):
         mli = control.getSelectedItem()

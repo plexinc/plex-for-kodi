@@ -197,7 +197,6 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         for pi in kodijsonrpc.rpc.PlayList.GetItems(
             playlistid=xbmc.PLAYLIST_MUSIC, properties=['title', 'artist', 'album', 'track', 'thumbnail', 'duration', 'playcount', 'comment', 'file']
         )['items']:
-            # util.TEST('')
             mli = self.createListItem(pi, idx)
             if mli:
                 mli.setProperty('index', str(idx))

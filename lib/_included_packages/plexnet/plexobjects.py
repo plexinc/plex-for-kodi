@@ -177,10 +177,10 @@ class Checks:
         return self.type == "photoalbum"  # or self.isPhotoItem()
 
     def isMusicOrDirectoryItem(self):
-        return False
+        return self.type in ('artist', 'album', 'track')
 
     def isVideoOrDirectoryItem(self):
-        return False
+        return self.type in ('movie', 'show', 'episode')
 
     def isSettings(self):
         return False
@@ -425,6 +425,13 @@ class BasePlaylist(PlexObject):
             return False
 
         self.pos -= 1
+        return True
+
+    def setCurrent(self, pos):
+        if pos < 0 or pos >= len(self.items()):
+            return False
+
+        self.pos = pos
         return True
 
     def current(self):

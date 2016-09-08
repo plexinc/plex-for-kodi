@@ -134,7 +134,7 @@ class PlayQueueFactory(object):
 def createPlayQueueForItem(item, children=None, options=None):
     obj = PlayQueueFactory()
 
-    contentType = obj.getContentType(item) or 'audio'  # TODO: REMOVE THIS FALLBACK -----------------------------------------------------------------------TODO
+    contentType = obj.getContentType(item)
     if not contentType:
         # TODO(schuyler): We may need to try harder, but I'm not sure yet. For
         # example, what if we're shuffling an entire library?
@@ -385,8 +385,8 @@ class PlayQueue(signalsmixin.SignalsMixin):
                 self.totalSize > 1 and response.container.allowShuffle.asBool() and not response.container.playQueueLastAddedItemID
             )
             self.allowRepeat = response.container.allowRepeat.asBool()
-            self.allowSkipPrev = self.totalSize > 1 and response.container.allowSkipPrevious.asBool()
-            self.allowSkipNext = self.totalSize > 1 and response.container.allowSkipNext.asBool()
+            self.allowSkipPrev = self.totalSize > 1 and response.container.allowSkipPrevious != "0"
+            self.allowSkipNext = self.totalSize > 1 and response.container.allowSkipNext != "0"
 
             # Figure out the selected track index and offset. PMS tries to make some
             # of this easy, but it might not realize that we've advanced to a new
@@ -471,6 +471,14 @@ class PlayQueue(signalsmixin.SignalsMixin):
         if not self.hasPrev():
             return None
         pos = self.items().index(self.current()) - 1
+        item = self.items()[pos]
+        self.selectedId = item.playQueueItemID.asInt()
+        return item
+
+    def setCurrent(self, pos):
+        if pos < 0 or pos >= len(self.items()):
+            return False
+
         item = self.items()[pos]
         self.selectedId = item.playQueueItemID.asInt()
         return item
@@ -601,8 +609,8 @@ def createRemotePlayQueue(item, contentType, options):
         path = "/library/metadata/" + item.get("grandparentRatingKey", "")
         itemType = "directory"
         options.key = item.getAbsolutePath("key")
-    elif item.type == "show":
-        path = "/library/metadata/" + item.get("ratingKey", "")
+    # elif item.type == "show":
+    #     path = "/library/metadata/" + item.get("ratingKey", "")
 
     if path:
         util.DEBUG_LOG("playQueue path: " + str(path))
@@ -628,7 +636,7 @@ def createRemotePlayQueue(item, contentType, options):
 
     request.addParam(not options.isPlaylist and "uri" or "playlistID", uri)
     request.addParam("type", contentType)
-    request.addParam('X-Plex-Client-Identifier', plexapp.INTERFACE.getGlobal('clientIdentifier'))
+    # request.addParam('X-Plex-Client-Identifier', plexapp.INTERFACE.getGlobal('clientIdentifier'))
 
     # Add options we pass once during PQ creation
     if options.shuffle:

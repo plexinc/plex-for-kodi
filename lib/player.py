@@ -119,6 +119,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         BasePlayerHandler.__init__(self, player)
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
         self.playlist = None
+        self.playQueue = None
         self.timelineType = 'video'
         self.reset()
 
@@ -147,6 +148,15 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def prev(self):
         if not self.playlist or not self.playlist.prev():
+            return False
+
+        self.seeking = self.SEEK_PLAYLIST
+        self.player.playVideoPlaylist(self.playlist, handler=self)
+
+        return True
+
+    def playAt(self, pos):
+        if not self.playlist or not self.playlist.setCurrent(pos):
             return False
 
         self.seeking = self.SEEK_PLAYLIST
@@ -191,7 +201,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.dialog.doClose()
 
     def onPlayBackStarted(self):
-        self.updateNowPlaying()
+        self.updateNowPlaying(refreshQueue=True)
         if self.mode == self.MODE_ABSOLUTE:
             self.seekAbsolute()
 
@@ -537,6 +547,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
         url += '&X-Plex-Platform=Chrome'
+        url += '&KodiID=PLEX-{0}'.format(self.video.ratingKey)
         li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
         vtype = self.video.type if self.video.type in ('movie', 'episode', 'musicvideo') else 'video'
         li.setInfo('video', {
@@ -546,7 +557,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'episode': self.video.index.asInt(),
             'season': self.video.parentIndex.asInt(),
             'year': self.video.year.asInt(),
-            'plot': self.video.summary,
+            'plot': self.video.summary
         })
         self.stopAndWait()
         self.play(url, li)
@@ -561,6 +572,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         if not handler:
             self.handler = SeekPlayerHandler(self)
         self.handler.playlist = playlist
+        if playlist.isRemote:
+            self.handler.playQueue = playlist
         self.video = playlist.current()
         self.open()
         self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0)
@@ -577,8 +590,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'episode': video.index.asInt(),
             'season': video.parentIndex.asInt(),
             'year': video.year.asInt(),
-            'plot': video.summary,
-            'comment': 'PLEX-{0}'.format(video.ratingKey)
+            'plot': video.summary
         })
 
         return url, li

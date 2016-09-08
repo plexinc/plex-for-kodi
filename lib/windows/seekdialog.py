@@ -54,6 +54,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.title2 = ''
         self.fromSeek = 0
         self.initialized = False
+        self.playlistDialog = None
 
     @property
     def player(self):
@@ -141,9 +142,17 @@ class SeekDialog(kodigui.BaseDialog):
         elif controlID == self.NEXT_BUTTON_ID:
             self.handler.next()
         elif controlID == self.PLAYLIST_BUTTON_ID:
-            PlaylistDialog.open(handler=self.handler)
+            self.playlistDialog = PlaylistDialog.create(show=False, handler=self.handler)
+            self.playlistDialog.show()
         elif controlID == 500:
             self.bigSeekSelected()
+
+    def doClose(self):
+        try:
+            if self.playlistDialog:
+                self.playlistDialog.doClose()
+        finally:
+            kodigui.BaseDialog.doClose(self)
 
     def videoSettingsHaveChanged(self):
         if (
@@ -334,10 +343,23 @@ class PlaylistDialog(kodigui.BaseDialog):
         self.playlist = self.handler.playlist
 
     def onFirstInit(self):
+        self.handler.player.on('playlist.changed', self.playQueueCallback)
         self.handler.player.on('session.ended', self.sessionEnded)
-        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 5)
+        self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 6)
         self.fillPlaylist()
+        self.updatePlayingItem()
         self.setFocusId(self.PLAYLIST_LIST_ID)
+
+    def onClick(self, controlID):
+        if controlID == self.PLAYLIST_LIST_ID:
+            self.playlistListClicked()
+
+    def playlistListClicked(self):
+        mli = self.playlistListControl.getSelectedItem()
+        if not mli:
+            return
+        self.handler.playAt(mli.pos())
+        self.updatePlayingItem()
 
     def sessionEnded(self, **kwargs):
         self.doClose()
@@ -363,6 +385,31 @@ class PlaylistDialog(kodigui.BaseDialog):
         mli.setProperty('watched', movie.isWatched and '1' or '')
         return mli
 
+    def playQueueCallback(self, **kwargs):
+        mli = self.playlistListControl.getSelectedItem()
+        pi = mli.dataSource
+        plexID = pi['comment'].split(':', 1)[0]
+        viewPos = self.playlistListControl.getViewPosition()
+
+        self.fillPlaylist()
+
+        for ni in self.playlistListControl:
+            if ni.dataSource['comment'].split(':', 1)[0] == plexID:
+                self.playlistListControl.selectItem(ni.pos())
+                break
+
+        xbmc.sleep(100)
+
+        newViewPos = self.playlistListControl.getViewPosition()
+        if viewPos != newViewPos:
+            diff = newViewPos - viewPos
+            self.playlistListControl.shiftView(diff, True)
+
+    def updatePlayingItem(self):
+        playing = self.handler.player.video.ratingKey
+        for mli in self.playlistListControl:
+            mli.setProperty('playing', mli.dataSource.ratingKey == playing and '1' or '')
+
     def fillPlaylist(self):
         items = []
         idx = 1
@@ -371,8 +418,6 @@ class PlaylistDialog(kodigui.BaseDialog):
             mli = self.createListItem(pi)
             if mli:
                 mli.setProperty('track.number', str(idx))
-                mli.setProperty('plex.ID', 'PLEX-{0}'.format(pi.ratingKey))
-                mli.setProperty('file', '!NONE!')
                 items.append(mli)
                 idx += 1
 

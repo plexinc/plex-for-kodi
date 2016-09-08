@@ -240,7 +240,7 @@ class PostersWindow(kodigui.BaseWindow):
             util.DEBUG_LOG('waiting for playQueue to initialize')
             if busy.widthDialog(pq.waitForInitialization, None):
                 util.DEBUG_LOG('playQueue initialized: {0}'.format(pq))
-                if self.section.TYPE == 'audio':
+                if pq.type == 'audio':
                     musicplayer.MusicPlayerWindow.open(track=pq.current(), playlist=pq)
                 else:
                     videoplayer.play(play_queue=pq)

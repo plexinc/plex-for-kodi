@@ -802,7 +802,7 @@
                                         <width>244</width>
                                         <height>244</height>
                                         <texture background="true" diffuse="script.plex/masks/role.png">$INFO[ListItem.Thumb]</texture>
-                                        <aspectratio scalediffuse="false">scale</aspectratio>
+                                        <aspectratio scalediffuse="false" aligny="top">scale</aspectratio>
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>
@@ -852,7 +852,7 @@
                                             <width>287</width>
                                             <height>287</height>
                                             <texture background="true" diffuse="script.plex/masks/role.png">$INFO[ListItem.Thumb]</texture>
-                                            <aspectratio scalediffuse="false">scale</aspectratio>
+                                            <aspectratio scalediffuse="false" aligny="top">scale</aspectratio>
                                         </control>
                                         <control type="textbox">
                                             <posx>0</posx>
@@ -891,7 +891,7 @@
                                         <width>244</width>
                                         <height>244</height>
                                         <texture background="true" diffuse="script.plex/masks/role.png">$INFO[ListItem.Thumb]</texture>
-                                        <aspectratio scalediffuse="false">scale</aspectratio>
+                                        <aspectratio scalediffuse="false" aligny="top">scale</aspectratio>
                                     </control>
                                     <control type="textbox">
                                         <posx>0</posx>

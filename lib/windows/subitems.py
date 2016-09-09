@@ -5,7 +5,7 @@ import kodigui
 from lib import colors
 from lib import util
 
-from plexnet import plexobjects
+from plexnet import playlist
 
 import busy
 import episodes
@@ -202,7 +202,7 @@ class ShowWindow(kodigui.BaseWindow):
         )
 
     def playButtonClicked(self, shuffle=False):
-        pl = plexobjects.TempPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
+        pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
         pl.shuffle(shuffle, first=True)
         videoplayer.play(play_queue=pl)
 
@@ -287,7 +287,7 @@ class ArtistWindow(ShowWindow):
         self.setFocusId(self.SUB_ITEM_LIST_ID)
 
     def playButtonClicked(self, shuffle=False):
-        pl = plexobjects.TempPlaylist(self.mediaItem.all(), self.mediaItem.getServer(), self.mediaItem)
+        pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer(), self.mediaItem)
         pl.startShuffled = shuffle
         musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
 

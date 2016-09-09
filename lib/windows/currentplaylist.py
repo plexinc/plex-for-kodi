@@ -109,7 +109,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         self.setDuration()
 
     def repeatButtonClicked(self):
-        if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue:
+        if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue.isRemote:
             if xbmc.getCondVisibility('Playlist.IsRepeatOne'):
                 xbmc.executebuiltin('PlayerControl(RepeatOff)')
             elif player.PLAYER.handler.playQueue.isRepeat:

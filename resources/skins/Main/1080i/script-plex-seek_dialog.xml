@@ -164,18 +164,79 @@
             <orientation>horizontal</orientation>
             <scrolltime tween="quadratic" easing="out">200</scrolltime>
             <usecontrolcoords>true</usecontrolcoords>
-            <control type="button" id="401">
-                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
-                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
-                <hitrect x="28" y="28" w="69" h="45" />
-                <posx>0</posx>
-                <posy>0</posy>
+            <control type="group" id="421">
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false" condition="Control.HasFocus(401)">Conditional</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false" condition="!Control.HasFocus(401)">Conditional</animation>
                 <width>125</width>
                 <height>101</height>
-                <font>font12</font>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texturefocus>
-                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texturenofocus>
-                <label> </label>
+                <control type="button" id="401">
+                    <hitrect x="28" y="28" w="69" h="45" />
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>125</width>
+                    <height>101</height>
+                    <onup>100</onup>
+                    <onright>402</onright>
+                    <onleft>411</onleft>
+                    <font>font12</font>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <label> </label>
+                </control>
+                <control type="group">
+                    <visible>!Control.HasFocus(401)</visible>
+                    <control type="image">
+                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeatOne | !IsEmpty(Window.Property(pq.repeat.one))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-one.png</texture>
+                    </control>
+                </control>
+                <control type="group">
+                    <visible>Control.HasFocus(401)</visible>
+                    <control type="image">
+                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-focus.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Playlist.IsRepeatOne | !IsEmpty(Window.Property(pq.repeat.one))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-one-focus.png</texture>
+                    </control>
+                </control>
             </control>
 
             <control type="togglebutton" id="402">
@@ -190,7 +251,7 @@
                 <font>font12</font>
                 <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texturefocus>
                 <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
-                <usealttexture>!IsEmpty(Window.Property(shuffled))</usealttexture>
+                <usealttexture>!IsEmpty(Window.Property(pq.shuffled))</usealttexture>
                 <alttexturefocus colordiffuse="FFCC7B19">script.plex/buttons/shuffle-focus.png</alttexturefocus>
                 <alttexturenofocus colordiffuse="FFCC7B19">script.plex/buttons/shuffle.png</alttexturenofocus>
                 <label> </label>
@@ -224,7 +285,7 @@
 
 
             <control type="button" id="404">
-                <visible>!IsEmpty(Window.Property(has.prev))</visible>
+                <visible>!IsEmpty(Window.Property(pq.hasprev))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -239,7 +300,7 @@
             </control>
             <control type="button" id="424">
                 <enable>false</enable>
-                <visible>IsEmpty(Window.Property(has.prev))</visible>
+                <visible>IsEmpty(Window.Property(pq.hasprev))</visible>
                 <posx>30</posx>
                 <posy>0</posy>
                 <width>125</width>
@@ -310,7 +371,7 @@
                 <label> </label>
             </control>
             <control type="button" id="409">
-                <visible>!IsEmpty(Window.Property(has.next))</visible>
+                <visible>!IsEmpty(Window.Property(pq.hasnext))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -325,7 +386,7 @@
             </control>
             <control type="button" id="419">
                 <enable>false</enable>
-                <visible>IsEmpty(Window.Property(has.next))</visible>
+                <visible>IsEmpty(Window.Property(pq.hasnext))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>125</width>
@@ -337,7 +398,7 @@
 
 
             <control type="button" id="410">
-                <visible>!IsEmpty(Window.Property(has.next)) | !IsEmpty(Window.Property(has.prev))</visible>
+                <visible>!IsEmpty(Window.Property(pq.hasnext)) | !IsEmpty(Window.Property(pq.hasprev))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -352,7 +413,7 @@
             </control>
             <control type="button" id="430">
                 <enable>false</enable>
-                <visible>IsEmpty(Window.Property(has.next)) + IsEmpty(Window.Property(has.prev))</visible>
+                <visible>IsEmpty(Window.Property(pq.hasnext)) + IsEmpty(Window.Property(pq.hasprev))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />

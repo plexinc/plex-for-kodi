@@ -23,6 +23,7 @@ class SeekDialog(kodigui.BaseDialog):
     BIF_IMAGE_ID = 300
     SEEK_IMAGE_WIDTH = 1920
 
+    REPEAT_BUTTON_ID = 401
     SHUFFLE_BUTTON_ID = 402
     SETTINGS_BUTTON_ID = 403
     PREV_BUTTON_ID = 404
@@ -74,6 +75,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.started = False
 
     def _onFirstInit(self):
+        if self.handler.playlist:
+            self.handler.playlist.on('change', self.updateProperties)
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
         self.positionControl = self.getControl(self.POSITION_IMAGE_ID)
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
@@ -135,6 +138,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.doClose()
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.showSettings()
+        elif controlID == self.REPEAT_BUTTON_ID:
+            self.repeatButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.shuffleButtonClicked()
         elif controlID == self.PREV_BUTTON_ID:
@@ -167,10 +172,25 @@ class SeekDialog(kodigui.BaseDialog):
 
         return False
 
+    def repeatButtonClicked(self):
+        pl = self.handler.playlist
+
+        if pl:
+            if pl.isRepeatOne:
+                pl.setRepeat(False, one=False)
+                self.updateProperties()
+            elif pl.isRepeat:
+                pl.setRepeat(False, one=True)
+                pl.refresh(force=True)
+            else:
+                pl.setRepeat(True)
+                pl.refresh(force=True)
+        else:
+            xbmc.executebuiltin('PlayerControl(Repeat)')
+
     def shuffleButtonClicked(self):
         if self.handler.playlist:
-            self.handler.playlist.shuffle(not self.handler.playlist.isShuffled)
-            self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
+            self.handler.playlist.setShuffle()
 
     def showSettings(self):
         playersettings.showDialog(self.player.video)
@@ -198,26 +218,33 @@ class SeekDialog(kodigui.BaseDialog):
         xbmc.sleep(100)
         self.updateBigSeek()
 
-    def updateProperties(self):
+    def updateProperties(self, **kwargs):
+        if not self.started:
+            return
         if self.fromSeek:
             self.setFocusId(self.MAIN_BUTTON_ID)
+            self.fromSeek = 0
         else:
             self.setFocusId(400)
-
-        if self.handler.playlist:
-            self.setProperty('has.next', self.handler.playlist.hasNext() and '1' or '')
-            self.setProperty('has.prev', self.handler.playlist.hasPrev() and '1' or '')
-        else:
-            self.setProperty('has.next', '')
-            self.setProperty('has.prev', '')
 
         self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)
         self.setProperty('video.title2', self.title2)
         self.setProperty('is.show', (self.player.video.type == 'episode') and '1' or '')
-        self.setProperty('has.playlist', self.handler.playlist and '1' or '')
-        self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
         self.setProperty('time.duration', util.timeDisplay(self.duration))
+
+        pq = self.handler.playlist
+        if pq:
+            self.setProperty('has.playlist', '1')
+            self.setProperty('pq.isRemote', pq.isRemote and '1' or '')
+            self.setProperty('pq.hasnext', pq.hasNext() and '1' or '')
+            self.setProperty('pq.hasprev', pq.hasPrev() and '1' or '')
+            self.setProperty('pq.repeat', pq.isRepeat and '1' or '')
+            self.setProperty('pq.repeat.one', pq.isRepeatOne and '1' or '')
+            self.setProperty('pq.shuffled', pq.isShuffled and '1' or '')
+        else:
+            self.setProperties(('pq.isRemote', 'pq.hasnext', 'pq.hasprev', 'pq.repeat', 'pq.shuffled', 'has.playlist'), '')
+
         self.updateCurrent()
 
         div = int(self.duration / 12)

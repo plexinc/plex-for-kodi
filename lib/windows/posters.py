@@ -235,8 +235,6 @@ class PostersWindow(kodigui.BaseWindow):
             pqItem.name = "Directory"
             pqItem.isLibraryPQ = True
             pq = playqueue.createPlayQueueForItem(pqItem, options={'shuffle': shuffle})
-            # pl = plexnet.plexobjects.TempLeafedPlaylist(items, self.section.getServer())
-            # pl.startShuffled = shuffle
             util.DEBUG_LOG('waiting for playQueue to initialize')
             if busy.widthDialog(pq.waitForInitialization, None):
                 util.DEBUG_LOG('playQueue initialized: {0}'.format(pq))

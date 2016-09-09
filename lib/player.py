@@ -279,7 +279,8 @@ class SeekPlayerHandler(BasePlayerHandler):
         util.DEBUG_LOG('Video window closed - Seeking={0}'.format(self.seeking))
         if not self.seeking:
             self.player.stop()
-            self.sessionEnded()
+            if not self.playlist or not self.playlist.hasNext():
+                self.sessionEnded()
 
     def onVideoOSD(self):
         # xbmc.executebuiltin('Dialog.Close(seekbar,true)')  # Doesn't work :)

@@ -170,6 +170,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.version = -1
         self.isShuffled = False
         self.isRepeat = False
+        self.isRepeatOne = False
         self.isLocalPlayQueue = False
         self.isMixed = None
         self.totalSize = 0
@@ -260,7 +261,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         if wait:
             return self.waitForInitialization()
 
-    def shuffle(self, shuffle=None):
+    def shuffle(self, shuffle=True):
         self.setShuffle(shuffle)
 
     def setShuffle(self, shuffle=None):
@@ -282,12 +283,13 @@ class PlayQueue(signalsmixin.SignalsMixin):
         context = request.createRequestContext("shuffle", callback.Callable(self.onResponse))
         plexapp.APP.startRequest(request, context)
 
-    def setRepeat(self, repeat):
-        if self.isRepeat == repeat:
+    def setRepeat(self, repeat, one=False):
+        if self.isRepeat == repeat and self.isRepeatOne == one:
             return
 
         self.options.repeat = repeat
         self.isRepeat = repeat
+        self.isRepeatOne = one
 
     def moveItemUp(self, item):
         for index in range(1, len(self._items)):
@@ -454,6 +456,8 @@ class PlayQueue(signalsmixin.SignalsMixin):
         return (not self.isLocal() and (self.totalSize > self.windowSize or self.forcedWindow))
 
     def hasNext(self):
+        if self.isRepeatOne:
+            return True
         return self.allowSkipNext or -1 < self.items().index(self.current()) < len(self.items()) - 1
 
     def hasPrev(self):
@@ -462,6 +466,8 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def next(self):
         if not self.hasNext():
             return None
+        if self.isRepeatOne:
+            return self.current()
         pos = self.items().index(self.current()) + 1
         item = self.items()[pos]
         self.selectedId = item.playQueueItemID.asInt()
@@ -470,6 +476,8 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def prev(self):
         if not self.hasPrev():
             return None
+        if self.isRepeatOne:
+            return self.current()
         pos = self.items().index(self.current()) - 1
         item = self.items()[pos]
         self.selectedId = item.playQueueItemID.asInt()

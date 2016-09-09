@@ -3,6 +3,7 @@
 PlexLibrary
 """
 import plexobjects
+import playlist
 import media
 import exceptions
 import util
@@ -281,7 +282,7 @@ class Generic(plexobjects.PlexObject):
 
 
 @plexobjects.registerLibType
-class Playlist(plexobjects.BasePlaylist):
+class Playlist(playlist.BasePlaylist):
     TYPE = 'playlist'
 
     def __repr__(self):

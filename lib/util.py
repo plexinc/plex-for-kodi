@@ -8,6 +8,8 @@ import math
 import time
 import datetime
 import contextlib
+import urllib
+
 from kodijsonrpc import rpc
 import xbmc
 import xbmcgui
@@ -415,3 +417,12 @@ class PlayerMonitor(xbmc.Player):
 
     def onPlayBackStarted(self):
         self.callback()
+
+
+def addURLParams(url, params):
+        if '?' in url:
+            url += '&'
+        else:
+            url += '?'
+        url += urllib.urlencode(params)
+        return url

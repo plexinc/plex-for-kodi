@@ -1,5 +1,6 @@
 import base64
 import threading
+import urllib
 
 import xbmc
 import xbmcgui
@@ -547,8 +548,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         bifURL = self.playerObject.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
-        url += '&X-Plex-Platform=Chrome'
-        url += '&KodiID=PLEX-{0}'.format(self.video.ratingKey)
+        url = util.addURLParams(url, {
+            'X-Plex-Platform': 'Chrome',
+            'X-Plex-Client-Identifier': plexapp.INTERFACE.getGlobal('clientIdentifier')
+        })
         li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
         vtype = self.video.type if self.video.type in ('movie', 'episode', 'musicvideo') else 'video'
         li.setInfo('video', {

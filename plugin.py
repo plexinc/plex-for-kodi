@@ -4,7 +4,7 @@ import xbmcgui
 import sys
 import base64
 from lib import _included_packages, plex, util
-from plexnet import audio, plexplayer
+from plexnet import audio, plexplayer, plexapp
 
 HANDLE = int(sys.argv[1])
 
@@ -18,8 +18,11 @@ util.LOG = LOG
 def playTrack(track):
     apobj = plexplayer.PlexAudioPlayer(track)
     url = apobj.build()['url']
+    url = util.addURLParams(url, {
+        'X-Plex-Platform': 'Chrome',
+        'X-Plex-Client-Identifier': plexapp.INTERFACE.getGlobal('clientIdentifier')
+    })
     LOG('Playing URL: {0}'.format(url))
-    url += '&X-Plex-Platform=Chrome'
 
     return xbmcgui.ListItem(path=url)
 

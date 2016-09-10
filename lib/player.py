@@ -775,12 +775,22 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
                 elif self.isPlayingAudio():
                     util.DEBUG_LOG('Monitoring audio...')
                     self._audioMonitor()
+                elif self.isPlaying():
+                    util.DEBUG_LOG('Monitoring pre-play...')
+                    self._preplayMonitor()
 
             self.handler.close()
             self.close()
             util.DEBUG_LOG('Player: Closed')
         finally:
             self.trigger('session.ended')
+
+    def _preplayMonitor(self):
+        while self.isPlaying() and not self.isPlayingVideo() and not self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
+            self.xbmcMonitor.waitForAbort(0.1)
+
+        if not self.isPlayingVideo() and not self.isPlayingAudio():
+            self.onPlayBackFailed()
 
     def _videoMonitor(self):
         with self.seekDelaySetting.suspend():

@@ -18,6 +18,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
+        self.nonPlayback = kwargs.get('non_playback')
 
     def onFirstInit(self):
         self.settingsList = kodigui.ManagedControlList(self, self.SETTINGS_LIST_ID, 6)
@@ -27,7 +28,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
 
     def onAction(self, action):
         try:
-            if not xbmc.getCondVisibility('Player.HasMedia'):
+            if not xbmc.getCondVisibility('Player.HasMedia') and not self.nonPlayback:
                 self.doClose()
                 return
         except:
@@ -43,6 +44,9 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         util.CRON.cancelReceiver(self)
 
     def tick(self):
+        if self.nonPlayback:
+            return
+
         if not xbmc.getCondVisibility('Player.HasMedia'):
             self.doClose()
             return
@@ -86,11 +90,11 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         result = mli.dataSource
 
         if result == 'audio':
-            showAudioDialog(self.video)
+            showAudioDialog(self.video, non_playback=self.nonPlayback)
         elif result == 'subs':
-            showSubtitlesDialog(self.video)
+            showSubtitlesDialog(self.video, non_playback=self.nonPlayback)
         elif result == 'quality':
-            showQualityDialog(self.video)
+            showQualityDialog(self.video, non_playback=self.nonPlayback)
 
         self.showSettings()
 
@@ -110,6 +114,7 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.heading = kwargs.get('heading')
         self.options = kwargs.get('options')
         self.choice = None
+        self.nonPlayback = kwargs.get('non_playback')
 
     def onFirstInit(self):
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
@@ -119,7 +124,7 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
 
     def onAction(self, action):
         try:
-            if not xbmc.getCondVisibility('Player.HasMedia'):
+            if not xbmc.getCondVisibility('Player.HasMedia') and not self.nonPlayback:
                 self.doClose()
                 return
         except:
@@ -135,6 +140,9 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         util.CRON.cancelReceiver(self)
 
     def tick(self):
+        if self.nonPlayback:
+            return
+
         if not xbmc.getCondVisibility('Player.HasMedia'):
             self.doClose()
             return
@@ -159,36 +167,36 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
-def showOptionsDialog(heading, options):
-    w = SelectDialog.open(heading=heading, options=options)
+def showOptionsDialog(heading, options, non_playback=False):
+    w = SelectDialog.open(heading=heading, options=options, non_playback=non_playback)
     choice = w.choice
     del w
     return choice
 
 
-def showAudioDialog(video):
+def showAudioDialog(video, non_playback=False):
     options = [(s, s.getTitle()) for s in video.audioStreams]
-    choice = showOptionsDialog('Audio', options)
+    choice = showOptionsDialog('Audio', options, non_playback=non_playback)
     if choice is None:
         return
 
     video.selectStream(choice)
 
 
-def showSubtitlesDialog(video):
+def showSubtitlesDialog(video, non_playback=False):
     options = [(s, s.getTitle()) for s in video.subtitleStreams]
     options.insert(0, (plexnet.plexstream.NoneStream(), 'None'))
-    choice = showOptionsDialog('Subtitle', options)
+    choice = showOptionsDialog('Subtitle', options, non_playback=non_playback)
     if choice is None:
         return
 
     video.selectStream(choice)
 
 
-def showQualityDialog(video):
+def showQualityDialog(video, non_playback=False):
     options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014))]
 
-    choice = showOptionsDialog('Quality', options)
+    choice = showOptionsDialog('Quality', options, non_playback=non_playback)
     if choice is None:
         return
 
@@ -197,6 +205,6 @@ def showQualityDialog(video):
     video.settings.setPrefOverride('online_quality', choice)
 
 
-def showDialog(video):
-    w = VideoSettingsDialog.open(video=video)
+def showDialog(video, non_playback=False):
+    w = VideoSettingsDialog.open(video=video, non_playback=non_playback)
     del w

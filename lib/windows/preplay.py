@@ -6,6 +6,9 @@ import busy
 import opener
 import info
 import videoplayer
+import playersettings
+
+from plexnet import plexplayer, media
 
 from lib import colors
 from lib import util
@@ -31,9 +34,13 @@ class PrePlayWindow(kodigui.BaseWindow):
     PROGRESS_IMAGE_ID = 250
 
     HOME_BUTTON_ID = 201
+
+    INFO_BUTTON_ID = 304
     RESUME_BUTTON_ID = 301
     PLAY_BUTTON_ID = 302
-    INFO_BUTTON_ID = 304
+    TRAILER_BUTTON_ID = 303
+    SETTINGS_BUTTON_ID = 305
+    OPTIONS_BUTTON_ID = 306
 
     PLAYER_STATUS_BUTTON_ID = 204
 
@@ -41,6 +48,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
         self.exitCommand = None
+        self.trailer = None
 
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
@@ -83,6 +91,10 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.showAudioPlayer()
         elif controlID == self.INFO_BUTTON_ID:
             self.infoButtonClicked()
+        elif controlID == self.SETTINGS_BUTTON_ID:
+            self.settingsButtonClicked()
+        elif controlID == self.TRAILER_BUTTON_ID:
+            self.openItem(item=self.trailer)
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -92,6 +104,12 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+    def settingsButtonClicked(self):
+        if not self.video.mediaChoice:
+            playerObject = plexplayer.PlexPlayer(self.video)
+            playerObject.build()
+        playersettings.showDialog(video=self.video, non_playback=True)
 
     def infoButtonClicked(self):
         info.InfoWindow.open(
@@ -106,12 +124,14 @@ class PrePlayWindow(kodigui.BaseWindow):
     def playVideo(self, resume=False):
         videoplayer.play(video=self.video, resume=resume)
 
-    def openItem(self, control):
-        mli = control.getSelectedItem()
-        if not mli:
-            return
+    def openItem(self, control=None, item=None):
+        if not item:
+            mli = control.getSelectedItem()
+            if not mli:
+                return
+            item = mli.dataSource
 
-        command = opener.open(mli.dataSource)
+        command = opener.open(item)
 
         if command == 'HOME':
             self.exitCommand = 'HOME'
@@ -189,8 +209,12 @@ class PrePlayWindow(kodigui.BaseWindow):
         idx = 0
         if not self.video.extras:
             return False
-
         for extra in self.video.extras():
+            if not self.trailer and extra.extraType.asInt() == media.METADATA_RELATED_TRAILER:
+                self.trailer = extra
+                self.setProperty('trailer.button', '1')
+                continue
+
             mli = self.createListItem(extra)
             if mli:
                 mli.setProperty('index', str(idx))

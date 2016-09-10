@@ -1,6 +1,5 @@
 import base64
 import threading
-import urllib
 
 import xbmc
 import xbmcgui

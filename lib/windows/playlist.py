@@ -8,6 +8,7 @@ import videoplayer
 
 from lib import colors
 from lib import util
+from lib import player
 
 
 class PlaylistWindow(kodigui.BaseWindow):
@@ -20,6 +21,9 @@ class PlaylistWindow(kodigui.BaseWindow):
 
     OPTIONS_GROUP_ID = 200
     PLAYER_STATUS_BUTTON_ID = 204
+
+    PLAY_BUTTON_ID = 301
+    SHUFFLE_BUTTON_ID = 302
 
     LI_AR16X9_THUMB_DIM = (178, 100)
     LI_SQUARE_THUMB_DIM = (100, 100)
@@ -56,16 +60,27 @@ class PlaylistWindow(kodigui.BaseWindow):
             self.playlistListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.PLAY_BUTTON_ID:
+            self.playlistListClicked(no_item=True, shuffle=False)
+        elif controlID == self.SHUFFLE_BUTTON_ID:
+            self.playlistListClicked(no_item=True, shuffle=True)
 
-    def playlistListClicked(self):
-        mli = self.playlistListControl.getSelectedItem()
-        if not mli:
-            return
+    def playlistListClicked(self, no_item=False, shuffle=False):
+        if no_item:
+            mli = None
+        else:
+            mli = self.playlistListControl.getSelectedItem()
+            if not mli:
+                return
+            player.PLAYER.stop()  # Necessary because if audio is already playing, it will close the window when that is stopped
 
         if self.playlist.playlistType == 'audio':
-            self.showAudioPlayer(track=mli.dataSource, playlist=self.playlist)
+            self.playlist.setShuffle(shuffle)
+            self.playlist.setCurrent(mli and mli.pos() or 0)
+            self.showAudioPlayer(track=mli and mli.dataSource or self.playlist.current(), playlist=self.playlist)
         elif self.playlist.playlistType == 'video':
-            self.playlist.pos = mli.pos()
+            self.playlist.setShuffle(shuffle)
+            self.playlist.setCurrent(mli and mli.pos() or 0)
             videoplayer.play(play_queue=self.playlist)
 
     def showAudioPlayer(self, **kwargs):
@@ -114,7 +129,7 @@ class PlaylistWindow(kodigui.BaseWindow):
     def fillPlaylist(self):
         items = []
         idx = 1
-        for pi in self.playlist.items():
+        for pi in self.playlist.unshuffledItems():
             # util.TEST('')
             mli = self.createListItem(pi)
             if mli:

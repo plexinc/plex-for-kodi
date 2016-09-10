@@ -285,15 +285,25 @@ class Generic(plexobjects.PlexObject):
 class Playlist(playlist.BasePlaylist):
     TYPE = 'playlist'
 
+    def __init__(self, *args, **kwargs):
+        playlist.BasePlaylist.__init__(self, *args, **kwargs)
+        self._itemsLoaded = False
+
     def __repr__(self):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
     def items(self):
-        if self._items is None:
+        if not self._itemsLoaded:
             path = '/playlists/{0}/items'.format(self.ratingKey)
             self._items = plexobjects.listItems(self.server, path)
+            self._itemsLoaded = True
 
+        return playlist.BasePlaylist.items(self)
+
+    def unshuffledItems(self):
+        if not self._itemsLoaded:
+            self.items()
         return self._items
 
     @property

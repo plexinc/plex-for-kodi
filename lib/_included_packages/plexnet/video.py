@@ -206,6 +206,10 @@ class Show(Video):
             self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server)
 
     @property
+    def unViewedLeafCount(self):
+        return self.leafCount.asInt() - self.viewedLeafCount.asInt()
+
+    @property
     def isWatched(self):
         return self.viewedLeafCount == self.leafCount
 
@@ -248,7 +252,7 @@ class Season(Video):
 
     @property
     def unViewedLeafCount(self):
-        return self.leafCount - self.viewedLeafCount
+        return self.leafCount.asInt() - self.viewedLeafCount.asInt()
 
     @property
     def isWatched(self):

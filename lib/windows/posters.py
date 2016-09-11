@@ -5,7 +5,6 @@ import kodigui
 
 from lib import colors
 from lib import util
-from lib import player
 from lib import backgroundthread
 
 import busy
@@ -15,6 +14,8 @@ import photos
 import plexnet
 import musicplayer
 import videoplayer
+import dropdown
+
 from plexnet import playqueue
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -117,7 +118,7 @@ class PostersWindow(kodigui.BaseWindow):
 
     PLAY_BUTTON_ID = 301
     SHUFFLE_BUTTON_ID = 302
-    MORE_BUTTON_ID = 303
+    OPTIONS_BUTTON_ID = 303
     VIEWTYPE_BUTTON_ID = 304
 
     def __init__(self, *args, **kwargs):
@@ -137,6 +138,9 @@ class PostersWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
+        util.TEST(self.section.TYPE)
+        self.setProperty('no.options', self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
+        self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
 
         self.setTitle()
         if self.section.TYPE in ('photo', 'photodirectory'):
@@ -180,6 +184,8 @@ class PostersWindow(kodigui.BaseWindow):
             self.playButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.shuffleButtonClicked()
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.KEY_LIST_ID:
@@ -248,6 +254,28 @@ class PostersWindow(kodigui.BaseWindow):
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)
 
+    def optionsButtonClicked(self):
+        options = []
+        if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
+            options.append(('play_next', 'Play Next'))
+
+        if self.section.TYPE not in ('artist', 'photo', 'photodirectory'):
+            options.append(('mark_watched', 'Mark All Watched'))
+            options.append(('mark_unwatched', 'Mark All Unwatched'))
+
+        # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
+        #     options.append(('add_to_queue', 'Add To Queue'))
+
+        # if False:
+        #     options.append(('add_to_playlist', 'Add To Playlist'))
+
+        choice = dropdown.showDropdown(options, (255, 260))
+        if not choice:
+            return
+
+        if choice == 'play_next':
+            xbmc.executebuiltin('PlayerControl(Next)')
+
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
         if not mli:
@@ -255,8 +283,10 @@ class PostersWindow(kodigui.BaseWindow):
 
         if self.section.TYPE == 'show':
             self.showSeasons(mli.dataSource)
+            self.updateUnwatched(mli)
         elif self.section.TYPE == 'movie':
             self.showPreplay(mli.dataSource)
+            self.updateUnwatched(mli)
         elif self.section.TYPE == 'artist':
             self.showArtist(mli.dataSource)
         elif self.section.TYPE in ('photo', 'photodirectory'):
@@ -282,6 +312,12 @@ class PostersWindow(kodigui.BaseWindow):
         else:
             w = SquaresWindow.open(section=photo)
             self.onChildWindowClosed(w)
+
+    def updateUnwatched(self, mli):
+        mli.dataSource.reload()
+        mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+        if not mli.dataSource.isWatched and self.section.TYPE == 'show':
+            mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
 
     def onChildWindowClosed(self, w):
         try:
@@ -410,11 +446,18 @@ class PostersWindow(kodigui.BaseWindow):
         pos = start
         self.setBackground(items)
         thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
+        showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
+
         for obj in items:
             mli = self.showPanelControl[pos]
             mli.setLabel(obj.defaultTitle or '')
             mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
             mli.dataSource = obj
+            if showUnwatched:
+                if not mli.dataSource.isWatched:
+                    mli.setProperty('unwatched', '1')
+                    if self.section.TYPE == 'show':
+                        mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
             pos += 1
 
     def showAudioPlayer(self):

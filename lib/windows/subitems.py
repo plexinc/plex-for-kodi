@@ -13,6 +13,7 @@ import opener
 import info
 import musicplayer
 import videoplayer
+import dropdown
 
 
 class ShowWindow(kodigui.BaseWindow):
@@ -55,7 +56,7 @@ class ShowWindow(kodigui.BaseWindow):
     INFO_BUTTON_ID = 301
     PLAY_BUTTON_ID = 302
     SHUFFLE_BUTTON_ID = 303
-    MORE_BUTTON_ID = 304
+    OPTIONS_BUTTON_ID = 304
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -152,6 +153,8 @@ class ShowWindow(kodigui.BaseWindow):
             self.playButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.shuffleButtonClicked()
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -180,6 +183,7 @@ class ShowWindow(kodigui.BaseWindow):
 
         if self.mediaItem.type == 'show':
             w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem)
+            mli.setProperty('unwatched.count', not mli.dataSource.isWatched and str(mli.dataSource.unViewedLeafCount) or '')
         elif self.mediaItem.type == 'artist':
             w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
 
@@ -209,6 +213,38 @@ class ShowWindow(kodigui.BaseWindow):
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)
 
+    def optionsButtonClicked(self):
+        options = []
+        if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
+            options.append(('play_next', 'Play Next'))
+
+        options.append(('mark_watched', 'Mark All Watched'))
+        options.append(('mark_unwatched', 'Mark All Unwatched'))
+
+        # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
+        #     options.append(('add_to_queue', 'Add To Queue'))
+
+        # if False:
+        #     options.append(('add_to_playlist', 'Add To Playlist'))
+
+        choice = dropdown.showDropdown(options, (880, 618), close_direction='left')
+        if not choice:
+            return
+
+        if choice == 'play_next':
+            xbmc.executebuiltin('PlayerControl(Next)')
+        elif choice == 'mark_watched':
+            self.mediaItem.markWatched()
+            self.markAllWatched()
+        elif choice == 'mark_unwatched':
+            self.mediaItem.markUnwatched()
+            self.markAllWatched()
+
+    def markAllWatched(self):
+        for mli in self.subItemListControl:
+            mli.dataSource.reload()
+            mli.setProperty('unwatched.count', not mli.dataSource.isWatched and str(mli.dataSource.unViewedLeafCount) or '')
+
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(
             obj.title or '',
@@ -226,6 +262,7 @@ class ShowWindow(kodigui.BaseWindow):
             if mli:
                 mli.setProperty('index', str(idx))
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+                mli.setProperty('unwatched.count', not season.isWatched and str(season.unViewedLeafCount) or '')
                 items.append(mli)
                 idx += 1
 

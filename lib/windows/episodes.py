@@ -11,6 +11,7 @@ import busy
 import preplay
 import musicplayer
 import videoplayer
+import dropdown
 
 
 class EpisodesWindow(kodigui.BaseWindow):
@@ -33,7 +34,7 @@ class EpisodesWindow(kodigui.BaseWindow):
 
     PLAY_BUTTON_ID = 301
     SHUFFLE_BUTTON_ID = 302
-    MORE_BUTTON_ID = 303
+    OPTIONS_BUTTON_ID = 303
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -80,6 +81,8 @@ class EpisodesWindow(kodigui.BaseWindow):
             self.playButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.shuffleButtonClicked()
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
@@ -101,6 +104,34 @@ class EpisodesWindow(kodigui.BaseWindow):
                 self.doClose()
         finally:
             del w
+
+    def optionsButtonClicked(self):
+        options = []
+        if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
+            options.append(('play_next', 'Play Next'))
+
+        if not isinstance(self, AlbumWindow):
+            options.append(('mark_watched', 'Mark All Watched'))
+            options.append(('mark_unwatched', 'Mark All Unwatched'))
+
+        # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
+        #     options.append(('add_to_queue', 'Add To Queue'))
+
+        # if False:
+        #     options.append(('add_to_playlist', 'Add To Playlist'))
+
+        choice = dropdown.showDropdown(options, (460, 1106), pos_is_bottom=True, close_direction='left')
+        if not choice:
+            return
+
+        if choice == 'play_next':
+            xbmc.executebuiltin('PlayerControl(Next)')
+        elif choice == 'mark_watched':
+            self.season.markWatched()
+            self.markAllWatched()
+        elif choice == 'mark_unwatched':
+            self.season.markUnwatched()
+            self.markAllWatched()
 
     def checkForHeaderFocus(self, action):
         if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):
@@ -127,6 +158,14 @@ class EpisodesWindow(kodigui.BaseWindow):
         mli.setProperty('episode.duration', util.durationToText(obj.duration.asInt()))
         mli.setProperty('watched', obj.isWatched and '1' or '')
         return mli
+
+    def markAllWatched(self):
+        if self.season.isWatched:
+            for mli in self.episodePanelControl:
+                mli.setProperty('watched', '1')
+        else:
+            for mli in self.episodePanelControl:
+                mli.setProperty('watched', '')
 
     @busy.dialog()
     def fillEpisodes(self):

@@ -72,6 +72,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="303">
+                    <visible>IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -159,6 +160,47 @@
                                         <colordiffuse>FFCC7B19</colordiffuse>
                                     </control>
                                 </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <posx>199</posx>
+                                        <posy>0</posy>
+                                        <width>45</width>
+                                        <height>45</height>
+                                        <texture>script.plex/indicators/unwatched.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <control type="image">
+                                            <posx>193</posx>
+                                            <posy>0</posy>
+                                            <width>51</width>
+                                            <height>39</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>FF000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>194</posx>
+                                            <posy>0</posy>
+                                            <width>50</width>
+                                            <height>38</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                        <control type="label">
+                                            <posx>194</posx>
+                                            <posy>0</posy>
+                                            <width>50</width>
+                                            <height>38</height>
+                                            <font>font12</font>
+                                            <align>center</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FF000000</textcolor>
+                                            <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                        </control>
+                                    </control>
+                                </control>
                                 <control type="textbox">
                                     <posx>0</posx>
                                     <posy>361</posy>
@@ -230,6 +272,47 @@
                                             <colordiffuse>FFCC7B19</colordiffuse>
                                         </control>
                                     </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <control type="image">
+                                            <visible>IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <posx>231</posx>
+                                            <posy>0</posy>
+                                            <width>56</width>
+                                            <height>56</height>
+                                            <texture>script.plex/indicators/unwatched.png</texture>
+                                        </control>
+                                        <control type="group">
+                                            <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <control type="image">
+                                                <posx>227</posx>
+                                                <posy>0</posy>
+                                                <width>60</width>
+                                                <height>46</height>
+                                                <texture>script.plex/white-square.png</texture>
+                                                <colordiffuse>FF000000</colordiffuse>
+                                            </control>
+                                            <control type="image">
+                                                <posx>228</posx>
+                                                <posy>0</posy>
+                                                <width>59</width>
+                                                <height>45</height>
+                                                <texture>script.plex/white-square.png</texture>
+                                                <colordiffuse>FFCC7B19</colordiffuse>
+                                            </control>
+                                            <control type="label">
+                                                <posx>228</posx>
+                                                <posy>0</posy>
+                                                <width>59</width>
+                                                <height>45</height>
+                                                <font>font13</font>
+                                                <align>center</align>
+                                                <aligny>center</aligny>
+                                                <textcolor>FF000000</textcolor>
+                                                <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                            </control>
+                                        </control>
+                                    </control>
                                     <control type="textbox">
                                         <posx>0</posx>
                                         <posy>427</posy>
@@ -288,6 +371,47 @@
                                         <height>8</height>
                                         <texture>$INFO[ListItem.Property(progress)]</texture>
                                         <colordiffuse>FFCC7B19</colordiffuse>
+                                    </control>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <posx>199</posx>
+                                        <posy>0</posy>
+                                        <width>45</width>
+                                        <height>45</height>
+                                        <texture>script.plex/indicators/unwatched.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <control type="image">
+                                            <posx>193</posx>
+                                            <posy>0</posy>
+                                            <width>51</width>
+                                            <height>39</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>FF000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>194</posx>
+                                            <posy>0</posy>
+                                            <width>50</width>
+                                            <height>38</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                        <control type="label">
+                                            <posx>194</posx>
+                                            <posy>0</posy>
+                                            <width>50</width>
+                                            <height>38</height>
+                                            <font>font12</font>
+                                            <align>center</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FF000000</textcolor>
+                                            <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                        </control>
                                     </control>
                                 </control>
                                 <control type="textbox">

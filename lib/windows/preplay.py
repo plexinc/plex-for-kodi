@@ -64,6 +64,10 @@ class PrePlayWindow(kodigui.BaseWindow):
         # else:
         #     self.setFocusId(self.PLAY_BUTTON_ID)
 
+    def onReInit(self):
+        self.video.reload()
+        self.setInfo()
+
     def onAction(self, action):
         try:
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
@@ -139,8 +143,12 @@ class PrePlayWindow(kodigui.BaseWindow):
 
         # if False:
         #     options.append(('add_to_playlist', 'Add To Playlist'))
-
-        choice = dropdown.showDropdown(options, (880, 618), close_direction='left')
+        posy = 880
+        if not self.getProperty('hide.resume'):
+            posy += 106
+        if self.getProperty('trailer.button'):
+            posy += 106
+        choice = dropdown.showDropdown(options, (posy, 618), close_direction='left')
         if not choice:
             return
 
@@ -229,7 +237,9 @@ class PrePlayWindow(kodigui.BaseWindow):
         if self.video.viewOffset.asInt():
             width = self.video.viewOffset.asInt() and (1 + int((self.video.viewOffset.asInt() / self.video.duration.asFloat()) * self.width)) or 1
             self.progressImageControl.setWidth(width)
+            self.setProperty('hide.resume', '')
         else:
+            self.progressImageControl.setWidth(1)
             self.setProperty('hide.resume', '1')
 
     def createListItem(self, obj):

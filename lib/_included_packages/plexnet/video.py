@@ -137,6 +137,13 @@ class PlayableVideo(Video):
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
             self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server)
 
+    def reload(self, *args, **kwargs):
+        if self.get('viewCount'):
+            del self.viewCount
+        if self.get('viewOffset'):
+            del self.viewOffset
+        Video.reload(self, *args, **kwargs)
+
 
 @plexobjects.registerLibType
 class Movie(PlayableVideo):
@@ -299,11 +306,6 @@ class Episode(PlayableVideo):
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
-
-    def reload(self, *args, **kwargs):
-        if self.get('viewCount'):
-            del self.viewCount
-        PlayableVideo.reload(self, *args, **kwargs)
 
     @property
     def defaultTitle(self):

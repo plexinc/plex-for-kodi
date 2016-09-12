@@ -71,15 +71,14 @@ class ShowWindow(kodigui.BaseWindow):
 
         self.mediaItem.reload(includeRelated=1, includeRelatedCount=10)
 
-        self.setProperties()
+        self.updateProperties()
         self.fill()
         hasPrev = self.fillRelated(False)
         self.fillRoles(hasPrev)
 
         self.setFocusId(self.PLAY_BUTTON_ID)
 
-    def setProperties(self):
-
+    def updateProperties(self):
         self.setProperty('title', self.mediaItem.title)
         self.setProperty('summary', self.mediaItem.summary)
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
@@ -184,6 +183,8 @@ class ShowWindow(kodigui.BaseWindow):
         if self.mediaItem.type == 'show':
             w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem)
             mli.setProperty('unwatched.count', not mli.dataSource.isWatched and str(mli.dataSource.unViewedLeafCount) or '')
+            self.mediaItem.reload()
+            self.updateProperties()
         elif self.mediaItem.type == 'artist':
             w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
 
@@ -241,9 +242,11 @@ class ShowWindow(kodigui.BaseWindow):
         elif choice == 'mark_watched':
             self.mediaItem.markWatched()
             self.updateItems()
+            self.updateProperties()
         elif choice == 'mark_unwatched':
             self.mediaItem.markUnwatched()
             self.updateItems()
+            self.updateProperties()
 
     def updateItems(self):
         self.fill(update=True)

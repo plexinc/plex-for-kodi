@@ -26,6 +26,7 @@ class EpisodesWindow(kodigui.BaseWindow):
     POSTER_DIM = (420, 630)
 
     EPISODE_PANEL_ID = 101
+    LIST_OPTIONS_BUTTON_ID = 111
 
     OPTIONS_GROUP_ID = 200
 
@@ -41,8 +42,6 @@ class EpisodesWindow(kodigui.BaseWindow):
         self.season = kwargs.get('season')
         self.show = kwargs.get('show')
         self.exitCommand = None
-        self.lastFocusID = None
-        self.mode = False
 
     def onFirstInit(self):
         self.episodePanelControl = kodigui.ManagedControlList(self, self.EPISODE_PANEL_ID, 5)
@@ -52,18 +51,14 @@ class EpisodesWindow(kodigui.BaseWindow):
         self.setFocusId(self.EPISODE_PANEL_ID)
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
 
-    def onReInit(self):
-        self.setMode()
-
     def onAction(self, action):
         controlID = self.getFocusId()
         try:
             if controlID == self.EPISODE_PANEL_ID:
                 self.checkForHeaderFocus(action)
-                if self.checkOptionsAction(action):
-                    return
-
-            if action == xbmcgui.ACTION_CONTEXT_MENU:
+            if controlID == self.LIST_OPTIONS_BUTTON_ID and self.checkOptionsAction(action):
+                return
+            elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
@@ -77,41 +72,26 @@ class EpisodesWindow(kodigui.BaseWindow):
         kodigui.BaseWindow.onAction(self, action)
 
     def checkOptionsAction(self, action):
-        if action == xbmcgui.ACTION_MOVE_RIGHT:
-            if self.lastFocusID == self.EPISODE_PANEL_ID and not self.mode == 'ignore':
-                if not self.mode:
-                    self.setMode('options')
-                    return True
-                else:
-                    self.setFocusId(152)
-                    return False
-            else:
-                self.setMode()
-
-        elif action == xbmcgui.ACTION_MOVE_LEFT:
-            if self.lastFocusID == self.EPISODE_PANEL_ID and not self.mode == 'ignore':
-                if not self.mode:
-                    self.setFocusId(300)
-                    return False
-                else:
-                    self.setMode()
-                    return True
-            else:
-                self.setMode()
+        if action == xbmcgui.ACTION_MOVE_UP:
+            mli = self.episodePanelControl.getSelectedItem()
+            if not mli:
+                return False
+            pos = mli.pos() - 1
+            if self.episodePanelControl.positionIsValid(pos):
+                self.setFocusId(self.EPISODE_PANEL_ID)
+                self.episodePanelControl.selectItem(pos)
+            return True
+        elif action == xbmcgui.ACTION_MOVE_DOWN:
+            mli = self.episodePanelControl.getSelectedItem()
+            if not mli:
+                return False
+            pos = mli.pos() + 1
+            if self.episodePanelControl.positionIsValid(pos):
+                self.setFocusId(self.EPISODE_PANEL_ID)
+                self.episodePanelControl.selectItem(pos)
+            return True
 
         return False
-
-    def setMode(self, mode=None):
-        self.mode = mode
-        self.setProperty('mode.options', self.mode == 'options' and '1' or '')
-
-    def onFocus(self, controlID):
-        self.lastFocusID = controlID
-        if controlID == self.EPISODE_PANEL_ID:
-            if self.mode == False:
-                self.setMode()
-            else:
-                self.setMode('ignore')
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
@@ -127,6 +107,10 @@ class EpisodesWindow(kodigui.BaseWindow):
             self.shuffleButtonClicked()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.optionsButtonClicked()
+        elif controlID == self.LIST_OPTIONS_BUTTON_ID:
+            mli = self.episodePanelControl.getSelectedItem()
+            if mli:
+                self.optionsButtonClicked(mli)
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
@@ -141,18 +125,15 @@ class EpisodesWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        if self.mode == 'options':
-            self.optionsButtonClicked(mli)
-        else:
-            w = preplay.PrePlayWindow.open(video=mli.dataSource)
-            mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
-            self.season.reload()
-            try:
-                if w.exitCommand == 'HOME':
-                    self.exitCommand = 'HOME'
-                    self.doClose()
-            finally:
-                del w
+        w = preplay.PrePlayWindow.open(video=mli.dataSource)
+        mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
+        self.season.reload()
+        try:
+            if w.exitCommand == 'HOME':
+                self.exitCommand = 'HOME'
+                self.doClose()
+        finally:
+            del w
 
     def optionsButtonClicked(self, item=None):
         options = []
@@ -162,6 +143,9 @@ class EpisodesWindow(kodigui.BaseWindow):
                 options.append(('mark_unwatched', 'Mark Unwatched'))
             else:
                 options.append(('mark_watched', 'Mark Watched'))
+
+            if True:
+                options.append(('add_to_playlist', '[COLOR FF808080]Add To Playlist[/COLOR]'))
         else:
             if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
                 options.append(('play_next', 'Play Next'))
@@ -175,15 +159,19 @@ class EpisodesWindow(kodigui.BaseWindow):
             # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
             #     options.append(('add_to_queue', 'Add To Queue'))
 
-            # if False:
-            #     options.append(('add_to_playlist', 'Add To Playlist'))
+
 
         pos = (460, 1106)
         bottom=True
         setDropdownProp = False
         if item:
-            pos = (1490, 167 + (self.episodePanelControl.getViewPosition() * 100))
-            bottom=False
+            viewPos = self.episodePanelControl.getViewPosition()
+            if viewPos > 6:
+                pos = (1490, 312 + (viewPos * 100))
+                bottom=True
+            else:
+                pos = (1490, 167 + (viewPos * 100))
+                bottom=False
             setDropdownProp = True
         choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='right', set_dropdown_prop=setDropdownProp)
         if not choice:

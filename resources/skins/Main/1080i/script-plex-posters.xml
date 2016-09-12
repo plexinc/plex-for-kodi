@@ -433,7 +433,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window.Property(sort),name) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1780</posx>
             <posy>150</posy>
@@ -657,6 +657,7 @@
                     <width>260</width>
                     <height>75</height>
                     <onleft>202</onleft>
+                    <onright>210</onright>
                     <ondown>50</ondown>
                     <font>font12</font>
                     <textcolor>FFFFFFFF</textcolor>
@@ -740,6 +741,31 @@
                     <righttexture>-</righttexture>
                     <overlaytexture>-</overlaytexture>
                     <info>Player.Progress</info>
+                </control>
+            </control>
+            <control type="grouplist">
+                <right>340</right>
+                <posy>35</posy>
+                <width>1000</width>
+                <height>65</height>
+                <align>right</align>
+                <itemgap>30</itemgap>
+                <orientation>horizontal</orientation>
+                <onleft>204</onleft>
+                <ondown>50</ondown>
+                <control type="button" id="210">
+                    <width max="300">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(sort.display)][/UPPERCASE]</label>
                 </control>
             </control>
             <control type="label">

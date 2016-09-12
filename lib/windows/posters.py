@@ -116,6 +116,8 @@ class PostersWindow(kodigui.BaseWindow):
     HOME_BUTTON_ID = 201
     PLAYER_STATUS_BUTTON_ID = 204
 
+    SORT_BUTTON_ID = 210
+
     PLAY_BUTTON_ID = 301
     SHUFFLE_BUTTON_ID = 302
     OPTIONS_BUTTON_ID = 303
@@ -129,6 +131,8 @@ class PostersWindow(kodigui.BaseWindow):
         self.tasks = []
         self.backgroundSet = False
         self.exitCommand = None
+        self.sort = 'name'
+        self.sortDesc = False
 
     def doClose(self):
         for task in self.tasks:
@@ -141,6 +145,8 @@ class PostersWindow(kodigui.BaseWindow):
         util.TEST(self.section.TYPE)
         self.setProperty('no.options', '1')  # self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
         self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
+        self.setProperty('sort', self.sort)
+        self.setProperty('sort.display', 'By Name')
 
         self.setTitle()
         if self.section.TYPE in ('photo', 'photodirectory'):
@@ -186,6 +192,8 @@ class PostersWindow(kodigui.BaseWindow):
             self.shuffleButtonClicked()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.optionsButtonClicked()
+        elif controlID == self.SORT_BUTTON_ID:
+            self.sortButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.KEY_LIST_ID:
@@ -275,6 +283,46 @@ class PostersWindow(kodigui.BaseWindow):
 
         if choice == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
+
+    def sortButtonClicked(self):
+        options = [
+            (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
+            (('date_released', 'By Release Date'), 'Release Date', self.sortDesc if self.sort == 'date_released' else None),
+            (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
+            (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
+            (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
+            (('resolution', 'By Resolution'), 'Resolution', self.sortDesc if self.sort == 'resolution' else None),
+            (('duration', 'By Duration'), 'Duration', self.sortDesc if self.sort == 'duration' else None)
+        ]
+        choice = dropdown.showDropdown(options, (1280, 106), with_indicator=True)
+        if not choice:
+            return
+
+        choice, display = choice
+
+        if choice == self.sort:
+            self.sortDesc = not self.sortDesc
+        else:
+            self.sortDesc = False
+
+        self.sort = choice
+        self.setProperty('sort', choice)
+        self.setProperty('sort.display', display)
+        if choice == 'date_added':
+            self.showPanelControl.sort(lambda i: i.dataSource.addedAt, reverse=self.sortDesc)
+        elif choice == 'date_released':
+            self.showPanelControl.sort(lambda i: i.dataSource.get('originallyAvailableAt'), reverse=self.sortDesc)
+        elif choice == 'date_viewed':
+            self.showPanelControl.sort(lambda i: i.dataSource.get('lastViewedAt'), reverse=self.sortDesc)
+        elif choice == 'name':
+            self.showPanelControl.sort(lambda i: i.dataSource.get('titleSort') or i.dataSource.title, reverse=self.sortDesc)
+            self.keyListControl.sort(lambda i: i.getProperty('original'), reverse=self.sortDesc)
+        elif choice == 'rating':
+            self.showPanelControl.sort(lambda i: i.dataSource.get('rating').asFloat(), reverse=self.sortDesc)
+        elif choice == 'resolution':
+            self.showPanelControl.sort(lambda i: i.dataSource.media.get('videoResolution').asInt(), reverse=self.sortDesc)
+        elif choice == 'duration':
+            self.showPanelControl.sort(lambda i: i.dataSource.duration.asInt(), reverse=self.sortDesc)
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
@@ -366,9 +414,10 @@ class PostersWindow(kodigui.BaseWindow):
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        for ji in jumpList:
+        for kidx, ji in enumerate(jumpList):
             mli = kodigui.ManagedListItem(ji.title, data_source=ji.key)
             mli.setProperty('key', ji.key)
+            mli.setProperty('original', '{0:02d}'.format(kidx))
             self.keyItems[ji.key] = mli
             jitems.append(mli)
             totalSize += ji.size.asInt()
@@ -430,9 +479,10 @@ class PostersWindow(kodigui.BaseWindow):
 
         litems = []
         self.keyItems = {}
-        for key in keys:
+        for i, key in enumerate(keys):
             mli = kodigui.ManagedListItem(key, data_source=key)
             mli.setProperty('key', key)
+            mli.setProperty('original', '{0:02d}'.format(i))
             self.keyItems[key] = mli
             litems.append(mli)
 

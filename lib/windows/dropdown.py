@@ -20,9 +20,11 @@ class DropdownDialog(kodigui.BaseDialog):
         self.pos = kwargs.get('pos')
         self.posIsBottom = kwargs.get('pos_is_bottom')
         self.closeDirection = kwargs.get('close_direction')
+        self.setDropdownProp = kwargs.get('set_dropdown_prop')
         self.choice = None
 
     def onFirstInit(self):
+        self.setProperty('dropdown', self.setDropdownProp and '1' or '')
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
         self.showOptions()
         height = (len(self.options) * 66) + 80
@@ -72,8 +74,8 @@ class DropdownDialog(kodigui.BaseDialog):
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
-def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top'):
-    w = DropdownDialog.open(options=options, pos=pos, pos_is_bottom=pos_is_bottom, close_direction=close_direction)
+def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top', set_dropdown_prop=True):
+    w = DropdownDialog.open(options=options, pos=pos, pos_is_bottom=pos_is_bottom, close_direction=close_direction, set_dropdown_prop=set_dropdown_prop)
     choice = w.choice
     del w
     return choice

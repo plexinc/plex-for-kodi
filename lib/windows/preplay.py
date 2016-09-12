@@ -7,7 +7,7 @@ import opener
 import info
 import videoplayer
 import playersettings
-
+import dropdown
 from plexnet import plexplayer, media
 
 from lib import colors
@@ -95,6 +95,8 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.settingsButtonClicked()
         elif controlID == self.TRAILER_BUTTON_ID:
             self.openItem(item=self.trailer)
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -116,10 +118,40 @@ class PrePlayWindow(kodigui.BaseWindow):
             title=self.video.title,
             sub_title=self.getProperty('info'),
             thumb=self.video.type == 'episode' and self.video.thumb or self.video.defaultThumb,
+            thumb_fallback='script.plex/thumb_fallbacks/{0}.png'.format(self.video.type == 'episode' and 'show' or 'movie'),
             info=self.video.summary,
             background=self.getProperty('background'),
-            is_square=self.video.type == 'episode'
+            is_16x9=self.video.type == 'episode'
         )
+
+    def optionsButtonClicked(self):
+        options = []
+        # if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
+        #     options.append(('play_next', 'Play Next'))
+
+        if self.video.isWatched:
+            options.append(('mark_unwatched', 'Mark Unwatched'))
+        else:
+            options.append(('mark_watched', 'Mark Watched'))
+
+        # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
+        #     options.append(('add_to_queue', 'Add To Queue'))
+
+        # if False:
+        #     options.append(('add_to_playlist', 'Add To Playlist'))
+
+        choice = dropdown.showDropdown(options, (880, 618), close_direction='left')
+        if not choice:
+            return
+
+        if choice == 'play_next':
+            xbmc.executebuiltin('PlayerControl(Next)')
+        elif choice == 'mark_watched':
+            self.video.markWatched()
+            self.setInfo()
+        elif choice == 'mark_unwatched':
+            self.video.markUnwatched()
+            self.setInfo()
 
     def playVideo(self, resume=False):
         videoplayer.play(video=self.video, resume=resume)

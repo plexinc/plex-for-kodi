@@ -142,8 +142,8 @@
                     <width>1380</width>
                     <height>945</height>
                     <onup>200</onup>
-                    <onright>152</onright>
-                    <onleft>300</onleft>
+                    <!-- <onright>152</onright> -->
+                    <!-- <onleft>300</onleft> -->
                     <scrolltime>200</scrolltime>
                     <orientation>vertical</orientation>
                     <preloaditems>4</preloaditems>
@@ -331,7 +331,7 @@
                         </control>
 
                         <control type="group">
-                            <visible>Control.HasFocus(101)</visible>
+                            <visible>Control.HasFocus(101) | !IsEmpty(Window.Property(dropdown))</visible>
                             <posx>63</posx>
                             <posy>21</posy>
                             <control type="image">
@@ -342,6 +342,16 @@
                                 <texture border="40">script.plex/square-rounded-shadow.png</texture>
                             </control>
                             <control type="image">
+                                <visible>!IsEmpty(Window.Property(mode.options)) | !IsEmpty(Window.Property(dropdown))</visible>
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>1209</width>
+                                <height>100</height>
+                                <texture border="12">script.plex/white-square-left-rounded.png</texture>
+                                <colordiffuse>FFCC7B19</colordiffuse>
+                            </control>
+                            <control type="image">
+                                <visible>IsEmpty(Window.Property(mode.options)) + IsEmpty(Window.Property(dropdown))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>1209</width>
@@ -425,12 +435,22 @@
                                 <texture>script.plex/indicators/unwatched.png</texture>
                             </control>
                             <control type="image">
+                                <visible>IsEmpty(Window.Property(mode.options)) + IsEmpty(Window.Property(dropdown))</visible>
                                 <posx>1209</posx>
                                 <posy>0</posy>
                                 <width>45</width>
                                 <height>100</height>
                                 <texture>script.plex/buttons/more-vertical.png</texture>
                                 <colordiffuse>99FFFFFF</colordiffuse>
+                            </control>
+                            <control type="image">
+                                <visible>!IsEmpty(Window.Property(mode.options)) | !IsEmpty(Window.Property(dropdown))</visible>
+                                <posx>1209</posx>
+                                <posy>0</posy>
+                                <width>45</width>
+                                <height>100</height>
+                                <texture>script.plex/buttons/more-vertical.png</texture>
+                                <colordiffuse>FFE5A00D</colordiffuse>
                             </control>
                         </control>
                     </focusedlayout>

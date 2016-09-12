@@ -33,23 +33,62 @@
             <control type="group">
                 <posx>60</posx>
                 <posy>0</posy>
-                <control type="image">
-                    <visible>IsEmpty(Window.Property(is.square))</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>519</width>
-                    <height>769</height>
-                    <texture>$INFO[Window.Property(thumb)]</texture>
-                    <aspectratio aligny="top">scale</aspectratio>
+                <control type="group">
+                    <visible>!IsEmpty(Window.Property(is.poster))</visible>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>519</width>
+                        <height>769</height>
+                        <texture>$INFO[Window.Property(thumb.fallback)]</texture>
+                        <aspectratio aligny="top">scale</aspectratio>
+                    </control>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>519</width>
+                        <height>769</height>
+                        <texture>$INFO[Window.Property(thumb)]</texture>
+                        <aspectratio aligny="top">scale</aspectratio>
+                    </control>
                 </control>
-                <control type="image">
+                <control type="group">
                     <visible>!IsEmpty(Window.Property(is.square))</visible>
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>519</width>
-                    <height>519</height>
-                    <texture>$INFO[Window.Property(thumb)]</texture>
-                    <aspectratio aligny="top">keep</aspectratio>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>519</width>
+                        <height>519</height>
+                        <texture>$INFO[Window.Property(thumb.fallback)]</texture>
+                        <aspectratio aligny="top">keep</aspectratio>
+                    </control>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>519</width>
+                        <height>519</height>
+                        <texture>$INFO[Window.Property(thumb)]</texture>
+                        <aspectratio aligny="top">scale</aspectratio>
+                    </control>
+                </control>
+                <control type="group">
+                    <visible>!IsEmpty(Window.Property(is.16x9))</visible>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>519</width>
+                        <height>292</height>
+                        <texture>$INFO[Window.Property(thumb.fallback)]</texture>
+                        <aspectratio>scale</aspectratio>
+                    </control>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>519</width>
+                        <height>292</height>
+                        <texture>$INFO[Window.Property(thumb)]</texture>
+                        <aspectratio aligny="top">scale</aspectratio>
+                    </control>
                 </control>
                 <control type="label">
                     <posx>579</posx>

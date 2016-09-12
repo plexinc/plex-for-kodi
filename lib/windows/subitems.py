@@ -195,11 +195,14 @@ class ShowWindow(kodigui.BaseWindow):
             del w
 
     def infoButtonClicked(self):
+        fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(self.mediaItem.type == 'show' and 'show' or 'music')
+        util.TEST(fallback)
         genres = u' / '.join([g.tag for g in util.removeDups(self.mediaItem.genres())][:6])
         info.InfoWindow.open(
             title=self.mediaItem.title,
             sub_title=genres,
             thumb=self.mediaItem.defaultThumb,
+            thumb_fallback=fallback,
             info=self.mediaItem.summary,
             background=self.getProperty('background'),
             is_square=bool(isinstance(self, ArtistWindow))
@@ -218,8 +221,10 @@ class ShowWindow(kodigui.BaseWindow):
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
             options.append(('play_next', 'Play Next'))
 
-        options.append(('mark_watched', 'Mark All Watched'))
-        options.append(('mark_unwatched', 'Mark All Unwatched'))
+        if self.mediaItem.isWatched:
+            options.append(('mark_unwatched', 'Mark Unwatched'))
+        else:
+            options.append(('mark_watched', 'Mark Watched'))
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append(('add_to_queue', 'Add To Queue'))
@@ -235,15 +240,13 @@ class ShowWindow(kodigui.BaseWindow):
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice == 'mark_watched':
             self.mediaItem.markWatched()
-            self.markAllWatched()
+            self.updateItems()
         elif choice == 'mark_unwatched':
             self.mediaItem.markUnwatched()
-            self.markAllWatched()
+            self.updateItems()
 
-    def markAllWatched(self):
-        for mli in self.subItemListControl:
-            mli.dataSource.reload()
-            mli.setProperty('unwatched.count', not mli.dataSource.isWatched and str(mli.dataSource.unViewedLeafCount) or '')
+    def updateItems(self):
+        self.fill(update=True)
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(
@@ -254,7 +257,7 @@ class ShowWindow(kodigui.BaseWindow):
         return mli
 
     @busy.dialog()
-    def fill(self):
+    def fill(self, update=False):
         items = []
         idx = 0
         for season in self.mediaItem.seasons():
@@ -266,7 +269,11 @@ class ShowWindow(kodigui.BaseWindow):
                 items.append(mli)
                 idx += 1
 
-        self.subItemListControl.addItems(items)
+        if update:
+            self.subItemListControl.replaceItems(items)
+        else:
+            self.subItemListControl.reset()
+            self.subItemListControl.addItems(items)
 
     def fillRelated(self, has_prev=False):
         items = []

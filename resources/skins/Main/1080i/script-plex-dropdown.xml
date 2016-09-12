@@ -1,4 +1,5 @@
 <window>
+    <onload>SetProperty(dropdown,1)</onload>
     <defaultcontrol>100</defaultcontrol>
     <coordinates>
         <system>1</system>
@@ -27,6 +28,7 @@
                 <onup condition="StringCompare(Window.Property(close.direction),top)">Close</onup>
                 <onup condition="!StringCompare(Window.Property(close.direction),top)">noop</onup>
                 <onleft condition="StringCompare(Window.Property(close.direction),left)">Close</onleft>
+                <onright condition="StringCompare(Window.Property(close.direction),right)">Close</onright>
                 <ondown>noop</ondown>
                 <scrolltime>200</scrolltime>
                 <orientation>vertical</orientation>

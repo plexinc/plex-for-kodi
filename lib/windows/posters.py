@@ -139,7 +139,7 @@ class PostersWindow(kodigui.BaseWindow):
         self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
         util.TEST(self.section.TYPE)
-        self.setProperty('no.options', self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
+        self.setProperty('no.options', '1')  # self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
         self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
 
         self.setTitle()
@@ -259,9 +259,9 @@ class PostersWindow(kodigui.BaseWindow):
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
             options.append(('play_next', 'Play Next'))
 
-        if self.section.TYPE not in ('artist', 'photo', 'photodirectory'):
-            options.append(('mark_watched', 'Mark All Watched'))
-            options.append(('mark_unwatched', 'Mark All Unwatched'))
+        # if self.section.TYPE not in ('artist', 'photo', 'photodirectory'):
+        #     options.append(('mark_watched', 'Mark All Watched'))
+        #     options.append(('mark_unwatched', 'Mark All Unwatched'))
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append(('add_to_queue', 'Add To Queue'))

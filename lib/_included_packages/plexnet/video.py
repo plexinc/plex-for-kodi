@@ -300,6 +300,11 @@ class Episode(PlayableVideo):
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
 
+    def reload(self, *args, **kwargs):
+        if self.get('viewCount'):
+            del self.viewCount
+        PlayableVideo.reload(self, *args, **kwargs)
+
     @property
     def defaultTitle(self):
         return self.grandparentTitle or self.parentTitle or self.title

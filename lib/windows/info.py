@@ -20,15 +20,21 @@ class InfoWindow(kodigui.BaseWindow):
         self.title = kwargs.get('title')
         self.subTitle = kwargs.get('sub_title')
         self.thumb = kwargs.get('thumb')
+        self.thumbFallback = kwargs.get('thumb_fallback')
         self.info = kwargs.get('info')
         self.background = kwargs.get('background')
         self.isSquare = kwargs.get('is_square')
+        self.is16x9 = kwargs.get('is_16x9')
+        self.isPoster = not (self.isSquare or self.is16x9)
         self.thumbDim = self.isSquare and self.THUMB_DIM_SQUARE or self.THUMB_DIM_POSTER
 
     def onFirstInit(self):
+        self.setProperty('is.poster', self.isPoster and '1' or '')
         self.setProperty('is.square', self.isSquare and '1' or '')
+        self.setProperty('is.16x9', self.is16x9 and '1' or '')
         self.setProperty('title.main', self.title)
         self.setProperty('title.sub', self.subTitle)
+        self.setProperty('thumb.fallback', self.thumbFallback)
         self.setProperty('thumb', self.thumb.asTranscodedImageURL(*self.thumbDim))
         self.setProperty('info', self.info)
         self.setProperty('background', self.background)

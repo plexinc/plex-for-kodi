@@ -41,6 +41,8 @@ class EpisodesWindow(kodigui.BaseWindow):
         self.season = kwargs.get('season')
         self.show = kwargs.get('show')
         self.exitCommand = None
+        self.lastFocusID = None
+        self.mode = False
 
     def onFirstInit(self):
         self.episodePanelControl = kodigui.ManagedControlList(self, self.EPISODE_PANEL_ID, 5)
@@ -50,11 +52,17 @@ class EpisodesWindow(kodigui.BaseWindow):
         self.setFocusId(self.EPISODE_PANEL_ID)
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
 
+    def onReInit(self):
+        self.setMode()
+
     def onAction(self, action):
         controlID = self.getFocusId()
         try:
             if controlID == self.EPISODE_PANEL_ID:
                 self.checkForHeaderFocus(action)
+                if self.checkOptionsAction(action):
+                    return
+
             if action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -63,11 +71,47 @@ class EpisodesWindow(kodigui.BaseWindow):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
-
         except:
             util.ERROR()
 
         kodigui.BaseWindow.onAction(self, action)
+
+    def checkOptionsAction(self, action):
+        if action == xbmcgui.ACTION_MOVE_RIGHT:
+            if self.lastFocusID == self.EPISODE_PANEL_ID and not self.mode == 'ignore':
+                if not self.mode:
+                    self.setMode('options')
+                    return True
+                else:
+                    self.setFocusId(152)
+                    return False
+            else:
+                self.setMode()
+
+        elif action == xbmcgui.ACTION_MOVE_LEFT:
+            if self.lastFocusID == self.EPISODE_PANEL_ID and not self.mode == 'ignore':
+                if not self.mode:
+                    self.setFocusId(300)
+                    return False
+                else:
+                    self.setMode()
+                    return True
+            else:
+                self.setMode()
+
+        return False
+
+    def setMode(self, mode=None):
+        self.mode = mode
+        self.setProperty('mode.options', self.mode == 'options' and '1' or '')
+
+    def onFocus(self, controlID):
+        self.lastFocusID = controlID
+        if controlID == self.EPISODE_PANEL_ID:
+            if self.mode == False:
+                self.setMode()
+            else:
+                self.setMode('ignore')
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
@@ -97,41 +141,64 @@ class EpisodesWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        w = preplay.PrePlayWindow.open(video=mli.dataSource)
-        try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
-                self.doClose()
-        finally:
-            del w
+        if self.mode == 'options':
+            self.optionsButtonClicked(mli)
+        else:
+            w = preplay.PrePlayWindow.open(video=mli.dataSource)
+            mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
+            self.season.reload()
+            try:
+                if w.exitCommand == 'HOME':
+                    self.exitCommand = 'HOME'
+                    self.doClose()
+            finally:
+                del w
 
-    def optionsButtonClicked(self):
+    def optionsButtonClicked(self, item=None):
         options = []
-        if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-            options.append(('play_next', 'Play Next'))
 
-        if not isinstance(self, AlbumWindow):
-            options.append(('mark_watched', 'Mark All Watched'))
-            options.append(('mark_unwatched', 'Mark All Unwatched'))
+        if item:
+            if item.dataSource.isWatched:
+                options.append(('mark_unwatched', 'Mark Unwatched'))
+            else:
+                options.append(('mark_watched', 'Mark Watched'))
+        else:
+            if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
+                options.append(('play_next', 'Play Next'))
 
-        # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
-        #     options.append(('add_to_queue', 'Add To Queue'))
+            if not isinstance(self, AlbumWindow):
+                if self.season.isWatched:
+                    options.append(('mark_unwatched', 'Mark Unwatched'))
+                else:
+                    options.append(('mark_watched', 'Mark Watched'))
 
-        # if False:
-        #     options.append(('add_to_playlist', 'Add To Playlist'))
+            # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
+            #     options.append(('add_to_queue', 'Add To Queue'))
 
-        choice = dropdown.showDropdown(options, (460, 1106), pos_is_bottom=True, close_direction='left')
+            # if False:
+            #     options.append(('add_to_playlist', 'Add To Playlist'))
+
+        pos = (460, 1106)
+        bottom=True
+        setDropdownProp = False
+        if item:
+            pos = (1490, 167 + (self.episodePanelControl.getViewPosition() * 100))
+            bottom=False
+            setDropdownProp = True
+        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='right', set_dropdown_prop=setDropdownProp)
         if not choice:
             return
 
         if choice == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice == 'mark_watched':
-            self.season.markWatched()
-            self.markAllWatched()
+            media = item and item.dataSource or self.season
+            media.markWatched()
+            self.updateItems(item)
         elif choice == 'mark_unwatched':
-            self.season.markUnwatched()
-            self.markAllWatched()
+            media = item and item.dataSource or self.season
+            media.markUnwatched()
+            self.updateItems(item)
 
     def checkForHeaderFocus(self, action):
         if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):
@@ -159,16 +226,15 @@ class EpisodesWindow(kodigui.BaseWindow):
         mli.setProperty('watched', obj.isWatched and '1' or '')
         return mli
 
-    def markAllWatched(self):
-        if self.season.isWatched:
-            for mli in self.episodePanelControl:
-                mli.setProperty('watched', '1')
+    def updateItems(self, item=None):
+        if item:
+            self.season.reload()
+            item.setProperty('watched', item.dataSource.isWatched and '1' or '')
         else:
-            for mli in self.episodePanelControl:
-                mli.setProperty('watched', '')
+            self.fillEpisodes(update=True)
 
     @busy.dialog()
-    def fillEpisodes(self):
+    def fillEpisodes(self, update=False):
         items = []
         idx = 0
         for episode in self.season.episodes():
@@ -178,7 +244,11 @@ class EpisodesWindow(kodigui.BaseWindow):
                 items.append(mli)
                 idx += 1
 
-        self.episodePanelControl.addItems(items)
+        if update:
+            self.episodePanelControl.replaceItems(items)
+        else:
+            self.episodePanelControl.reset()
+            self.episodePanelControl.addItems(items)
 
     def showAudioPlayer(self):
         import musicplayer

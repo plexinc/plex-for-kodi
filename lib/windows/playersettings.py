@@ -20,6 +20,10 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         self.video = kwargs.get('video')
         self.nonPlayback = kwargs.get('non_playback')
 
+        if not self.video.mediaChoice:
+            playerObject = plexnet.plexplayer.PlexPlayer(self.video)
+            playerObject.build()
+
     def onFirstInit(self):
         self.settingsList = kodigui.ManagedControlList(self, self.SETTINGS_LIST_ID, 6)
         self.setProperty('heading', 'Settings')

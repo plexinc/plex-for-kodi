@@ -326,7 +326,7 @@ class PostersWindow(kodigui.BaseWindow):
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
-        if not mli:
+        if not mli or not mli.dataSource:
             return
 
         if self.section.TYPE == 'show':

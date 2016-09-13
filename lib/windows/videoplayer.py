@@ -43,7 +43,7 @@ class VideoPlayerWindow(kodigui.BaseWindow):
         if self.playQueue:
             player.PLAYER.playVideoPlaylist(self.playQueue)
         elif self.video:
-            player.PLAYER.playVideo(self.video, resume=self.resume)
+            player.PLAYER.playVideo(self.video, resume=self.resume, force_update=True)
 
 
 def play(video=None, play_queue=None, resume=False):

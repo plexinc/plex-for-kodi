@@ -291,7 +291,7 @@ class PostersWindow(kodigui.BaseWindow):
             (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
             (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
             (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
-            (('resolution', 'By Resolution'), 'Resolution', self.sortDesc if self.sort == 'resolution' else None),
+            # (('resolution', 'By Resolution'), 'Resolution', self.sortDesc if self.sort == 'resolution' else None),
             (('duration', 'By Duration'), 'Duration', self.sortDesc if self.sort == 'duration' else None)
         ]
         choice = dropdown.showDropdown(options, (1280, 106), with_indicator=True)

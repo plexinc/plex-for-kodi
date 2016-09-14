@@ -142,7 +142,6 @@ class PostersWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
-        util.TEST(self.section.TYPE)
         self.setProperty('no.options', '1')  # self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
         self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
         self.setProperty('sort', self.sort)
@@ -378,7 +377,7 @@ class PostersWindow(kodigui.BaseWindow):
     def setTitle(self):
         if self.section.TYPE == 'artist':
             self.setProperty('screen.title', 'MUSIC')
-        elif self.section.TYPE == 'photo':
+        elif self.section.TYPE in ('photo', 'photodirectory'):
             self.setProperty('screen.title', 'PHOTOS')
         else:
             self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')

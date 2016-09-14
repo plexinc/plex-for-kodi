@@ -136,11 +136,11 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         if server.uuid in self.serversByUuid:
             existing = self.serversByUuid[server.uuid]
             existing.merge(server)
-            util.DEBUG_LOG("Merged {0}".format(server.name))
+            util.DEBUG_LOG("Merged {0}".format(repr(server.name)))
             return existing
         else:
             self.serversByUuid[server.uuid] = server
-            util.DEBUG_LOG("Added new server {0}".format(server.name))
+            util.DEBUG_LOG("Added new server {0}".format(repr(server.name)))
             self.trigger("new_server", server=server)
             return server
 
@@ -153,7 +153,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         for uuid in toRemove:
             server = self.serversByUuid[uuid]
 
-            util.DEBUG_LOG("Server {0} has no more connections - removing".format(server.name))
+            util.DEBUG_LOG("Server {0} has no more connections - removing".format(repr(server.name)))
             # self.notifyAboutDevice(server, False)
             self.removeServer(server)
 

@@ -68,58 +68,6 @@ class PlexValue(unicode):
         return self.parent.server.getImageTranscodeURL(self, w, h, **extras)
 
 
-class PlexItemList(object):
-    def __init__(self, data, item_cls, tag, server=None):
-        self._data = data
-        self._itemClass = item_cls
-        self._itemTag = tag
-        self._server = server
-        self._items = None
-
-    @property
-    def items(self):
-        if self._items is None:
-            if self._data is not None:
-                if self._server:
-                    self._items = [self._itemClass(elem, server=self._server) for elem in self._data if elem.tag == self._itemTag]
-                else:
-                    self._items = [self._itemClass(elem) for elem in self._data if elem.tag == self._itemTag]
-            else:
-                self._items = []
-
-        return self._items
-
-    def __call__(self, *args):
-        return self.items
-
-    def __len__(self):
-        return len(self.items)
-
-    def append(self, item):
-        self.items.append(item)
-
-
-class PlexMediaItemList(PlexItemList):
-    def __init__(self, data, item_cls, tag, initpath=None, server=None, media=None):
-        self._data = data
-        self._itemClass = item_cls
-        self._itemTag = tag
-        self._initpath = initpath
-        self._server = server
-        self._media = media
-        self._items = None
-
-    @property
-    def items(self):
-        if self._items is None:
-            if self._data is not None:
-                self._items = [self._itemClass(elem, self._initpath, self._server, self._media) for elem in self._data if elem.tag == self._itemTag]
-            else:
-                self._items = []
-
-        return self._items
-
-
 class JEncoder(json.JSONEncoder):
     def default(self, o):
         try:
@@ -413,6 +361,59 @@ class PlexServerContainer(PlexContainer):
 
     def __len__(self):
         return len(self.resources)
+
+
+class PlexItemList(object):
+    def __init__(self, data, item_cls, tag, server=None):
+        self._data = data
+        self._itemClass = item_cls
+        self._itemTag = tag
+        self._server = server
+        self._items = None
+
+    def __iter__(self):
+        for i in self.items:
+            yield i
+
+    @property
+    def items(self):
+        if self._items is None:
+            if self._data is not None:
+                if self._server:
+                    self._items = [self._itemClass(elem, server=self._server) for elem in self._data if elem.tag == self._itemTag]
+                else:
+                    self._items = [self._itemClass(elem) for elem in self._data if elem.tag == self._itemTag]
+            else:
+                self._items = []
+
+        return self._items
+
+    def __call__(self, *args):
+        return self.items
+
+    def __len__(self):
+        return len(self.items)
+
+    def append(self, item):
+        self.items.append(item)
+
+
+class PlexMediaItemList(PlexItemList):
+    def __init__(self, data, item_cls, tag, initpath=None, server=None, media=None):
+        PlexItemList.__init__(self, data, item_cls, tag, server)
+        self._initpath = initpath
+        self._media = media
+        self._items = None
+
+    @property
+    def items(self):
+        if self._items is None:
+            if self._data is not None:
+                self._items = [self._itemClass(elem, self._initpath, self._server, self._media) for elem in self._data if elem.tag == self._itemTag]
+            else:
+                self._items = []
+
+        return self._items
 
 
 def findItem(server, path, title):

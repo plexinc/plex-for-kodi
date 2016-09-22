@@ -111,7 +111,7 @@
                     <width>1800</width>
                     <height>1280</height>
                     <onup>300</onup>
-                    <onright>150</onright>
+                    <onright>151</onright>
                     <scrolltime>200</scrolltime>
                     <orientation>vertical</orientation>
                     <preloaditems>2</preloaditems>

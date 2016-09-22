@@ -284,15 +284,42 @@ class PostersWindow(kodigui.BaseWindow):
             xbmc.executebuiltin('PlayerControl(Next)')
 
     def sortButtonClicked(self):
-        options = [
-            (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
-            (('date_released', 'By Release Date'), 'Release Date', self.sortDesc if self.sort == 'date_released' else None),
-            (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
-            (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
-            (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
-            # (('resolution', 'By Resolution'), 'Resolution', self.sortDesc if self.sort == 'resolution' else None),
-            (('duration', 'By Duration'), 'Duration', self.sortDesc if self.sort == 'duration' else None)
-        ]
+        if self.section.TYPE == 'movie':
+            options = [
+                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
+                (('date_released', 'By Release Date'), 'Release Date', self.sortDesc if self.sort == 'date_released' else None),
+                (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
+                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
+                (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
+                (('resolution', 'By Resolution'), 'Resolution', self.sortDesc if self.sort == 'resolution' else None),
+                (('duration', 'By Duration'), 'Duration', self.sortDesc if self.sort == 'duration' else None)
+            ]
+        elif self.section.TYPE == 'show':
+            options = [
+                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
+                (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
+                (('date_released', 'By First Aired'), 'First Aired', self.sortDesc if self.sort == 'date_released' else None),
+                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
+                (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
+                (('unwatched', 'By Unwatched'), 'Unwatched', self.sortDesc if self.sort == 'unwatched' else None)
+            ]
+        elif self.section.TYPE == 'artist':
+            options = [
+                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
+                (('date_viewed', 'By Date Played'), 'Date Played', self.sortDesc if self.sort == 'date_viewed' else None),
+                (('play_count', 'By Play Count'), 'Play Count', self.sortDesc if self.sort == 'play_count' else None),
+                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None)
+            ]
+        elif self.section.TYPE == 'photo':
+            options = [
+                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
+                (('date_released', 'By Date Taken'), 'Date Taken', self.sortDesc if self.sort == 'date_released' else None),
+                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
+                (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None)
+            ]
+        else:
+            return
+
         choice = dropdown.showDropdown(options, (1280, 106), with_indicator=True)
         if not choice:
             return
@@ -313,15 +340,21 @@ class PostersWindow(kodigui.BaseWindow):
             self.showPanelControl.sort(lambda i: i.dataSource.get('originallyAvailableAt'), reverse=self.sortDesc)
         elif choice == 'date_viewed':
             self.showPanelControl.sort(lambda i: i.dataSource.get('lastViewedAt'), reverse=self.sortDesc)
+        elif choice == 'play_count':
+            self.showPanelControl.sort(lambda i: i.dataSource.get('titleSort') or i.dataSource.title)
+            self.showPanelControl.sort(lambda i: i.dataSource.get('viewCount').asInt(), reverse=self.sortDesc)
         elif choice == 'name':
             self.showPanelControl.sort(lambda i: i.dataSource.get('titleSort') or i.dataSource.title, reverse=self.sortDesc)
             self.keyListControl.sort(lambda i: i.getProperty('original'), reverse=self.sortDesc)
         elif choice == 'rating':
+            self.showPanelControl.sort(lambda i: i.dataSource.get('titleSort') or i.dataSource.title)
             self.showPanelControl.sort(lambda i: i.dataSource.get('rating').asFloat(), reverse=self.sortDesc)
         elif choice == 'resolution':
-            self.showPanelControl.sort(lambda i: i.dataSource.media.get('videoResolution').asInt(), reverse=self.sortDesc)
+            self.showPanelControl.sort(lambda i: i.dataSource.maxHeight, reverse=self.sortDesc)
         elif choice == 'duration':
             self.showPanelControl.sort(lambda i: i.dataSource.duration.asInt(), reverse=self.sortDesc)
+        elif choice == 'unwatched':
+            self.showPanelControl.sort(lambda i: i.dataSource.unViewedLeafCount, reverse=self.sortDesc)
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
@@ -462,7 +495,13 @@ class PostersWindow(kodigui.BaseWindow):
 
         for photo in photos:
             title = photo.title
-            mli = kodigui.ManagedListItem(title, thumbnailImage=photo.defaultThumb.asTranscodedImageURL(*thumbDim), data_source=photo)
+            if photo.TYPE == 'photodirectory':
+                thumb = photo.composite.asTranscodedImageURL(*thumbDim)
+            else:
+                thumb = photo.defaultThumb.asTranscodedImageURL(*thumbDim)
+            mli = kodigui.ManagedListItem(title, thumbnailImage=thumb, data_source=photo)
+            if photo.TYPE == 'photodirectory':
+                mli.setProperty('is.folder', '1')
             mli.setProperty('thumb.fallback', fallback)
             mli.setProperty('index', str(idx))
 

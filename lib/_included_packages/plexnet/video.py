@@ -160,6 +160,9 @@ class Movie(PlayableVideo):
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
+        else:
+            if data.find(media.Media.TYPE):
+                self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
         self._videoStreams = None
         self._audioStreams = None
@@ -170,6 +173,14 @@ class Movie(PlayableVideo):
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
         self.transcodeSession = self._findTranscodeSession(data)
+
+    @property
+    def maxHeight(self):
+        height = 0
+        for m in self.media:
+            if m.height.asInt() > height:
+                height = m.height.asInt()
+        return height
 
     @property
     def videoStreams(self):

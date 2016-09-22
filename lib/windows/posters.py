@@ -75,6 +75,13 @@ TYPE_KEYS = {
     },
 }
 
+TYPE_PLURAL = {
+    'artist': 'artists',
+    'movie': 'movies',
+    'photo': 'photos',
+    'show': 'shows'
+}
+
 
 class ChunkRequestTask(backgroundthread.Task):
     def setup(self, section, start, size, callback):
@@ -117,6 +124,8 @@ class PostersWindow(kodigui.BaseWindow):
     PLAYER_STATUS_BUTTON_ID = 204
 
     SORT_BUTTON_ID = 210
+    FILTER1_BUTTON_ID = 211
+    FILTER2_BUTTON_ID = 212
 
     PLAY_BUTTON_ID = 301
     SHUFFLE_BUTTON_ID = 302
@@ -133,6 +142,8 @@ class PostersWindow(kodigui.BaseWindow):
         self.exitCommand = None
         self.sort = 'name'
         self.sortDesc = False
+        self.filter = None
+        self.filterUnwatched = False
 
     def doClose(self):
         for task in self.tasks:
@@ -145,13 +156,12 @@ class PostersWindow(kodigui.BaseWindow):
         self.setProperty('no.options', '1')  # self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
         self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
         self.setProperty('sort', self.sort)
+        self.setProperty('filter1.display', 'All')
         self.setProperty('sort.display', 'By Name')
+        self.setProperty('media.type', TYPE_PLURAL.get(self.section.TYPE, self.section.TYPE))
 
         self.setTitle()
-        if self.section.TYPE in ('photo', 'photodirectory'):
-            self.fillPhotos()
-        else:
-            self.fillShows()
+        self.fill()
         self.setFocusId(self.POSTERS_PANEL_ID)
 
     def onAction(self, action):
@@ -193,6 +203,8 @@ class PostersWindow(kodigui.BaseWindow):
             self.optionsButtonClicked()
         elif controlID == self.SORT_BUTTON_ID:
             self.sortButtonClicked()
+        elif controlID == self.FILTER1_BUTTON_ID:
+            self.filter1ButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.KEY_LIST_ID:
@@ -334,6 +346,10 @@ class PostersWindow(kodigui.BaseWindow):
         self.sort = choice
         self.setProperty('sort', choice)
         self.setProperty('sort.display', display)
+
+        self.sortShowPanel(choice)
+
+    def sortShowPanel(self, choice):
         if choice == 'date_added':
             self.showPanelControl.sort(lambda i: i.dataSource.addedAt, reverse=self.sortDesc)
         elif choice == 'date_released':
@@ -355,6 +371,44 @@ class PostersWindow(kodigui.BaseWindow):
             self.showPanelControl.sort(lambda i: i.dataSource.duration.asInt(), reverse=self.sortDesc)
         elif choice == 'unwatched':
             self.showPanelControl.sort(lambda i: i.dataSource.unViewedLeafCount, reverse=self.sortDesc)
+
+    def filter1ButtonClicked(self):
+        options = [
+            ('unwatched', 'UNWATCHED', self.filterUnwatched and 'script.plex/home/device/check.png' or None),
+            ('clear_filter', 'CLEAR FILTER', None),
+            ('year', 'Year', self.filter == 'year' and 'script.plex/home/device/check.png' or None),
+            ('decade', 'Decade', self.filter == 'decade' and 'script.plex/home/device/check.png' or None),
+            ('genre', 'Genre', self.filter == 'genre' and 'script.plex/home/device/check.png' or None),
+            ('content_rating', 'Content Rating', self.filter == 'content_rating' and 'script.plex/home/device/check.png' or None),
+            ('collection', 'Collection', self.filter == 'collection' and 'script.plex/home/device/check.png' or None),
+            ('director', 'Director', self.filter == 'director' and 'script.plex/home/device/check.png' or None),
+            ('actor', 'Actor', self.filter == 'actor' and 'script.plex/home/device/check.png' or None),
+            ('country', 'Country', self.filter == 'country' and 'script.plex/home/device/check.png' or None),
+            ('studio', 'Studio', self.filter == 'studio' and 'script.plex/home/device/check.png' or None),
+            ('resolution', 'Resolution', self.filter == 'resolution' and 'script.plex/home/device/check.png' or None),
+            ('labels', 'Labels', self.filter == 'labels' and 'script.plex/home/device/check.png' or None)
+        ]
+
+        choice = dropdown.showDropdown(options, (1280, 106), with_supplied_indicator=True)
+        if not choice:
+            return
+
+        if choice == 'clear_filter':
+            self.filter = None
+        elif choice == 'unwatched':
+            self.filterUnwatched = not self.filterUnwatched
+        else:
+            self.filter = choice
+
+        if self.filter:
+            self.setProperty('filter1.display', self.filter)
+            self.setProperty('filter2.display', self.filterUnwatched and 'unwatched' or '')
+
+        else:
+            self.setProperty('filter1.display', self.filterUnwatched and 'unwatched' or 'all')
+            self.setProperty('filter2.display', '')
+
+        #self.fill()
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
@@ -433,6 +487,12 @@ class PostersWindow(kodigui.BaseWindow):
 
         item = random.choice(items)
         self.setProperty('background', item.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+
+    def fill(self):
+        if self.section.TYPE in ('photo', 'photodirectory'):
+            self.fillPhotos()
+        else:
+            self.fillShows()
 
     @busy.dialog()
     def fillShows(self):

@@ -606,6 +606,20 @@
                 <orientation>horizontal</orientation>
                 <onleft>204</onleft>
                 <ondown>50</ondown>
+                <control type="button">
+                    <width max="300">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FFFFFFFF</focusedcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>0</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+                </control>
                 <control type="button" id="210">
                     <width max="300">auto</width>
                     <height>65</height>

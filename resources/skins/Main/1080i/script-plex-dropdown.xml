@@ -92,20 +92,11 @@
                             <label>$INFO[ListItem.Label]</label>
                         </control>
                         <control type="image">
-                            <visible>!IsEmpty(ListItem.Property(sort.desc))</visible>
                             <posx>254</posx>
                             <posy>25</posy>
                             <width>26</width>
                             <height>16</height>
-                            <texture colordiffuse="FFFFFFFF">script.plex/indicators/arrow-down.png</texture>
-                        </control>
-                        <control type="image">
-                            <visible>!IsEmpty(ListItem.Property(sort.asc))</visible>
-                            <posx>254</posx>
-                            <posy>25</posy>
-                            <width>26</width>
-                            <height>16</height>
-                            <texture colordiffuse="FFFFFFFF" flipy="true">script.plex/indicators/arrow-down.png</texture>
+                            <texture colordiffuse="FFFFFFFF">$INFO[ListItem.Thumb]</texture>
                         </control>
                     </control>
                 </itemlayout>
@@ -168,20 +159,11 @@
                             <label>$INFO[ListItem.Label]</label>
                         </control>
                         <control type="image">
-                            <visible>!IsEmpty(ListItem.Property(sort.desc))</visible>
                             <posx>254</posx>
                             <posy>25</posy>
                             <width>26</width>
                             <height>16</height>
-                            <texture colordiffuse="FF000000">script.plex/indicators/arrow-down.png</texture>
-                        </control>
-                        <control type="image">
-                            <visible>!IsEmpty(ListItem.Property(sort.asc))</visible>
-                            <posx>254</posx>
-                            <posy>25</posy>
-                            <width>26</width>
-                            <height>16</height>
-                            <texture colordiffuse="FF000000" flipy="true">script.plex/indicators/arrow-down.png</texture>
+                            <texture colordiffuse="FFFFFFFF">$INFO[ListItem.Thumb]</texture>
                         </control>
                     </control>
                 </focusedlayout>

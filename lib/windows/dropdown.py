@@ -22,11 +22,12 @@ class DropdownDialog(kodigui.BaseDialog):
         self.closeDirection = kwargs.get('close_direction')
         self.setDropdownProp = kwargs.get('set_dropdown_prop')
         self.withIndicator = kwargs.get('with_indicator')
+        self.withSuppliedIndicator = kwargs.get('with_supplied_indicator')
         self.choice = None
 
     def onFirstInit(self):
         self.setProperty('dropdown', self.setDropdownProp and '1' or '')
-        self.setProperty('with.indicator', self.withIndicator and '1' or '')
+        self.setProperty('with.indicator', (self.withIndicator or self.withSuppliedIndicator) and '1' or '')
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
         self.showOptions()
         height = (len(self.options) * 66) + 80
@@ -67,9 +68,13 @@ class DropdownDialog(kodigui.BaseDialog):
         if self.withIndicator:
             for i, o in enumerate(self.options):
                 if o[2] is True:
-                    items[i].setProperty('sort.desc', '1')
+                    items[i].setThumbnailImage('script.plex/indicators/arrow-down.png')
                 elif o[2] is False:
-                    items[i].setProperty('sort.asc', '1')
+                    items[i].setThumbnailImage('script.plex/indicators/arrow-up.png')
+        elif self.withSuppliedIndicator:
+            for i, o in enumerate(self.options):
+                if o[2]:
+                    items[i].setThumbnailImage(o[2])
 
         if len(items) > 1:
             items[0].setProperty('first', '1')
@@ -83,13 +88,14 @@ class DropdownDialog(kodigui.BaseDialog):
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
-def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top', set_dropdown_prop=True, with_indicator=False):
+def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top', set_dropdown_prop=True, with_indicator=False, with_supplied_indicator=False):
     w = DropdownDialog.open(
         options=options, pos=pos,
         pos_is_bottom=pos_is_bottom,
         close_direction=close_direction,
         set_dropdown_prop=set_dropdown_prop,
-        with_indicator=with_indicator
+        with_indicator=with_indicator,
+        with_supplied_indicator=with_supplied_indicator
     )
     choice = w.choice
     del w

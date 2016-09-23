@@ -433,7 +433,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>StringCompare(Window.Property(sort),name) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window.Property(sort),titleSort) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1780</posx>
             <posy>150</posy>
@@ -771,7 +771,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="211">
-                    <width max="300">auto</width>
+                    <width max="500">auto</width>
                     <height>65</height>
                     <font>font12</font>
                     <textcolor>FFFFFFFF</textcolor>

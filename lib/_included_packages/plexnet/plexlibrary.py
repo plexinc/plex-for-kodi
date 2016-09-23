@@ -85,22 +85,51 @@ class LibrarySection(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<%s:%s>' % (self.__class__.__name__, title.encode('utf8'))
 
-    def all(self, start=None, size=None):
+    def all(self, start=None, size=None, filter_=None, sort=None, unwatched=False):
         if self.key.startswith('/'):
             path = '{0}/all'.format(self.key)
         else:
             path = '/library/sections/{0}/all'.format(self.key)
 
+        args = {}
+
         if size is not None:
-            path += '?X-Plex-Container-Start={0}&X-Plex-Container-Size={1}'.format(start, size)
+            args['X-Plex-Container-Start'] = start
+            args['X-Plex-Container-Size'] = size
+
+        if filter_:
+            args[filter_[0]] = filter_[1]
+
+        if sort:
+            args['sort'] = '{0}:{1}'.format(*sort)
+
+        if unwatched:
+            args['unwatched'] = 1
+
+        if args:
+            path += util.joinArgs(args)
 
         return plexobjects.listItems(self.server, path)
 
-    def jumpList(self):
+    def jumpList(self, filter_=None, sort=None, unwatched=False):
         if self.key.startswith('/'):
             path = '{0}/firstCharacter'.format(self.key)
         else:
             path = '/library/sections/{0}/firstCharacter'.format(self.key)
+
+        args = {}
+
+        if filter_:
+            args[filter_[0]] = filter_[1]
+
+        if sort:
+            args['sort'] = '{0}:{1}'.format(*sort)
+
+        if unwatched:
+            args['unwatched'] = 1
+
+        if args:
+            path += util.joinArgs(args)
 
         return plexobjects.listItems(self.server, path, bytag=True)
 
@@ -130,6 +159,7 @@ class LibrarySection(plexobjects.PlexObject):
         if libtype is not None:
             args['type'] = plexobjects.searchType(libtype)
         query = '/library/sections/%s/%s%s' % (self.key, category, util.joinArgs(args))
+
         return plexobjects.listItems(self.server, query, bytag=True)
 
     def search(self, title=None, sort=None, maxresults=999999, libtype=None, **kwargs):

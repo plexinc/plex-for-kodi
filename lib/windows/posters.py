@@ -1,4 +1,6 @@
 import random
+import urllib
+
 import xbmc
 import xbmcgui
 import kodigui
@@ -84,11 +86,14 @@ TYPE_PLURAL = {
 
 
 class ChunkRequestTask(backgroundthread.Task):
-    def setup(self, section, start, size, callback):
+    def setup(self, section, start, size, callback, filter_=None, sort=None, unwatched=False):
         self.section = section
         self.start = start
         self.size = size
         self.callback = callback
+        self.filter = filter_
+        self.sort = sort
+        self.unwatched = unwatched
         return self
 
     def contains(self, pos):
@@ -99,7 +104,7 @@ class ChunkRequestTask(backgroundthread.Task):
             return
 
         try:
-            items = self.section.all(self.start, self.size)
+            items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched)
             if self.isCanceled():
                 return
             self.callback(items, self.start)
@@ -140,7 +145,7 @@ class PostersWindow(kodigui.BaseWindow):
         self.tasks = []
         self.backgroundSet = False
         self.exitCommand = None
-        self.sort = 'name'
+        self.sort = 'titleSort'
         self.sortDesc = False
         self.filter = None
         self.filterUnwatched = False
@@ -276,67 +281,71 @@ class PostersWindow(kodigui.BaseWindow):
     def optionsButtonClicked(self):
         options = []
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-            options.append(('play_next', 'Play Next'))
+            options.append({'key': 'play_next', 'display': 'Play Next'})
 
         # if self.section.TYPE not in ('artist', 'photo', 'photodirectory'):
-        #     options.append(('mark_watched', 'Mark All Watched'))
-        #     options.append(('mark_unwatched', 'Mark All Unwatched'))
+        #     options.append({'key': 'mark_watched', 'display': 'Mark All Watched'})
+        #     options.append({'key': 'mark_unwatched', 'display': 'Mark All Unwatched'})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
-        #     options.append(('add_to_queue', 'Add To Queue'))
+        #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
 
         # if False:
-        #     options.append(('add_to_playlist', 'Add To Playlist'))
+        #     options.append({'key': 'add_to_playlist', 'display': 'Add To Playlist'})
 
         choice = dropdown.showDropdown(options, (255, 260))
         if not choice:
             return
 
-        if choice == 'play_next':
+        if choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
 
     def sortButtonClicked(self):
+        desc = 'script.plex/indicators/arrow-down.png'
+        asc = 'script.plex/indicators/arrow-up.png'
+        ind = self.sortDesc and desc or asc
+
         if self.section.TYPE == 'movie':
             options = [
-                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
-                (('date_released', 'By Release Date'), 'Release Date', self.sortDesc if self.sort == 'date_released' else None),
-                (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
-                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
-                (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
-                (('resolution', 'By Resolution'), 'Resolution', self.sortDesc if self.sort == 'resolution' else None),
-                (('duration', 'By Duration'), 'Duration', self.sortDesc if self.sort == 'duration' else None)
+                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind  or ''},
+                {'type': 'originallyAvailableAt', 'title': 'By Release Date', 'display': 'Release Date', 'indicator': self.sort == 'originallyAvailableAt' and ind  or ''},
+                {'type': 'lastViewedAt', 'title': 'By Date Viewed', 'display': 'Date Viewed', 'indicator': self.sort == 'lastViewedAt' and ind  or ''},
+                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind  or ''},
+                {'type': 'rating', 'title': 'By Rating', 'display': 'Rating', 'indicator': self.sort == 'rating' and ind  or ''},
+                {'type': 'resolution', 'title': 'By Resolution', 'display': 'Resolution', 'indicator': self.sort == 'resolution' and ind  or ''},
+                {'type': 'duration', 'title': 'By Duration', 'display': 'Duration', 'indicator': self.sort == 'duration' and ind  or ''}
             ]
         elif self.section.TYPE == 'show':
             options = [
-                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
-                (('date_viewed', 'By Date Viewed'), 'Date Viewed', self.sortDesc if self.sort == 'date_viewed' else None),
-                (('date_released', 'By First Aired'), 'First Aired', self.sortDesc if self.sort == 'date_released' else None),
-                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
-                (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None),
-                (('unwatched', 'By Unwatched'), 'Unwatched', self.sortDesc if self.sort == 'unwatched' else None)
+                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind  or ''},
+                {'type': 'lastViewedAt', 'title': 'By Date Viewed', 'display': 'Date Viewed', 'indicator': self.sort == 'lastViewedAt' and ind  or ''},
+                {'type': 'originallyAvailableAt', 'title': 'By First Aired', 'display': 'First Aired', 'indicator': self.sort == 'originallyAvailableAt' and ind  or ''},
+                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind  or ''},
+                {'type': 'rating', 'title': 'By Rating', 'display': 'Rating', 'indicator': self.sort == 'rating' and ind  or ''},
+                {'type': 'unwatched', 'title': 'By Unwatched', 'display': 'Unwatched', 'indicator': self.sort == 'unwatched' and ind  or ''}
             ]
         elif self.section.TYPE == 'artist':
             options = [
-                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
-                (('date_viewed', 'By Date Played'), 'Date Played', self.sortDesc if self.sort == 'date_viewed' else None),
-                (('play_count', 'By Play Count'), 'Play Count', self.sortDesc if self.sort == 'play_count' else None),
-                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None)
+                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind  or ''},
+                {'type': 'lastViewedAt', 'title': 'By Date Played', 'display': 'Date Played', 'indicator': self.sort == 'lastViewedAt' and ind  or ''},
+                {'type': 'viewCount', 'title': 'By Play Count', 'display': 'Play Count', 'indicator': self.sort == 'viewCount' and ind  or ''},
+                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind  or ''}
             ]
         elif self.section.TYPE == 'photo':
             options = [
-                (('date_added', 'By Date Added'), 'Date Added', self.sortDesc if self.sort == 'date_added' else None),
-                (('date_released', 'By Date Taken'), 'Date Taken', self.sortDesc if self.sort == 'date_released' else None),
-                (('name', 'By Name'), 'Name', self.sortDesc if self.sort == 'name' else None),
-                (('rating', 'By Rating'), 'Rating', self.sortDesc if self.sort == 'rating' else None)
+                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind  or ''},
+                {'type': 'originallyAvailableAt', 'title': 'By Date Taken', 'display': 'Date Taken', 'indicator': self.sort == 'originallyAvailableAt' and ind  or ''},
+                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind  or ''},
+                {'type': 'rating', 'title': 'By Rating', 'display': 'Rating', 'indicator': self.sort == 'rating' and ind  or ''}
             ]
         else:
             return
 
-        choice = dropdown.showDropdown(options, (1280, 106), with_indicator=True)
-        if not choice:
+        result = dropdown.showDropdown(options, (1280, 106), with_indicator=True)
+        if not result:
             return
 
-        choice, display = choice
+        choice = result['type']
 
         if choice == self.sort:
             self.sortDesc = not self.sortDesc
@@ -345,21 +354,21 @@ class PostersWindow(kodigui.BaseWindow):
 
         self.sort = choice
         self.setProperty('sort', choice)
-        self.setProperty('sort.display', display)
+        self.setProperty('sort.display', result['display'])
 
         self.sortShowPanel(choice)
 
     def sortShowPanel(self, choice):
-        if choice == 'date_added':
+        if choice == 'addedAt':
             self.showPanelControl.sort(lambda i: i.dataSource.addedAt, reverse=self.sortDesc)
-        elif choice == 'date_released':
+        elif choice == 'originallyAvailableAt':
             self.showPanelControl.sort(lambda i: i.dataSource.get('originallyAvailableAt'), reverse=self.sortDesc)
-        elif choice == 'date_viewed':
+        elif choice == 'lastViewedAt':
             self.showPanelControl.sort(lambda i: i.dataSource.get('lastViewedAt'), reverse=self.sortDesc)
-        elif choice == 'play_count':
+        elif choice == 'viewCount':
             self.showPanelControl.sort(lambda i: i.dataSource.get('titleSort') or i.dataSource.title)
             self.showPanelControl.sort(lambda i: i.dataSource.get('viewCount').asInt(), reverse=self.sortDesc)
-        elif choice == 'name':
+        elif choice == 'titleSort':
             self.showPanelControl.sort(lambda i: i.dataSource.get('titleSort') or i.dataSource.title, reverse=self.sortDesc)
             self.keyListControl.sort(lambda i: i.getProperty('original'), reverse=self.sortDesc)
         elif choice == 'rating':
@@ -372,43 +381,79 @@ class PostersWindow(kodigui.BaseWindow):
         elif choice == 'unwatched':
             self.showPanelControl.sort(lambda i: i.dataSource.unViewedLeafCount, reverse=self.sortDesc)
 
+    def subOptionCallback(self, option):
+        check = 'script.plex/home/device/check.png'
+        options = None
+        subKey = None
+        if self.filter:
+            if self.filter.get('sub'):
+                subKey = self.filter['sub']['val']
+
+        if option['type'] in ('year', 'decade', 'genre', 'contentRating', 'collection', 'director', 'actor', 'country', 'studio', 'resolution', 'labels'):
+            options = [{'val': o.key, 'display': o.title, 'indicator': o.key == subKey and check or ''} for o in self.section.listChoices(option['type'])]
+            if not options:
+                options = [{'val': None, 'display': 'No filters available', 'ignore': True}]
+
+        return options
+
+    def hasFilter(self, ftype):
+        if not self.filter:
+            return False
+
+        return self.filter['type'] == ftype
+
     def filter1ButtonClicked(self):
+        check = 'script.plex/home/device/check.png'
+
         options = [
-            ('unwatched', 'UNWATCHED', self.filterUnwatched and 'script.plex/home/device/check.png' or None),
-            ('clear_filter', 'CLEAR FILTER', None),
-            ('year', 'Year', self.filter == 'year' and 'script.plex/home/device/check.png' or None),
-            ('decade', 'Decade', self.filter == 'decade' and 'script.plex/home/device/check.png' or None),
-            ('genre', 'Genre', self.filter == 'genre' and 'script.plex/home/device/check.png' or None),
-            ('content_rating', 'Content Rating', self.filter == 'content_rating' and 'script.plex/home/device/check.png' or None),
-            ('collection', 'Collection', self.filter == 'collection' and 'script.plex/home/device/check.png' or None),
-            ('director', 'Director', self.filter == 'director' and 'script.plex/home/device/check.png' or None),
-            ('actor', 'Actor', self.filter == 'actor' and 'script.plex/home/device/check.png' or None),
-            ('country', 'Country', self.filter == 'country' and 'script.plex/home/device/check.png' or None),
-            ('studio', 'Studio', self.filter == 'studio' and 'script.plex/home/device/check.png' or None),
-            ('resolution', 'Resolution', self.filter == 'resolution' and 'script.plex/home/device/check.png' or None),
-            ('labels', 'Labels', self.filter == 'labels' and 'script.plex/home/device/check.png' or None)
+            {'type': 'unwatched', 'display': 'UNWATCHED', 'indicator': self.filterUnwatched and check or ''}
         ]
 
-        choice = dropdown.showDropdown(options, (1280, 106), with_supplied_indicator=True)
-        if not choice:
+        if self.filter:
+            options.append({'type': 'clear_filter', 'display': 'CLEAR FILTER', 'indicator': 'script.plex/indicators/remove.png'})
+
+        options.append(None)
+
+        options += [
+            {'type': 'year', 'display': 'Year', 'indicator': self.hasFilter('year') and check or ''},
+            {'type': 'decade', 'display': 'Decade', 'indicator': self.hasFilter('decade') and check or ''},
+            {'type': 'genre', 'display': 'Genre', 'indicator': self.hasFilter('genre') and check or ''},
+            {'type': 'contentRating', 'display': 'Content Rating', 'indicator': self.hasFilter('contentRating') and check or ''},
+            {'type': 'collection', 'display': 'Collection', 'indicator': self.hasFilter('collection') and check or ''},
+            {'type': 'director', 'display': 'Director', 'indicator': self.hasFilter('director') and check or ''},
+            {'type': 'actor', 'display': 'Actor', 'indicator': self.hasFilter('actor') and check or ''},
+            {'type': 'country', 'display': 'Country', 'indicator': self.hasFilter('country') and check or ''},
+            {'type': 'studio', 'display': 'Studio', 'indicator': self.hasFilter('studio') and check or ''},
+            {'type': 'resolution', 'display': 'Resolution', 'indicator': self.hasFilter('resolution') and check or ''},
+            {'type': 'labels', 'display': 'Labels', 'indicator': self.hasFilter('labels') and check or ''}
+        ]
+
+        result = dropdown.showDropdown(options, (980, 106), with_indicator=True, suboption_callback=self.subOptionCallback)
+        if not result:
             return
+
+        choice = result['type']
 
         if choice == 'clear_filter':
             self.filter = None
         elif choice == 'unwatched':
             self.filterUnwatched = not self.filterUnwatched
         else:
-            self.filter = choice
+            self.filter = result
 
         if self.filter:
-            self.setProperty('filter1.display', self.filter)
-            self.setProperty('filter2.display', self.filterUnwatched and 'unwatched' or '')
+            disp = self.filter['display']
+            if self.filter.get('sub'):
+                disp = self.filter['sub']['display']
 
+            self.setProperty('filter1.display', disp)
+            self.setProperty('filter2.display', self.filterUnwatched and 'unwatched' or '')
         else:
             self.setProperty('filter1.display', self.filterUnwatched and 'unwatched' or 'all')
             self.setProperty('filter2.display', '')
 
-        #self.fill()
+        if self.filter or choice in ('clear_filter', 'unwatched'):
+            self.fill()
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
@@ -494,6 +539,22 @@ class PostersWindow(kodigui.BaseWindow):
         else:
             self.fillShows()
 
+    def getFilterOpts(self):
+        if not self.filter:
+            return None
+
+        if not self.filter.get('sub'):
+            util.DEBUG_LOG('Filter missing sub-filter data')
+            return None
+
+        return (self.filter['type'], urllib.unquote_plus(self.filter['sub']['val']))
+
+    def getSortOpts(self):
+        if not self.sort:
+            return None
+
+        return (self.sort, self.sortDesc and 'desc' or 'asc')
+
     @busy.dialog()
     def fillShows(self):
         items = []
@@ -502,7 +563,7 @@ class PostersWindow(kodigui.BaseWindow):
         self.firstOfKeyItems = {}
         totalSize = 0
 
-        jumpList = self.section.jumpList()
+        jumpList = self.section.jumpList(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched)
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
@@ -524,6 +585,9 @@ class PostersWindow(kodigui.BaseWindow):
                     self.firstOfKeyItems[ji.key] = mli
                 idx += 1
 
+        self.showPanelControl.reset()
+        self.keyListControl.reset()
+
         self.showPanelControl.addItems(items)
         self.keyListControl.addItems(jitems)
 
@@ -532,7 +596,7 @@ class PostersWindow(kodigui.BaseWindow):
 
         tasks = []
         for start in range(0, totalSize, 500):
-            tasks.append(ChunkRequestTask().setup(self.section, start, 500, self.chunkCallback))
+            tasks.append(ChunkRequestTask().setup(self.section, start, 500, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched))
 
         self.tasks = tasks
         backgroundthread.BGThreader.addTasksToFront(tasks)

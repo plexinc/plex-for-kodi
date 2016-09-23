@@ -220,30 +220,30 @@ class ShowWindow(kodigui.BaseWindow):
     def optionsButtonClicked(self):
         options = []
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-            options.append(('play_next', 'Play Next'))
+            options.append({'key': 'play_next', 'display': 'Play Next'})
 
         if self.mediaItem.isWatched:
-            options.append(('mark_unwatched', 'Mark Unwatched'))
+            options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
         else:
-            options.append(('mark_watched', 'Mark Watched'))
+            options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
-        #     options.append(('add_to_queue', 'Add To Queue'))
+        #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
 
         # if False:
-        #     options.append(('add_to_playlist', 'Add To Playlist'))
+        #     options.append({'key': 'add_to_playlist', 'display': 'Add To Playlist'})
 
         choice = dropdown.showDropdown(options, (880, 618), close_direction='left')
         if not choice:
             return
 
-        if choice == 'play_next':
+        if choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
-        elif choice == 'mark_watched':
+        elif choice['key'] == 'mark_watched':
             self.mediaItem.markWatched()
             self.updateItems()
             self.updateProperties()
-        elif choice == 'mark_unwatched':
+        elif choice['key'] == 'mark_unwatched':
             self.mediaItem.markUnwatched()
             self.updateItems()
             self.updateProperties()

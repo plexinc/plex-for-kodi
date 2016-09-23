@@ -446,6 +446,7 @@ def listItems(server, path, libtype=None, watched=None, bytag=False, data=None):
             items.append(buildItem(server, elem, path, bytag, container))
         except exceptions.UnknownType:
             pass
+
     return items
 
 

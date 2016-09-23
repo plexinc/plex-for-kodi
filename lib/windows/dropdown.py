@@ -22,22 +22,29 @@ class DropdownDialog(kodigui.BaseDialog):
         self.closeDirection = kwargs.get('close_direction')
         self.setDropdownProp = kwargs.get('set_dropdown_prop')
         self.withIndicator = kwargs.get('with_indicator')
-        self.withSuppliedIndicator = kwargs.get('with_supplied_indicator')
+        self.suboptionCallback = kwargs.get('suboption_callback')
         self.choice = None
 
     def onFirstInit(self):
         self.setProperty('dropdown', self.setDropdownProp and '1' or '')
-        self.setProperty('with.indicator', (self.withIndicator or self.withSuppliedIndicator) and '1' or '')
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
         self.showOptions()
-        height = (len(self.options) * 66) + 80
-        y = self.pos[1]
-        if self.posIsBottom:
-            y -= height
-        self.getControl(100).setPosition(self.pos[0], y)
+        height = min(66 * 14, (len(self.options) * 66)) + 80
+        self.getControl(100).setPosition(self.x, self.y)
         self.getControl(110).setHeight(height)
         self.setProperty('show', '1')
         self.setProperty('close.direction', self.closeDirection)
+
+    @property
+    def x(self):
+        return self.pos[0]
+
+    @property
+    def y(self):
+        y = self.pos[1]
+        if self.posIsBottom:
+            y -= (len(self.options) * 66) + 80
+        return y
 
     def onAction(self, action):
         try:
@@ -56,25 +63,36 @@ class DropdownDialog(kodigui.BaseDialog):
         if not mli:
             return
 
-        self.choice = self.options[self.optionsList.getSelectedPosition()][0]
+        choice = self.options[self.optionsList.getSelectedPosition()]
+
+        if choice.get('ignore'):
+            return
+
+        if self.suboptionCallback:
+            options = self.suboptionCallback(choice)
+            if options:
+                sub = showDropdown(options, (self.x + 290, self.y + 10), close_direction='left', with_indicator=True)
+                if not sub:
+                    return
+
+                choice['sub'] = sub
+
+        self.choice = choice
         self.doClose()
 
     def showOptions(self):
         items = []
+        options = []
         for o in self.options:
-            item = kodigui.ManagedListItem(o[1], data_source=o[0])
-            items.append(item)
+            if o:
+                item = kodigui.ManagedListItem(o['display'], thumbnailImage=o.get('indicator', ''), data_source=o)
+                item.setProperty('with.indicator', self.withIndicator and '1' or '')
+                items.append(item)
+                options.append(o)
+            else:
+                items[-1].setProperty('separator', '1')
 
-        if self.withIndicator:
-            for i, o in enumerate(self.options):
-                if o[2] is True:
-                    items[i].setThumbnailImage('script.plex/indicators/arrow-down.png')
-                elif o[2] is False:
-                    items[i].setThumbnailImage('script.plex/indicators/arrow-up.png')
-        elif self.withSuppliedIndicator:
-            for i, o in enumerate(self.options):
-                if o[2]:
-                    items[i].setThumbnailImage(o[2])
+        self.options = options
 
         if len(items) > 1:
             items[0].setProperty('first', '1')
@@ -88,14 +106,14 @@ class DropdownDialog(kodigui.BaseDialog):
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
-def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top', set_dropdown_prop=True, with_indicator=False, with_supplied_indicator=False):
+def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top', set_dropdown_prop=True, with_indicator=False, suboption_callback=None):
     w = DropdownDialog.open(
         options=options, pos=pos,
         pos_is_bottom=pos_is_bottom,
         close_direction=close_direction,
         set_dropdown_prop=set_dropdown_prop,
         with_indicator=with_indicator,
-        with_supplied_indicator=with_supplied_indicator
+        suboption_callback=suboption_callback
     )
     choice = w.choice
     del w

@@ -24,7 +24,7 @@
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>300</width>
-                <height>858</height>
+                <height>924</height>
                 <onup condition="StringCompare(Window.Property(close.direction),top)">Close</onup>
                 <onup condition="!StringCompare(Window.Property(close.direction),top)">noop</onup>
                 <onleft condition="StringCompare(Window.Property(close.direction),left)">Close</onleft>
@@ -40,7 +40,7 @@
                         <posy>0</posy>
                         <width>300</width>
                         <height>66</height>
-                        <texture colordiffuse="FF1F1F1F" border="10">script.plex/white-square-top-rounded.png</texture>
+                        <texture colordiffuse="FF323232" border="10">script.plex/white-square-top-rounded.png</texture>
                     </control>
                     <control type="image">
                         <visible>IsEmpty(ListItem.Property(first)) + IsEmpty(ListItem.Property(last)) + IsEmpty(ListItem.Property(only))</visible>
@@ -48,7 +48,7 @@
                         <posy>0</posy>
                         <width>300</width>
                         <height>66</height>
-                        <texture colordiffuse="FF1F1F1F">script.plex/white-square.png</texture>
+                        <texture colordiffuse="FF323232">script.plex/white-square.png</texture>
                     </control>
                     <control type="image">
                         <visible>!IsEmpty(ListItem.Property(last))</visible>
@@ -56,7 +56,7 @@
                         <posy>0</posy>
                         <width>300</width>
                         <height>66</height>
-                        <texture flipy="true" colordiffuse="FF1F1F1F" border="10">script.plex/white-square-top-rounded.png</texture>
+                        <texture flipy="true" colordiffuse="FF323232" border="10">script.plex/white-square-top-rounded.png</texture>
                     </control>
                     <control type="image">
                         <visible>!IsEmpty(ListItem.Property(only))</visible>
@@ -64,10 +64,10 @@
                         <posy>0</posy>
                         <width>300</width>
                         <height>66</height>
-                        <texture colordiffuse="FF1F1F1F" border="10">script.plex/white-square-rounded.png</texture>
+                        <texture colordiffuse="FF323232" border="10">script.plex/white-square-rounded.png</texture>
                     </control>
                     <control type="label">
-                        <visible>IsEmpty(Window.Property(with.indicator))</visible>
+                        <visible>IsEmpty(ListItem.Property(with.indicator))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>300</width>
@@ -79,7 +79,7 @@
                         <label>$INFO[ListItem.Label]</label>
                     </control>
                     <control type="group">
-                        <visible>!IsEmpty(Window.Property(with.indicator))</visible>
+                        <visible>!IsEmpty(ListItem.Property(with.indicator))</visible>
                         <control type="label">
                             <posx>20</posx>
                             <posy>0</posy>
@@ -93,11 +93,20 @@
                         </control>
                         <control type="image">
                             <posx>254</posx>
-                            <posy>25</posy>
+                            <posy>20</posy>
                             <width>26</width>
-                            <height>16</height>
+                            <height>26</height>
                             <texture colordiffuse="FFFFFFFF">$INFO[ListItem.Thumb]</texture>
+                            <aspectratio>keep</aspectratio>
                         </control>
+                    </control>
+                    <control type="image">
+                        <visible>!IsEmpty(ListItem.Property(separator))</visible>
+                        <posx>0</posx>
+                        <posy>64</posy>
+                        <width>300</width>
+                        <height>2</height>
+                        <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
                     </control>
                 </itemlayout>
                 <focusedlayout height="66">
@@ -134,7 +143,7 @@
                         <texture colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texture>
                     </control>
                     <control type="label">
-                        <visible>IsEmpty(Window.Property(with.indicator))</visible>
+                        <visible>IsEmpty(ListItem.Property(with.indicator))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>300</width>
@@ -146,7 +155,7 @@
                         <label>$INFO[ListItem.Label]</label>
                     </control>
                     <control type="group">
-                        <visible>!IsEmpty(Window.Property(with.indicator))</visible>
+                        <visible>!IsEmpty(ListItem.Property(with.indicator))</visible>
                         <control type="label">
                             <posx>20</posx>
                             <posy>0</posy>
@@ -160,11 +169,20 @@
                         </control>
                         <control type="image">
                             <posx>254</posx>
-                            <posy>25</posy>
+                            <posy>20</posy>
                             <width>26</width>
-                            <height>16</height>
-                            <texture colordiffuse="FFFFFFFF">$INFO[ListItem.Thumb]</texture>
+                            <height>26</height>
+                            <texture colordiffuse="FF000000">$INFO[ListItem.Thumb]</texture>
+                            <aspectratio>keep</aspectratio>
                         </control>
+                    </control>
+                    <control type="image">
+                        <visible>!IsEmpty(ListItem.Property(separator))</visible>
+                        <posx>0</posx>
+                        <posy>64</posy>
+                        <width>300</width>
+                        <height>2</height>
+                        <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
                     </control>
                 </focusedlayout>
             </control>

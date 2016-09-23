@@ -510,7 +510,7 @@
                     <width>260</width>
                     <height>75</height>
                     <onleft>202</onleft>
-                    <onright>210</onright>
+                    <onright>211</onright>
                     <ondown>50</ondown>
                     <font>font12</font>
                     <textcolor>FFFFFFFF</textcolor>
@@ -605,13 +605,46 @@
                 <itemgap>30</itemgap>
                 <orientation>horizontal</orientation>
                 <onleft>204</onleft>
+                <onright>210</onright>
                 <ondown>50</ondown>
-                <control type="button">
+                <control type="button" id="311">
+                    <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
                     <font>font12</font>
                     <textcolor>FFFFFFFF</textcolor>
                     <focusedcolor>FFFFFFFF</focusedcolor>
+                    <disabledcolor>FFFFFFFF</disabledcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>0</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
+                </control>
+                <control type="button" id="211">
+                    <width max="500">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
+                </control>
+                <control type="button" id="310">
+                    <enable>false</enable>
+                    <width max="300">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FFFFFFFF</focusedcolor>
+                    <disabledcolor>FFFFFFFF</disabledcolor>
                     <align>center</align>
                     <aligny>center</aligny>
                     <texturefocus>-</texturefocus>

@@ -480,12 +480,11 @@ class PostersWindow(kodigui.BaseWindow):
             disp = self.filter['display']
             if self.filter.get('sub'):
                 disp = self.filter['sub']['display']
-
             self.setProperty('filter1.display', disp)
             self.setProperty('filter2.display', self.filterUnwatched and 'unwatched' or '')
         else:
-            self.setProperty('filter1.display', self.filterUnwatched and 'unwatched' or 'all')
             self.setProperty('filter2.display', '')
+            self.setProperty('filter1.display', self.filterUnwatched and 'unwatched' or 'all')
 
         if self.filter or choice in ('clear_filter', 'unwatched'):
             self.fill()

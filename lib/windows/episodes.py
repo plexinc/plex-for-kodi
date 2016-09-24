@@ -160,16 +160,16 @@ class EpisodesWindow(kodigui.BaseWindow):
             #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
 
         pos = (460, 1106)
-        bottom=True
+        bottom = True
         setDropdownProp = False
         if item:
             viewPos = self.episodePanelControl.getViewPosition()
             if viewPos > 6:
                 pos = (1490, 312 + (viewPos * 100))
-                bottom=True
+                bottom = True
             else:
                 pos = (1490, 167 + (viewPos * 100))
-                bottom=False
+                bottom = False
             setDropdownProp = True
         choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='right', set_dropdown_prop=setDropdownProp)
         if not choice:

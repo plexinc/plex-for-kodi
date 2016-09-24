@@ -1,9 +1,12 @@
 import re
 import time
+
 import xbmc
 import xbmcgui
+
 import kodigui
 import playersettings
+import dropdown
 
 from lib import util
 
@@ -31,6 +34,7 @@ class SeekDialog(kodigui.BaseDialog):
     SKIP_FORWARD_BUTTON_ID = 408
     NEXT_BUTTON_ID = 409
     PLAYLIST_BUTTON_ID = 410
+    OPTIONS_BUTTON_ID = 411
 
     BAR_X = 0
     BAR_Y = 921
@@ -149,6 +153,8 @@ class SeekDialog(kodigui.BaseDialog):
         elif controlID == self.PLAYLIST_BUTTON_ID:
             self.playlistDialog = PlaylistDialog.create(show=False, handler=self.handler)
             self.playlistDialog.show()
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
         elif controlID == 500:
             self.bigSeekSelected()
 
@@ -191,6 +197,22 @@ class SeekDialog(kodigui.BaseDialog):
     def shuffleButtonClicked(self):
         if self.handler.playlist:
             self.handler.playlist.setShuffle()
+
+    def optionsButtonClicked(self):
+        options = []
+
+        options.append({'key': 'kodi_video', 'display': 'Video Options'})
+        options.append({'key': 'kodi_audio', 'display': 'Audio Options'})
+
+        choice = dropdown.showDropdown(options, (1360, 1060), close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
+
+        if not choice:
+            return
+
+        if choice['key'] == 'kodi_video':
+            xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
+        elif choice['key'] == 'kodi_audio':
+            xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
 
     def showSettings(self):
         playersettings.showDialog(self.player.video)

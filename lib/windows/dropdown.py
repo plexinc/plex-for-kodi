@@ -20,20 +20,11 @@ class DropdownDialog(kodigui.BaseDialog):
         self.pos = kwargs.get('pos')
         self.posIsBottom = kwargs.get('pos_is_bottom')
         self.closeDirection = kwargs.get('close_direction')
-        self.setDropdownProp = kwargs.get('set_dropdown_prop')
-        self.withIndicator = kwargs.get('with_indicator')
+        self.setDropdownProp = kwargs.get('set_dropdown_prop', False)
+        self.withIndicator = kwargs.get('with_indicator', False)
         self.suboptionCallback = kwargs.get('suboption_callback')
+        self.closeOnPlaybackEnded = kwargs.get('close_on_playback_ended', False)
         self.choice = None
-
-    def onFirstInit(self):
-        self.setProperty('dropdown', self.setDropdownProp and '1' or '')
-        self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
-        self.showOptions()
-        height = min(66 * 14, (len(self.options) * 66)) + 80
-        self.getControl(100).setPosition(self.x, self.y)
-        self.getControl(110).setHeight(height)
-        self.setProperty('show', '1')
-        self.setProperty('close.direction', self.closeDirection)
 
     @property
     def x(self):
@@ -46,6 +37,19 @@ class DropdownDialog(kodigui.BaseDialog):
             y -= (len(self.options) * 66) + 80
         return y
 
+    def onFirstInit(self):
+        self.setProperty('dropdown', self.setDropdownProp and '1' or '')
+        self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
+        self.showOptions()
+        height = min(66 * 14, (len(self.options) * 66)) + 80
+        self.getControl(100).setPosition(self.x, self.y)
+        self.getControl(110).setHeight(height)
+        self.setProperty('show', '1')
+        self.setProperty('close.direction', self.closeDirection)
+        if self.closeOnPlaybackEnded:
+            from lib import player
+            player.PLAYER.on('session.ended', self.playbackSessionEnded)
+
     def onAction(self, action):
         try:
             pass
@@ -57,6 +61,9 @@ class DropdownDialog(kodigui.BaseDialog):
     def onClick(self, controlID):
         if controlID == self.OPTIONS_LIST_ID:
             self.setChoice()
+
+    def playbackSessionEnded(self, **kwargs):
+        self.doClose()
 
     def setChoice(self):
         mli = self.optionsList.getSelectedItem()
@@ -106,14 +113,23 @@ class DropdownDialog(kodigui.BaseDialog):
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
-def showDropdown(options, pos=(0, 0), pos_is_bottom=False, close_direction='top', set_dropdown_prop=True, with_indicator=False, suboption_callback=None):
+def showDropdown(
+    options, pos=(0, 0),
+    pos_is_bottom=False,
+    close_direction='top',
+    set_dropdown_prop=True,
+    with_indicator=False,
+    suboption_callback=None,
+    close_on_playback_ended=False
+):
     w = DropdownDialog.open(
         options=options, pos=pos,
         pos_is_bottom=pos_is_bottom,
         close_direction=close_direction,
         set_dropdown_prop=set_dropdown_prop,
         with_indicator=with_indicator,
-        suboption_callback=suboption_callback
+        suboption_callback=suboption_callback,
+        close_on_playback_ended=close_on_playback_ended
     )
     choice = w.choice
     del w

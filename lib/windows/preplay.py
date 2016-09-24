@@ -59,8 +59,8 @@ class PrePlayWindow(kodigui.BaseWindow):
         self.setup()
         # import xbmc
         # xbmc.sleep(100)
-        # if self.video.viewOffset.asInt():
-        #     self.setFocusId(self.RESUME_BUTTON_ID)
+        if self.video.viewOffset.asInt():
+            self.setFocusId(self.RESUME_BUTTON_ID)
         # else:
         #     self.setFocusId(self.PLAY_BUTTON_ID)
 

@@ -166,10 +166,10 @@ class HttpRequest(object):
 
     def addParam(self, encodedName, value):
         if self.hasParams:
-            self.url += "&" + encodedName + "=" + urllib.quote(value)
+            self.url += "&" + encodedName + "=" + urllib.quote_plus(value)
         else:
             self.hasParams = True
-            self.url += "?" + encodedName + "=" + urllib.quote(value)
+            self.url += "?" + encodedName + "=" + urllib.quote_plus(value)
 
     def addHeader(self, name, value):
         self.session.headers.update({name: value})

@@ -274,6 +274,17 @@ class PlexObject(object, Checks):
         else:
             return self.getAddress() + "/" + path
 
+    def getParentPath(self, key):
+        # Some containers have /children on its key while others (such as playlists) use /items
+        path = self.getAbsolutePath(key)
+        if path is None:
+            return ""
+
+        for suffix in ("/children", "/items"):
+            path = path.replace(suffix, "")
+
+        return path
+
     def getServer(self):
         return self.server
 
@@ -334,7 +345,7 @@ class PlexContainer(PlexObject):
             self.address = address
 
         # TODO(schuyler): Do we need to make sure that we only hang onto the path here and not a full URL?
-        if self.address.startswith("/") and "node.plexapp.com" not in self.address:
+        if not self.address.startswith("/") and "node.plexapp.com" not in self.address:
             util.FATAL("Container address is not an expected path: {0}".format(address))
 
     def getAbsolutePath(self, path):
@@ -434,7 +445,7 @@ def buildItem(server, elem, initpath, bytag=False, container=None):
 def listItems(server, path, libtype=None, watched=None, bytag=False, data=None):
     items = []
     data = data or server.query(path)
-    container = PlexContainer(data, path, server, '')
+    container = PlexContainer(data, path, server, path)
     for elem in data:
         if libtype and elem.attrib.get('type') != libtype:
             continue

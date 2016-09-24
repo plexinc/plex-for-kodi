@@ -36,6 +36,9 @@ class Photo(media.MediaItem):
     def refresh(self):
         self.server.query('%s/refresh' % self.key, method=self.server.session.put)
 
+    def isPhotoOrDirectoryItem(self):
+        return True
+
 
 class PhotoDirectory(media.MediaItem):
     TYPE = 'photodirectory'
@@ -43,6 +46,9 @@ class PhotoDirectory(media.MediaItem):
     def all(self):
         path = self.key
         return plexobjects.listItems(self.server, path)
+
+    def isPhotoOrDirectoryItem(self):
+        return True
 
 
 @plexobjects.registerLibFactory('photo')

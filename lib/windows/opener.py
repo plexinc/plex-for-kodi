@@ -18,7 +18,7 @@ def open(obj):
         return seasonClicked(obj)
     elif obj.TYPE in ('album'):
         return albumClicked(obj)
-    elif obj.TYPE in ('photo'):
+    elif obj.TYPE in ('photo',):
         return photoClicked(obj)
     elif obj.TYPE in ('photodirectory'):
         return photoDirectoryClicked(obj)

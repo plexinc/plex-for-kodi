@@ -458,7 +458,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def hasNext(self):
         if self.isRepeatOne:
             return True
-        return self.allowSkipNext or -1 < self.items().index(self.current()) < len(self.items()) - 1
+        return self.allowSkipNext and -1 < self.items().index(self.current()) < (len(self.items()) - 1)  # TODO: Was or - issues?
 
     def hasPrev(self):
         return self.allowSkipPrev or self.items().index(self.current()) > 0
@@ -612,6 +612,7 @@ def createRemotePlayQueue(item, contentType, options):
         else:
             path = item.container.address
             itemType = "directory"
+            options.key = item.getAbsolutePath("key")
 
     elif item.type == "episode":
         path = "/library/metadata/" + item.get("grandparentRatingKey", "")
@@ -652,7 +653,6 @@ def createRemotePlayQueue(item, contentType, options):
         options.key = None
     else:
         request.addParam("shuffle", "0")
-        options.key = None
 
     if options.key:
         request.addParam("key", options.key)

@@ -435,6 +435,7 @@ class PlexAudioPlayer(object):
 class PlexPhotoPlayer(object):
     def __init__(self, item):
         self.item = item
+        self.choice = item
         self.media = item.media()[0]
         self.metadata = None
 

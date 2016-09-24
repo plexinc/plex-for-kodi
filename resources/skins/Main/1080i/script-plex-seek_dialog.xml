@@ -259,13 +259,13 @@
             <control type="button" id="422">
                 <enable>false</enable>
                 <visible>IsEmpty(Window.Property(has.playlist))</visible>
-                <posx>30</posx>
+                <posx>0</posx>
                 <posy>0</posy>
                 <width>125</width>
                 <height>101</height>
                 <font>font12</font>
-                <texturefocus flipx="true" colordiffuse="40FFFFFF">script.plex/buttons/shuffle-focus.png</texturefocus>
-                <texturenofocus flipx="true" colordiffuse="40FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
+                <texturefocus colordiffuse="40FFFFFF">script.plex/buttons/shuffle-focus.png</texturefocus>
+                <texturenofocus colordiffuse="40FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
                 <label> </label>
             </control>
 

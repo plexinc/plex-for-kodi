@@ -12,11 +12,11 @@ from lib import backgroundthread
 import busy
 import subitems
 import preplay
-import photos
 import plexnet
 import musicplayer
 import videoplayer
 import dropdown
+import opener
 
 from plexnet import playqueue
 
@@ -518,10 +518,8 @@ class PostersWindow(kodigui.BaseWindow):
         self.onChildWindowClosed(w)
 
     def showPhoto(self, photo):
-        if isinstance(photo, plexnet.photo.Photo):
-            w = photos.PhotoWindow.open(photo=photo)
-        elif photo.TYPE == 'clip':
-            videoplayer.play(video=photo)
+        if isinstance(photo, plexnet.photo.Photo) or photo.TYPE == 'clip':
+            opener.open(photo)
         else:
             w = SquaresWindow.open(section=photo)
             self.onChildWindowClosed(w)
@@ -646,7 +644,11 @@ class PostersWindow(kodigui.BaseWindow):
         self.firstOfKeyItems = {}
         idx = 0
 
-        photos = self.section.all(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched)
+        if self.section.TYPE == 'photodirectory':
+            photos = self.section.all()
+        else:
+            photos = self.section.all(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched)
+
         if not photos:
             return
 

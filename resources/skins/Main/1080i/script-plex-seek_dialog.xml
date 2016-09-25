@@ -288,7 +288,7 @@
                 <visible>!IsEmpty(Window.Property(pq.hasprev))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
-                <hitrect x="28" y="28" w="69" h="45" />
+                <hitrect x="58" y="28" w="69" h="45" />
                 <posx>30</posx>
                 <posy>0</posy>
                 <width>125</width>
@@ -401,7 +401,7 @@
                 <visible>!IsEmpty(Window.Property(pq.hasnext)) | !IsEmpty(Window.Property(pq.hasprev))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
-                <hitrect x="28" y="28" w="69" h="45" />
+                <hitrect x="58" y="28" w="69" h="45" />
                 <posx>30</posx>
                 <posy>0</posy>
                 <width>125</width>

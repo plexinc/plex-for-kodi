@@ -458,17 +458,26 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def hasNext(self):
         if self.isRepeatOne:
             return True
-        return self.allowSkipNext and -1 < self.items().index(self.current()) < (len(self.items()) - 1)  # TODO: Was or - issues?
+        if not self.allowSkipNext and -1 < self.items().index(self.current()) < (len(self.items()) - 1):  # TODO: Was 'or' - did change cause issues?
+            return self.isRepeat and not self.isWindowed()
+
+        return True
 
     def hasPrev(self):
-        return self.allowSkipPrev or self.items().index(self.current()) > 0
+        # return self.allowSkipPrev or self.items().index(self.current()) > 0
+        return self.items().index(self.current()) > 0
 
     def next(self):
         if not self.hasNext():
             return None
+
         if self.isRepeatOne:
             return self.current()
+
         pos = self.items().index(self.current()) + 1
+        if pos >= len(self.items()):
+            pos = 0
+
         item = self.items()[pos]
         self.selectedId = item.playQueueItemID.asInt()
         return item
@@ -490,6 +499,9 @@ class PlayQueue(signalsmixin.SignalsMixin):
         item = self.items()[pos]
         self.selectedId = item.playQueueItemID.asInt()
         return item
+
+    def setCurrentItem(self, item):
+        self.selectedId = item.playQueueItemID.asInt()
 
     def __eq__(self, other):
         if not other:

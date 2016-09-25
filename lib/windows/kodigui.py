@@ -712,7 +712,7 @@ class MultiSelectDialog(BaseDialog):
 
 
 class PropertyTimer():
-    def __init__(self, window_id, timeout, property_, value, addon_id=None):
+    def __init__(self, window_id, timeout, property_, value, addon_id=None, focus_id=None):
         self._winID = window_id
         self._timeout = timeout
         self._property = property_
@@ -722,6 +722,7 @@ class PropertyTimer():
         self._addonID = addon_id
         self._closeWin = None
         self._closed = False
+        self._focusID = focus_id
 
     def _onTimeout(self):
         self._endTime = 0
@@ -730,6 +731,8 @@ class PropertyTimer():
             xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self._property), self._value)
         if self._closeWin:
             self._closeWin.doClose()
+        if self._focusID:
+            xbmc.executebuiltin('SetFocus({0})'.format(self._focusID))
 
     def _wait(self):
         while not xbmc.abortRequested and time.time() < self._endTime:
@@ -750,8 +753,8 @@ class PropertyTimer():
         self._thread = threading.Thread(target=self._wait)
         self._thread.start()
 
-    def stop(self):
-        self._endTime = 0
+    def stop(self, trigger=False):
+        self._endTime = trigger and 1 or 0
         if not self._stopped():
             self._thread.join()
 
@@ -759,12 +762,23 @@ class PropertyTimer():
         self._closed = True
         self.stop()
 
-    def reset(self, close_win=None):
+    def init(self, val):
+        xbmcgui.Window(self._winID).setProperty(self._property, val)
+        if self._addonID:
+            xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self._property), val)
+
+    def reset(self, close_win=None, init=None):
+        if init:
+            self.init(init)
+
         if self._closed:
+
             return
         if not self._timeout:
             return
+
         self._closeWin = close_win
         self._reset()
+
         if self._stopped:
             self._start()

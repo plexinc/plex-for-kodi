@@ -1,3 +1,7 @@
+import threading
+import time
+
+import xbmc
 import xbmcgui
 
 import kodigui
@@ -15,8 +19,15 @@ class PhotoWindow(kodigui.BaseWindow):
     width = 1920
     height = 1080
 
+    OVERLAY_BUTTON_ID = 250
+    OSD_GROUP_ID = 200
+    OSD_BUTTONS_GROUP_ID = 400
     PREV_BUTTON_ID = 404
+    PLAY_PAUSE_BUTTON_ID = 406
+    STOP_BUTTON_ID = 407
     NEXT_BUTTON_ID = 409
+
+    SLIDESHOW_INTERVAL = 3
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
@@ -27,17 +38,36 @@ class PhotoWindow(kodigui.BaseWindow):
         self.lastTimelineState = None
         self.ignoreTimelines = False
         self.trueTime = 0
+        self.slideshowThread = None
+        self.slideshowRunning = False
+        self.slideshowNext = 0
+        self.osdTimer = None
 
     def onFirstInit(self):
         self.getPlayQueue()
         self.start()
+        self.osdTimer = kodigui.PropertyTimer(self._winID, 4, 'OSD', '', focus_id=self.OVERLAY_BUTTON_ID)
 
     def onAction(self, action):
         try:
             # controlID = self.getFocusId()
-            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+            if action == xbmcgui.ACTION_MOVE_LEFT:
+                if not self.osdVisible():
+                    self.prev()
+            elif action == xbmcgui.ACTION_MOVE_RIGHT:
+                if not self.osdVisible():
+                    self.next()
+            elif action == xbmcgui.ACTION_MOVE_UP:
+                if self.osdVisible():
+                    self.hideOSD()
+            elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+                if self.getFocusId() != self.OVERLAY_BUTTON_ID:
+                    self.hideOSD()
+                    return
                 self.doClose()
                 return
+
+            self.osdTimer.reset()
         except:
             util.ERROR()
 
@@ -48,6 +78,15 @@ class PhotoWindow(kodigui.BaseWindow):
             self.prev()
         elif controlID == self.NEXT_BUTTON_ID:
             self.next()
+        elif controlID == self.PLAY_PAUSE_BUTTON_ID:
+            if self.getProperty('playing'):
+                self.pause()
+            else:
+                self.play()
+        elif controlID == self.STOP_BUTTON_ID:
+            self.stop()
+        elif controlID == self.OVERLAY_BUTTON_ID:
+            self.showOSD()
 
     def getPlayQueue(self, shuffle=False):
         if True:
@@ -58,23 +97,67 @@ class PhotoWindow(kodigui.BaseWindow):
             else:
                 util.DEBUG_LOG('playQueue timed out wating for initialization')
 
+    @busy.dialog()
     def showPhoto(self, photo):
         if not photo:
             return
+
+        self.slideshowNext = 0
 
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
         meta = self.playerObject.build()
         self.setProperty('photo', meta.get('url', ''))
         self.updateNowPlaying(force=True, refreshQueue=True)
+        self.resetNext()
+
+    def slideshow(self):
+        util.DEBUG_LOG('Slideshow: STARTED')
+        self.slideshowRunning = True
+        monitor = xbmc.Monitor()
+
+        self.resetNext()
+        while not monitor.waitForAbort(0.1) and self.slideshowRunning:
+            if not self.slideshowNext or time.time() < self.slideshowNext:
+                continue
+            util.TEST(time.time())
+            self.next()
+
+        util.DEBUG_LOG('Slideshow: STOPPED')
+
+    def resetNext(self):
+        self.slideshowNext = time.time() + self.SLIDESHOW_INTERVAL
+
+    def osdVisible(self):
+        return self.getProperty('OSD')
 
     def start(self):
         self.showPhoto(self.playQueue.current())
+        self.setFocusId(self.OVERLAY_BUTTON_ID)
 
     def prev(self):
         self.showPhoto(self.playQueue.prev())
 
     def next(self):
         self.showPhoto(self.playQueue.next())
+
+    def play(self):
+        self.setProperty('playing', '1')
+        if self.slideshowThread and self.slideshowThread.isAlive():
+            return
+
+        self.slideshowThread = threading.Thread(target=self.slideshow, name='slideshow')
+        self.slideshowThread.start()
+
+    def pause(self):
+        self.setProperty('playing', '')
+        self.slideshowRunning = False
+
+    def stop(self):
+        self.doClose()
+
+    def doClose(self):
+        self.pause()
+        kodigui.BaseWindow.doClose(self)
 
     def getCurrentItem(self):
         if self.playerObject:
@@ -112,3 +195,13 @@ class PhotoWindow(kodigui.BaseWindow):
             self.playQueue.refreshOnTimeline = True
 
         plexapp.APP.nowplayingmanager.updatePlaybackState(self.timelineType, self.playerObject, state, time, self.playQueue)
+
+    def showOSD(self):
+        self.setFocusId(self.OSD_BUTTONS_GROUP_ID)
+
+        self.osdTimer.reset(init='1')
+
+    def hideOSD(self):
+        self.setFocusId(self.OVERLAY_BUTTON_ID)
+
+        self.osdTimer.stop(trigger=True)

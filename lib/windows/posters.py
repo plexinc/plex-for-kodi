@@ -246,34 +246,8 @@ class PostersWindow(kodigui.BaseWindow):
         self.setProperty('key', li.dataSource)
 
     def playButtonClicked(self, shuffle=False):
-        if self.section.TYPE in ('movie', 'show', 'artist'):
-            class ObjectWrapper(object):
-                def __init__(self, item):
-                    self._item = item
-
-                def __getattr__(self, name):
-                    return getattr(self._item, name)
-
-                def getAbsolutePath(self, key):
-                    return '/library/sections/{0}/all'.format(self._item.key)
-
-            pqItem = ObjectWrapper(self.section)
-            # if self.sectisFolderView:
-            #     pqItem.type = pqItem.get("type") or pqItem.container.get("viewGroup")
-            # else:
-            #     pqItem.type = pqItem.type
-            pqItem.name = "Directory"
-            pqItem.isLibraryPQ = True
-            pq = playqueue.createPlayQueueForItem(pqItem, options={'shuffle': shuffle})
-            util.DEBUG_LOG('waiting for playQueue to initialize')
-            if busy.widthDialog(pq.waitForInitialization, None):
-                util.DEBUG_LOG('playQueue initialized: {0}'.format(pq))
-                if pq.type == 'audio':
-                    musicplayer.MusicPlayerWindow.open(track=pq.current(), playlist=pq)
-                else:
-                    videoplayer.play(play_queue=pq)
-            else:
-                util.DEBUG_LOG('playQueue timed out wating for initialization')
+        pq = playqueue.createPlayQueueForItem(self.section, options={'shuffle': shuffle})
+        opener.open(pq)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)

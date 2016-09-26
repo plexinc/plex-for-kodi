@@ -81,9 +81,23 @@ class LibrarySection(plexobjects.PlexObject):
     ALLOWED_SORT = ()
     BOOLEAN_FILTERS = ('unwatched', 'duplicate')
 
+    isLibraryPQ = True
+
     def __repr__(self):
         title = self.title.replace(' ', '.')[0:20]
         return '<%s:%s>' % (self.__class__.__name__, title.encode('utf8'))
+
+    def isDirectory(self):
+        return True
+
+    def isLibraryItem(self):
+        return True
+
+    def getAbsolutePath(self, key):
+        if key == 'key':
+            return '/library/sections/{0}/all'.format(self.key)
+
+        return plexobjects.PlexObject.getAbsolutePath(self, key)
 
     def all(self, start=None, size=None, filter_=None, sort=None, unwatched=False):
         if self.key.startswith('/'):
@@ -300,6 +314,9 @@ class PhotoSection(LibrarySection):
     ALLOWED_FILTERS = ()
     ALLOWED_SORT = ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort')
     TYPE = 'photo'
+
+    def isPhotoOrDirectoryItem(self):
+        return True
 
 
 @plexobjects.registerLibType

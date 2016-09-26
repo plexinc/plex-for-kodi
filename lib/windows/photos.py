@@ -40,7 +40,7 @@ class PhotoWindow(kodigui.BaseWindow):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.photo = kwargs.get('photo')
-        self.playQueue = None
+        self.playQueue = kwargs.get('play_queue')
         self.playerObject = None
         self.timelineType = 'photo'
         self.lastTimelineState = None
@@ -168,15 +168,22 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setProperty('rotate', str(self.rotate))
 
     def getPlayQueue(self, shuffle=False):
-        self.playQueue = playqueue.createPlayQueueForItem(self.photo, options={'shuffle': shuffle})
-        self.playQueue.on('items.changed', self.fillPqueueList)
-        self.playQueue.on('change', self.updateProperties)
-
-        util.DEBUG_LOG('waiting for playQueue to initialize')
-        if busy.widthDialog(self.playQueue.waitForInitialization, None):
-            util.DEBUG_LOG('playQueue initialized: {0}'.format(self.playQueue))
+        if self.playQueue:
+            self.playQueue.on('items.changed', self.fillPqueueList)
+            self.playQueue.on('change', self.updateProperties)
+            self.updateProperties()
+            self.fillPqueueList()
         else:
-            util.DEBUG_LOG('playQueue timed out wating for initialization')
+            self.playQueue = playqueue.createPlayQueueForItem(self.photo, options={'shuffle': shuffle})
+            self.playQueue.on('items.changed', self.fillPqueueList)
+            self.playQueue.on('change', self.updateProperties)
+
+            util.DEBUG_LOG('waiting for playQueue to initialize')
+            if busy.widthDialog(self.playQueue.waitForInitialization, None):
+                util.DEBUG_LOG('playQueue initialized: {0}'.format(self.playQueue))
+            else:
+                util.DEBUG_LOG('playQueue timed out wating for initialization')
+
         self.showPhoto()
 
     def fillPqueueList(self, **kwargs):
@@ -252,7 +259,6 @@ class PhotoWindow(kodigui.BaseWindow):
         while not monitor.waitForAbort(0.1) and self.slideshowRunning:
             if not self.slideshowNext or time.time() < self.slideshowNext:
                 continue
-            util.TEST(time.time())
             self.next()
 
         util.DEBUG_LOG('Slideshow: STOPPED')

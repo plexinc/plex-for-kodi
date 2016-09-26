@@ -197,7 +197,6 @@ class ShowWindow(kodigui.BaseWindow):
 
     def infoButtonClicked(self):
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(self.mediaItem.type == 'show' and 'show' or 'music')
-        util.TEST(fallback)
         genres = u' / '.join([g.tag for g in util.removeDups(self.mediaItem.genres())][:6])
         info.InfoWindow.open(
             title=self.mediaItem.title,

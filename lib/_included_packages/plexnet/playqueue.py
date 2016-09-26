@@ -624,6 +624,8 @@ def createRemotePlayQueue(item, contentType, options):
         if item.type == "photoalbum" or item.parentKey:
             path = item.getParentPath(item.type == "photoalbum" and "key" or "parentKey")
             itemType = "item"
+        elif item.isDirectory():
+            path = item.getAbsolutePath("key")
         else:
             path = item.container.address
             itemType = "directory"
@@ -702,6 +704,10 @@ class VideoPlayer():
     pass
 
 
+class PhotoPlayer():
+    pass
+
+
 def addItemToPlayQueue(item, addNext=False):
     # See if we have an active play queue for this self.dia type or if we need to
     # create one.
@@ -711,8 +717,7 @@ def addItemToPlayQueue(item, addNext=False):
     elif item.isVideoOrDirectoryItem():
         player = VideoPlayer()
     elif item.isPhotoOrDirectoryItem():
-        # player = PhotoPlayer()
-        player = None
+        player = PhotoPlayer()
     else:
         player = None
 

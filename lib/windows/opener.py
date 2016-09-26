@@ -5,10 +5,27 @@ import photos
 import posters
 import playlist
 import videoplayer
+import musicplayer
+import busy
+
+from plexnet import playqueue
+from lib import util
 
 
 def open(obj):
-    if obj.TYPE in ('episode', 'movie'):
+    if isinstance(obj, playqueue.PlayQueue):
+        util.DEBUG_LOG('waiting for playQueue to initialize')
+        if busy.widthDialog(obj.waitForInitialization, None):
+            util.DEBUG_LOG('playQueue initialized: {0}'.format(obj))
+            if obj.type == 'audio':
+                return handleOpen(musicplayer.MusicPlayerWindow, track=obj.current(), playlist=obj)
+            elif obj.type == 'photo':
+                return handleOpen(photos.PhotoWindow, play_queue=obj)
+            else:
+                return videoplayer.play(play_queue=obj)
+        else:
+            util.DEBUG_LOG('playQueue timed out wating for initialization')
+    elif obj.TYPE in ('episode', 'movie'):
         return playableClicked(obj)
     elif obj.TYPE in ('show'):
         return showClicked(obj)

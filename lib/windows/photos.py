@@ -68,6 +68,7 @@ class PhotoWindow(kodigui.BaseWindow):
     def onAction(self, action):
         try:
             # controlID = self.getFocusId()
+            # util.TEST(action.getId())
             if action == xbmcgui.ACTION_MOVE_LEFT:
                 if not self.osdVisible() or self.getFocusId() == self.PQUEUE_LIST_OVERLAY_BUTTON_ID:
                     self.prev()
@@ -86,6 +87,17 @@ class PhotoWindow(kodigui.BaseWindow):
                         self.hideOSD()
                     else:
                         self.showOSD()
+            elif action == xbmcgui.ACTION_STOP:
+                self.stop()
+            elif action in (xbmcgui.ACTION_PLAY, xbmcgui.ACTION_PAUSE):
+                if self.isPlaying():
+                    self.pause()
+                else:
+                    self.play()
+            elif action == xbmcgui.ACTION_PREV_ITEM:
+                self.prev()
+            elif action == xbmcgui.ACTION_NEXT_ITEM:
+                self.next()
             elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
                 if self.osdVisible():
                     self.hideOSD()
@@ -113,7 +125,7 @@ class PhotoWindow(kodigui.BaseWindow):
         elif controlID == self.NEXT_BUTTON_ID:
             self.next()
         elif controlID == self.PLAY_PAUSE_BUTTON_ID:
-            if self.getProperty('playing'):
+            if self.isPlaying():
                 self.pause()
             else:
                 self.play()
@@ -166,6 +178,9 @@ class PhotoWindow(kodigui.BaseWindow):
             self.imageControl.setHeight(1080)
 
         self.setProperty('rotate', str(self.rotate))
+
+    def isPlaying(self):
+        return bool(self.getProperty('playing'))
 
     def getPlayQueue(self, shuffle=False):
         if self.playQueue:

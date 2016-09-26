@@ -386,6 +386,9 @@ class PlexItemList(object):
         for i in self.items:
             yield i
 
+    def __getitem__(self, idx):
+        return self.items[idx]
+
     @property
     def items(self):
         if self._items is None:

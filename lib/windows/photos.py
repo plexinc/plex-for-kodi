@@ -246,6 +246,21 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setProperty('photo', url)
         self.setProperty('background', photo.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
 
+        self.setProperty('photo.title', photo.title)
+        self.setProperty('photo.date', util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y')))
+        self.setProperty('camera.model', photo.media[0].model)
+        self.setProperty('camera.lens', photo.media[0].lens)
+        self.setProperty('photo.dims', u'{0} x {1} \u2022 {2} Mo'.format(photo.media[0].width, photo.media[0].height, photo.media[0].parts[0].orientation))
+        settings = []
+        if photo.media[0].iso:
+            settings.append('ISO {0}'.format(photo.media[0].iso))
+        if photo.media[0].aperture:
+            settings.append('{0}'.format(photo.media[0].aperture))
+        if photo.media[0].exposure:
+            settings.append('{0}'.format(photo.media[0].exposure))
+        self.setProperty('camera.settings', u' \u2022 '.join(settings))
+        self.setProperty('photo.summary', photo.summary)
+
         self.updateNowPlaying(force=True, refreshQueue=True)
         self.resetSlideshowTimeout()
 

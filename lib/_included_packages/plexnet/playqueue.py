@@ -458,6 +458,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
     def hasNext(self):
         if self.isRepeatOne:
             return True
+
         if not self.allowSkipNext and -1 < self.items().index(self.current()) < (len(self.items()) - 1):  # TODO: Was 'or' - did change cause issues?
             return self.isRepeat and not self.isWindowed()
 
@@ -476,6 +477,8 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
         pos = self.items().index(self.current()) + 1
         if pos >= len(self.items()):
+            if not self.isRepeat or self.isWindowed():
+                return None
             pos = 0
 
         item = self.items()[pos]
@@ -542,7 +545,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         )
 
     def isLocal(self):
-        return (self.isLocalPlayQueue)
+        return self.isLocalPlayQueue
 
     def deriveIsMixed(self):
         if self.isMixed is None:

@@ -15,6 +15,11 @@ except ImportError:
     from urllib import quote
 
 try:
+    from urllib.parse import quote_plus
+except ImportError:
+    from urllib import quote_plus
+
+try:
     from configparser import ConfigParser
 except ImportError:
     from ConfigParser import ConfigParser

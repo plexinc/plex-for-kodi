@@ -159,7 +159,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         else:
             imageUrl = "http://127.0.0.1:" + self.getLocalServerPort() + path
 
-        path = "/photo/:/transcode?url=" + compat.quote(imageUrl) + params
+        path = "/photo/:/transcode?url=" + compat.quote_plus(imageUrl) + params
 
         # Try to use a better server to transcode for synced servers
         if self.synced:
@@ -405,8 +405,9 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
     def convertUrlToLoopBack(self, url):
         # If the URL starts with our server URL, replace it with 127.0.0.1:32400.
+        baseuri = self.activeConnection.address
         if self.isRequestToServer(url):
-            url = "http://127.0.0.1:32400" + url[len(self.baseuri) - 1:]
+            url = "http://127.0.0.1:32400" + url[len(baseuri):]
 
         return url
 

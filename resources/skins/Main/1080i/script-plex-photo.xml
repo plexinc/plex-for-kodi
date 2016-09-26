@@ -24,13 +24,20 @@
                 <fadetime>1000</fadetime>
                 <texture background="true">$INFO[Window.Property(background)]</texture>
             </control>
-            <control type="image">
+            <control type="image" id="600">
+                <!-- Doesn't work for all aspects -->
+                <!-- <animation effect="zoom" start="56" end="100" time="200" center="960,540" reversible="false" condition="StringCompare(Window.Property(rotate),90) | StringCompare(Window.Property(rotate),270)">Conditional</animation>
+                <animation effect="zoom" start="178" end="100" time="200" center="960,540" reversible="false" condition="StringCompare(Window.Property(rotate),0) | StringCompare(Window.Property(rotate),180)">Conditional</animation> -->
+                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="IntegerGreaterThan(Window.Property(rotate),89)">Conditional</animation>
+                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="IntegerGreaterThan(Window.Property(rotate),179)">Conditional</animation>
+                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="IntegerGreaterThan(Window.Property(rotate),269)">Conditional</animation>
+                <animation effect="rotate" time="200" start="270" end="360" center="960,540" reversible="false" condition="!IntegerGreaterThan(Window.Property(rotate),89)">Conditional</animation>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
                 <height>1080</height>
                 <fadetime>200</fadetime>
-                <texture background="true">$INFO[Window.Property(photo)]</texture>
+                <texture condition="" background="true">$INFO[Window.Property(photo)]</texture>
                 <aspectratio>keep</aspectratio>
             </control>
         </control>
@@ -154,8 +161,8 @@
                         <width>125</width>
                         <height>101</height>
                         <font>font12</font>
-                        <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/settings-focus.png</texturefocus>
-                        <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/settings.png</texturenofocus>
+                        <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/rotate-focus.png</texturefocus>
+                        <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/rotate.png</texturenofocus>
                         <label> </label>
                     </control>
 
@@ -287,6 +294,7 @@
                         <label> </label>
                     </control>
                     <control type="button" id="411">
+                        <visible>false</visible>
                         <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                         <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                         <hitrect x="28" y="28" w="69" h="45" />

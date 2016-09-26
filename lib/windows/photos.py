@@ -25,6 +25,7 @@ class PhotoWindow(kodigui.BaseWindow):
     OSD_BUTTONS_GROUP_ID = 400
     REPEAT_BUTTON_ID = 401
     SHUFFLE_BUTTON_ID = 402
+    ROTATE_BUTTON_ID = 403
     PREV_BUTTON_ID = 404
     PLAY_PAUSE_BUTTON_ID = 406
     STOP_BUTTON_ID = 407
@@ -52,12 +53,14 @@ class PhotoWindow(kodigui.BaseWindow):
         self.lastItem = None
         self.showPhotoThread = None
         self.showPhotoTimeout = 0
+        self.rotate = 0
 
     def onFirstInit(self):
         self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 14)
         self.getPlayQueue()
         self.start()
         self.osdTimer = kodigui.PropertyTimer(self._winID, 4, 'OSD', '', callback=self.osdTimerCallback)
+        self.imageControl = self.getControl(600)
 
     def osdTimerCallback(self):
         self.setFocusId(self.OVERLAY_BUTTON_ID)
@@ -122,6 +125,8 @@ class PhotoWindow(kodigui.BaseWindow):
             self.shuffleButtonClicked()
         elif controlID == self.REPEAT_BUTTON_ID:
             self.repeatButtonClicked()
+        elif controlID == self.ROTATE_BUTTON_ID:
+            self.setRotation()
 
     def shuffleButtonClicked(self):
         self.playQueue.setShuffle()
@@ -133,6 +138,34 @@ class PhotoWindow(kodigui.BaseWindow):
         else:
             self.playQueue.setRepeat(True)
             self.playQueue.refresh(force=True)
+
+    def setRotation(self, angle=None):
+        if angle is None:
+            self.resetSlideshowTimeout()
+            self.rotate += 90
+            if self.rotate > 270:
+                self.rotate = 0
+        else:
+            self.rotate = angle
+
+        if self.rotate == 90:
+            self.imageControl.setPosition(420, -420)
+            self.imageControl.setWidth(1080)
+            self.imageControl.setHeight(1920)
+        elif self.rotate == 180:
+            self.imageControl.setPosition(0, 0)
+            self.imageControl.setWidth(1920)
+            self.imageControl.setHeight(1080)
+        elif self.rotate == 270:
+            self.imageControl.setPosition(420, -420)
+            self.imageControl.setWidth(1080)
+            self.imageControl.setHeight(1920)
+        else:
+            self.imageControl.setPosition(0, 0)
+            self.imageControl.setWidth(1920)
+            self.imageControl.setHeight(1080)
+
+        self.setProperty('rotate', str(self.rotate))
 
     def getPlayQueue(self, shuffle=False):
         self.playQueue = playqueue.createPlayQueueForItem(self.photo, options={'shuffle': shuffle})
@@ -186,11 +219,13 @@ class PhotoWindow(kodigui.BaseWindow):
         photo = self.playQueue.current()
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
         meta = self.playerObject.build()
-        self.setProperty('photo', meta.get('url', ''))
+        url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)
+        self.setRotation(0)
+        self.setProperty('photo', url)
         self.setProperty('background', photo.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
 
         self.updateNowPlaying(force=True, refreshQueue=True)
-        self.resetNext()
+        self.resetSlideshowTimeout()
 
     def updateProperties(self, **kwargs):
         self.setProperty('pq.shuffled', self.playQueue.isShuffled and '1' or '')
@@ -213,7 +248,7 @@ class PhotoWindow(kodigui.BaseWindow):
         self.slideshowRunning = True
         monitor = xbmc.Monitor()
 
-        self.resetNext()
+        self.resetSlideshowTimeout()
         while not monitor.waitForAbort(0.1) and self.slideshowRunning:
             if not self.slideshowNext or time.time() < self.slideshowNext:
                 continue
@@ -222,7 +257,7 @@ class PhotoWindow(kodigui.BaseWindow):
 
         util.DEBUG_LOG('Slideshow: STOPPED')
 
-    def resetNext(self):
+    def resetSlideshowTimeout(self):
         self.slideshowNext = time.time() + self.SLIDESHOW_INTERVAL
 
     def osdVisible(self):
@@ -235,12 +270,14 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setFocusId(self.OVERLAY_BUTTON_ID)
 
     def prev(self):
-        self.playQueue.prev()
+        if not self.playQueue.prev():
+            return
         self.updateProperties()
         self.showPhoto()
 
     def next(self):
-        self.playQueue.next()
+        if not self.playQueue.next():
+            return
         self.updateProperties()
         self.showPhoto()
 

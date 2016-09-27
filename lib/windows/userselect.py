@@ -102,6 +102,7 @@ class UserSelectWindow(kodigui.BaseWindow):
             backgroundthread.BGThreader.addTask(self.task)
 
             self.setFocusId(self.USER_LIST_ID)
+            self.setProperty('initialized', '1')
         finally:
             self.setProperty('busy', '')
 

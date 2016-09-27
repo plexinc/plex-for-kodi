@@ -256,7 +256,7 @@
 
             <control type="group" id="400">
                 <defaultcontrol always="true">205</defaultcontrol>
-                <visible allowhiddenfocus="true">!IsEmpty(Container(101).ListItem.Property(protected)) + ControlGroup(400).HasFocus(0)</visible>
+                <visible allowhiddenfocus="true">!IsEmpty(Container(101).ListItem.Property(protected)) + ControlGroup(400).HasFocus(0) + !IsEmpty(Window.Property(initialized))</visible>
                 <posx>810</posx>
                 <posy>375</posy>
                 <control type="image">

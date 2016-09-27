@@ -460,7 +460,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.video = None
         self.hasOSD = False
         self.hasSeekOSD = False
-        self.xbmcMonitor = xbmc.Monitor()
+        self.xbmcMonitor = util.MONITOR
         self.handler = AudioPlayerHandler(self)
         self.playerObject = None
         self.currentTime = 0

@@ -10,6 +10,7 @@ class PlexMedia(plexobjects.PlexObject):
     def __init__(self, data, initpath=None, server=None, container=None):
         self._data = data.attrib
         plexobjects.PlexObject.__init__(self, data, initpath, server)
+        self.container_ = self.get('container')
         self.container = container
         self.parts = []
         # If we weren't given any data, this is a synthetic media

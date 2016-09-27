@@ -23,6 +23,8 @@ PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
 T = ADDON.getLocalizedString
 
+MONITOR = xbmc.Monitor()
+
 
 def LOG(msg):
     xbmc.log('script.plex: {0}'.format(msg))

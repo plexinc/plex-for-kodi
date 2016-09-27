@@ -7,6 +7,7 @@
     </coordinates>
     <defaultcontrol>250</defaultcontrol>
     <zorder>100</zorder>
+    <onload>SetProperty(photo,script.plex/home/background-fallback.jpg)</onload>
     <controls>
         <control type="group">
             <control type="image">
@@ -37,7 +38,7 @@
                 <width>1920</width>
                 <height>1080</height>
                 <fadetime>200</fadetime>
-                <texture condition="" background="true">$INFO[Window.Property(photo)]</texture>
+                <texture fallback="script.plex/thumb_fallbacks/broken-photo.png" background="true">$INFO[Window.Property(photo)]</texture>
                 <aspectratio>keep</aspectratio>
             </control>
         </control>
@@ -363,14 +364,14 @@
                                 <posy>0</posy>
                                 <width>123</width>
                                 <height>123</height>
-                                <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                <texture>script.plex/thumb_fallbacks/photo.png</texture>
                             </control>
                             <control type="image">
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>123</width>
                                 <height>123</height>
-                                <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                <texture fallback="script.plex/thumb_fallbacks/broken-photo-thumb.png" background="true">$INFO[ListItem.Thumb]</texture>
                                 <aspectratio>scale</aspectratio>
                             </control>
                         </control>
@@ -390,14 +391,14 @@
                                 <posy>0</posy>
                                 <width>123</width>
                                 <height>123</height>
-                                <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                <texture>script.plex/thumb_fallbacks/photo.png</texture>
                             </control>
                             <control type="image">
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>123</width>
                                 <height>123</height>
-                                <texture background="true">$INFO[ListItem.Thumb]</texture>
+                                <texture fallback="script.plex/thumb_fallbacks/broken-photo-thumb.png" background="true">$INFO[ListItem.Thumb]</texture>
                                 <aspectratio>scale</aspectratio>
                             </control>
                         </control>
@@ -489,6 +490,7 @@
                     <label> </label>
                 </control>
                 <control type="group">
+                    <visible>!IsEmpty(Window.Property(camera.model))</visible>
                     <width>450</width>
                     <height>37</height>
                     <control type="button">
@@ -528,6 +530,7 @@
                     <label>$INFO[Window.Property(camera.lens)]</label>
                 </control>
                 <control type="group">
+                    <visible>!IsEmpty(Window.Property(photo.container))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>450</width>
@@ -580,9 +583,10 @@
                     <label> </label>
                 </control>
                 <control type="group">
-                    <!-- sep -->
+                    <visible>!IsEmpty(Window.Property(camera.settings))</visible>
                     <width>450</width>
-                    <height>1</height>
+                    <height>80</height>
+                    <!-- sep -->
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>
@@ -599,36 +603,42 @@
                         <texture>script.plex/white-square.png</texture>
                         <colordiffuse>999B9B9B</colordiffuse>
                     </control>
-                </control>
-                <control type="button">
-                    <!-- margin -->
-                    <width>450</width>
-                    <height>21</height>
-                    <texturefocus>script.plex/white-square.png</texturefocus>
-                    <texturenofocus>script.plex/white-square.png</texturenofocus>
-                    <colordiffuse>99000000</colordiffuse>
-                    <label> </label>
-                </control>
-                <control type="button">
-                    <width>450</width>
-                    <height>37</height>
-                    <texturefocus>script.plex/white-square.png</texturefocus>
-                    <texturenofocus>script.plex/white-square.png</texturenofocus>
-                    <colordiffuse>99000000</colordiffuse>
-                    <align>left</align>
-                    <align>center</align>
-                    <textoffsetx>28</textoffsetx>
-                    <font>font12</font>
-                    <label>$INFO[Window.Property(camera.settings)]</label>
-                </control>
-                <control type="button">
-                    <!-- margin -->
-                    <width>450</width>
-                    <height>21</height>
-                    <texturefocus>script.plex/white-square.png</texturefocus>
-                    <texturenofocus>script.plex/white-square.png</texturenofocus>
-                    <colordiffuse>99000000</colordiffuse>
-                    <label> </label>
+                    <control type="button">
+                        <!-- margin -->
+                        <posx>0</posx>
+                        <posy>1</posy>
+                        <width>450</width>
+                        <height>21</height>
+                        <texturefocus>script.plex/white-square.png</texturefocus>
+                        <texturenofocus>script.plex/white-square.png</texturenofocus>
+                        <colordiffuse>99000000</colordiffuse>
+                        <label> </label>
+                    </control>
+                    <control type="button">
+                        <posx>0</posx>
+                        <posy>22</posy>
+                        <width>450</width>
+                        <height>37</height>
+                        <texturefocus>script.plex/white-square.png</texturefocus>
+                        <texturenofocus>script.plex/white-square.png</texturenofocus>
+                        <colordiffuse>99000000</colordiffuse>
+                        <align>left</align>
+                        <align>center</align>
+                        <textoffsetx>28</textoffsetx>
+                        <font>font12</font>
+                        <label>$INFO[Window.Property(camera.settings)]</label>
+                    </control>
+                    <control type="button">
+                        <!-- margin -->
+                        <posx>0</posx>
+                        <posy>59</posy>
+                        <width>450</width>
+                        <height>21</height>
+                        <texturefocus>script.plex/white-square.png</texturefocus>
+                        <texturenofocus>script.plex/white-square.png</texturenofocus>
+                        <colordiffuse>99000000</colordiffuse>
+                        <label> </label>
+                    </control>
                 </control>
 
                 <control type="group">

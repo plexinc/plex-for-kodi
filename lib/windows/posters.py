@@ -193,6 +193,7 @@ class PostersWindow(kodigui.BaseWindow):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
+            self.exitCommand = 'HOME'
             self.doClose()
         elif controlID == self.POSTERS_PANEL_ID:
             self.showPanelClicked()
@@ -493,7 +494,9 @@ class PostersWindow(kodigui.BaseWindow):
 
     def showPhoto(self, photo):
         if isinstance(photo, plexnet.photo.Photo) or photo.TYPE == 'clip':
-            opener.open(photo)
+            if opener.open(photo) == 'HOME':
+                self.exitCommand = 'HOME'
+                self.doClose()
         else:
             w = SquaresWindow.open(section=photo)
             self.onChildWindowClosed(w)
@@ -690,7 +693,6 @@ class PostersWindow(kodigui.BaseWindow):
             pos += 1
 
     def showAudioPlayer(self):
-        import musicplayer
         w = musicplayer.MusicPlayerWindow.open()
         del w
 

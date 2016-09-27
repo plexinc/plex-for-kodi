@@ -597,6 +597,7 @@
                 </control>
             </control>
             <control type="grouplist">
+                <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
                 <right>340</right>
                 <posy>35</posy>
                 <width>1000</width>

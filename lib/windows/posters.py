@@ -164,6 +164,7 @@ class PostersWindow(kodigui.BaseWindow):
         self.setProperty('filter1.display', 'All')
         self.setProperty('sort.display', 'By Name')
         self.setProperty('media.type', TYPE_PLURAL.get(self.section.TYPE, self.section.TYPE))
+        self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
 
         self.setTitle()
         self.fill()

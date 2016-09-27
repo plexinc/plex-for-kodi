@@ -71,7 +71,9 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         options = [
             ('audio', 'Audio', u'{0}'.format(sas and sas.getTitle() or 'None')),
             ('subs', 'Subtitles', u'{0}'.format(sss and sss.getTitle() or 'None')),
-            ('quality', 'Quality', u'{0}'.format(current))
+            ('quality', 'Quality', u'{0}'.format(current)),
+            ('kodi_video', 'Kodi Video Settings', ''),
+            ('kodi_audio', 'Kodi Audio Settings', '')
         ]
 
         items = []
@@ -99,6 +101,10 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
             showSubtitlesDialog(self.video, non_playback=self.nonPlayback)
         elif result == 'quality':
             showQualityDialog(self.video, non_playback=self.nonPlayback)
+        elif result == 'kodi_video':
+            xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
+        elif result == 'kodi_audio':
+            xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
 
         self.showSettings()
 

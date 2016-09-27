@@ -1,5 +1,6 @@
 import threading
 import time
+import os
 
 import xbmc
 import xbmcgui
@@ -250,7 +251,12 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setProperty('photo.date', util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y')))
         self.setProperty('camera.model', photo.media[0].model)
         self.setProperty('camera.lens', photo.media[0].lens)
-        self.setProperty('photo.dims', u'{0} x {1} \u2022 {2} Mo'.format(photo.media[0].width, photo.media[0].height, photo.media[0].parts[0].orientation))
+        dims = u'{0} x {1}{2}'.format(
+            photo.media[0].width,
+            photo.media[0].height,
+            photo.media[0].parts[0].orientation and u' \u2022 {0} Mo'.format(photo.media[0].parts[0].orientation) or ''
+        )
+        self.setProperty('photo.dims', dims)
         settings = []
         if photo.media[0].iso:
             settings.append('ISO {0}'.format(photo.media[0].iso))
@@ -260,6 +266,10 @@ class PhotoWindow(kodigui.BaseWindow):
             settings.append('{0}'.format(photo.media[0].exposure))
         self.setProperty('camera.settings', u' \u2022 '.join(settings))
         self.setProperty('photo.summary', photo.summary)
+        container = photo.media[0].parts[0].container_ or os.path.splitext(photo.media[0].parts[0].file)[-1][1:].lower()
+        if container == 'jpg':
+            container = 'jpeg'
+        self.setProperty('photo.container', container)
 
         self.updateNowPlaying(force=True, refreshQueue=True)
         self.resetSlideshowTimeout()

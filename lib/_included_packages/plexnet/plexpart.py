@@ -10,6 +10,7 @@ class PlexPart(plexobjects.PlexObject):
 
     def __init__(self, data, initpath=None, server=None, media=None):
         plexobjects.PlexObject.__init__(self, data, initpath, server)
+        self.container_ = self.container
         self.container = media
         self.streams = []
 

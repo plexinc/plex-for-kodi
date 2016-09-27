@@ -488,17 +488,31 @@
                     <colordiffuse>99000000</colordiffuse>
                     <label> </label>
                 </control>
-                <control type="button">
+                <control type="group">
                     <width>450</width>
                     <height>37</height>
-                    <texturefocus>script.plex/white-square.png</texturefocus>
-                    <texturenofocus>script.plex/white-square.png</texturenofocus>
-                    <colordiffuse>99000000</colordiffuse>
-                    <align>left</align>
-                    <align>center</align>
-                    <textoffsetx>28</textoffsetx>
-                    <font>font12</font>
-                    <label>$INFO[Window.Property(camera.model)]</label>
+                    <control type="button">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>450</width>
+                        <height>37</height>
+                        <texturefocus>script.plex/white-square.png</texturefocus>
+                        <texturenofocus>script.plex/white-square.png</texturenofocus>
+                        <colordiffuse>99000000</colordiffuse>
+                        <align>left</align>
+                        <align>center</align>
+                        <textoffsetx>28</textoffsetx>
+                        <font>font12</font>
+                        <label>$INFO[Window.Property(camera.model)]</label>
+                    </control>
+                    <control type="image">
+                        <posx>393</posx>
+                        <posy>6</posy>
+                        <width>29</width>
+                        <height>24</height>
+                        <texture>script.plex/indicators/camera.png</texture>
+                        <colordiffuse>A0FFFFFF</colordiffuse>
+                    </control>
                 </control>
                 <control type="button">
                     <visible>!IsEmpty(Window.Property(camera.lens))</visible>
@@ -513,17 +527,48 @@
                     <font>font12</font>
                     <label>$INFO[Window.Property(camera.lens)]</label>
                 </control>
-                <control type="button">
+                <control type="group">
+                    <posx>0</posx>
+                    <posy>0</posy>
                     <width>450</width>
                     <height>37</height>
-                    <texturefocus>script.plex/white-square.png</texturefocus>
-                    <texturenofocus>script.plex/white-square.png</texturenofocus>
-                    <colordiffuse>99000000</colordiffuse>
-                    <align>left</align>
-                    <align>center</align>
-                    <textoffsetx>28</textoffsetx>
-                    <font>font12</font>
-                    <label>$INFO[Window.Property(photo.dims)]</label>
+                    <control type="button">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>450</width>
+                        <height>37</height>
+                        <texturefocus>script.plex/white-square.png</texturefocus>
+                        <texturenofocus>script.plex/white-square.png</texturenofocus>
+                        <colordiffuse>99000000</colordiffuse>
+                        <align>left</align>
+                        <align>center</align>
+                        <textoffsetx>28</textoffsetx>
+                        <font>font12</font>
+                        <label>$INFO[Window.Property(photo.dims)]</label>
+                    </control>
+                    <control type="grouplist">
+                        <right>28</right>
+                        <posy>5</posy>
+                        <width>200</width>
+                        <height>26</height>
+                        <itemgap>0</itemgap>
+                        <orientation>horizontal</orientation>
+                        <align>right</align>
+                        <control type="button">
+                            <width>auto</width>
+                            <height>26</height>
+                            <font>font10</font>
+                            <align>center</align>
+                            <aligny>top</aligny>
+                            <focusedcolor>FF000000</focusedcolor>
+                            <textcolor>FF000000</textcolor>
+                            <textoffsetx>5</textoffsetx>
+                            <textoffsety>-3</textoffsety>
+                            <texturefocus colordiffuse="A0FFFFFF" border="12">script.plex/white-square-rounded.png</texturefocus>
+                            <texturenofocus colordiffuse="A0FFFFFF" border="12">script.plex/white-square-rounded.png</texturenofocus>
+                            <label>[UPPERCASE]$INFO[Window.Property(photo.container)][/UPPERCASE]</label>
+                        </control>
+                        </control>
                 </control>
                 <control type="button">
                     <!-- margin -->

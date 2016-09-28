@@ -242,10 +242,12 @@ class ShowWindow(kodigui.BaseWindow):
             self.mediaItem.markWatched()
             self.updateItems()
             self.updateProperties()
+            util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
             self.mediaItem.markUnwatched()
             self.updateItems()
             self.updateProperties()
+            util.MONITOR.watchStatusChanged()
 
     def updateItems(self):
         self.fill(update=True)

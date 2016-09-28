@@ -181,10 +181,12 @@ class EpisodesWindow(kodigui.BaseWindow):
             media = item and item.dataSource or self.season
             media.markWatched()
             self.updateItems(item)
+            util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
             media = item and item.dataSource or self.season
             media.markUnwatched()
             self.updateItems(item)
+            util.MONITOR.watchStatusChanged()
 
     def checkForHeaderFocus(self, action):
         if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):

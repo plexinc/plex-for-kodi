@@ -15,6 +15,8 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 
+from plexnet import signalsmixin
+
 DEBUG = True
 
 ADDON = xbmcaddon.Addon()
@@ -23,7 +25,13 @@ PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
 T = ADDON.getLocalizedString
 
-MONITOR = xbmc.Monitor()
+
+class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
+    def watchStatusChanged(self):
+        self.trigger('changed.watchstatus')
+
+
+MONITOR = UtilityMonitor()
 
 
 def LOG(msg):

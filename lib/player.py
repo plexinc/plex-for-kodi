@@ -121,6 +121,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.playlist = None
         self.playQueue = None
         self.timelineType = 'video'
+        self.ended = False
         self.reset()
 
     def reset(self):
@@ -130,8 +131,10 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.seeking = self.NO_SEEK
         self.seekOnStart = 0
         self.mode = self.MODE_RELATIVE
+        self.ended = False
 
     def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
+        self.ended = False
         self.baseOffset = offset / 1000.0
         self.seeking = seeking
         self.duration = duration
@@ -295,6 +298,9 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.closeSeekDialog()
 
     def sessionEnded(self):
+        if self.ended:
+            return
+        self.ended = True
         self.player.trigger('session.ended')
 
 
@@ -424,17 +430,19 @@ class AudioPlayerHandler(BasePlayerHandler):
     def onPlayBackStopped(self):
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
-        self.closeWindow()
+        self.finish()
 
     def onPlayBackEnded(self):
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
-        self.closeWindow()
+        self.finish()
 
     def onPlayBackFailed(self):
         return True
 
-    def closeWindow(self):
+    def finish(self):
+        self.player.trigger('session.ended')
+
         if not self.window:
             return
 

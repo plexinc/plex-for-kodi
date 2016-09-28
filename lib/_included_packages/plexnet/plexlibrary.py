@@ -363,7 +363,7 @@ class Hub(plexobjects.PlexObject):
 
     def init(self, data):
         self.items = []
-        container = plexobjects.PlexContainer(data, self.key, self.server, '')
+        container = plexobjects.PlexContainer(data, self.key, self.server, self.key)
         for elem in data:
             try:
                 self.items.append(plexobjects.buildItem(self.server, elem, '/hubs', container=container))
@@ -372,6 +372,21 @@ class Hub(plexobjects.PlexObject):
 
     def __repr__(self):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
+
+    def reload(self, **kwargs):
+        """ Reload the data for this object from PlexServer XML. """
+        try:
+            data = self.server.query(self.key, params=kwargs)
+        except Exception, e:
+            import traceback
+            traceback.print_exc()
+            util.ERROR(err=e)
+            self.initpath = self.key
+            return
+
+        self.initpath = self.key
+        self._setData(data)
+        self.init(data)
 
 
 SECTION_TYPES = {

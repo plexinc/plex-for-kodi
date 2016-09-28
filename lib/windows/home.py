@@ -5,6 +5,7 @@ import kodigui
 from lib import util
 from lib import backgroundthread
 from lib import colors
+from lib import player
 
 import plexnet
 from plexnet import plexapp
@@ -34,6 +35,29 @@ class SectionHubsTask(backgroundthread.Task):
             if self.isCanceled():
                 return
             self.callback(self.section, hubs)
+        except plexnet.exceptions.BadRequest:
+            util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
+
+
+class UpdateHubTask(backgroundthread.Task):
+    def setup(self, hub, callback):
+        self.hub = hub
+        self.callback = callback
+        return self
+
+    def run(self):
+        if self.isCanceled():
+            return
+
+        if not plexapp.SERVERMANAGER.selectedServer:
+            # Could happen during sign-out for instance
+            return
+
+        try:
+            self.hub.reload()
+            if self.isCanceled():
+                return
+            self.callback(self.hub)
         except plexnet.exceptions.BadRequest:
             util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
 
@@ -100,8 +124,8 @@ class HomeWindow(kodigui.BaseWindow):
 
     HUBMAP = {
         # HOME
-        'home.continue': {'index': 0, 'with_progress': True, 'with_art': True},
-        'home.ondeck': {'index': 1},
+        'home.continue': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True},
+        'home.ondeck': {'index': 1, 'do_updates': True},
         'home.television.recent': {'index': 3},
         'home.movies.recent': {'index': 4},
         'home.music.recent': {'index': 5},
@@ -109,10 +133,10 @@ class HomeWindow(kodigui.BaseWindow):
         'home.playlists': {'index': 9},
         'home.photos.recent': {'index': 10},
         # SHOW
-        'tv.ondeck': {'index': 1},
+        'tv.ondeck': {'index': 1, 'do_updates': True},
         'tv.recentlyaired': {'index': 2},
         'tv.recentlyadded': {'index': 3},
-        'tv.inprogress': {'index': 4, 'with_progress': True},
+        'tv.inprogress': {'index': 4, 'with_progress': True, 'do_updates': True},
         'tv.startwatching': {'index': 7},
         'tv.rediscover': {'index': 8},
         'tv.morefromnetwork': {'index': 13},
@@ -120,7 +144,7 @@ class HomeWindow(kodigui.BaseWindow):
         'tv.moreingenre': {'index': 15},
         'tv.recentlyviewed': {'index': 16},
         # MOVIE
-        'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True},
+        'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True},
         'movie.recentlyreleased': {'index': 1},
         'movie.recentlyadded': {'index': 2},
         'movie.genre': {'index': 3},
@@ -129,7 +153,7 @@ class HomeWindow(kodigui.BaseWindow):
         'movie.topunwatched': {'index': 13},
         'movie.recentlyviewed': {'index': 14},
         # ARTIST
-        'music.recent.played': {'index': 5},
+        'music.recent.played': {'index': 5, 'do_updates': True},
         'music.recent.added': {'index': 9},
         'music.recent.artist': {'index': 10},
         'music.recent.genre': {'index': 11},
@@ -148,7 +172,7 @@ class HomeWindow(kodigui.BaseWindow):
         'video.recent': {'index': 0, 'ar16x9': True},
         'video.random.year': {'index': 6, 'ar16x9': True},
         'video.random.decade': {'index': 17, 'ar16x9': True},
-        'video.inprogress': {'index': 18, 'with_progress': True, 'ar16x9': True},
+        'video.inprogress': {'index': 18, 'with_progress': True, 'ar16x9': True, 'do_updates': True},
         'video.unwatched.random': {'index': 19, 'ar16x9': True},
         'video.recentlyviewed': {'index': 23, 'ar16x9': True},
     }
@@ -165,6 +189,7 @@ class HomeWindow(kodigui.BaseWindow):
         self.hubControls = None
         self.backgroundSet = False
         self.sectionHubs = {}
+        self.updateHubs = {}
 
     def onFirstInit(self):
         self.sectionList = kodigui.ManagedControlList(self, self.SECTION_LIST_ID, 7)
@@ -203,6 +228,9 @@ class HomeWindow(kodigui.BaseWindow):
         self.bottomItem = 0
         if self.serverRefresh():
             self.setFocusId(self.SECTION_LIST_ID)
+
+        player.PLAYER.on('session.ended', self.updateOnDeckHubs)
+        util.MONITOR.on('changed.watchstatus', self.updateOnDeckHubs)
 
     def onAction(self, action):
         controlID = self.getFocusId()
@@ -265,6 +293,11 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('off.sections', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
             self.setProperty('off.sections', '1')
+
+    def updateOnDeckHubs(self, **kwargs):
+        tasks = [UpdateHubTask().setup(hub, self.updateHubCallback) for hub in self.updateHubs.values()]
+        self.tasks += tasks
+        backgroundthread.BGThreader.addTasks(tasks)
 
     def showBusy(self, on=True):
         self.setProperty('busy', on and '1' or '')
@@ -330,6 +363,21 @@ class HomeWindow(kodigui.BaseWindow):
         self.sectionHubs[section.key] = hubs
         if self.lastSection == section:
             self.showHubs(section)
+
+    def updateHubCallback(self, hub):
+        for mli in self.sectionList:
+            section = mli.dataSource
+            if not section:
+                continue
+
+            hubs = self.sectionHubs.get(section.key, ())
+            for idx, ihub in enumerate(hubs):
+                if ihub == hub:
+                    if self.lastSection == section:
+                        util.DEBUG_LOG('Hub {0} updated - refreshing section: {1}'.format(hub.hubIdentifier, repr(section.title)))
+                        hubs[idx] = hub
+                        self.showHub(hub)
+                        return
 
     def showSections(self):
         self.sectionHubs = {}
@@ -399,13 +447,20 @@ class HomeWindow(kodigui.BaseWindow):
 
         try:
             for hub in hubs:
-                if hub.hubIdentifier in self.HUBMAP:
-                    util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
-                    self.showHub(hub, **self.HUBMAP[hub.hubIdentifier])
-                else:
-                    util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+                if self.showHub(hub):
+                    if self.HUBMAP[hub.hubIdentifier].get('do_updates'):
+                        self.updateHubs[hub.hubIdentifier] = hub
         finally:
             self.showBusy(False)
+
+    def showHub(self, hub):
+        if hub.hubIdentifier in self.HUBMAP:
+            util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+            self._showHub(hub, **self.HUBMAP[hub.hubIdentifier])
+            return True
+        else:
+            util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+            return
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h, with_grandparent_title=False):
         if with_grandparent_title and obj.grandparentTitle and obj.title:
@@ -471,7 +526,7 @@ class HomeWindow(kodigui.BaseWindow):
         for control in self.hubControls:
             control.reset()
 
-    def showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False):
+    def _showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False, **kwargs):
         if not hub.items:
             return
 
@@ -502,7 +557,7 @@ class HomeWindow(kodigui.BaseWindow):
             for mli in items:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
 
-        control.addItems(items)
+        control.replaceItems(items)
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()

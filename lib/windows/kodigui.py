@@ -370,7 +370,6 @@ class ManagedControlList(object):
                 for i in range(0, size - oldSize):
                     self.control.addItem(xbmcgui.ListItem())
             elif size < oldSize:
-                pos = self.getSelectedPosition()
                 diff = oldSize - size
                 idx = oldSize - 1
                 while diff:

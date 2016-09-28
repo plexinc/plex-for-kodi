@@ -157,9 +157,11 @@ class PrePlayWindow(kodigui.BaseWindow):
         elif choice['key'] == 'mark_watched':
             self.video.markWatched()
             self.setInfo()
+            util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
             self.video.markUnwatched()
             self.setInfo()
+            util.MONITOR.watchStatusChanged()
 
     def playVideo(self, resume=False):
         videoplayer.play(video=self.video, resume=resume)

@@ -1,3 +1,6 @@
+import time
+import threading
+
 import xbmc
 import xbmcgui
 
@@ -188,6 +191,8 @@ class HomeWindow(kodigui.BaseWindow):
         self.closeOption = None
         self.hubControls = None
         self.backgroundSet = False
+        self.sectionChangeThread = None
+        self.sectionChangeTimeout = 0
         self.sectionHubs = {}
         self.updateHubs = {}
 
@@ -326,7 +331,9 @@ class HomeWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        command = opener.open(mli.dataSource)
+        self.processCommand(opener.open(mli.dataSource))
+
+    def processCommand(self, command):
         if command.startswith('HOME:'):
             sectionID = command.split(':', 1)[-1]
             for mli in self.sectionList:
@@ -362,6 +369,20 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('server.iconmod', '')
 
     def sectionChanged(self, section):
+        self.sectionChangeTimeout = time.time() + 0.3
+        if not self.sectionChangeThread or not self.sectionChangeThread.isAlive():
+            self.sectionChangeThread = threading.Thread(target=self._sectionChanged, name="sectionchanged")
+            self.sectionChangeThread.start()
+
+    def _sectionChanged(self):
+        while not util.MONITOR.waitForAbort(0.1):
+            if time.time() >= self.sectionChangeTimeout:
+                break
+
+        self._sectionReallyChanged()
+
+    def _sectionReallyChanged(self):
+        section = self.lastSection
         self.setProperty('hub.focus', '')
         util.DEBUG_LOG('Section chaged ({0}): {1}'.format(section.key, repr(section.title)))
         self.showHubs(section)
@@ -574,11 +595,11 @@ class HomeWindow(kodigui.BaseWindow):
         section = item.dataSource
 
         if section.type in ('show', 'movie'):
-            posters.PostersWindow.open(section=section)
+            self.processCommand(opener.handleOpen(posters.PostersWindow, section=section))
         elif section.type in ('artist', 'photo'):
-            posters.SquaresWindow.open(section=section)
+            self.processCommand(opener.handleOpen(posters.SquaresWindow, section=section))
         elif section.type in ('playlists',):
-            playlists.PlaylistsWindow.open()
+            self.processCommand(opener.handleOpen(playlists.PlaylistsWindow))
 
     def showServers(self):
         servers = sorted(
@@ -654,8 +675,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def showAudioPlayer(self):
         import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
+        self.processCommand(opener.handleOpen(musicplayer.MusicPlayerWindow))
 
     def finished(self):
         if self.tasks:

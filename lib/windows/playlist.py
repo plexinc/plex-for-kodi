@@ -3,15 +3,15 @@ import xbmcgui
 import kodigui
 
 import busy
-import musicplayer
 import videoplayer
+import windowutils
 
 from lib import colors
 from lib import util
 from lib import player
 
 
-class PlaylistWindow(kodigui.BaseWindow):
+class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -82,10 +82,6 @@ class PlaylistWindow(kodigui.BaseWindow):
             self.playlist.setShuffle(shuffle)
             self.playlist.setCurrent(mli and mli.pos() or 0)
             videoplayer.play(play_queue=self.playlist)
-
-    def showAudioPlayer(self, **kwargs):
-        w = musicplayer.MusicPlayerWindow.open(**kwargs)
-        del w
 
     def setProperties(self):
         self.setProperty(

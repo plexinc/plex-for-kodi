@@ -2,6 +2,8 @@ import xbmc
 import xbmcgui
 import kodigui
 import currentplaylist
+import opener
+
 from lib import player
 from lib import util
 
@@ -39,11 +41,12 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
     BAR_RIGHT = 1920
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseDialog.__init__(self, *args, **kwargs)
+        kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.track = kwargs.get('track')
         self.playlist = kwargs.get('playlist')
         self.album = kwargs.get('album')
         self.selectedOffset = 0
+        self.exitCommand = None
 
         if self.track:
             self.duration = self.track.duration.asInt()
@@ -71,7 +74,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         except:
             util.ERROR()
 
-        kodigui.BaseDialog.onAction(self, action)
+        kodigui.BaseWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_BUTTON_ID:
@@ -86,6 +89,8 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
             self.skipPrevButtonClicked()
         elif controlID == self.SKIP_NEXT_BUTTON_ID:
             self.skipNextButtonClicked()
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked((1240, 1060))
 
     def repeatButtonClicked(self):
         if self.playlist and self.playlist.isRemote:
@@ -118,8 +123,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         xbmc.executebuiltin('PlayerControl(Next)')
 
     def showPlaylist(self):
-        w = currentplaylist.CurrentPlaylistWindow.open()
-        del w
+        self.processCommand(opener.handleOpen(currentplaylist.CurrentPlaylistWindow))
 
     def updateProperties(self, **kwargs):
         if self.playlist:

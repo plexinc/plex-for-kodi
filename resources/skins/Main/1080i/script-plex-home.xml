@@ -165,7 +165,8 @@
                     <width>2430</width>
                     <height>240</height>
                     <onleft>100</onleft>
-                    <onup>200</onup>
+                    <onup condition="!Player.HasAudio">200</onup>
+                    <onup condition="Player.HasAudio">204</onup>
                     <ondown>400</ondown>
                     <scrolltime>200</scrolltime>
                     <orientation>horizontal</orientation>

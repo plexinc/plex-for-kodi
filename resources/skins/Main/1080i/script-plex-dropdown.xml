@@ -29,7 +29,8 @@
                 <onup condition="!StringCompare(Window.Property(close.direction),top)">noop</onup>
                 <onleft condition="StringCompare(Window.Property(close.direction),left)">Close</onleft>
                 <onright condition="StringCompare(Window.Property(close.direction),right)">Close</onright>
-                <ondown>noop</ondown>
+                <ondown condition="StringCompare(Window.Property(close.direction),down)">Close</ondown>
+                <ondown condition="!StringCompare(Window.Property(close.direction),down)">noop</ondown>
                 <scrolltime>200</scrolltime>
                 <orientation>vertical</orientation>
                 <!-- ITEM LAYOUT ########################################## -->

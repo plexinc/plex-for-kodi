@@ -3,13 +3,16 @@ import xbmcgui
 import kodigui
 
 import busy
+import windowutils
+import dropdown
+import opener
 
 from lib import util
 from lib import player
 from lib import kodijsonrpc
 
 
-class CurrentPlaylistWindow(kodigui.BaseDialog):
+class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-music_current_playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -35,6 +38,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
     SKIP_PREV_BUTTON_ID = 404
     SKIP_NEXT_BUTTON_ID = 409
     PLAYLIST_BUTTON_ID = 410
+    OPTIONS_BUTTON_ID = 411
 
     SEEK_IMAGE_WIDTH = 819
     SELECTION_BOX_WIDTH = 101
@@ -46,7 +50,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
     BAR_BOTTOM = 969
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseDialog.__init__(self, *args, **kwargs)
+        kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.selectedOffset = 0
         self.setDuration()
         self.exitCommand = None
@@ -75,7 +79,7 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
         except:
             util.ERROR()
 
-        kodigui.BaseDialog.onAction(self, action)
+        kodigui.BaseWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_LIST_ID:
@@ -92,6 +96,8 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
             self.skipPrevButtonClicked()
         elif controlID == self.SKIP_NEXT_BUTTON_ID:
             self.skipNextButtonClicked()
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.SEEK_BUTTON_ID:
@@ -137,6 +143,28 @@ class CurrentPlaylistWindow(kodigui.BaseDialog):
                 return
 
         xbmc.executebuiltin('PlayerControl(Next)')
+
+    def optionsButtonClicked(self, pos=(670, 1060)):
+        track = player.PLAYER.currentTrack()
+        if not track:
+            return
+
+        options = []
+
+        options.append({'key': 'to_album', 'display': 'Go to Album'})
+        options.append({'key': 'to_artist', 'display': 'Go to Artist'})
+        options.append({'key': 'to_section', 'display': u'Go to {0}'.format(track.getLibrarySectionTitle())})
+
+        choice = dropdown.showDropdown(options, pos, close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
+        if not choice:
+            return
+
+        if choice['key'] == 'to_album':
+            self.processCommand(opener.open(track.parentRatingKey))
+        elif choice['key'] == 'to_artist':
+            self.processCommand(opener.open(track.grandparentRatingKey))
+        elif choice['key'] == 'to_section':
+            self.closeWithCommand('HOME:{0}'.format(track.getLibrarySectionId()))
 
     def selectPlayingItem(self):
         for mli in self.playlistListControl:

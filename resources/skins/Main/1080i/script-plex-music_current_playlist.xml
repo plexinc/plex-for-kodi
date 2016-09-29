@@ -654,7 +654,6 @@
                 <onclick>Close</onclick>
             </control>
             <control type="button" id="411">
-                <enable>false</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />

@@ -4,6 +4,7 @@ import kodigui
 
 import busy
 import playlist
+import windowutils
 
 from lib import util
 from lib import colors
@@ -11,7 +12,7 @@ from lib import colors
 from plexnet import plexapp
 
 
-class PlaylistsWindow(kodigui.BaseWindow):
+class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-playlists.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -65,19 +66,13 @@ class PlaylistsWindow(kodigui.BaseWindow):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.exitCommand = 'HOME'
-            self.doClose()
+            self.closeWithCommand('HOME')
         elif controlID == self.AUDIO_PL_LIST_ID:
             self.playlistListClicked(self.audioPLListControl)
         elif controlID == self.VIDEO_PL_LIST_ID:
             self.playlistListClicked(self.videoPLListControl)
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
-
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
 
     def playlistListClicked(self, list_control):
         mli = list_control.getSelectedItem()
@@ -87,9 +82,7 @@ class PlaylistsWindow(kodigui.BaseWindow):
         w = playlist.PlaylistWindow.open(playlist=mli.dataSource)
 
         try:
-            if w.exitCommand.startswith('HOME'):
-                self.exitCommand = w.exitCommand
-                self.doClose()
+            self.processCommand(w.exitCommand)
         finally:
             del w
 

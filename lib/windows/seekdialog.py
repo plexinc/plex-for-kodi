@@ -31,6 +31,7 @@ class SeekDialog(kodigui.BaseDialog):
     SETTINGS_BUTTON_ID = 403
     PREV_BUTTON_ID = 404
     SKIP_BACK_BUTTON_ID = 405
+    PLAY_PAUSE_BUTTON_ID = 406
     SKIP_FORWARD_BUTTON_ID = 408
     NEXT_BUTTON_ID = 409
     PLAYLIST_BUTTON_ID = 410
@@ -247,7 +248,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.setFocusId(self.MAIN_BUTTON_ID)
             self.fromSeek = 0
         else:
-            self.setFocusId(400)
+            self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
 
         self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)

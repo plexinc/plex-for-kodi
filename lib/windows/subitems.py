@@ -14,9 +14,10 @@ import info
 import musicplayer
 import videoplayer
 import dropdown
+import windowutils
 
 
-class ShowWindow(kodigui.BaseWindow):
+class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-seasons.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -138,8 +139,7 @@ class ShowWindow(kodigui.BaseWindow):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.exitCommand = 'HOME'
-            self.doClose()
+            self.closeWithCommand('HOME')
         elif controlID == self.SUB_ITEM_LIST_ID:
             self.subItemListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
@@ -169,11 +169,7 @@ class ShowWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        command = opener.open(mli.dataSource)
-
-        if command.startswith('HOME'):
-            self.exitCommand = command
-            self.doClose()
+        self.processCommand(opener.open(mli.dataSource))
 
     def subItemListClicked(self):
         mli = self.subItemListControl.getSelectedItem()
@@ -189,9 +185,7 @@ class ShowWindow(kodigui.BaseWindow):
             w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
 
         try:
-            if w.exitCommand.startswith('HOME'):
-                self.exitCommand = w.exitCommand
-                self.doClose()
+            self.processCommand(w.exitCommand)
         finally:
             del w
 
@@ -232,6 +226,10 @@ class ShowWindow(kodigui.BaseWindow):
         # if False:
         #     options.append({'key': 'add_to_playlist', 'display': 'Add To Playlist'})
 
+        options.append(dropdown.SEPARATOR)
+
+        options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.mediaItem.getLibrarySectionTitle())})
+
         choice = dropdown.showDropdown(options, (880, 618), close_direction='left')
         if not choice:
             return
@@ -248,6 +246,8 @@ class ShowWindow(kodigui.BaseWindow):
             self.updateItems()
             self.updateProperties()
             util.MONITOR.watchStatusChanged()
+        elif choice['key'] == 'to_section':
+            self.closeWithCommand('HOME:{0}'.format(self.mediaItem.getLibrarySectionId()))
 
     def updateItems(self):
         self.fill(update=True)
@@ -314,11 +314,6 @@ class ShowWindow(kodigui.BaseWindow):
 
         self.rolesListControl.addItems(items)
         return True
-
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
 
 
 class ArtistWindow(ShowWindow):

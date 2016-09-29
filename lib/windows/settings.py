@@ -1,8 +1,11 @@
 import xbmc
 import xbmcgui
 import kodigui
+import windowutils
+
 from lib.util import T
 from lib import util
+
 import plexnet
 
 '''
@@ -221,7 +224,7 @@ class Settings(object):
         return self.SETTINGS[key]
 
 
-class SettingsWindow(kodigui.BaseWindow):
+class SettingsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-settings.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -291,11 +294,6 @@ class SettingsWindow(kodigui.BaseWindow):
         self.showSettings(self.lastSection)
         self.setProperty('section.about', self.lastSection == 'about' and '1' or '')
         util.DEBUG_LOG('Settings: Changed section ({0})'.format(self.lastSection))
-
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
 
     def showSections(self):
         items = []

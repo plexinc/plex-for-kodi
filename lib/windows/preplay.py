@@ -8,13 +8,14 @@ import info
 import videoplayer
 import playersettings
 import dropdown
+import windowutils
 from plexnet import plexplayer, media
 
 from lib import colors
 from lib import util
 
 
-class PrePlayWindow(kodigui.BaseWindow):
+class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -81,8 +82,7 @@ class PrePlayWindow(kodigui.BaseWindow):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.exitCommand = 'HOME'
-            self.doClose()
+            self.closeWithCommand('HOME')
         elif controlID == self.EXTRA_LIST_ID:
             self.openItem(self.extraListControl)
         elif controlID == self.RELATED_LIST_ID:
@@ -138,7 +138,7 @@ class PrePlayWindow(kodigui.BaseWindow):
         else:
             options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
 
-        options.append(None)
+        options.append(dropdown.SEPARATOR)
 
         if self.video.type == 'episode':
             options.append({'key': 'to_season', 'display': 'Go to Season'})
@@ -172,13 +172,11 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.setInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_season':
-            util.TEST(self.video.parentRatingKey)
-            opener.open(self.video.parentRatingKey)
+            self.processCommand(opener.open(self.video.parentRatingKey))
         elif choice['key'] == 'to_show':
-            opener.open(self.video.grandparentRatingKey)
+            self.processCommand(opener.open(self.video.grandparentRatingKey))
         elif choice['key'] == 'to_section':
-            self.exitCommand = 'HOME:{0}'.format(self.video.getLibrarySectionId())
-            self.doClose()
+            self.closeWithCommand('HOME:{0}'.format(self.video.getLibrarySectionId()))
 
     def playVideo(self, resume=False):
         videoplayer.play(video=self.video, resume=resume)
@@ -190,11 +188,7 @@ class PrePlayWindow(kodigui.BaseWindow):
                 return
             item = mli.dataSource
 
-        command = opener.open(item)
-
-        if command.startswith('HOME'):
-            self.exitCommand = command
-            self.doClose()
+        self.processCommand(opener.open(item))
 
     @busy.dialog()
     def setup(self):
@@ -320,8 +314,3 @@ class PrePlayWindow(kodigui.BaseWindow):
 
         self.rolesListControl.addItems(items)
         return True
-
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w

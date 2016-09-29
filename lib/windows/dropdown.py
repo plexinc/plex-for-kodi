@@ -2,6 +2,8 @@ import kodigui
 
 from lib import util
 
+SEPARATOR = None
+
 
 class DropdownDialog(kodigui.BaseDialog):
     xmlFile = 'script-plex-dropdown.xml'

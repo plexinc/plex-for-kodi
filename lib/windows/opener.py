@@ -1,11 +1,4 @@
-import preplay
-import subitems
-import episodes
-import photos
-import posters
-import playlist
-import videoplayer
-import musicplayer
+
 import busy
 
 from plexnet import playqueue, plexapp
@@ -18,10 +11,13 @@ def open(obj):
         if busy.widthDialog(obj.waitForInitialization, None):
             util.DEBUG_LOG('playQueue initialized: {0}'.format(obj))
             if obj.type == 'audio':
+                import musicplayer
                 return handleOpen(musicplayer.MusicPlayerWindow, track=obj.current(), playlist=obj)
             elif obj.type == 'photo':
+                import photos
                 return handleOpen(photos.PhotoWindow, play_queue=obj)
             else:
+                import videoplayer
                 videoplayer.play(play_queue=obj)
                 return ''
         else:
@@ -64,32 +60,40 @@ def handleOpen(winclass, **kwargs):
 
 
 def playableClicked(playable):
+    import preplay
     return handleOpen(preplay.PrePlayWindow, video=playable)
 
 
 def showClicked(show):
+    import subitems
     return handleOpen(subitems.ShowWindow, media_item=show)
 
 
 def artistClicked(artist):
+    import subitems
     return handleOpen(subitems.ArtistWindow, media_item=artist)
 
 
 def seasonClicked(season):
+    import episodes
     return handleOpen(episodes.EpisodesWindow, season=season)
 
 
 def albumClicked(album):
+    import episodes
     return handleOpen(episodes.AlbumWindow, season=album)
 
 
 def photoClicked(photo):
+    import photos
     return handleOpen(photos.PhotoWindow, photo=photo)
 
 
 def photoDirectoryClicked(photodirectory):
+    import posters
     return handleOpen(posters.SquaresWindow, section=photodirectory)
 
 
 def playlistClicked(pl):
+    import playlist
     return handleOpen(playlist.PlaylistWindow, playlist=pl)

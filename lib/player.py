@@ -16,6 +16,7 @@ from plexnet import signalsmixin
 class BasePlayerHandler(object):
     def __init__(self, player):
         self.player = player
+        self.media = None
         self.baseOffset = 0
         self.timelineType = None
         self.lastTimelineState = None
@@ -336,6 +337,7 @@ class AudioPlayerHandler(BasePlayerHandler):
             data = plexID.split(':', 1)[-1]
             from plexnet import plexobjects
             track = plexobjects.PlexObject.deSerialize(base64.urlsafe_b64decode(data.encode('utf-8')))
+            self.media = track
             pobj = plexplayer.PlexAudioPlayer(track)
             self.player.playerObject = pobj
             self.updatePlayQueueTrack(track)
@@ -520,6 +522,11 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def videoIsFullscreen(self):
         return xbmc.getCondVisibility('VideoPlayer.IsFullscreen')
+
+    def currentTrack(self):
+        if self.handler.media and self.handler.media.type == 'track':
+            return self.handler.media
+        return None
 
     def playAt(self, path, ms):
         """

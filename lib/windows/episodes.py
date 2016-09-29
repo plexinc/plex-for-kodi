@@ -8,13 +8,14 @@ from lib import util
 from plexnet import playlist
 
 import busy
-import preplay
 import musicplayer
 import videoplayer
 import dropdown
+import windowutils
+import opener
 
 
-class EpisodesWindow(kodigui.BaseWindow):
+class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-episodes.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -95,8 +96,7 @@ class EpisodesWindow(kodigui.BaseWindow):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.exitCommand = 'HOME'
-            self.doClose()
+            self.closeWithCommand('HOME')
         elif controlID == self.EPISODE_PANEL_ID:
             self.episodePanelClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
@@ -125,15 +125,10 @@ class EpisodesWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        w = preplay.PrePlayWindow.open(video=mli.dataSource)
+        command = opener.open(mli.dataSource)
         mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
         self.season.reload()
-        try:
-            if w.exitCommand.startswith('HOME'):
-                self.exitCommand = w.exitCommand
-                self.doClose()
-        finally:
-            del w
+        self.processCommand(command)
 
     def optionsButtonClicked(self, item=None):
         options = []
@@ -158,6 +153,12 @@ class EpisodesWindow(kodigui.BaseWindow):
 
             # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
             #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
+
+            if options:
+                options.append(dropdown.SEPARATOR)
+
+            options.append({'key': 'to_show', 'display': isinstance(self, AlbumWindow) and 'Go to Artist' or 'Go To Show'})
+            options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.season.getLibrarySectionTitle())})
 
         pos = (460, 1106)
         bottom = True
@@ -187,6 +188,10 @@ class EpisodesWindow(kodigui.BaseWindow):
             media.markUnwatched()
             self.updateItems(item)
             util.MONITOR.watchStatusChanged()
+        elif choice['key'] == 'to_show':
+            self.processCommand(opener.open(self.season.parentRatingKey))
+        elif choice['key'] == 'to_section':
+            self.closeWithCommand('HOME:{0}'.format(self.season.getLibrarySectionId()))
 
     def checkForHeaderFocus(self, action):
         if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):
@@ -238,11 +243,6 @@ class EpisodesWindow(kodigui.BaseWindow):
             self.episodePanelControl.reset()
             self.episodePanelControl.addItems(items)
 
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
-
 
 class AlbumWindow(EpisodesWindow):
     xmlFile = 'script-plex-album.xml'
@@ -250,7 +250,11 @@ class AlbumWindow(EpisodesWindow):
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
         pl.startShuffled = shuffle
-        musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
+        w = musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
+        try:
+            self.processCommand(w.exitCommand)
+        finally:
+            del w
 
     def episodePanelClicked(self):
         mli = self.episodePanelControl.getSelectedItem()
@@ -258,7 +262,10 @@ class AlbumWindow(EpisodesWindow):
             return
 
         w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, album=self.season)
-        del w
+        try:
+            self.processCommand(w.exitCommand)
+        finally:
+            del w
 
     def setProperties(self):
         self.setProperty(

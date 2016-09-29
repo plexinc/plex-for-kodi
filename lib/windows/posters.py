@@ -14,9 +14,9 @@ import subitems
 import preplay
 import plexnet
 import musicplayer
-import videoplayer
 import dropdown
 import opener
+import windowutils
 
 from plexnet import playqueue
 
@@ -112,7 +112,7 @@ class ChunkRequestTask(backgroundthread.Task):
             util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
 
 
-class PostersWindow(kodigui.BaseWindow):
+class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-posters.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -158,7 +158,7 @@ class PostersWindow(kodigui.BaseWindow):
     def onFirstInit(self):
         self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
         self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
-        self.setProperty('no.options', '1')  # self.section.TYPE in ('artist', 'photo', 'photodirectory') and '1' or '')
+        self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
         self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
         self.setProperty('sort', self.sort)
         self.setProperty('filter1.display', 'All')
@@ -194,8 +194,7 @@ class PostersWindow(kodigui.BaseWindow):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.exitCommand = 'HOME'
-            self.doClose()
+            self.closeWithCommand('HOME')
         elif controlID == self.POSTERS_PANEL_ID:
             self.showPanelClicked()
         elif controlID == self.KEY_LIST_ID:
@@ -269,12 +268,19 @@ class PostersWindow(kodigui.BaseWindow):
         # if False:
         #     options.append({'key': 'add_to_playlist', 'display': 'Add To Playlist'})
 
+        if self.section.TYPE == 'photodirectory':
+            if options:
+                options.append(dropdown.SEPARATOR)
+            options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.section.getLibrarySectionTitle())})
+
         choice = dropdown.showDropdown(options, (255, 260))
         if not choice:
             return
 
         if choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
+        elif choice['key'] == 'to_section':
+            self.closeWithCommand('HOME:{0}'.format(self.section.getLibrarySectionId()))
 
     def sortButtonClicked(self):
         desc = 'script.plex/indicators/arrow-down.png'
@@ -495,10 +501,7 @@ class PostersWindow(kodigui.BaseWindow):
 
     def showPhoto(self, photo):
         if isinstance(photo, plexnet.photo.Photo) or photo.TYPE == 'clip':
-            res = opener.open(photo)
-            if res.startswith('HOME'):
-                self.exitCommand = res
-                self.doClose()
+            self.processCommand(opener.open(photo))
         else:
             w = SquaresWindow.open(section=photo)
             self.onChildWindowClosed(w)
@@ -511,9 +514,7 @@ class PostersWindow(kodigui.BaseWindow):
 
     def onChildWindowClosed(self, w):
         try:
-            if w.exitCommand.startswith('HOME'):
-                self.exitCommand = w.exitCommand
-                self.doClose()
+            self.processCommand(w.exitCommand)
         finally:
             del w
 
@@ -693,10 +694,6 @@ class PostersWindow(kodigui.BaseWindow):
                     if self.section.TYPE == 'show':
                         mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
             pos += 1
-
-    def showAudioPlayer(self):
-        w = musicplayer.MusicPlayerWindow.open()
-        del w
 
 
 class SquaresWindow(PostersWindow):

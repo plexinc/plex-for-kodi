@@ -13,7 +13,6 @@ import busy
 import subitems
 import preplay
 import plexnet
-import musicplayer
 import dropdown
 import opener
 import windowutils

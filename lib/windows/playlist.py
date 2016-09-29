@@ -5,6 +5,7 @@ import kodigui
 import busy
 import videoplayer
 import windowutils
+import dropdown
 
 from lib import colors
 from lib import util
@@ -24,6 +25,7 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
     PLAY_BUTTON_ID = 301
     SHUFFLE_BUTTON_ID = 302
+    OPTIONS_BUTTON_ID = 303
 
     LI_AR16X9_THUMB_DIM = (178, 100)
     LI_SQUARE_THUMB_DIM = (100, 100)
@@ -64,6 +66,8 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.playlistListClicked(no_item=True, shuffle=False)
         elif controlID == self.SHUFFLE_BUTTON_ID:
             self.playlistListClicked(no_item=True, shuffle=True)
+        elif controlID == self.OPTIONS_BUTTON_ID:
+            self.optionsButtonClicked()
 
     def playlistListClicked(self, no_item=False, shuffle=False):
         if no_item:
@@ -82,6 +86,21 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.playlist.setShuffle(shuffle)
             self.playlist.setCurrent(mli and mli.pos() or 0)
             videoplayer.play(play_queue=self.playlist)
+
+    def optionsButtonClicked(self):
+        options = []
+        if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
+            options.append({'key': 'play_next', 'display': 'Play Next'})
+
+        if not options:
+            return
+
+        choice = dropdown.showDropdown(options, (440, 1020), close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
+        if not choice:
+            return
+
+        if choice['key'] == 'play_next':
+            xbmc.executebuiltin('PlayerControl(Next)')
 
     def setProperties(self):
         self.setProperty(

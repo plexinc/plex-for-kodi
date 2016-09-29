@@ -107,6 +107,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="303">
+                    <visible>!IsEmpty(Window.Property(show.options)) | Player.HasAudio</visible>
                     <animation effect="zoom" start="100" end="120" time="100" center="87,69.5" reversible="false">Focus</animation>
                     <animation effect="zoom" start="120" end="100" time="100" center="87,69.5" reversible="false">UnFocus</animation>
                     <hitrect x="40" y="40" w="94" h="59" />

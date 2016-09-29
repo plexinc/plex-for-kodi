@@ -87,8 +87,8 @@ class PlaylistsWindow(kodigui.BaseWindow):
         w = playlist.PlaylistWindow.open(playlist=mli.dataSource)
 
         try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
+            if w.exitCommand.startswith('HOME'):
+                self.exitCommand = w.exitCommand
                 self.doClose()
         finally:
             del w

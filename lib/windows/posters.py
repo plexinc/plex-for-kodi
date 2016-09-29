@@ -495,8 +495,9 @@ class PostersWindow(kodigui.BaseWindow):
 
     def showPhoto(self, photo):
         if isinstance(photo, plexnet.photo.Photo) or photo.TYPE == 'clip':
-            if opener.open(photo) == 'HOME':
-                self.exitCommand = 'HOME'
+            res = opener.open(photo)
+            if res.startswith('HOME'):
+                self.exitCommand = res
                 self.doClose()
         else:
             w = SquaresWindow.open(section=photo)
@@ -510,8 +511,8 @@ class PostersWindow(kodigui.BaseWindow):
 
     def onChildWindowClosed(self, w):
         try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
+            if w.exitCommand.startswith('HOME'):
+                self.exitCommand = w.exitCommand
                 self.doClose()
         finally:
             del w

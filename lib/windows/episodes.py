@@ -129,8 +129,8 @@ class EpisodesWindow(kodigui.BaseWindow):
         mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
         self.season.reload()
         try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
+            if w.exitCommand.startswith('HOME'):
+                self.exitCommand = w.exitCommand
                 self.doClose()
         finally:
             del w

@@ -138,6 +138,15 @@ class PrePlayWindow(kodigui.BaseWindow):
         else:
             options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
 
+        options.append(None)
+
+        if self.video.type == 'episode':
+            options.append({'key': 'to_season', 'display': 'Go to Season'})
+            options.append({'key': 'to_show', 'display': 'Go to Show'})
+
+        if self.video.type in ('episode', 'movie'):
+            options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.video.getLibrarySectionTitle())})
+
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
 
@@ -162,6 +171,14 @@ class PrePlayWindow(kodigui.BaseWindow):
             self.video.markUnwatched()
             self.setInfo()
             util.MONITOR.watchStatusChanged()
+        elif choice['key'] == 'to_season':
+            util.TEST(self.video.parentRatingKey)
+            opener.open(self.video.parentRatingKey)
+        elif choice['key'] == 'to_show':
+            opener.open(self.video.grandparentRatingKey)
+        elif choice['key'] == 'to_section':
+            self.exitCommand = 'HOME:{0}'.format(self.video.getLibrarySectionId())
+            self.doClose()
 
     def playVideo(self, resume=False):
         videoplayer.play(video=self.video, resume=resume)
@@ -175,8 +192,8 @@ class PrePlayWindow(kodigui.BaseWindow):
 
         command = opener.open(item)
 
-        if command == 'HOME':
-            self.exitCommand = 'HOME'
+        if command.startswith('HOME'):
+            self.exitCommand = command
             self.doClose()
 
     @busy.dialog()

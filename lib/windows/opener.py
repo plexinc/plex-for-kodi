@@ -8,7 +8,7 @@ import videoplayer
 import musicplayer
 import busy
 
-from plexnet import playqueue
+from plexnet import playqueue, plexapp
 from lib import util
 
 
@@ -22,9 +22,15 @@ def open(obj):
             elif obj.type == 'photo':
                 return handleOpen(photos.PhotoWindow, play_queue=obj)
             else:
-                return videoplayer.play(play_queue=obj)
+                videoplayer.play(play_queue=obj)
+                return ''
         else:
             util.DEBUG_LOG('playQueue timed out wating for initialization')
+    elif isinstance(obj, basestring):
+        key = obj
+        if not obj.startswith('/'):
+            key = '/library/metadata/{0}'.format(obj)
+        return open(plexapp.SERVERMANAGER.selectedServer.getObject(key))
     elif obj.TYPE in ('episode', 'movie'):
         return playableClicked(obj)
     elif obj.TYPE in ('show'):
@@ -48,13 +54,13 @@ def open(obj):
 def handleOpen(winclass, **kwargs):
     try:
         w = winclass.open(**kwargs)
-        return w.exitCommand
+        return w.exitCommand or ''
     except AttributeError:
         pass
     finally:
         del w
 
-    return None
+    return ''
 
 
 def playableClicked(playable):

@@ -96,6 +96,10 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if self.activeConnection:
             return self.activeConnection.isSecure
 
+    def getObject(self, key):
+        data = self.query(key)
+        return plexobjects.buildItem(self, data[0], key, container=self)
+
     def hubs(self, section=None, count=None):
         hubs = []
 
@@ -107,8 +111,11 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if count is not None:
             params = {'count': count}
 
-        for elem in self.query(q, params=params):
-            hubs.append(plexlibrary.Hub(elem, server=self))
+        data = self.query(q, params=params)
+        container = plexobjects.PlexContainer(data, initpath=q, server=self, address=q)
+
+        for elem in data:
+            hubs.append(plexlibrary.Hub(elem, server=self, container=container))
         return hubs
 
     def playlists(self):

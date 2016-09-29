@@ -326,7 +326,14 @@ class HomeWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        opener.open(mli.dataSource)
+        command = opener.open(mli.dataSource)
+        if command.startswith('HOME:'):
+            sectionID = command.split(':', 1)[-1]
+            for mli in self.sectionList:
+                if mli.dataSource and mli.dataSource.key == sectionID:
+                    self.sectionList.selectItem(mli.pos())
+                    self.lastSection = mli.dataSource
+                    self.sectionChanged(mli.dataSource)
 
     def checkSectionItem(self):
         item = self.sectionList.getSelectedItem()
@@ -463,10 +470,10 @@ class HomeWindow(kodigui.BaseWindow):
             return
 
     def createGrandparentedListItem(self, obj, thumb_w, thumb_h, with_grandparent_title=False):
-        if with_grandparent_title and obj.grandparentTitle and obj.title:
+        if with_grandparent_title and obj.get('grandparentTitle') and obj.title:
             title = u'{0} - {1}'.format(obj.grandparentTitle, obj.title)
         else:
-            title = obj.grandparentTitle or obj.parentTitle or obj.title or ''
+            title = obj.get('grandparentTitle') or obj.get('parentTitle') or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 

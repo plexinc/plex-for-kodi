@@ -171,8 +171,8 @@ class ShowWindow(kodigui.BaseWindow):
 
         command = opener.open(mli.dataSource)
 
-        if command == 'HOME':
-            self.exitCommand = 'HOME'
+        if command.startswith('HOME'):
+            self.exitCommand = command
             self.doClose()
 
     def subItemListClicked(self):
@@ -189,8 +189,8 @@ class ShowWindow(kodigui.BaseWindow):
             w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
 
         try:
-            if w.exitCommand == 'HOME':
-                self.exitCommand = 'HOME'
+            if w.exitCommand.startswith('HOME'):
+                self.exitCommand = w.exitCommand
                 self.doClose()
         finally:
             del w

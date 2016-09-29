@@ -23,6 +23,7 @@ def resetBaseHeaders():
         'Accept-Encoding': 'gzip,deflate'
     }
 
+
 # Core Settings
 PROJECT = 'PlexNet'                                 # name provided to plex server
 VERSION = '0.0.0a1'                                 # version of this api

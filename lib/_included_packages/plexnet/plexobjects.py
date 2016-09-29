@@ -224,6 +224,21 @@ class PlexObject(object, Checks):
 
         return ID
 
+    def getLibrarySectionTitle(self):
+        title = self.get('librarySectionTitle')
+
+        if not title:
+            title = self.container.get("librarySectionTitle", '')
+
+        if not title:
+            lsid = self.getLibrarySectionId()
+            if lsid:
+                data = self.server.query('/library/sections/{0}'.format(lsid))
+                title = data.attrib.get('title1')
+                if title:
+                    self.librarySectionTitle = title
+        return title
+
     def getLibrarySectionUuid(self):
         uuid = self.get("uuid") or self.get("librarySectionUUID")
 
@@ -375,11 +390,12 @@ class PlexServerContainer(PlexContainer):
 
 
 class PlexItemList(object):
-    def __init__(self, data, item_cls, tag, server=None):
+    def __init__(self, data, item_cls, tag, server=None, container=None):
         self._data = data
         self._itemClass = item_cls
         self._itemTag = tag
         self._server = server
+        self._container = container
         self._items = None
 
     def __iter__(self):
@@ -394,7 +410,7 @@ class PlexItemList(object):
         if self._items is None:
             if self._data is not None:
                 if self._server:
-                    self._items = [self._itemClass(elem, server=self._server) for elem in self._data if elem.tag == self._itemTag]
+                    self._items = [self._itemClass(elem, server=self._server, container=self._container) for elem in self._data if elem.tag == self._itemTag]
                 else:
                     self._items = [self._itemClass(elem) for elem in self._data if elem.tag == self._itemTag]
             else:

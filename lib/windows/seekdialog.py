@@ -42,6 +42,8 @@ class SeekDialog(kodigui.BaseDialog):
     BAR_RIGHT = 1920
     BAR_BOTTOM = 969
 
+    HIDE_DELAY = 4  # This uses the Cron tick so is +/- 1 second accurate
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.handler = kwargs.get('handler')
@@ -61,10 +63,15 @@ class SeekDialog(kodigui.BaseDialog):
         self.fromSeek = 0
         self.initialized = False
         self.playlistDialog = None
+        self.timeout = None
+        self.hasDialog = False
 
     @property
     def player(self):
         return self.handler.player
+
+    def resetTimeout(self):
+        self.timeout = time.time() + self.HIDE_DELAY
 
     def trueOffset(self):
         if self.handler.mode == self.handler.MODE_ABSOLUTE:
@@ -80,8 +87,11 @@ class SeekDialog(kodigui.BaseDialog):
             self.started = False
 
     def _onFirstInit(self):
+        self.resetTimeout()
+
         if self.handler.playlist:
             self.handler.playlist.on('change', self.updateProperties)
+
         self.seekbarControl = self.getControl(self.SEEK_IMAGE_ID)
         self.positionControl = self.getControl(self.POSITION_IMAGE_ID)
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
@@ -94,12 +104,16 @@ class SeekDialog(kodigui.BaseDialog):
         self.update()
 
     def onReInit(self):
+        self.resetTimeout()
+
         self.updateProperties()
         self.videoSettingsHaveChanged()
         self.updateProgress()
 
     def onAction(self, action):
         try:
+            self.resetTimeout()
+
             controlID = self.getFocusId()
             if controlID == self.MAIN_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
@@ -142,7 +156,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.handler.seek(self.selectedOffset)
             self.doClose()
         elif controlID == self.SETTINGS_BUTTON_ID:
-            self.showSettings()
+            self.handleDialog(self.showSettings)
         elif controlID == self.REPEAT_BUTTON_ID:
             self.repeatButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
@@ -155,7 +169,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.playlistDialog = PlaylistDialog.create(show=False, handler=self.handler)
             self.playlistDialog.show()
         elif controlID == self.OPTIONS_BUTTON_ID:
-            self.optionsButtonClicked()
+            self.handleDialog(self.optionsButtonClicked)
         elif controlID == 500:
             self.bigSeekSelected()
 
@@ -165,6 +179,15 @@ class SeekDialog(kodigui.BaseDialog):
                 self.playlistDialog.doClose()
         finally:
             kodigui.BaseDialog.doClose(self)
+
+    def handleDialog(self, func):
+        self.hasDialog = True
+
+        try:
+            func()
+        finally:
+            self.resetTimeout()
+            self.hasDialog = False
 
     def videoSettingsHaveChanged(self):
         if (
@@ -366,6 +389,10 @@ class SeekDialog(kodigui.BaseDialog):
     def tick(self):
         if not self.initialized:
             return
+
+        if time.time() > self.timeout and not self.hasDialog:
+            self.doClose()
+
         try:
             self.offset = int(self.handler.player.getTime() * 1000)
         except RuntimeError:  # Playback has stopped

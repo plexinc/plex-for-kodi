@@ -201,7 +201,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.video.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.setInfo()
         self.fillExtras()
-        hasPrev = self.fillRelated(False)
+        hasPrev = self.fillRelated()
         self.fillRoles(hasPrev)
 
     def setInfo(self):
@@ -262,8 +262,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def fillExtras(self):
         items = []
         idx = 0
-        if not self.video.extras:
-            return False
+
         for extra in self.video.extras():
             if not self.trailer and extra.extraType.asInt() == media.METADATA_RELATED_TRAILER:
                 self.trailer = extra
@@ -276,16 +275,15 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 items.append(mli)
                 idx += 1
 
+        if not items:
+            return False
+
         self.extraListControl.addItems(items)
         return True
 
     def fillRelated(self, has_prev=False):
         items = []
         idx = 0
-        if not self.video.related:
-            return has_prev
-
-        self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
         for rel in self.video.related()[0].items:
             mli = self.createListItem(rel)
@@ -295,22 +293,28 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 items.append(mli)
                 idx += 1
 
+        if not items:
+            return False
+
+        self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
+
         self.relatedListControl.addItems(items)
         return True
 
     def fillRoles(self, has_prev=False):
         items = []
         idx = 0
-        if not self.video.roles:
-            return has_prev
-
-        self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')
 
         for role in self.video.roles():
             mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=role)
             mli.setProperty('index', str(idx))
             items.append(mli)
             idx += 1
+
+        if not items:
+            return False
+
+        self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')
 
         self.rolesListControl.addItems(items)
         return True

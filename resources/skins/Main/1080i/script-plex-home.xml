@@ -220,7 +220,7 @@
                                 <posx>31</posx>
                                 <posy>145</posy>
                                 <width>238</width>
-                                <height>55</height>
+                                <height>30</height>
                                 <font>font10</font>
                                 <align>center</align>
                                 <textcolor>FFFFFFFF</textcolor>
@@ -345,7 +345,7 @@
                                 <posx>31</posx>
                                 <posy>145</posy>
                                 <width>238</width>
-                                <height>55</height>
+                                <height>30</height>
                                 <font>font10</font>
                                 <align>center</align>
                                 <textcolor>FFFFFFFF</textcolor>

@@ -660,7 +660,8 @@ class HomeWindow(kodigui.BaseWindow):
                 if mli.dataSource == selection:
                     self.serverList.selectItem(mli.pos())
 
-        self.setFocusId(self.SERVER_LIST_ID)
+        if not from_refresh:
+            self.setFocusId(self.SERVER_LIST_ID)
 
     def selectServer(self):
         mli = self.serverList.getSelectedItem()

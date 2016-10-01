@@ -236,6 +236,21 @@
                         <height>22</height>
                         <texture>script.plex/stars/$INFO[Window.Property(rating)].png</texture>
                     </control>
+                    <control type="button">
+                        <visible>!IsEmpty(Window.Property(unavailable))</visible>
+                        <posx>10</posx>
+                        <width>auto</width>
+                        <height>30</height>
+                        <font>font12</font>
+                        <align>center</align>
+                        <aligny>center</aligny>
+                        <focusedcolor>FFFFFFFF</focusedcolor>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <textoffsetx>15</textoffsetx>
+                        <texturefocus colordiffuse="FFAC3223" border="12">script.plex/white-square-rounded.png</texturefocus>
+                        <texturenofocus colordiffuse="FFAC3223" border="12">script.plex/white-square-rounded.png</texturenofocus>
+                        <label>Unavailable</label>
+                    </control>
                 </control>
 
                 <control type="grouplist">

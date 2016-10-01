@@ -247,6 +247,8 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         sss = self.video.selectedSubtitleStream()
         self.setProperty('subtitles', sss and sss.getTitle() or 'None')
 
+        self.setProperty('unavailable', not self.video.media()[0].isAccessible() and '1' or '')
+
         if self.video.viewOffset.asInt():
             width = self.video.viewOffset.asInt() and (1 + int((self.video.viewOffset.asInt() / self.video.duration.asFloat()) * self.width)) or 1
             self.progressImageControl.setWidth(width)

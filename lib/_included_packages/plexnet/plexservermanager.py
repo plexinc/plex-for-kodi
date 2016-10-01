@@ -94,6 +94,8 @@ class PlexServerManager(signalsmixin.SignalsMixin):
     def removeServer(self, server):
         del self.serversByUuid[server.uuid]
 
+        self.trigger('remove:server')
+
         if server == self.selectedServer:
             util.LOG("The selected server went away")
             self.setSelectedServer(None, force=True)
@@ -141,7 +143,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         else:
             self.serversByUuid[server.uuid] = server
             util.DEBUG_LOG("Added new server {0}".format(repr(server.name)))
-            self.trigger("new_server", server=server)
+            self.trigger("new:server", server=server)
             return server
 
     def deviceRefreshComplete(self, source):
@@ -205,7 +207,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         if reachable:
             # If we're in the middle of a search for our selected server, see if
             # this is a candidate.
-
+            self.trigger('reachable:server', server=server)
             if searching:
                 # If this is what we were hoping for, select it
                 if server.uuid == self.searchContext.preferredServer:

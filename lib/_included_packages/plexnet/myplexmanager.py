@@ -12,7 +12,7 @@ import util
 class MyPlexManager(object):
     def publish(self):
         util.LOG('MyPlexManager().publish() - NOT IMPLEMENTED')
-        return  # TODO: ------------------------------------------------------------------------------------------------------------------------------ IMPLEMENT
+        return  # TODO: ----------------------------------------------------------------------------------------------------------------------------- IMPLEMENT?
         request = myplexrequest.MyPlexRequest("/devices/" + plexapp.INTERFACE.getGlobal("clientIdentifier"))
         context = request.createRequestContext("publish")
 
@@ -71,5 +71,6 @@ class MyPlexManager(object):
                 servers.append(server)
 
         plexapp.SERVERMANAGER.updateFromConnectionType(servers, plexconnection.PlexConnection.SOURCE_MYPLEX)
+
 
 MANAGER = MyPlexManager()

@@ -234,6 +234,12 @@ class HomeWindow(kodigui.BaseWindow):
         if self.serverRefresh():
             self.setFocusId(self.SECTION_LIST_ID)
 
+        plexapp.SERVERMANAGER.on('new:server', self.onNewServer)
+        plexapp.SERVERMANAGER.on('remove:server', self.onRemoveServer)
+        plexapp.SERVERMANAGER.on('reachable:server', self.onReachableServer)
+
+        plexapp.APP.on('change:selectedServer', self.onSelectedServerChange)
+
         player.PLAYER.on('session.ended', self.updateOnDeckHubs)
         util.MONITOR.on('changed.watchstatus', self.updateOnDeckHubs)
 
@@ -601,11 +607,37 @@ class HomeWindow(kodigui.BaseWindow):
         elif section.type in ('playlists',):
             self.processCommand(opener.handleOpen(playlists.PlaylistsWindow))
 
-    def showServers(self):
+    def onNewServer(self, **kwargs):
+        self.showServers(from_refresh=True)
+
+    def onRemoveServer(self, **kwargs):
+        self.onNewServer()
+
+    def onReachableServer(self, server=None, **kwargs):
+        for mli in self.serverList:
+            if mli.dataSource == server:
+                return
+        else:
+            self.onNewServer()
+
+    def onSelectedServerChange(self, **kwargs):
+        if self.serverRefresh():
+            self.setFocusId(self.SECTION_LIST_ID)
+
+    def showServers(self, from_refresh=False):
+        selection = None
+        if from_refresh:
+            mli = self.serverList.getSelectedItem()
+            if mli:
+                selection = mli.dataSource
+        else:
+            plexapp.refreshResources()
+
         servers = sorted(
             [s for s in plexapp.SERVERMANAGER.getServers() if s.isReachable()],
             key=lambda x: (x.owned and '0' or '1') + x.name.lower()
         )
+
         items = []
         for s in servers:
             item = kodigui.ManagedListItem(s.name, not s.owned and s.owner or '', data_source=s)
@@ -619,10 +651,14 @@ class HomeWindow(kodigui.BaseWindow):
         elif items:
             items[0].setProperty('only', '1')
 
-        self.serverList.reset()
-        self.serverList.addItems(items)
+        self.serverList.replaceItems(items)
 
         self.getControl(800).setHeight((min(len(items), 9) * 100) + 80)
+
+        if selection:
+            for mli in self.serverList:
+                if mli.dataSource == selection:
+                    self.serverList.selectItem(mli.pos())
 
         self.setFocusId(self.SERVER_LIST_ID)
 
@@ -634,8 +670,7 @@ class HomeWindow(kodigui.BaseWindow):
         server = mli.dataSource
         self.setFocusId(self.SERVER_BUTTON_ID)
 
-        if plexapp.SERVERMANAGER.setSelectedServer(server, force=True):
-            self.serverRefresh()
+        plexapp.SERVERMANAGER.setSelectedServer(server, force=True)
 
     def showUserMenu(self):
         items = []

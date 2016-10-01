@@ -161,7 +161,7 @@ class Movie(PlayableVideo):
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
         else:
-            if data.find(media.Media.TYPE):
+            if data.find(media.Media.TYPE) is not None:
                 self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
         self._videoStreams = None

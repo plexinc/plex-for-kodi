@@ -127,50 +127,50 @@ class HomeWindow(kodigui.BaseWindow):
 
     HUBMAP = {
         # HOME
-        'home.continue': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True},
-        'home.ondeck': {'index': 1, 'do_updates': True},
-        'home.television.recent': {'index': 3},
-        'home.movies.recent': {'index': 4},
-        'home.music.recent': {'index': 5},
+        'home.continue': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True, 'text2lines': True},
+        'home.ondeck': {'index': 1, 'do_updates': True, 'text2lines': True},
+        'home.television.recent': {'index': 2, 'text2lines': True, 'text2lines': True},
+        'home.movies.recent': {'index': 4, 'text2lines': True},
+        'home.music.recent': {'index': 5, 'text2lines': True},
         'home.videos.recent': {'index': 6, 'ar16x9': True},
         'home.playlists': {'index': 9},
-        'home.photos.recent': {'index': 10},
+        'home.photos.recent': {'index': 10, 'text2lines': True},
         # SHOW
-        'tv.ondeck': {'index': 1, 'do_updates': True},
-        'tv.recentlyaired': {'index': 2},
-        'tv.recentlyadded': {'index': 3},
-        'tv.inprogress': {'index': 4, 'with_progress': True, 'do_updates': True},
+        'tv.ondeck': {'index': 1, 'do_updates': True, 'text2lines': True},
+        'tv.recentlyaired': {'index': 2, 'text2lines': True},
+        'tv.recentlyadded': {'index': 3, 'text2lines': True},
+        'tv.inprogress': {'index': 4, 'with_progress': True, 'do_updates': True, 'text2lines': True},
         'tv.startwatching': {'index': 7},
         'tv.rediscover': {'index': 8},
         'tv.morefromnetwork': {'index': 13},
         'tv.toprated': {'index': 14},
         'tv.moreingenre': {'index': 15},
-        'tv.recentlyviewed': {'index': 16},
+        'tv.recentlyviewed': {'index': 16, 'text2lines': True},
         # MOVIE
-        'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True},
-        'movie.recentlyreleased': {'index': 1},
-        'movie.recentlyadded': {'index': 2},
-        'movie.genre': {'index': 3},
-        'movie.director': {'index': 7},
-        'movie.actor': {'index': 8},
-        'movie.topunwatched': {'index': 13},
-        'movie.recentlyviewed': {'index': 14},
+        'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True, 'text2lines': True},
+        'movie.recentlyreleased': {'index': 1, 'text2lines': True},
+        'movie.recentlyadded': {'index': 2, 'text2lines': True},
+        'movie.genre': {'index': 3, 'text2lines': True},
+        'movie.director': {'index': 7, 'text2lines': True},
+        'movie.actor': {'index': 8, 'text2lines': True},
+        'movie.topunwatched': {'index': 13, 'text2lines': True},
+        'movie.recentlyviewed': {'index': 14, 'text2lines': True},
         # ARTIST
         'music.recent.played': {'index': 5, 'do_updates': True},
-        'music.recent.added': {'index': 9},
-        'music.recent.artist': {'index': 10},
-        'music.recent.genre': {'index': 11},
-        'music.top.period': {'index': 12},
-        'music.popular': {'index': 20},
-        'music.recent.label': {'index': 21},
+        'music.recent.added': {'index': 9, 'text2lines': True},
+        'music.recent.artist': {'index': 10, 'text2lines': True},
+        'music.recent.genre': {'index': 11, 'text2lines': True},
+        'music.top.period': {'index': 12, 'text2lines': True},
+        'music.popular': {'index': 20, 'text2lines': True},
+        'music.recent.label': {'index': 21, 'text2lines': True},
         'music.touring': {'index': 22},
         'music.videos.popular.new': {'index': 18},
         'music.videos.recent.artists': {'index': 19},
         # PHOTO
-        'photo.recent': {'index': 5},
-        'photo.random.year': {'index': 9},
-        'photo.random.decade': {'index': 10},
-        'photo.random.dayormonth': {'index': 11},
+        'photo.recent': {'index': 5, 'text2lines': True},
+        'photo.random.year': {'index': 9, 'text2lines': True},
+        'photo.random.decade': {'index': 10, 'text2lines': True},
+        'photo.random.dayormonth': {'index': 11, 'text2lines': True},
         # VIDEO
         'video.recent': {'index': 0, 'ar16x9': True},
         'video.random.year': {'index': 6, 'ar16x9': True},
@@ -295,6 +295,7 @@ class HomeWindow(kodigui.BaseWindow):
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
+            util.TEST('{0} {1}'.format(controlID, str(self.hubFocusIndexes[controlID - 400])))
             self.setProperty('hub.focus', str(self.hubFocusIndexes[controlID - 400]))
 
         if controlID == self.SECTION_LIST_ID:
@@ -516,17 +517,23 @@ class HomeWindow(kodigui.BaseWindow):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
-    def createListItem(self, obj):
+    def createListItem(self, obj, wide=False):
         if obj.type == 'episode':
             mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
+            if wide:
+                mli.setLabel2(u'{0} - S{1} \u2022 E{2}'.format(util.shortenText(obj.title, 35), obj.parentIndex, obj.index))
+            else:
+                mli.setLabel2(u'S{0} \u2022 E{1}'.format(obj.parentIndex, obj.index))
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
             return mli
         elif obj.type == 'season':
             mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
+            # mli.setLabel2('Season {0}'.format(obj.index))
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
             return mli
         elif obj.type == 'movie':
             mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+            mli.setLabel2(obj.year)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
             return mli
         elif obj.type == 'show':
@@ -534,15 +541,19 @@ class HomeWindow(kodigui.BaseWindow):
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
             return mli
         elif obj.type == 'album':
-            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM, with_parent_title=True)
+            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setLabel2(obj.title)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli
         elif obj.type == 'track':
             mli = self.createGrandparentedListItem(obj, *self.THUMB_SQUARE_DIM)
+            mli.setLabel2(obj.title)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
             return mli
         elif obj.type in ('photo', 'photodirectory'):
             mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
+            if obj.type == 'photo':
+                mli.setLabel2(obj.originallyAvailableAt.asDatetime('%d %B %Y'))
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
             return mli
         elif obj.type == 'clip':
@@ -560,11 +571,12 @@ class HomeWindow(kodigui.BaseWindow):
         for control in self.hubControls:
             control.reset()
 
-    def _showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False, **kwargs):
+    def _showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False, text2lines=False, **kwargs):
         if not hub.items:
             return
 
         self.setProperty('hub.4{0:02d}'.format(index), hub.title)
+        self.setProperty('hub.text2lines.4{0:02d}'.format(index), text2lines and '1' or '')
 
         control = self.hubControls[index]
 
@@ -576,7 +588,7 @@ class HomeWindow(kodigui.BaseWindow):
                 self.setProperty(
                     'background', obj.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
                 )
-            mli = self.createListItem(obj)
+            mli = self.createListItem(obj, wide=with_art)
             if mli:
                 items.append(mli)
 

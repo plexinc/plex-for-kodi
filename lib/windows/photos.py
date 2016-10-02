@@ -2,7 +2,6 @@ import threading
 import time
 import os
 
-import xbmc
 import xbmcgui
 
 import kodigui

@@ -34,8 +34,8 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
 MONITOR = UtilityMonitor()
 
 
-def LOG(msg):
-    xbmc.log('script.plex: {0}'.format(msg))
+def LOG(msg, level=xbmc.LOGNOTICE):
+    xbmc.log('script.plex: {0}'.format(msg), level)
 
 
 def DEBUG_LOG(msg):
@@ -66,7 +66,7 @@ def ERROR(txt='', hide_tb=False, notify=False):
 
 
 def TEST(msg):
-    xbmc.log('---TEST: {0}'.format(msg))
+    xbmc.log('---TEST: {0}'.format(msg), xbmc.LOGNOTICE)
 
 
 def getSetting(key, default=None):
@@ -228,6 +228,13 @@ def simplifiedTimeDisplay(ms):
     left, right = timeDisplay(ms).rsplit(':', 1)
     left = left.lstrip('0:') or '0'
     return left + ':' + right
+
+
+def shortenText(text, size):
+    if len(text) < size:
+        return text
+
+    return u'{0}\u2026'.format(text[:size - 1])
 
 
 class TextBox:

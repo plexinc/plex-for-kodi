@@ -265,6 +265,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         items = []
         idx = 0
 
+        if not self.video.extras:
+            return False
+
         for extra in self.video.extras():
             if not self.trailer and extra.extraType.asInt() == media.METADATA_RELATED_TRAILER:
                 self.trailer = extra
@@ -287,6 +290,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         items = []
         idx = 0
 
+        if not self.video.related:
+            return False
+
         for rel in self.video.related()[0].items:
             mli = self.createListItem(rel)
             if mli:
@@ -306,6 +312,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def fillRoles(self, has_prev=False):
         items = []
         idx = 0
+
+        if not self.video.roles:
+            return False
 
         for role in self.video.roles():
             mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=role)

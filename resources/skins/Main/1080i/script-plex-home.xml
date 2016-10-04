@@ -158,8 +158,8 @@
                 <width>2130</width>
                 <height>200</height>
                 <control type="fixedlist" id="101">
-                    <animation effect="slide" end="-90,0" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).Position,3)">Conditional</animation>
-                    <animation effect="slide" end="-130,0" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).Position,4)">Conditional</animation>
+                    <animation effect="slide" end="-110,0" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).Position,3)">Conditional</animation>
+                    <animation effect="slide" end="-110,0" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).Position,4)">Conditional</animation>
                     <posx>-300</posx>
                     <posy>0</posy>
                     <width>2430</width>
@@ -174,16 +174,16 @@
                     <movement>3</movement>
                     <pagecontrol>102</pagecontrol>
                     <!-- ITEM LAYOUT ########################################## -->
-                    <itemlayout width="300">
+                    <itemlayout width="298">
                         <control type="group">
                             <visible>!IsEmpty(ListItem.Property(item))</visible>
-                            <posx>0</posx>
+                            <posx>60</posx>
                             <posy>40</posy>
-                            <width>300</width>
+                            <width>298</width>
                             <height>200</height>
                             <control type="group">
-                                <posx>31</posx>
-                                <posy>9</posy>
+                                <posx>0</posx>
+                                <posy>0</posy>
                                 <width>238</width>
                                 <height>117</height>
                                 <control type="image">
@@ -217,10 +217,9 @@
                             </control>
 
                             <control type="label">
-
                             	<scroll>false</scroll>
-                                <posx>31</posx>
-                                <posy>145</posy>
+                                <posx>0</posx>
+                                <posy>125</posy>
                                 <width>238</width>
                                 <height>35</height>
                                 <font>font10</font>
@@ -232,128 +231,89 @@
                     </itemlayout>
 
                     <!-- FOCUSED LAYOUT ####################################### -->
-                    <focusedlayout width="300">
+                    <focusedlayout width="298">
                         <control type="group">
                             <visible>!IsEmpty(ListItem.Property(item))</visible>
-                            <posx>0</posx>
+                            <posx>60</posx>
                             <posy>40</posy>
-                            <width>300</width>
-                            <height>200</height>
-
                             <control type="group">
-                                <visible>Control.HasFocus(101)</visible>
-                                <animation effect="zoom" start="80" end="100" time="100" center="151,74" reversible="false">Focus</animation>
-                                <animation effect="zoom" start="100" end="80" time="100" center="151,74" reversible="false">UnFocus</animation>
-                                <posx>1</posx>
-                                <posy>-5.5</posy>
-                                <width>275</width>
-                                <height>135</height>
+                                <animation effect="zoom" start="100" end="120" time="100" center="119,58.5" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="120" end="100" time="100" center="119,58.5" reversible="false">UnFocus</animation>
+                                <posx>0</posx>
+                                <posy>0</posy>
                                 <control type="group">
                                     <visible>IsEmpty(ListItem.Property(is.home))</visible>
-                                    <control type="image">
-                                        <posx>-40</posx>
-                                        <posy>-40</posy>
-                                        <width>378</width>
-                                        <height>226</height>
-                                        <texture border="42">script.plex/drop-shadow.png</texture>
+                                    <control type="group">
+                                        <visible>Control.HasFocus(101)</visible>
+                                        <control type="image">
+                                            <posx>-40</posx>
+                                            <posy>-40</posy>
+                                            <width>318</width>
+                                            <height>197</height>
+                                            <texture border="42">script.plex/drop-shadow.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <animation effect="fade" end="0" reversible="false">UnFocus</animation>
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>238</width>
+                                            <height>117</height>
+                                            <texture border="10">script.plex/white-square-rounded.png</texture>
+                                            <colordiffuse>FFE5A00D</colordiffuse>
+                                        </control>
                                     </control>
                                     <control type="image">
-                                        <posx>1</posx>
-                                        <posy>1</posy>
-                                        <width>296</width>
-                                        <height>144</height>
-                                        <texture border="10">script.plex/white-square-rounded.png</texture>
-                                        <colordiffuse>FF1F1F1F</colordiffuse>
-                                    </control>
-                                    <control type="image">
-                                        <animation effect="fade" end="0" reversible="false">UnFocus</animation>
+                                        <visible>!Control.HasFocus(101)</visible>
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>298</width>
-                                        <height>146</height>
+                                        <width>238</width>
+                                        <height>117</height>
                                         <texture border="10">script.plex/white-square-rounded.png</texture>
-                                        <colordiffuse>FFE5A00D</colordiffuse>
+                                        <colordiffuse>FFCC7B19</colordiffuse>
                                     </control>
                                     <control type="image">
-                                        <posx>99</posx>
-                                        <posy>23</posy>
-                                        <width>100</width>
-                                        <height>100</height>
+                                        <posx>84</posx>
+                                        <posy>23.5</posy>
+                                        <width>70</width>
+                                        <height>70</height>
                                         <texture>$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
                                 </control>
                                 <control type="group">
                                     <visible>!IsEmpty(ListItem.Property(is.home))</visible>
-                                    <posx>93</posx>
-                                    <posy>17</posy>
+                                    <posx>74</posx>
+                                    <posy>13.5</posy>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>112</width>
-                                        <height>112</height>
+                                        <width>90</width>
+                                        <height>90</height>
                                         <texture>script.plex/home/type/home.png</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
                                     <control type="image">
+                                        <visible>Control.HasFocus(101)</visible>
                                         <animation effect="fade" end="0" reversible="false">UnFocus</animation>
                                         <posx>-40</posx>
                                         <posy>-40</posy>
-                                        <width>192</width>
-                                        <height>192</height>
+                                        <width>170</width>
+                                        <height>170</height>
                                         <texture>script.plex/home/type/home-selected.png</texture>
                                         <aspectratio>keep</aspectratio>
                                     </control>
                                 </control>
-                            </control>
-
-                            <control type="group">
-                                <visible>!Control.HasFocus(101)</visible>
-                                <posx>31</posx>
-                                <posy>9</posy>
-                                <width>238</width>
-                                <height>117</height>
-                                <control type="image">
-                                    <visible>IsEmpty(ListItem.Property(is.home))</visible>
+                                <control type="label">
+                                    <scroll>false</scroll>
                                     <posx>0</posx>
-                                    <posy>0</posy>
+                                    <posy>125</posy>
                                     <width>238</width>
-                                    <height>117</height>
-                                    <texture border="10">script.plex/white-square-rounded.png</texture>
-                                    <colordiffuse>FFCC7B19</colordiffuse>
+                                    <height>35</height>
+                                    <font>font10</font>
+                                    <align>center</align>
+                                    <textcolor>FFFFFFFF</textcolor>
+                                    <label>$INFO[ListItem.Label]</label>
                                 </control>
-                                <control type="image">
-                                    <visible>IsEmpty(ListItem.Property(is.home))</visible>
-                                    <posx>84</posx>
-                                    <posy>23.5</posy>
-                                    <width>70</width>
-                                    <height>70</height>
-                                    <texture>$INFO[ListItem.Thumb]</texture>
-                                    <aspectratio>keep</aspectratio>
-                                </control>
-                                <control type="image">
-                                    <visible>!IsEmpty(ListItem.Property(is.home))</visible>
-                                    <posx>74</posx>
-                                    <posy>13.5</posy>
-                                    <width>90</width>
-                                    <height>90</height>
-                                    <texture>script.plex/home/type/home.png</texture>
-                                    <colordiffuse>FFCC7B19</colordiffuse>
-                                    <aspectratio>keep</aspectratio>
-                                </control>
-                            </control>
-
-                            <control type="label">
-
-                            	<scroll>false</scroll>
-                                <posx>31</posx>
-                                <posy>145</posy>
-                                <width>238</width>
-                                <height>35</height>
-                                <font>font10</font>
-                                <align>center</align>
-                                <textcolor>FFFFFFFF</textcolor>
-                                <label>$INFO[ListItem.Label]</label>
                             </control>
                         </control>
                     </focusedlayout>

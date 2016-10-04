@@ -279,6 +279,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             mli = self.createListItem(extra)
             if mli:
                 mli.setProperty('index', str(idx))
+                mli.setProperty(
+                    'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(extra.type in ('show', 'season', 'episode') and 'show' or 'movie')
+                )
                 items.append(mli)
                 idx += 1
 

@@ -444,6 +444,7 @@
                                         <width>299</width>
                                         <height>168</height>
                                         <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
@@ -494,6 +495,7 @@
                                             <width>299</width>
                                             <height>168</height>
                                             <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                            <aspectratio>scale</aspectratio>
                                         </control>
                                         <control type="image">
                                             <posx>0</posx>

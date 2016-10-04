@@ -28,7 +28,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     THUMB_DIMS = {
         'show': {
             'main.thumb': (347, 518),
-            'item.thumb': (198, 295)
+            'item.thumb': (174, 260)
         },
         'episode': {
             'main.thumb': (347, 518),
@@ -40,7 +40,8 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         }
     }
 
-    ROLES_DIM = (374, 210)
+    RELATED_DIM = (268, 397)
+    ROLES_DIM = (268, 268)
 
     SUB_ITEM_LIST_ID = 400
 
@@ -288,7 +289,11 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
         for rel in self.mediaItem.related()[0].items:
-            mli = self.createListItem(rel)
+            mli = kodigui.ManagedListItem(
+                rel.title or '',
+                thumbnailImage=rel.defaultThumb.asTranscodedImageURL(*self.RELATED_DIM),
+                data_source=rel
+            )
             if mli:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))

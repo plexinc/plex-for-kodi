@@ -119,11 +119,11 @@
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout width="287" height="343">
                         <control type="group">
-                            <posx>30</posx>
-                            <posy>190</posy>
+                            <posx>55</posx>
+                            <posy>211</posy>
                             <control type="group">
-                                <posx>26.5</posx>
-                                <posy>26.5</posy>
+                                <posx>5</posx>
+                                <posy>5</posy>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -149,6 +149,7 @@
                                     <colordiffuse>80000000</colordiffuse>
                                 </control>
                                 <control type="label">
+                                    <scroll>false</scroll>
                                     <posx>0</posx>
                                     <posy>244</posy>
                                     <width>244</width>
@@ -166,20 +167,31 @@
                     <!-- FOCUSED LAYOUT ####################################### -->
                     <focusedlayout width="287" height="343">
                         <control type="group">
-                            <posx>30</posx>
-                            <posy>190</posy>
+                            <posx>55</posx>
+                            <posy>211</posy>
                             <control type="group">
-                                <animation effect="zoom" start="86" end="100" time="100" center="148.5,148.5" reversible="false">Focus</animation>
-                                <animation effect="zoom" start="100" end="86" time="100" center="148.5,148.5" reversible="false">UnFocus</animation>
-                                <visible>Control.HasFocus(101)</visible>
+                                <animation effect="zoom" start="100" end="110" time="100" center="127,127" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="110" end="100" time="100" center="127,127" reversible="false">UnFocus</animation>
                                 <posx>0</posx>
                                 <posy>0</posy>
-                                <control type="image">
-                                    <posx>-40</posx>
-                                    <posy>-40</posy>
-                                    <width>377</width>
-                                    <height>377</height>
-                                    <texture border="42">script.plex/drop-shadow.png</texture>
+                                <control type="group">
+                                    <visible>Control.HasFocus(101)</visible>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <posx>-40</posx>
+                                        <posy>-40</posy>
+                                        <width>334</width>
+                                        <height>334</height>
+                                        <texture border="42">script.plex/drop-shadow.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <posx>-40</posx>
+                                        <posy>-40</posy>
+                                        <width>334</width>
+                                        <height>374</height>
+                                        <texture border="42">script.plex/drop-shadow.png</texture>
+                                    </control>
                                 </control>
                                 <control type="group">
                                     <posx>5</posx>
@@ -187,95 +199,58 @@
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>287</width>
-                                        <height>287</height>
+                                        <width>244</width>
+                                        <height>244</height>
                                         <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>287</width>
-                                        <height>287</height>
+                                        <width>244</width>
+                                        <height>244</height>
                                         <texture background="true">$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="image">
                                         <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>0</posx>
-                                        <posy>287</posy>
-                                        <width>287</width>
-                                        <height>47</height>
+                                        <posy>244</posy>
+                                        <width>244</width>
+                                        <height>40</height>
                                         <texture>script.plex/white-square.png</texture>
                                         <colordiffuse>80000000</colordiffuse>
                                     </control>
                                     <control type="label">
+                                        <scroll>false</scroll>
                                         <posx>0</posx>
-                                        <posy>289</posy>
-                                        <width>287</width>
-                                        <height>47</height>
-                                        <font>font12</font>
+                                        <posy>244</posy>
+                                        <width>244</width>
+                                        <height>40</height>
+                                        <font>font10</font>
                                         <align>center</align>
                                         <aligny>center</aligny>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                 </control>
-                                <control type="image">
-                                    <visible>IsEmpty(ListItem.Property(is.folder))</visible>
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>297</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
-                                <control type="image">
-                                    <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>297</width>
-                                    <height>344</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
-                            </control>
-
-                            <control type="group">
-                                <visible>!Control.HasFocus(101)</visible>
-                                <posx>26.5</posx>
-                                <posy>26.5</posy>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>244</width>
-                                    <height>244</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
-                                </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>244</width>
-                                    <height>244</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
-                                    <aspectratio>scale</aspectratio>
-                                </control>
-                                <control type="image">
-                                    <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
-                                    <posx>0</posx>
-                                    <posy>244</posy>
-                                    <width>244</width>
-                                    <height>40</height>
-                                    <texture>script.plex/white-square.png</texture>
-                                    <colordiffuse>80000000</colordiffuse>
-                                </control>
-                                <control type="label">
-                                    <posx>0</posx>
-                                    <posy>244</posy>
-                                    <width>244</width>
-                                    <height>40</height>
-                                    <font>font10</font>
-                                    <align>center</align>
-                                    <aligny>center</aligny>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>$INFO[ListItem.Label]</label>
+                                <control type="group">
+                                    <visible>Control.HasFocus(101)</visible>
+                                    <control type="image">
+                                        <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>254</width>
+                                        <height>254</height>
+                                        <texture border="10">script.plex/home/selected.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>254</width>
+                                        <height>294</height>
+                                        <texture border="10">script.plex/home/selected.png</texture>
+                                    </control>
                                 </control>
                             </control>
                         </control>

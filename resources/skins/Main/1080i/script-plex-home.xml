@@ -253,6 +253,15 @@
                                             <texture border="42">script.plex/drop-shadow.png</texture>
                                         </control>
                                         <control type="image">
+                                            <animation effect="fade" end="100" reversible="false">UnFocus</animation>
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>238</width>
+                                            <height>117</height>
+                                            <texture border="10">script.plex/white-square-rounded.png</texture>
+                                            <colordiffuse>FF1F1F1F</colordiffuse>
+                                        </control>
+                                        <control type="image">
                                             <animation effect="fade" end="0" reversible="false">UnFocus</animation>
                                             <posx>0</posx>
                                             <posy>0</posy>

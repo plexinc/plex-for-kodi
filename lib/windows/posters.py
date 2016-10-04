@@ -121,6 +121,7 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
     POSTERS_PANEL_ID = 101
     KEY_LIST_ID = 151
+    SCROLLBAR_ID = 152
 
     OPTIONS_GROUP_ID = 200
 
@@ -173,7 +174,7 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         try:
             if action.getId() in MOVE_SET:
                 controlID = self.getFocusId()
-                if controlID == self.POSTERS_PANEL_ID:
+                if controlID == self.POSTERS_PANEL_ID or controlID == self.SCROLLBAR_ID:
                     self.updateKey()
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
@@ -222,10 +223,13 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         self.setProperty('key', mli.getProperty('key'))
 
-    def selectKey(self):
-        mli = self.showPanelControl.getSelectedItem()
+        self.selectKey(mli)
+
+    def selectKey(self, mli=None):
         if not mli:
-            return
+            mli = self.showPanelControl.getSelectedItem()
+            if not mli:
+                return
 
         li = self.keyItems.get(mli.getProperty('key'))
         if not li:

@@ -610,6 +610,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'year': video.year.asInt(),
             'plot': video.summary
         })
+        li.setArt({
+            'poster': self.video.defaultThumb.asTranscodedImageURL(347, 518),
+            'fanart': self.video.defaultArt.asTranscodedImageURL(1920, 1080),
+        })
 
         return url, li
 

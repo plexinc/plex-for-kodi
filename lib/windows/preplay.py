@@ -24,7 +24,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     height = 1080
 
     THUMB_POSTER_DIM = (347, 518)
-    EXTRA_DIM = (374, 210)
+    RELATED_DIM = (268, 397)
+    EXTRA_DIM = (329, 185)
+    ROLES_DIM = (268, 268)
     PREVIEW_DIM = (343, 193)
 
     EXTRA_LIST_ID = 400
@@ -208,7 +210,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
-        self.setProperty('summary', self.video.summary)
+        self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))
 
         directors = u' / '.join([d.tag for d in self.video.directors()][:5])
         directorsLabel = len(self.video.directors) > 1 and u'DIRECTORS' or u'DIRECTOR'
@@ -294,7 +296,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             return False
 
         for rel in self.video.related()[0].items:
-            mli = self.createListItem(rel)
+            mli = kodigui.ManagedListItem(rel.title or '', thumbnailImage=rel.thumb.asTranscodedImageURL(*self.RELATED_DIM), data_source=rel)
             if mli:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))
@@ -317,7 +319,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             return False
 
         for role in self.video.roles():
-            mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=role)
+            mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.ROLES_DIM), data_source=role)
             mli.setProperty('index', str(idx))
             items.append(mli)
             idx += 1

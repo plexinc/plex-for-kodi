@@ -86,4 +86,7 @@ def _main():
         back.doClose()
         del back
 
+        import gc
+        util.DEBUG_LOG(gc.collect(2))
+
         util.DEBUG_LOG('FINISHED')

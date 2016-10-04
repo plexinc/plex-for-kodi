@@ -187,7 +187,7 @@ class MyPlexAccount(object):
             self.signOut(True)
         else:
             # Unexpected error, keep using whatever we read from the registry
-            util.WARN_LOG("Unexpected response from plex.tv ({0}), switching to offline mode".format(response.getStatus()))
+            util.WARN_LOG("Unexpected response from plex.tv ({0}), switching to OFFLINE mode".format(response.getStatus()))
             self.isOffline = True
             # consider a single, unprotected user authenticated
             if not self.isAuthenticated and not self.isProtected:
@@ -281,10 +281,12 @@ class MyPlexAccount(object):
 
         # Offline support
         if self.isOffline:
-            digest = hashlib.sha256()
-            digest.update(pin + self.authToken)
-            if not self.isProtected or self.isAuthenticated or digest.digest() == (self.pin or ""):
-                util.DEBUG_LOG("Offline access granted")
+            hashed = 'NONE'
+            if pin and self.authToken:
+                hashed = hashlib.sha256(pin + self.authToken).digest()
+
+            if not self.isProtected or self.isAuthenticated or hashed == (self.pin or ""):
+                util.DEBUG_LOG("OFFLINE access granted")
                 self.isAuthenticated = True
                 self.validateToken(self.authToken, True)
                 return True

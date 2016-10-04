@@ -295,7 +295,6 @@ class HomeWindow(kodigui.BaseWindow):
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
-            util.TEST('{0} {1}'.format(controlID, str(self.hubFocusIndexes[controlID - 400])))
             self.setProperty('hub.focus', str(self.hubFocusIndexes[controlID - 400]))
 
         if controlID == self.SECTION_LIST_ID:
@@ -451,7 +450,10 @@ class HomeWindow(kodigui.BaseWindow):
         self.sectionList.reset()
         self.sectionList.addItems(items)
 
-        self.setFocusId(self.SECTION_LIST_ID)
+        if items:
+            self.setFocusId(self.SECTION_LIST_ID)
+        else:
+            self.setFocusId(self.SERVER_BUTTON_ID)
 
     def showHubs(self, section=None):
         self.setProperty('drawing', '1')
@@ -672,7 +674,7 @@ class HomeWindow(kodigui.BaseWindow):
                 if mli.dataSource == selection:
                     self.serverList.selectItem(mli.pos())
 
-        if not from_refresh:
+        if not from_refresh and items:
             self.setFocusId(self.SERVER_LIST_ID)
 
     def selectServer(self):

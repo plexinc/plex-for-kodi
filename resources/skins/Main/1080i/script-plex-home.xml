@@ -165,7 +165,7 @@
                     <width>2430</width>
                     <height>240</height>
                     <onleft>100</onleft>
-                    <onup condition="!Player.HasAudio">200</onup>
+                    <onup condition="!Player.HasAudio">203</onup>
                     <onup condition="Player.HasAudio">204</onup>
                     <ondown>400</ondown>
                     <scrolltime>200</scrolltime>
@@ -5292,30 +5292,33 @@
                 <texture>script.plex/white-square.png</texture>
                 <colordiffuse>C0000000</colordiffuse>
             </control>
-            <control type="button" id="203">
-                <animation effect="zoom" start="100" end="177" time="100" center="80,67.5" reversible="false">Focus</animation>
-                <animation effect="zoom" start="177" end="100" time="100" center="80,67.5" reversible="false">UnFocus</animation>
-                <posx>60</posx>
-                <posy>47.5</posy>
-                <width>40</width>
-                <height>40</height>
-                <ondown>50</ondown>
-                <font>font12</font>
-                <focusedcolor>FF000000</focusedcolor>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search-focus.png</texturefocus>
-                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/search.png</texturenofocus>
-                <label> </label>
-            </control>
-            <control type="label">
-                <posx>160</posx>
-                <posy>35</posy>
-                <width>500</width>
-                <height>65</height>
-                <font>font12</font>
-                <align>left</align>
-                <aligny>center</aligny>
-                <textcolor>FFFFFFFF</textcolor>
-                <label>[UPPERCASE]Discovery[/UPPERCASE]</label>
+            <control type="group">
+                <visible>IsEmpty(Window.Property(search.dialog))</visible>
+                <control type="button" id="203">
+                    <animation effect="zoom" start="100" end="177" time="100" center="80,67.5" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="177" end="100" time="100" center="80,67.5" reversible="false">UnFocus</animation>
+                    <posx>60</posx>
+                    <posy>47.5</posy>
+                    <width>40</width>
+                    <height>40</height>
+                    <ondown>50</ondown>
+                    <font>font12</font>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/search-focus.png</texturefocus>
+                    <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/search.png</texturenofocus>
+                    <label> </label>
+                </control>
+                <control type="label">
+                    <posx>160</posx>
+                    <posy>35</posy>
+                    <width>500</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]Discovery[/UPPERCASE]</label>
+                </control>
             </control>
             <control type="group">
                 <visible>Player.HasAudio</visible>

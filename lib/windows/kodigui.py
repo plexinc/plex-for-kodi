@@ -73,6 +73,9 @@ class BaseFunctions:
         for prop, val in zip(prop_list, val_list):
             self.setProperty(prop, val)
 
+    def propertyContext(self, prop, val='1'):
+        return WindowProperty(self, prop, val)
+
 
 class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
     def __init__(self, *args, **kwargs):
@@ -781,3 +784,17 @@ class PropertyTimer():
 
         if self._stopped:
             self._start()
+
+
+class WindowProperty():
+    def __init__(self, win, prop, val='1'):
+        self.win = win
+        self.prop = prop
+        self.val = val
+
+    def __enter__(self):
+        self.win.setProperty(self.prop, self.val)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.win.setProperty(self.prop, '')

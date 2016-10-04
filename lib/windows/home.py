@@ -17,6 +17,7 @@ import playlists
 import posters
 import busy
 import opener
+import search
 
 
 class SectionHubsTask(backgroundthread.Task):
@@ -292,6 +293,8 @@ class HomeWindow(kodigui.BaseWindow):
             self.showAudioPlayer()
         elif 399 < controlID < 500:
             self.hubItemClicked(controlID)
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -304,6 +307,10 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('off.sections', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
             self.setProperty('off.sections', '1')
+
+    def searchButtonClicked(self):
+        with self.propertyContext('search.dialog'):
+            search.dialog()
 
     def updateOnDeckHubs(self, **kwargs):
         tasks = [UpdateHubTask().setup(hub, self.updateHubCallback) for hub in self.updateHubs.values()]

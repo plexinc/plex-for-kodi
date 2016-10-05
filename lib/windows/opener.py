@@ -44,6 +44,7 @@ def open(obj):
     elif obj.TYPE in ('playlist'):
         return playlistClicked(obj)
     elif obj.TYPE in ('clip'):
+        import videoplayer
         videoplayer.play(video=obj)
 
 

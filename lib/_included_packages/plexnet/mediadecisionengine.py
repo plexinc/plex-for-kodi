@@ -281,55 +281,57 @@ class MediaDecisionEngine(object):
                 util.LOG("MDE: frame rate is not support for resolution: {0}@{1}".format(height, videoFrameRate))
                 return False
 
-        container = choice.media.get('container')
-        videoCodec = choice.videoStream.codec
-        if choice.audioStream is None:
-            audioCodec = None
-            numChannels = 0
-        else:
-            audioCodec = choice.audioStream.codec
-            numChannels = choice.audioStream.channels.asInt()
+        return True
+
+        # container = choice.media.get('container')
+        # videoCodec = choice.videoStream.codec
+        # if choice.audioStream is None:
+        #     audioCodec = None
+        #     numChannels = 0
+        # else:
+        #     audioCodec = choice.audioStream.codec
+        #     numChannels = choice.audioStream.channels.asInt()
 
         # Formats: https://support.roku.com/hc/en-us/articles/208754908-Roku-Media-Player-Playing-your-personal-videos-music-photos
         #  All Models: H.264/AVC  (MKV, MP4, MOV),
         # Roku 4 only: H.265/HEVC (MKV, MP4, MOV); VP9 (.MKV)
 
-        if True:  # container in ("mp4", "mov", "m4v", "mkv"):
-            util.LOG("MDE: {0} container looks OK, checking streams".format(container))
+        # if True:  # container in ("mp4", "mov", "m4v", "mkv"):
+        #     util.LOG("MDE: {0} container looks OK, checking streams".format(container))
 
-            isHEVC = videoCodec == "hevc" and item.settings.getPreference("allow_hevc", False)
-            isVP9 = videoCodec == "vp9" and container == "mkv" and item.settings.getGlobal("vp9Support")
+        #     isHEVC = videoCodec == "hevc" and item.settings.getPreference("allow_hevc", False)
+        #     isVP9 = videoCodec == "vp9" and container == "mkv" and item.settings.getGlobal("vp9Support")
 
-            if videoCodec != "h264" and videoCodec != "mpeg4" and not isHEVC and not isVP9:
-                util.LOG("MDE: Unsupported video codec: {0}".format(videoCodec))
-                return False
+        #     if videoCodec != "h264" and videoCodec != "mpeg4" and not isHEVC and not isVP9:
+        #         util.LOG("MDE: Unsupported video codec: {0}".format(videoCodec))
+        #         return False
 
-            # TODO(schuyler): Fix ref frames check. It's more nuanced than this.
-            if choice.videoStream.refFrames.asInt() > 8:
-                util.LOG("MDE: Too many ref frames: {0}".format(choice.videoStream.refFrames))
-                return False
+        #     # TODO(schuyler): Fix ref frames check. It's more nuanced than this.
+        #     if choice.videoStream.refFrames.asInt() > 8:
+        #         util.LOG("MDE: Too many ref frames: {0}".format(choice.videoStream.refFrames))
+        #         return False
 
-            # HEVC supports a bitDepth of 10, otherwise 8 is the limit
-            if choice.videoStream.bitDepth.asInt() > (isHEVC and 10 or 8):
-                util.LOG("MDE: Bit depth too high: {0}".format(choice.videoStream.bitDepth))
-                return False
+        #     # HEVC supports a bitDepth of 10, otherwise 8 is the limit
+        #     if choice.videoStream.bitDepth.asInt() > (isHEVC and 10 or 8):
+        #         util.LOG("MDE: Bit depth too high: {0}".format(choice.videoStream.bitDepth))
+        #         return False
 
-            # We shouldn't have to whitelist particular audio codecs, we can just
-            # check to see if the Roku can decode this codec with the number of channels.
-            if not item.settings.supportsAudioStream(audioCodec, numChannels):
-                util.LOG("MDE: Unsupported audio track: {0} ({1} channels)".format(audioCodec, numChannels))
-                return False
+        #     # We shouldn't have to whitelist particular audio codecs, we can just
+        #     # check to see if the Roku can decode this codec with the number of channels.
+        #     if not item.settings.supportsAudioStream(audioCodec, numChannels):
+        #         util.LOG("MDE: Unsupported audio track: {0} ({1} channels)".format(audioCodec, numChannels))
+        #         return False
 
-            # # TODO(schuyler): We've reported this to Roku, they may fix it. If/when
-            # # they do, we should move this behind a firmware version check.
-            # if container == "mkv" and choice.videoStream.headerStripping.asBool() and audioCodec == "ac3":
-            #     util.ERROR_LOG("MDE: Header stripping with AC3 audio")
-            #     return False
+        #     # # TODO(schuyler): We've reported this to Roku, they may fix it. If/when
+        #     # # they do, we should move this behind a firmware version check.
+        #     # if container == "mkv" and choice.videoStream.headerStripping.asBool() and audioCodec == "ac3":
+        #     #     util.ERROR_LOG("MDE: Header stripping with AC3 audio")
+        #     #     return False
 
-            # Those were our problems, everything else should be OK.
-            return True
-        else:
-            util.LOG("MDE: Unsupported container: {0}".format(container))
+        #     # Those were our problems, everything else should be OK.
+        #     return True
+        # else:
+        #     util.LOG("MDE: Unsupported container: {0}".format(container))
 
         return False
 
@@ -459,7 +461,7 @@ class MediaDecisionEngine(object):
         if key is None:
             choices.sort()
         elif isinstance(key, basestring):
-            choices.sort(key=lambda x: getattr(x, key))
+            choices.sort(key=lambda x: getattr(x.media, key))
         elif hasattr(key, '__call__'):
             choices.sort(key=key)
 
@@ -472,7 +474,7 @@ class MediaDecisionEngine(object):
         return 0
 
     def cloudIfRemote(self, choice):
-        if choice.media is not None and choice.media.getServer().isLocalConnection() and choice.proxyType != self.proxyTypes.CLOUD:
+        if choice.media is not None and choice.media.getServer().isLocalConnection() and choice.media.proxyType != self.proxyTypes.CLOUD:
             return 1
 
         return 0

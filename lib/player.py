@@ -310,10 +310,12 @@ class AudioPlayerHandler(BasePlayerHandler):
         BasePlayerHandler.__init__(self, player)
         self.window = window
         self.timelineType = 'music'
-        if self.player.isPlayingAudio():
-            self.extractTrackInfo()
+        self.extractTrackInfo()
 
     def extractTrackInfo(self):
+        if not self.player.isPlayingAudio():
+            return
+
         plexID = None
         for x in range(10):  # Wait a sec (if necessary) for this to become available
             try:

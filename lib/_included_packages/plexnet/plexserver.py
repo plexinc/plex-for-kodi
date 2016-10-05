@@ -103,16 +103,22 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         data = self.query(key)
         return plexobjects.buildItem(self, data[0], key, container=self)
 
-    def hubs(self, section=None, count=None):
+    def hubs(self, section=None, count=None, search_query=None):
         hubs = []
 
-        q = '/hubs'
         params = {}
-        if section:
-            q = '/hubs/sections/%s' % section
+        if search_query:
+            q = '/hubs/search'
+            params['query'] = search_query.lower()
+            if section:
+                params['sectionId'] = section
+        else:
+            q = '/hubs'
+            if section:
+                q = '/hubs/sections/%s' % section
 
         if count is not None:
-            params = {'count': count}
+            params['count'] = count
 
         data = self.query(q, params=params)
         container = plexobjects.PlexContainer(data, initpath=q, server=self, address=q)

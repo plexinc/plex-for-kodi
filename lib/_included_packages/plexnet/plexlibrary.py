@@ -363,11 +363,12 @@ class Hub(plexobjects.PlexObject):
 
     def init(self, data):
         self.items = []
-        container = plexobjects.PlexContainer(data, self.key, self.server, self.key)
-        if self.container:
-            container.librarySectionID = self.container.librarySectionID
-            container.librarySectionTitle = self.container.librarySectionTitle
-            container.librarySectionUUID = self.container.librarySectionUUID
+        container = self.container  # = plexobjects.PlexContainer(data, self.key, self.server, self.key)
+        if not container:
+            container = plexobjects.PlexContainer(data, self.key, self.server, self.key)
+            # container.librarySectionID = self.container.librarySectionID
+            # container.librarySectionTitle = self.container.librarySectionTitle
+            # container.librarySectionUUID = self.container.librarySectionUUID
 
         for elem in data:
             try:

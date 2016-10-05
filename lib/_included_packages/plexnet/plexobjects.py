@@ -51,6 +51,9 @@ class PlexValue(unicode):
         return float(self or default)
 
     def asDatetime(self, format_=None):
+        if not self:
+            return None
+
         if self.isdigit():
             dt = datetime.fromtimestamp(int(self))
         else:

@@ -158,7 +158,7 @@ class Movie(PlayableVideo):
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
-            self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server)
+            self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
         else:
             if data.find(media.Media.TYPE) is not None:
@@ -220,7 +220,7 @@ class Show(Video):
         Video._setData(self, data)
         if self.isFullObject():
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
-            self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server)
+            self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
 
     @property

@@ -89,6 +89,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.openItem(self.extraListControl)
         elif controlID == self.RELATED_LIST_ID:
             self.openItem(self.relatedListControl)
+        elif controlID == self.ROLES_LIST_ID:
+            # self.openItem(self.rolesListControl)
+            pass
         elif controlID == self.RESUME_BUTTON_ID:
             self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:

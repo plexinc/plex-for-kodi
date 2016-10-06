@@ -122,6 +122,7 @@ class TranscodeSession(plexobjects.PlexObject):
 
 class MediaTag(plexobjects.PlexObject):
     TYPE = None
+    ID = 'None'
 
     def __repr__(self):
         tag = self.tag.replace(' ', '.')[0:20]
@@ -150,11 +151,13 @@ class Country(MediaTag):
 class Director(MediaTag):
     TYPE = 'Director'
     FILTER = 'director'
+    ID = '4'
 
 
 class Genre(MediaTag):
     TYPE = 'Genre'
     FILTER = 'genre'
+    ID = '1'
 
 
 class Mood(MediaTag):
@@ -169,7 +172,8 @@ class Producer(MediaTag):
 
 class Role(MediaTag):
     TYPE = 'Role'
-    FILTER = 'role'
+    FILTER = 'actor'
+    ID = '6'
 
 
 class Similar(MediaTag):

@@ -1,3 +1,4 @@
+import sys
 import threading
 import xbmc
 import plex
@@ -90,3 +91,4 @@ def _main():
         util.DEBUG_LOG(gc.collect(2))
 
         util.DEBUG_LOG('FINISHED')
+        sys.exit()

@@ -22,7 +22,7 @@
                 <width>1920</width>
                 <height>1080</height>
                 <fadetime>1000</fadetime>
-                <texture  background="true">$INFO[Window.Property(background)]</texture>
+                <texture background="true">$INFO[Window.Property(background)]</texture>
             </control>
         </control>
 

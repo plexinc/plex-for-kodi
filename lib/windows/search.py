@@ -2,13 +2,16 @@ import time
 import threading
 
 import kodigui
+import posters
+import opener
+import windowutils
 
 from lib import util
 
-from plexnet import plexapp
+from plexnet import plexapp, plexlibrary
 
 
-class SearchDialog(kodigui.BaseDialog):
+class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     xmlFile = 'script-plex-search.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -41,6 +44,38 @@ class SearchDialog(kodigui.BaseDialog):
     HUB_SQUARE_13 = 2113
     HUB_AR16X9_14 = 2114
     HUB_CIRCLE_15 = 2115
+    HUB_POSTER_16 = 2116
+    HUB_SQUARE_17 = 2117
+    HUB_AR16X9_18 = 2118
+    HUB_CIRCLE_19 = 2119
+    HUB_POSTER_20 = 2120
+    HUB_SQUARE_21 = 2121
+    HUB_AR16X9_22 = 2122
+    HUB_CIRCLE_23 = 2123
+    HUB_POSTER_24 = 2124
+    HUB_SQUARE_25 = 2125
+    HUB_AR16X9_26 = 2126
+    HUB_CIRCLE_27 = 2127
+    HUB_POSTER_28 = 2128
+    HUB_SQUARE_29 = 2129
+    HUB_AR16X9_30 = 2130
+    HUB_CIRCLE_31 = 2131
+    HUB_POSTER_32 = 2132
+    HUB_SQUARE_33 = 2133
+    HUB_AR16X9_34 = 2134
+    HUB_CIRCLE_35 = 2135
+    HUB_POSTER_36 = 2136
+    HUB_SQUARE_37 = 2137
+    HUB_AR16X9_38 = 2138
+    HUB_CIRCLE_39 = 2139
+    HUB_POSTER_40 = 2140
+    HUB_SQUARE_41 = 2141
+    HUB_AR16X9_42 = 2142
+    HUB_CIRCLE_43 = 2143
+    HUB_POSTER_44 = 2144
+    HUB_SQUARE_45 = 2145
+    HUB_AR16X9_46 = 2146
+    HUB_CIRCLE_47 = 2147
 
     HUBMAP = {
         'track': {'type': 'square'},
@@ -53,12 +88,23 @@ class SearchDialog(kodigui.BaseDialog):
         'photo': {'type': 'square'},
         'actor': {'type': 'circle'},
         'director': {'type': 'circle'},
-        'genre': {'type': 'square'},
+        'genre': {'type': 'circle'},
         'playlist': {'type': 'square'},
+    }
+
+    SECTION_TYPE_MAP = {
+        '1': {'thumb': 'script.plex/section_type/movie.png'},  # Movie
+        '2': {'thumb': 'script.plex/section_type/show.png'},  # Show
+        '3': {'thumb': 'script.plex/section_type/show.png'},  # Season
+        '4': {'thumb': 'script.plex/section_type/show.png'},  # Episode
+        '8': {'thumb': 'script.plex/section_type/music.png'},  # Artist
+        '9': {'thumb': 'script.plex/section_type/music.png'},  # Album
+        '10': {'thumb': 'script.plex/section_type/music.png'},  # Track
     }
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
+        windowutils.UtilMixin.__init__(self)
         # self.query = 'Not Implemented'
         self.query = ''
         self.resultsThread = None
@@ -68,63 +114,75 @@ class SearchDialog(kodigui.BaseDialog):
         self.hubControls = (
             {
                 'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_00, 5),
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_01, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_02, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_03, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_04, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_05, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_06, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_07, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_08, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_09, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_10, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_11, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_12, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_13, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_14, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_15, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_16, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_17, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_18, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_19, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_20, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_21, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_22, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_23, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_24, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_25, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_26, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_27, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_28, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_29, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_30, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_31, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_32, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_33, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_34, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_35, 5)
             },
             {
-                'poster': None,
-                'square': None,
-                'ar16x9': None,
-                'circle': None
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_36, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_37, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_38, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_39, 5)
+            },
+            {
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_40, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_41, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_42, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_43, 5)
+            },
+            {
+                'poster': kodigui.ManagedControlList(self, self.HUB_POSTER_44, 5),
+                'square': kodigui.ManagedControlList(self, self.HUB_SQUARE_45, 5),
+                'ar16x9': kodigui.ManagedControlList(self, self.HUB_AR16X9_46, 5),
+                'circle': kodigui.ManagedControlList(self, self.HUB_CIRCLE_47, 5)
             },
         )
 
@@ -150,6 +208,12 @@ class SearchDialog(kodigui.BaseDialog):
             self.letterClicked(1037)
         elif controlID == 953:
             self.clearClicked()
+        elif 2099 < controlID < 2200:
+            self.hubItemClicked(controlID)
+
+    def onFocus(self, controlID):
+        if 2099 < controlID < 2200:
+            self.setProperty('hub.focus', str(controlID - 2099))
 
     def updateQuery(self):
         self.setProperty('search.query', self.query)
@@ -169,8 +233,9 @@ class SearchDialog(kodigui.BaseDialog):
 
     def _reallyUpdateResults(self):
         if self.query:
-            hubs = plexapp.SERVERMANAGER.selectedServer.hubs(search_query=self.query)
-            self.showHubs(hubs)
+            with self.propertyContext('searching'):
+                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(count=10, search_query=self.query)
+                self.showHubs(hubs)
         else:
             self.clearHubs()
 
@@ -191,12 +256,77 @@ class SearchDialog(kodigui.BaseDialog):
         self.query = ''
         self.updateQuery()
 
+    def hubItemClicked(self, hubControlID):
+        for controls in self.hubControls:
+            for control in controls.values():
+                if control.controlID == hubControlID:
+                    break
+            else:
+                continue
+            break
+        else:
+            return
+
+        mli = control.getSelectedItem()
+        if not mli:
+            return
+
+        hubItem = mli.dataSource
+
+        self.doClose()
+        try:
+            self.processCommand(opener.open(hubItem))
+        finally:
+            if not self.exitCommand:
+                self.show()
+
+    def createListItem(self, hubItem):
+        if hubItem.TYPE in ('Genre', 'Director', 'Role'):
+            if hubItem.TYPE == 'Genre':
+                thumb = (self.SECTION_TYPE_MAP.get(hubItem.librarySectionType) or {}).get('thumb', '')
+                mli = kodigui.ManagedListItem(hubItem.tag, hubItem.reasonTitle, thumbnailImage=thumb, data_source=hubItem)
+                mli.setProperty('thumb.fallback', thumb)
+            else:
+                mli = kodigui.ManagedListItem(
+                    hubItem.tag, hubItem.reasonTitle, thumbnailImage=hubItem.get('thumb').asTranscodedImageURL(256, 256), data_source=hubItem
+                )
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/role.png')
+        else:
+            if hubItem.TYPE == 'playlist':
+                mli = kodigui.ManagedListItem(hubItem.tag, thumbnailImage=hubItem.get('composite').asTranscodedImageURL(256, 256), data_source=hubItem)
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(hubItem.playlistType == 'audio' and 'music' or 'movie'))
+            elif hubItem.TYPE == 'photodirectory':
+                mli = kodigui.ManagedListItem(hubItem.title, thumbnailImage=hubItem.get('composite').asTranscodedImageURL(256, 256), data_source=hubItem)
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
+            else:
+                mli = kodigui.ManagedListItem(hubItem.title, thumbnailImage=hubItem.get('thumb').asTranscodedImageURL(256, 256), data_source=hubItem)
+                if hubItem.TYPE in ('movie', 'clip'):
+                    mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
+                elif hubItem.TYPE in ('artist', 'album', 'track'):
+                    mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+                elif hubItem.TYPE in ('show', 'season', 'episode'):
+                    mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+                elif hubItem.TYPE == 'photo':
+                    mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
+
+        return mli
+
     def showHubs(self, hubs):
+        self.clearHubs()
+        self.setProperty('has.results', '')
+        controlID = None
         i = 0
         for h in hubs:
             if h.size.asInt() > 0:
-                self.showHub(h, i)
+                self.setProperty('has.results', '1')
+                cid = self.showHub(h, i)
+                controlID = controlID or cid
                 i += 1
+
+        if controlID:
+            self.setProperty('no.results', '')
+        else:
+            self.setProperty('no.results', '1')
 
     def showHub(self, hub, idx):
         util.DEBUG_LOG('Showing search hub: {0} at {1}'.format(hub.type, idx))
@@ -214,17 +344,22 @@ class SearchDialog(kodigui.BaseDialog):
 
         items = []
         for hubItem in hub.items:
-            mli = kodigui.ManagedListItem(hubItem.title, thumbnailImage=hubItem.defaultThumb.asTranscodedImageURL(256, 256), data_source=hubItem)
+            mli = self.createListItem(hubItem)
             items.append(mli)
 
         itemListControl.reset()
         itemListControl.addItems(items)
 
+        return itemListControl.controlID
+
     def clearHubs(self):
+        self.setProperty('has.results', '')
+        self.setProperty('no.results', '')
         for controls in self.hubControls:
             for control in controls.values():
                 if control:
                     control.reset()
+        self.setProperty('hub.focus', '')
 
 
 def dialog():

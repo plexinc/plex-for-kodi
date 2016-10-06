@@ -242,6 +242,21 @@ class PlexObject(object, Checks):
                     self.librarySectionTitle = title
         return title
 
+    def getLibrarySectionType(self):
+        type_ = self.get('librarySectionType')
+
+        if not type_:
+            type_ = self.container.get("librarySectionType", '')
+
+        if not type_:
+            lsid = self.getLibrarySectionId()
+            if lsid:
+                data = self.server.query('/library/sections/{0}'.format(lsid))
+                type_ = data.attrib.get('type')
+                if type_:
+                    self.librarySectionTitle = type_
+        return type_
+
     def getLibrarySectionUuid(self):
         uuid = self.get("uuid") or self.get("librarySectionUUID")
 
@@ -456,18 +471,21 @@ def findItem(server, path, title):
     raise exceptions.NotFound('Unable to find item: {0}'.format(title))
 
 
-def buildItem(server, elem, initpath, bytag=False, container=None):
+def buildItem(server, elem, initpath, bytag=False, container=None, tag_fallback=False):
     libtype = elem.tag if bytag else elem.attrib.get('type')
+    if not libtype and tag_fallback:
+        libtype = elem.tag
+
     if libtype in LIBRARY_TYPES:
         cls = LIBRARY_TYPES[libtype]
         return cls(elem, initpath=initpath, server=server, container=container)
     raise exceptions.UnknownType('Unknown library type: {0}'.format(libtype))
 
 
-def listItems(server, path, libtype=None, watched=None, bytag=False, data=None):
+def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None):
     items = []
     data = data or server.query(path)
-    container = PlexContainer(data, path, server, path)
+    container = container or PlexContainer(data, path, server, path)
     for elem in data:
         if libtype and elem.attrib.get('type') != libtype:
             continue

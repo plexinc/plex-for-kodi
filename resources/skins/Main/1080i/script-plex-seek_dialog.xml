@@ -338,7 +338,7 @@
                 <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
                 <alttexturefocus colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</alttexturefocus>
                 <alttexturenofocus colordiffuse="99FFFFFF">script.plex/buttons/play.png</alttexturenofocus>
-                <enable>Player.PauseEnabled</enable>
+                <!-- <enable>Player.PauseEnabled</enable> -->
                 <onclick>PlayerControl(Play)</onclick>
                 <label> </label>
             </control>

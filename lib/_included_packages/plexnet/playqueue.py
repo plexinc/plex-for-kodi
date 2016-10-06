@@ -131,7 +131,7 @@ class PlayQueueFactory(object):
         return self.item.type == "artist"
 
 
-def createPlayQueueForItem(item, children=None, options=None):
+def createPlayQueueForItem(item, children=None, options=None, args=None):
     obj = PlayQueueFactory()
 
     contentType = obj.getContentType(item)
@@ -150,7 +150,7 @@ def createPlayQueueForItem(item, children=None, options=None):
     options = PlayOptions(options or {})
 
     if obj.canCreateRemotePlayQueue():
-        return createRemotePlayQueue(item, contentType, options)
+        return createRemotePlayQueue(item, contentType, options, args)
     else:
         if obj.itemRequiresRemotePlayQueue():
             util.DEBUG_LOG("Can't create remote PQs and item does not support local PQs")
@@ -572,7 +572,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         return None
 
 
-def createRemotePlayQueue(item, contentType, options):
+def createRemotePlayQueue(item, contentType, options, args):
     obj = PlayQueue(item.getServer(), contentType, options)
 
     # The item's URI is made up of the library section UUID, a descriptor of
@@ -637,6 +637,9 @@ def createRemotePlayQueue(item, contentType, options):
         options.key = item.getAbsolutePath("key")
     # elif item.type == "show":
     #     path = "/library/metadata/" + item.get("ratingKey", "")
+
+    if args:
+        path += util.joinArgs(args)
 
     if path:
         util.DEBUG_LOG("playQueue path: " + str(path))

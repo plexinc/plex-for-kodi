@@ -17,7 +17,7 @@ import dropdown
 import opener
 import windowutils
 
-from plexnet import playqueue
+from plexnet import playqueue, plexapp
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -140,6 +140,7 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.section = kwargs.get('section')
+        self.filter = kwargs.get('filter_')
         self.keyItems = {}
         self.firstOfKeyItems = {}
         self.tasks = []
@@ -147,8 +148,8 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.exitCommand = None
         self.sort = 'titleSort'
         self.sortDesc = False
-        self.filter = None
         self.filterUnwatched = False
+        util.TEST(self.filter)
 
     def doClose(self):
         for task in self.tasks:
@@ -250,7 +251,23 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.setProperty('key', li.dataSource)
 
     def playButtonClicked(self, shuffle=False):
-        pq = playqueue.createPlayQueueForItem(self.section, options={'shuffle': shuffle})
+        filter_ = self.getFilterOpts()
+        sort = self.getSortOpts()
+        args = {}
+        if filter_:
+            args[filter_[0]] = filter_[1]
+
+        if sort:
+            args['sort'] = '{0}:{1}'.format(*sort)
+
+        if self.section.TYPE == 'movie':
+            args['sourceType'] = '1'
+        elif self.section.TYPE == 'show':
+            args['sourceType'] = '2'
+        else:
+            args['sourceType'] = '8'
+
+        pq = playqueue.createPlayQueueForItem(self.section, options={'shuffle': shuffle}, args=args)
         opener.open(pq)
 
     def shuffleButtonClicked(self):
@@ -375,6 +392,9 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         elif choice == 'unwatched':
             self.showPanelControl.sort(lambda i: i.dataSource.unViewedLeafCount, reverse=self.sortDesc)
 
+        for i, mli in enumerate(self.showPanelControl):
+            mli.setProperty('index', str(i))
+
     def subOptionCallback(self, option):
         check = 'script.plex/home/device/check.png'
         options = None
@@ -461,6 +481,12 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         else:
             self.filter = result
 
+        self.updateFilterDisplay()
+
+        if self.filter or choice in ('clear_filter', 'unwatched'):
+            self.fill()
+
+    def updateFilterDisplay(self):
         if self.filter:
             disp = self.filter['display']
             if self.filter.get('sub'):
@@ -470,9 +496,6 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         else:
             self.setProperty('filter2.display', '')
             self.setProperty('filter1.display', self.filterUnwatched and 'unwatched' or 'all')
-
-        if self.filter or choice in ('clear_filter', 'unwatched'):
-            self.fill()
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()
@@ -528,6 +551,9 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('screen.title', 'PHOTOS')
         else:
             self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
+
+        if self.filter:
+            self.updateFilterDisplay()
 
     def updateItem(self, mli=None):
         mli = mli or self.showPanelControl.getSelectedItem()

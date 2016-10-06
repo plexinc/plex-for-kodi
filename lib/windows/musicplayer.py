@@ -149,5 +149,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         # player.PLAYER.playAudio(self.track, window=self, fanart=self.getProperty('background'))
         if self.album:
             player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=fanart)
-        else:
+        elif self.playlist:
             player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=fanart)
+        else:
+            player.PLAYER.playAudio(self.track, window=self)

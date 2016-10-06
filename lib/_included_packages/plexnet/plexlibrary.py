@@ -87,6 +87,33 @@ class LibrarySection(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<%s:%s>' % (self.__class__.__name__, title.encode('utf8'))
 
+    @staticmethod
+    def fromFilter(filter_):
+        cls = SECTION_IDS.get(filter_.getLibrarySectionType())
+        if not cls:
+            return
+        section = cls(None, initpath=filter_.initpath, server=filter_.server, container=filter_.container)
+        section.key = filter_.getLibrarySectionId()
+        section.title = filter_.reasonTitle
+        section.type = cls.TYPE
+        return section
+
+    def reload(self, **kwargs):
+        """ Reload the data for this object from PlexServer XML. """
+        initpath = '/library/sections/{0}'.format(self.key)
+        key = self.key
+        try:
+            data = self.server.query(initpath, params=kwargs)
+        except Exception, e:
+            import traceback
+            traceback.print_exc()
+            util.ERROR(err=e)
+            self.initpath = self.key
+            return
+
+        self._setData(data[0])
+        self.initpath = self.key = key
+
     def isDirectory(self):
         return True
 
@@ -281,12 +308,14 @@ class MovieSection(LibrarySection):
         'mediaHeight', 'duration'
     )
     TYPE = 'movie'
+    ID = '1'
 
 
 class ShowSection(LibrarySection):
     ALLOWED_FILTERS = ('unwatched', 'year', 'genre', 'contentRating', 'network', 'collection')
     ALLOWED_SORT = ('addedAt', 'lastViewedAt', 'originallyAvailableAt', 'titleSort', 'rating', 'unwatched')
     TYPE = 'show'
+    ID = '2'
 
     def searchShows(self, **kwargs):
         return self.search(libtype='show', **kwargs)
@@ -299,6 +328,7 @@ class MusicSection(LibrarySection):
     ALLOWED_FILTERS = ('genre', 'country', 'collection')
     ALLOWED_SORT = ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort')
     TYPE = 'artist'
+    ID = '8'
 
     def searchShows(self, **kwargs):
         return self.search(libtype='artist', **kwargs)
@@ -314,6 +344,7 @@ class PhotoSection(LibrarySection):
     ALLOWED_FILTERS = ()
     ALLOWED_SORT = ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort')
     TYPE = 'photo'
+    ID = 'None'
 
     def isPhotoOrDirectoryItem(self):
         return True
@@ -370,11 +401,18 @@ class Hub(plexobjects.PlexObject):
             # container.librarySectionTitle = self.container.librarySectionTitle
             # container.librarySectionUUID = self.container.librarySectionUUID
 
-        for elem in data:
-            try:
-                self.items.append(plexobjects.buildItem(self.server, elem, '/hubs', container=container))
-            except exceptions.UnknownType:
-                util.DEBUG_LOG('Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type')))
+        if self.type == 'genre':
+            self.items = [media.Genre(elem, initpath='/hubs', server=self.server, container=container) for elem in data]
+        elif self.type == 'director':
+            self.items = [media.Director(elem, initpath='/hubs', server=self.server, container=container) for elem in data]
+        elif self.type == 'actor':
+            self.items = [media.Role(elem, initpath='/hubs', server=self.server, container=container) for elem in data]
+        else:
+            for elem in data:
+                try:
+                    self.items.append(plexobjects.buildItem(self.server, elem, '/hubs', container=container, tag_fallback=True))
+                except exceptions.UnknownType:
+                    util.DEBUG_LOG('Unkown hub item type({1}): {0}'.format(elem, elem.attrib.get('type')))
 
     def __repr__(self):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
@@ -400,4 +438,11 @@ SECTION_TYPES = {
     ShowSection.TYPE: ShowSection,
     MusicSection.TYPE: MusicSection,
     PhotoSection.TYPE: PhotoSection
+}
+
+SECTION_IDS = {
+    MovieSection.ID: MovieSection,
+    ShowSection.ID: ShowSection,
+    MusicSection.ID: MusicSection,
+    PhotoSection.ID: PhotoSection
 }

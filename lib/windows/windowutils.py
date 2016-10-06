@@ -2,6 +2,9 @@ import opener
 
 
 class UtilMixin():
+    def __init__(self):
+        self.exitCommand = None
+
     def processCommand(self, command):
         if command and command.startswith('HOME'):
             self.exitCommand = command

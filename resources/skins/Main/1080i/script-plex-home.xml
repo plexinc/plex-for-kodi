@@ -5293,7 +5293,7 @@
                 <colordiffuse>C0000000</colordiffuse>
             </control>
             <control type="group">
-                <visible>IsEmpty(Window.Property(search.dialog))</visible>
+                <visible>IsEmpty(Window(10000).Property(script.plex.search.dialog))</visible>
                 <control type="button" id="203">
                     <animation effect="zoom" start="100" end="177" time="100" center="80,67.5" reversible="false">Focus</animation>
                     <animation effect="zoom" start="177" end="100" time="100" center="80,67.5" reversible="false">UnFocus</animation>

@@ -2,13 +2,12 @@ import time
 import threading
 
 import kodigui
-import posters
 import opener
 import windowutils
 
 from lib import util
 
-from plexnet import plexapp, plexlibrary
+from plexnet import plexapp
 
 
 class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
@@ -241,7 +240,10 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
 
     def sectionClicked(self, controlID):
         section = self.SECTION_BUTTONS[controlID]
+        old = self.getProperty('search.section')
         self.setProperty('search.section', section)
+        if old != section:
+            self.updateResults()
 
     def letterClicked(self, controlID):
         letter = self.LETTERS[controlID - 1001]
@@ -314,9 +316,23 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     def showHubs(self, hubs):
         self.clearHubs()
         self.setProperty('has.results', '')
+
+        allowed = None
+        if self.getProperty('search.section') == 'movie':
+            allowed = ('movie',)
+        elif self.getProperty('search.section') == 'show':
+            allowed = ('show', 'season', 'episode')
+        elif self.getProperty('search.section') == 'artist':
+            allowed = ('artist', 'album', 'track')
+        elif self.getProperty('search.section') == 'photo':
+            allowed = ('photo', 'photodirectory')
+
         controlID = None
         i = 0
         for h in hubs:
+            if allowed and h.type not in allowed:
+                continue
+
             if h.size.asInt() > 0:
                 self.setProperty('has.results', '1')
                 cid = self.showHub(h, i)

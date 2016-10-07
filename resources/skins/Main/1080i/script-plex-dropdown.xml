@@ -8,6 +8,15 @@
     </coordinates>
     <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
+        <control type="button" id="700">
+            <!-- dummy for clicks off list -->
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texturefocus>-</texturefocus>
+            <texturenofocus>-</texturenofocus>
+        </control>
         <control type="group" id="100">
             <defaultcontrol>250</defaultcontrol>
             <visible>!IsEmpty(Window.Property(show))</visible>

@@ -798,3 +798,18 @@ class WindowProperty():
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.win.setProperty(self.prop, '')
+
+
+class GlobalProperty():
+    def __init__(self, prop, val='1'):
+        import xbmcaddon
+        self.addonID = xbmcaddon.Addon().getInfo('id')
+        self.prop = prop
+        self.val = val
+
+    def __enter__(self):
+        xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self.prop), self.val)
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self.prop), '')

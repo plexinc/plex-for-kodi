@@ -175,6 +175,22 @@ class Role(MediaTag):
     FILTER = 'actor'
     ID = '6'
 
+    def sectionRoles(self):
+        hubs = self.server.hubs(count=10, search_query=self.tag)
+        for hub in hubs:
+            if hub.type == 'actor':
+                break
+        else:
+            return None
+
+        roles = []
+
+        for actor in hub.items:
+            if actor.id == self.id:
+                roles.append(actor)
+
+        return roles or None
+
 
 class Similar(MediaTag):
     TYPE = 'Similar'

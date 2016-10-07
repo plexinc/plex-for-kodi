@@ -63,6 +63,8 @@ class DropdownDialog(kodigui.BaseDialog):
     def onClick(self, controlID):
         if controlID == self.OPTIONS_LIST_ID:
             self.setChoice()
+        else:
+            self.doClose()
 
     def playbackSessionEnded(self, **kwargs):
         self.doClose()

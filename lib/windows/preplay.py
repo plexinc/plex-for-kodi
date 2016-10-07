@@ -90,8 +90,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         elif controlID == self.RELATED_LIST_ID:
             self.openItem(self.relatedListControl)
         elif controlID == self.ROLES_LIST_ID:
-            # self.openItem(self.rolesListControl)
-            pass
+            self.roleClicked()
         elif controlID == self.RESUME_BUTTON_ID:
             self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:
@@ -182,6 +181,50 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.processCommand(opener.open(self.video.grandparentRatingKey))
         elif choice['key'] == 'to_section':
             self.closeWithCommand('HOME:{0}'.format(self.video.getLibrarySectionId()))
+
+    def roleClicked(self):
+        mli = self.rolesListControl.getSelectedItem()
+        if not mli:
+            return
+
+        sectionRoles = busy.widthDialog(mli.dataSource.sectionRoles, '')
+
+        if not sectionRoles:
+            util.DEBUG_LOG('No sections found for actor')
+            return
+
+        if len(sectionRoles) > 1:
+            x, y = self.getRoleItemDDPosition()
+
+            options = [{'role': r, 'display': r.reasonTitle} for r in sectionRoles]
+            choice = dropdown.showDropdown(options, (x, y), pos_is_bottom=True, close_direction='bottom')
+
+            if not choice:
+                return
+
+            role = choice['role']
+        else:
+            role = sectionRoles[0]
+
+        self.processCommand(opener.open(role))
+
+    def getRoleItemDDPosition(self):
+        y = 980
+        if xbmc.getCondVisibility('Control.IsVisible(500)'):
+            y += 360
+        if xbmc.getCondVisibility('Control.IsVisible(501)'):
+            y += 520
+        if xbmc.getCondVisibility('!IsEmpty(Window.Property(on.extras))'):
+            y -= 300
+        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
+            y -= 500
+        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
+            y -= 500
+
+        focus = int(xbmc.getInfoLabel('Container(403).Position'))
+
+        x = ((focus + 1) * 304) - 100
+        return x, y
 
     def playVideo(self, resume=False):
         videoplayer.play(video=self.video, resume=resume)

@@ -324,24 +324,67 @@
                 <onclick>PlayerControl(Rewind)</onclick>
                 <label> </label>
             </control>
-            <control type="togglebutton" id="406">
-                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
-                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
-                <hitrect x="28" y="28" w="69" h="45" />
-                <posx>0</posx>
-                <posy>0</posy>
+
+            <control type="group" id="426">
+                <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false" condition="Control.HasFocus(406)">Conditional</animation>
+                <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false" condition="!Control.HasFocus(406)">Conditional</animation>
                 <width>125</width>
                 <height>101</height>
-                <font>font12</font>
-                <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/pause-focus.png</texturefocus>
-                <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/pause.png</texturenofocus>
-                <usealttexture>Player.Paused | Player.Forwarding | Player.Rewinding</usealttexture>
-                <alttexturefocus colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</alttexturefocus>
-                <alttexturenofocus colordiffuse="99FFFFFF">script.plex/buttons/play.png</alttexturenofocus>
-                <!-- <enable>Player.PauseEnabled</enable> -->
-                <onclick>PlayerControl(Play)</onclick>
-                <label> </label>
+                <control type="button" id="406">
+                    <hitrect x="28" y="28" w="69" h="45" />
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>125</width>
+                    <height>101</height>
+                    <onup>100</onup>
+                    <onright>407</onright>
+                    <onleft>405</onleft>
+                    <font>font12</font>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <label> </label>
+                    <onclick>PlayerControl(Play)</onclick>
+                </control>
+                <control type="group">
+                    <visible>!Control.HasFocus(406)</visible>
+                    <control type="image">
+                        <visible>!Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="99FFFFFF">script.plex/buttons/pause.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Player.Paused | Player.Forwarding | Player.Rewinding</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="99FFFFFF">script.plex/buttons/play.png</texture>
+                    </control>
+                </control>
+                <control type="group">
+                    <visible>Control.HasFocus(406)</visible>
+                    <control type="image">
+                        <visible>!Player.Paused + !Player.Forwarding + !Player.Rewinding</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFE5A00D">script.plex/buttons/pause-focus.png</texture>
+                    </control>
+                    <control type="image">
+                        <visible>Player.Paused | Player.Forwarding | Player.Rewinding</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>125</width>
+                        <height>101</height>
+                        <texture colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</texture>
+                    </control>
+                </control>
             </control>
+
             <control type="button" id="407">
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>

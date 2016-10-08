@@ -542,6 +542,76 @@ class ManagedControlList(object):
         return self.getSelectedPosition() == self.size() - 1
 
 
+class SafeControlEdit(object):
+    CHARS_LOWER = 'abcdefghijklmnopqrstuvwxyz'
+    CHARS_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    CHARS_NUMBERS = '0123456789'
+    CURSOR = '[COLOR FFCC7B19]|[/COLOR]'
+
+    def __init__(self, control_id, label_id, window, key_callback=None):
+        self.controlID = control_id
+        self.labelID = label_id
+        self._win = window
+        self._text = ''
+        self._keyCallback = key_callback
+        self.setup()
+
+    def setup(self):
+        self._labelControl = self._win.getControl(self.labelID)
+        self._winOnAction = self._win.onAction
+        self._win.onAction = self.onAction
+        self.updateLabel()
+
+    def onAction(self, action):
+        controlID = self._win.getFocusId()
+        if controlID == self.controlID:
+            if self.processAction(action.getId()):
+                return
+
+        self._winOnAction(action)
+
+    def processAction(self, action_id):
+        if 61793 <= action_id <= 61818:  # Lowercase
+            self.processChar(self.CHARS_LOWER[action_id - 61793])
+        elif 61761 <= action_id <= 61786:  # Uppercase
+            self.processChar(self.CHARS_UPPER[action_id - 61761])
+        elif 61744 <= action_id <= 61753:
+            self.processChar(self.CHARS_NUMBERS[action_id - 61744])
+        elif action_id == 61728:  # Space
+            self.processChar(' ')
+        elif action_id == 61448:
+            self.delete()
+        else:
+            return False
+
+        if self._keyCallback:
+            self._keyCallback()
+
+        return True
+
+    def updateLabel(self):
+        self._labelControl.setLabel(self._text + self.CURSOR)
+
+    def processChar(self, char):
+        self._text += char
+        self.updateLabel()
+
+    def setText(self, text):
+        self._text = text
+        self.updateLabel()
+
+    def getText(self):
+        return self._text
+
+    def append(self, text):
+        self._text += text
+        self.updateLabel()
+
+    def delete(self):
+        self._text = self._text[:-1]
+        self.updateLabel()
+
+
 class MultiSelectDialog(BaseDialog):
     xmlFile = ''
     path = ''

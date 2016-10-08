@@ -18,7 +18,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     width = 1920
     height = 1080
 
-    LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 '
+    LETTERS = 'abcdefghijklmnopqrstuvwxyz0123456789 '
     SECTION_BUTTONS = {
         901: 'all',
         902: 'movie',
@@ -104,8 +104,6 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
-        # self.query = 'Not Implemented'
-        self.query = ''
         self.resultsThread = None
         self.updateResultsTimeout = 0
 
@@ -185,6 +183,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
             },
         )
 
+        self.edit = kodigui.SafeControlEdit(650, 651, self, key_callback=self.updateFromEdit)
         self.setProperty('search.section', 'all')
         self.updateQuery()
 
@@ -214,8 +213,10 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         if 2099 < controlID < 2200:
             self.setProperty('hub.focus', str(controlID - 2099))
 
+    def updateFromEdit(self):
+        self.updateQuery()
+
     def updateQuery(self):
-        self.setProperty('search.query', self.query)
         self.updateResults()
 
     def updateResults(self):
@@ -231,9 +232,10 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         self._reallyUpdateResults()
 
     def _reallyUpdateResults(self):
-        if self.query:
+        query = self.edit.getText()
+        if query:
             with self.propertyContext('searching'):
-                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(count=10, search_query=self.query)
+                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(count=10, search_query=query)
                 self.showHubs(hubs)
         else:
             self.clearHubs()
@@ -247,15 +249,15 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
 
     def letterClicked(self, controlID):
         letter = self.LETTERS[controlID - 1001]
-        self.query += letter
+        self.edit.append(letter)
         self.updateQuery()
 
     def deleteClicked(self):
-        self.query = self.query[:-1]
+        self.edit.delete()
         self.updateQuery()
 
     def clearClicked(self):
-        self.query = ''
+        self.edit.setText('')
         self.updateQuery()
 
     def hubItemClicked(self, hubControlID):

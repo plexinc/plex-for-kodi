@@ -234,7 +234,7 @@
                             <height>140</height>
                             <onright>902</onright>
                             <onup>999</onup>
-                            <ondown>1001</ondown>
+                            <ondown>650</ondown>
                             <font>font12</font>
                             <align>center</align>
                             <aligny>center</aligny>
@@ -259,7 +259,7 @@
                             <onleft>901</onleft>
                             <onright>903</onright>
                             <onup>999</onup>
-                            <ondown>1001</ondown>
+                            <ondown>650</ondown>
                             <font>font12</font>
                             <align>center</align>
                             <aligny>center</aligny>
@@ -283,7 +283,7 @@
                             <onleft>902</onleft>
                             <onright>904</onright>
                             <onup>999</onup>
-                            <ondown>1001</ondown>
+                            <ondown>650</ondown>
                             <font>font12</font>
                             <align>center</align>
                             <aligny>center</aligny>
@@ -307,7 +307,7 @@
                             <onleft>903</onleft>
                             <onright>905</onright>
                             <onup>999</onup>
-                            <ondown>1001</ondown>
+                            <ondown>650</ondown>
                             <font>font12</font>
                             <align>center</align>
                             <aligny>center</aligny>
@@ -331,7 +331,7 @@
                             <onleft>904</onleft>
                             <onright>3000</onright>
                             <onup>999</onup>
-                            <ondown>1001</ondown>
+                            <ondown>650</ondown>
                             <font>font12</font>
                             <align>center</align>
                             <aligny>center</aligny>
@@ -430,7 +430,27 @@
                     <height>60</height>
                     <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
                 </control>
-                <control type="label">
+                <control type="edit" id="650">
+                    <description>My First edit control</description>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>459</width>
+                    <height>60</height>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <onup>900</onup>
+                    <ondown>1001</ondown>
+                    <onright>3000</onright>
+                    <textcolor>00000000</textcolor>
+                    <label> </label>
+                    <hinttext> </hinttext>
+                    <font>font13</font>
+                    <textoffsetx>0</textoffsetx>
+                    <texturefocus border="10">script.plex/home/selected.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <pulseonselect>no</pulseonselect>
+                </control>
+                <control type="label" id="651">
                     <scroll>false</scroll>
                     <posx>30</posx>
                     <posy>0</posy>
@@ -439,9 +459,9 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>$INFO[Window.Property(search.query)][COLOR FFCC7B19]|[/COLOR]</label>
+                    <font>font13</font>
+                    <label> </label>
                 </control>
-
             </control>
 
             <!-- KEYBOARD -->
@@ -750,7 +770,7 @@
                             <posy>-40</posy>
                             <width>154</width>
                             <height>154</height>
-                            <onup>900</onup>
+                            <onup>650</onup>
                             <ondown>1007</ondown>
                             <onright>1002</onright>
                             <onleft>1006</onleft>
@@ -774,7 +794,7 @@
                             <posy>-40</posy>
                             <width>154</width>
                             <height>154</height>
-                            <onup>900</onup>
+                            <onup>650</onup>
                             <ondown>1008</ondown>
                             <onright>1003</onright>
                             <onleft>1001</onleft>
@@ -798,7 +818,7 @@
                             <posy>-40</posy>
                             <width>154</width>
                             <height>154</height>
-                            <onup>900</onup>
+                            <onup>650</onup>
                             <ondown>1009</ondown>
                             <onright>1004</onright>
                             <onleft>1002</onleft>
@@ -822,7 +842,7 @@
                             <posy>-40</posy>
                             <width>154</width>
                             <height>154</height>
-                            <onup>900</onup>
+                            <onup>650</onup>
                             <ondown>1010</ondown>
                             <onright>1005</onright>
                             <onleft>1003</onleft>
@@ -846,7 +866,7 @@
                             <posy>-40</posy>
                             <width>154</width>
                             <height>154</height>
-                            <onup>900</onup>
+                            <onup>650</onup>
                             <ondown>1011</ondown>
                             <onright>1006</onright>
                             <onleft>1004</onleft>
@@ -870,7 +890,7 @@
                             <posy>-40</posy>
                             <width>154</width>
                             <height>154</height>
-                            <onup>900</onup>
+                            <onup>650</onup>
                             <ondown>1012</ondown>
                             <onright>3000</onright>
                             <onleft>1005</onleft>

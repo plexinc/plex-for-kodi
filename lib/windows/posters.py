@@ -149,7 +149,6 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.sort = 'titleSort'
         self.sortDesc = False
         self.filterUnwatched = False
-        util.TEST(self.filter)
 
     def doClose(self):
         for task in self.tasks:

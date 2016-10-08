@@ -548,12 +548,13 @@ class SafeControlEdit(object):
     CHARS_NUMBERS = '0123456789'
     CURSOR = '[COLOR FFCC7B19]|[/COLOR]'
 
-    def __init__(self, control_id, label_id, window, key_callback=None):
+    def __init__(self, control_id, label_id, window, key_callback=None, grab_focus=False):
         self.controlID = control_id
         self.labelID = label_id
         self._win = window
-        self._text = ''
         self._keyCallback = key_callback
+        self.grabFocus = grab_focus
+        self._text = ''
         self.setup()
 
     def setup(self):
@@ -567,6 +568,10 @@ class SafeControlEdit(object):
         if controlID == self.controlID:
             if self.processAction(action.getId()):
                 return
+        elif self.grabFocus:
+            if self.processOffControlAction(action.getButtonCode()):
+                self._win.setFocusId(self.controlID)
+                return
 
         self._winOnAction(action)
 
@@ -578,6 +583,25 @@ class SafeControlEdit(object):
         elif 61744 <= action_id <= 61753:
             self.processChar(self.CHARS_NUMBERS[action_id - 61744])
         elif action_id == 61728:  # Space
+            self.processChar(' ')
+        elif action_id == 61448:
+            self.delete()
+        else:
+            return False
+
+        if self._keyCallback:
+            self._keyCallback()
+
+        return True
+
+    def processOffControlAction(self, action_id):
+        if 61505 <= action_id <= 61530:  # Lowercase
+            self.processChar(self.CHARS_LOWER[action_id - 61505])
+        elif 192577 <= action_id <= 192602:  # Uppercase
+            self.processChar(self.CHARS_UPPER[action_id - 192577])
+        elif 61488 <= action_id <= 61497:
+            self.processChar(self.CHARS_NUMBERS[action_id - 61488])
+        elif action_id == 61472:  # Space
             self.processChar(' ')
         elif action_id == 61448:
             self.delete()

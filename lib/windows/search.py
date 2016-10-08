@@ -183,7 +183,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
             },
         )
 
-        self.edit = kodigui.SafeControlEdit(650, 651, self, key_callback=self.updateFromEdit)
+        self.edit = kodigui.SafeControlEdit(650, 651, self, key_callback=self.updateFromEdit, grab_focus=True)
         self.setProperty('search.section', 'all')
         self.updateQuery()
 

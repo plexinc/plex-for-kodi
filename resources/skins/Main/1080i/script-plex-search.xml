@@ -1,6 +1,6 @@
 <window>
     <onload>SetProperty(dropdown,1)</onload>
-    <defaultcontrol>1001</defaultcontrol>
+    <defaultcontrol>650</defaultcontrol>
     <coordinates>
         <system>1</system>
         <posx>0</posx>

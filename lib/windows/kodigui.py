@@ -603,8 +603,8 @@ class SafeControlEdit(object):
             self.processChar(self.CHARS_NUMBERS[action_id - 61488])
         elif action_id == 61472:  # Space
             self.processChar(' ')
-        elif action_id == 61448:
-            self.delete()
+        # elif action_id == 61448:
+        #     self.delete()
         else:
             return False
 

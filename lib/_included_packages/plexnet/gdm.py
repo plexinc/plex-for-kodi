@@ -185,7 +185,7 @@ class GDMDiscovery(object):
         machineID = parseFieldValue(message, "Resource-Identifier: ")
         secureHost = parseFieldValue(message, "Host: ")
 
-        util.DEBUG_LOG("Received GDM response for " + str(name) + " at http://" + hostname + ":" + port)
+        util.DEBUG_LOG("Received GDM response for " + repr(name) + " at http://" + hostname + ":" + port)
 
         if not name or not machineID:
             return

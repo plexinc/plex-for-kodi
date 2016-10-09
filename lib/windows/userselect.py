@@ -51,6 +51,13 @@ class UserSelectWindow(kodigui.BaseWindow):
                         return
                     self.setFocusId(self.PIN_ENTRY_GROUP_ID)
                 self.pinEntryClicked(ID + 142)
+            elif 142 <= ID <= 149:  # JumpSMS action
+                if not xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
+                    item = self.userList.getSelectedItem()
+                    if not item.dataSource.protected:
+                        return
+                    self.setFocusId(self.PIN_ENTRY_GROUP_ID)
+                self.pinEntryClicked(ID + 60)
             elif ID in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_BACKSPACE):
                 if xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
                     self.pinEntryClicked(211)
@@ -66,7 +73,7 @@ class UserSelectWindow(kodigui.BaseWindow):
             if item.dataSource.isProtected:
                 self.setFocusId(self.PIN_ENTRY_GROUP_ID)
             else:
-                self.userSelected(item.dataSource)
+                self.userSelected(item)
         elif 200 < controlID < 212:
             self.pinEntryClicked(controlID)
 
@@ -126,12 +133,13 @@ class UserSelectWindow(kodigui.BaseWindow):
             item.setProperty('pin', ' '.join(list(u"\u2022" * len(pin))))
             item.setProperty('editing.pin', pin)
             if len(pin) > 3:
-                self.userSelected(item.dataSource, pin)
+                self.userSelected(item, pin)
         else:
             item.setProperty('pin', item.dataSource.title)
             item.setProperty('editing.pin', '')
 
-    def userSelected(self, user, pin=None):
+    def userSelected(self, item, pin=None):
+        user = item.dataSource
         # xbmc.sleep(500)
         util.DEBUG_LOG('Home user selected: {0}'.format(user))
 
@@ -141,6 +149,10 @@ class UserSelectWindow(kodigui.BaseWindow):
                 util.DEBUG_LOG('Waiting for user change...')
             else:
                 e.close()
+                item.setProperty('pin', item.dataSource.title)
+                item.setProperty('editing.pin', '')
+                util.messageDialog('Failed', 'Login failed!')
+                return
 
         self.selected = True
         self.doClose()

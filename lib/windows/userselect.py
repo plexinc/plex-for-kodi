@@ -44,6 +44,7 @@ class UserSelectWindow(kodigui.BaseWindow):
     def onAction(self, action):
         try:
             ID = action.getId()
+            util.TEST('ID: {0} BC: {1}'.format(ID, action.getButtonCode()))
             if 57 < ID < 68:
                 if not xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
                     item = self.userList.getSelectedItem()

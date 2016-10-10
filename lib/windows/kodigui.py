@@ -564,14 +564,17 @@ class SafeControlEdit(object):
         self.updateLabel()
 
     def onAction(self, action):
-        controlID = self._win.getFocusId()
-        if controlID == self.controlID:
-            if self.processAction(action.getId()):
-                return
-        elif self.grabFocus:
-            if self.processOffControlAction(action.getButtonCode()):
-                self._win.setFocusId(self.controlID)
-                return
+        try:
+            controlID = self._win.getFocusId()
+            if controlID == self.controlID:
+                if self.processAction(action.getId()):
+                    return
+            elif self.grabFocus:
+                if self.processOffControlAction(action.getButtonCode()):
+                    self._win.setFocusId(self.controlID)
+                    return
+        except:
+            traceback.print_exc()
 
         self._winOnAction(action)
 
@@ -601,6 +604,8 @@ class SafeControlEdit(object):
             self.processChar(self.CHARS_UPPER[action_id - 192577])
         elif 61488 <= action_id <= 61497:
             self.processChar(self.CHARS_NUMBERS[action_id - 61488])
+        elif 61552 <= action_id <= 61561:
+            self.processChar(self.CHARS_NUMBERS[action_id - 61552])
         elif action_id == 61472:  # Space
             self.processChar(' ')
         # elif action_id == 61448:

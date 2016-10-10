@@ -489,7 +489,11 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         if not self.selectedServer and self.searchContext:
             for server in self.getServers():
                 if server.pendingReachabilityRequests > 0 and server.uuid == self.searchContext.preferredServer:
-                    util.LOG('Still waiting on {0} responses from preferred server'.format(server.pendingReachabilityRequests))
+                    util.DEBUG_LOG(
+                        'Still waiting on {0} responses from preferred server: {1}'.format(
+                            server.pendingReachabilityRequests, self.searchContext.preferredServer
+                        )
+                    )
                     return
 
         self.deferReachabilityTimer.cancel()

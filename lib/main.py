@@ -39,6 +39,7 @@ def _main():
         while not xbmc.abortRequested:
             if plex.init():
                 background.setSplash(False)
+                tries = 0
                 while not xbmc.abortRequested:
                     if not plexapp.ACCOUNT.isAuthenticated and (len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected):
                         if not userselect.start():
@@ -53,6 +54,11 @@ def _main():
                                 done.wait()
                             finally:
                                 background.setBusy(False)
+
+                        tries += 1
+                        if not plexapp.SERVERMANAGER.selectedServer and tries <= 1:
+                            util.DEBUG_LOG('No servers found. Waiting for selected server one more time...')
+                            continue
 
                         util.DEBUG_LOG('STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
 

@@ -360,6 +360,10 @@ class ManagedControlList(object):
         self.control.addItems([i._takeListItem(self, self._nextID()) for i in managed_items])
 
     def replaceItems(self, managed_items):
+        if not self.items:
+            self.addItems(managed_items)
+            return
+
         oldSize = self.size()
 
         for i in self.items:

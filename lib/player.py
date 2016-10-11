@@ -141,6 +141,13 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.duration = duration
         self.dialog.setup(duration, offset, bif_url, title, title2)
 
+    @property
+    def trueTime(self):
+        if self.mode == self.MODE_RELATIVE:
+            return self.baseOffset + self.player.currentTime
+        else:
+            return self.player.currentTime
+
     def next(self):
         if not self.playlist or not self.playlist.next():
             return False

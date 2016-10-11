@@ -14,7 +14,7 @@ import plexnet
 from plexnet import plexapp
 
 import playlists
-import posters
+import library
 import busy
 import opener
 import search
@@ -620,10 +620,8 @@ class HomeWindow(kodigui.BaseWindow):
 
         section = item.dataSource
 
-        if section.type in ('show', 'movie'):
-            self.processCommand(opener.handleOpen(posters.PostersWindow, section=section))
-        elif section.type in ('artist', 'photo'):
-            self.processCommand(opener.handleOpen(posters.SquaresWindow, section=section))
+        if section.type in ('show', 'movie', 'artist', 'photo'):
+            self.processCommand(opener.sectionClicked(section))
         elif section.type in ('playlists',):
             self.processCommand(opener.handleOpen(playlists.PlaylistsWindow))
 

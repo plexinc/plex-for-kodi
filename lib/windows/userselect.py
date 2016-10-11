@@ -44,23 +44,24 @@ class UserSelectWindow(kodigui.BaseWindow):
     def onAction(self, action):
         try:
             ID = action.getId()
-            util.TEST('ID: {0} BC: {1}'.format(ID, action.getButtonCode()))
             if 57 < ID < 68:
-                if not xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.PIN_ENTRY_GROUP_ID)):
                     item = self.userList.getSelectedItem()
-                    if not item.dataSource.protected:
+                    if not item.dataSource.isProtected:
                         return
                     self.setFocusId(self.PIN_ENTRY_GROUP_ID)
                 self.pinEntryClicked(ID + 142)
+                return
             elif 142 <= ID <= 149:  # JumpSMS action
-                if not xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.PIN_ENTRY_GROUP_ID)):
                     item = self.userList.getSelectedItem()
-                    if not item.dataSource.protected:
+                    if not item.dataSource.isProtected:
                         return
                     self.setFocusId(self.PIN_ENTRY_GROUP_ID)
                 self.pinEntryClicked(ID + 60)
+                return
             elif ID in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_BACKSPACE):
-                if xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
+                if xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.PIN_ENTRY_GROUP_ID)):
                     self.pinEntryClicked(211)
                     return
         except:

@@ -230,7 +230,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackResumed(self):
         self.updateNowPlaying()
-        self.closeSeekDialog()
+        # self.closeSeekDialog()
 
     def onPlayBackStopped(self):
         self.updateNowPlaying()
@@ -863,5 +863,6 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             if ct > 9:
                 ct = 0
                 self.handler.tick()
+
 
 PLAYER = PlexPlayer().init()

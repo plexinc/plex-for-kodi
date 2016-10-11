@@ -38,7 +38,7 @@
                 <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>30</posx>
-                <posy>30</posy>
+                <posy>-25</posy>
                 <width>1000</width>
                 <height>145</height>
                 <onup>200</onup>
@@ -85,6 +85,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="304">
+                    <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -120,7 +121,7 @@
                     <itemlayout width="287" height="343">
                         <control type="group">
                             <posx>55</posx>
-                            <posy>211</posy>
+                            <posy>97</posy>
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
@@ -168,7 +169,7 @@
                     <focusedlayout width="287" height="343">
                         <control type="group">
                             <posx>55</posx>
-                            <posy>211</posy>
+                            <posy>97</posy>
                             <control type="group">
                                 <animation effect="zoom" start="100" end="110" time="100" center="127,127" reversible="false">Focus</animation>
                                 <animation effect="zoom" start="110" end="100" time="100" center="127,127" reversible="false">UnFocus</animation>

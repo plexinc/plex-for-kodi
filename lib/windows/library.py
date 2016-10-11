@@ -1,3 +1,4 @@
+import os
 import random
 import urllib
 
@@ -17,7 +18,7 @@ import dropdown
 import opener
 import windowutils
 
-from plexnet import playqueue, plexapp
+from plexnet import playqueue
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -29,13 +30,16 @@ MOVE_SET = frozenset(
         xbmcgui.ACTION_MOVE_DOWN,
         xbmcgui.ACTION_MOUSE_MOVE,
         xbmcgui.ACTION_PAGE_UP,
-        xbmcgui.ACTION_PAGE_DOWN
+        xbmcgui.ACTION_PAGE_DOWN,
+        xbmcgui.ACTION_FIRST_PAGE,
+        xbmcgui.ACTION_LAST_PAGE
     )
 )
 
 THUMB_POSTER_DIM = (268, 397)
 THUMB_AR16X9_DIM = (619, 348)
-THUMB_SQUARE_DIM = (268, 268)
+THUMB_SQUARE_DIM = (355, 355)
+ART_AR16X9_DIM = (630, 355)
 
 TYPE_KEYS = {
     'episode': {
@@ -48,11 +52,13 @@ TYPE_KEYS = {
     },
     'movie': {
         'fallback': 'movie',
-        'thumb_dim': THUMB_POSTER_DIM
+        'thumb_dim': THUMB_POSTER_DIM,
+        'art_dim': ART_AR16X9_DIM
     },
     'show': {
         'fallback': 'show',
-        'thumb_dim': THUMB_POSTER_DIM
+        'thumb_dim': THUMB_POSTER_DIM,
+        'art_dim': ART_AR16X9_DIM
     },
     'album': {
         'fallback': 'music',
@@ -111,64 +117,70 @@ class ChunkRequestTask(backgroundthread.Task):
             util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
 
 
-class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
-    xmlFile = 'script-plex-posters.xml'
+class PhotoPropertiesTask(backgroundthread.Task):
+    def setup(self, photo, callback):
+        self.photo = photo
+        self.callback = callback
+        return self
+
+    def run(self):
+        if self.isCanceled():
+            return
+
+        try:
+            self.photo.reload()
+            self.callback(self.photo)
+        except plexnet.exceptions.BadRequest:
+            util.DEBUG_LOG('404 on photo reload: {0}'.format(self.photo))
+
+
+class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
+    bgXML = 'script-plex-blank.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
     res = '1080i'
-    width = 1920
-    height = 1080
-
-    POSTERS_PANEL_ID = 101
-    KEY_LIST_ID = 151
-    SCROLLBAR_ID = 152
-
-    OPTIONS_GROUP_ID = 200
-
-    HOME_BUTTON_ID = 201
-    PLAYER_STATUS_BUTTON_ID = 204
-
-    SORT_BUTTON_ID = 210
-    FILTER1_BUTTON_ID = 211
-    FILTER2_BUTTON_ID = 212
-
-    PLAY_BUTTON_ID = 301
-    SHUFFLE_BUTTON_ID = 302
-    OPTIONS_BUTTON_ID = 303
-    VIEWTYPE_BUTTON_ID = 304
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.MultiWindow.__init__(self, *args, **kwargs)
+        windowutils.UtilMixin.__init__(self)
         self.section = kwargs.get('section')
         self.filter = kwargs.get('filter_')
         self.keyItems = {}
         self.firstOfKeyItems = {}
         self.tasks = []
         self.backgroundSet = False
-        self.exitCommand = None
         self.sort = 'titleSort'
         self.sortDesc = False
         self.filterUnwatched = False
+        self.showPanelControl = None
+        self.keyListControl = None
+        self.lastItem = None
 
     def doClose(self):
         for task in self.tasks:
             task.cancel()
-        kodigui.BaseWindow.doClose(self)
+        kodigui.MultiWindow.doClose(self)
 
     def onFirstInit(self):
-        self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
-        self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
-        self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
-        self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
-        self.setProperty('sort', self.sort)
-        self.setProperty('filter1.display', 'All')
-        self.setProperty('sort.display', 'By Name')
-        self.setProperty('media.type', TYPE_PLURAL.get(self.section.TYPE, self.section.TYPE))
-        self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
+        if self.showPanelControl:
+            self.showPanelControl.newControl()
+            self.keyListControl.newControl()
+            self.setFocusId(self.VIEWTYPE_BUTTON_ID)
+        else:
+            self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
+            self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
+            self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
+            self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
+            self.setProperty('sort', self.sort)
+            self.setProperty('filter1.display', 'All')
+            self.setProperty('sort.display', 'By Name')
+            self.setProperty('media.type', TYPE_PLURAL.get(self.section.TYPE, self.section.TYPE))
+            self.setProperty('media', self.section.TYPE)
+            self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
 
-        self.setTitle()
-        self.fill()
-        self.setFocusId(self.POSTERS_PANEL_ID)
+            self.setTitle()
+            self.fill()
+            self.setFocusId(self.POSTERS_PANEL_ID)
 
     def onAction(self, action):
         try:
@@ -190,7 +202,7 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.MultiWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
@@ -207,6 +219,8 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.shuffleButtonClicked()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.optionsButtonClicked()
+        elif controlID == self.VIEWTYPE_BUTTON_ID:
+            self.viewTypeButtonClicked()
         elif controlID == self.SORT_BUTTON_ID:
             self.sortButtonClicked()
         elif controlID == self.FILTER1_BUTTON_ID:
@@ -216,10 +230,23 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if controlID == self.KEY_LIST_ID:
             self.selectKey()
 
+    def onItemChanged(self, mli):
+        if not mli:
+            return
+
+        if not mli.dataSource.TYPE == 'photo':
+            return
+
+        self.showPhotoItemProperties(mli.dataSource)
+
     def updateKey(self):
         mli = self.showPanelControl.getSelectedItem()
         if not mli:
             return
+
+        if self.lastItem != mli:
+            self.lastItem = mli
+            self.onItemChanged(mli)
 
         self.setProperty('key', mli.getProperty('key'))
 
@@ -292,7 +319,7 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 options.append(dropdown.SEPARATOR)
             options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.section.getLibrarySectionTitle())})
 
-        choice = dropdown.showDropdown(options, (255, 260))
+        choice = dropdown.showDropdown(options, (255, 205))
         if not choice:
             return
 
@@ -367,6 +394,13 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.setProperty('sort.display', result['display'])
 
         self.sortShowPanel(choice)
+
+    def viewTypeButtonClicked(self):
+        win = self.nextWindow()
+        key = self.section.key
+        if not key.isdigit():
+            key = self.section.getLibrarySectionId()
+        util.setSetting('viewtype.{0}.{1}'.format(self.section.server.uuid, key), win.VIEWTYPE)
 
     def sortShowPanel(self, choice):
         if choice == 'addedAt':
@@ -528,14 +562,18 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if isinstance(photo, plexnet.photo.Photo) or photo.TYPE == 'clip':
             self.processCommand(opener.open(photo))
         else:
-            w = SquaresWindow.open(section=photo)
-            self.onChildWindowClosed(w)
+            self.processCommand(opener.sectionClicked(photo))
 
     def updateUnwatched(self, mli):
         mli.dataSource.reload()
-        mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
-        if not mli.dataSource.isWatched and self.section.TYPE == 'show':
-            mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+        if mli.dataSource.isWatched:
+            mli.setProperty('unwatched', '')
+            mli.setProperty('unwatched.count', '')
+        else:
+            if self.section.TYPE == 'show':
+                mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+            else:
+                mli.setProperty('unwatched', '1')
 
     def onChildWindowClosed(self, w):
         try:
@@ -645,6 +683,50 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.tasks = tasks
         backgroundthread.BGThreader.addTasksToFront(tasks)
 
+    def showPhotoItemProperties(self, photo):
+        if photo.isFullObject():
+            return
+
+        task = PhotoPropertiesTask().setup(photo, self._showPhotoItemProperties)
+        backgroundthread.BGThreader.addTasksToFront([task])
+
+    def _showPhotoItemProperties(self, photo):
+        mli = self.showPanelControl.getSelectedItem()
+        if not mli or not mli.dataSource.TYPE == 'photo':
+            for mli in self.showPanelControl:
+                if mli.dataSource == photo:
+                    break
+            else:
+                return
+
+        mli.setProperty('camera.model', photo.media[0].model)
+        mli.setProperty('camera.lens', photo.media[0].lens)
+
+        attrib = []
+        if photo.media[0].height:
+            attrib.append(u'{0} x {1}'.format(photo.media[0].width, photo.media[0].height))
+
+        orientation = photo.media[0].parts[0].orientation
+        if orientation:
+            attrib.append(u'{0} Mo'.format(orientation))
+
+        container = photo.media[0].container_ or os.path.splitext(photo.media[0].parts[0].file)[-1][1:].lower()
+        if container == 'jpg':
+            container = 'jpeg'
+        attrib.append(container.upper())
+        if attrib:
+            mli.setProperty('photo.dims', u' \u2022 '.join(attrib))
+
+        settings = []
+        if photo.media[0].iso:
+            settings.append('ISO {0}'.format(photo.media[0].iso))
+        if photo.media[0].aperture:
+            settings.append('{0}'.format(photo.media[0].aperture))
+        if photo.media[0].exposure:
+            settings.append('{0}'.format(photo.media[0].exposure))
+        mli.setProperty('camera.settings', u' \u2022 '.join(settings))
+        mli.setProperty('photo.summary', photo.get('summary'))
+
     @busy.dialog()
     def fillPhotos(self):
         items = []
@@ -669,11 +751,13 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             title = photo.title
             if photo.TYPE == 'photodirectory':
                 thumb = photo.composite.asTranscodedImageURL(*thumbDim)
+                mli = kodigui.ManagedListItem(title, thumbnailImage=thumb, data_source=photo)
+                mli.setProperty('is.folder', '1')
             else:
                 thumb = photo.defaultThumb.asTranscodedImageURL(*thumbDim)
-            mli = kodigui.ManagedListItem(title, thumbnailImage=thumb, data_source=photo)
-            if photo.TYPE == 'photodirectory':
-                mli.setProperty('is.folder', '1')
+                label2 = util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y'))
+                mli = kodigui.ManagedListItem(title, label2, thumbnailImage=thumb, data_source=photo)
+
             mli.setProperty('thumb.fallback', fallback)
             mli.setProperty('index', str(idx))
 
@@ -709,6 +793,8 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         pos = start
         self.setBackground(items)
         thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
+        artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))
+
         showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
 
         for obj in items:
@@ -716,13 +802,73 @@ class PostersWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             mli.setLabel(obj.defaultTitle or '')
             mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
             mli.dataSource = obj
+            mli.setProperty('summary', obj.get('summary'))
+
             if showUnwatched:
-                if not mli.dataSource.isWatched:
-                    mli.setProperty('unwatched', '1')
+                duration = obj.duration.asInt()
+                if duration < 1000:
+                    duration *= 60000
+                mli.setLabel2(util.durationToText(duration))
+                mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
+                if not obj.isWatched:
                     if self.section.TYPE == 'show':
                         mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+                    else:
+                        mli.setProperty('unwatched', '1')
+
             pos += 1
+
+
+class PostersWindow(kodigui.BaseWindow):
+    xmlFile = 'script-plex-posters.xml'
+    path = util.ADDON.getAddonInfo('path')
+    theme = 'Main'
+    res = '1080i'
+    width = 1920
+    height = 1080
+
+    POSTERS_PANEL_ID = 101
+    KEY_LIST_ID = 151
+    SCROLLBAR_ID = 152
+
+    OPTIONS_GROUP_ID = 200
+
+    HOME_BUTTON_ID = 201
+    PLAYER_STATUS_BUTTON_ID = 204
+
+    SORT_BUTTON_ID = 210
+    FILTER1_BUTTON_ID = 211
+    FILTER2_BUTTON_ID = 212
+
+    PLAY_BUTTON_ID = 301
+    SHUFFLE_BUTTON_ID = 302
+    OPTIONS_BUTTON_ID = 303
+    VIEWTYPE_BUTTON_ID = 304
+
+    VIEWTYPE = 'panel'
+
+
+class ListView16x9Window(PostersWindow):
+    xmlFile = 'script-plex-listview-16x9.xml'
+    VIEWTYPE = 'list'
 
 
 class SquaresWindow(PostersWindow):
     xmlFile = 'script-plex-squares.xml'
+    VIEWTYPE = 'panel'
+
+
+class ListViewSquareWindow(PostersWindow):
+    xmlFile = 'script-plex-listview-square.xml'
+    VIEWTYPE = 'list'
+
+
+VIEWS_POSTER = {
+    'panel': PostersWindow,
+    'list': ListView16x9Window
+}
+
+VIEWS_SQUARE = {
+    'panel': SquaresWindow,
+    'list': ListViewSquareWindow
+}

@@ -22,20 +22,107 @@
                 <width>1920</width>
                 <height>1080</height>
                 <fadetime>1000</fadetime>
-                <texture  background="true">$INFO[Window.Property(background)]</texture>
+                <texture background="true">$INFO[Window.Property(background)]</texture>
+            </control>
+        </control>
+
+        <control type="group">
+            <posx>60</posx>
+            <posy>248</posy>
+            <control type="group">
+                <visible>StringCompare(Window.Property(media),photo) | StringCompare(Window.Property(media),photodirectory)</visible>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>630</width>
+                    <height>355</height>
+                    <texture colordiffuse="A0000000">script.plex/white-square.png</texture>
+                </control>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>630</width>
+                    <height>355</height>
+                    <fadetime>500</fadetime>
+                    <texture background="true" fallback="script.plex/thumb_fallbacks/photo.png">$INFO[Container(101).ListItem.Thumb]</texture>
+                    <aspectratio>keep</aspectratio>
+                </control>
+            </control>
+            <control type="image">
+                <visible>StringCompare(Window.Property(media),artist)</visible>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>355</width>
+                <height>355</height>
+                <fadetime>500</fadetime>
+                <texture background="true" fallback="script.plex/thumb_fallbacks/music.png">$INFO[Container(101).ListItem.Thumb]</texture>
+                <aspectratio>scale</aspectratio>
+            </control>
+            <control type="group">
+                <visible>!IsEmpty(Container(101).ListItem.Label2)</visible>
+                <control type="label">
+                    <posx>0</posx>
+                    <posy>355</posy>
+                    <width>310</width>
+                    <height>80</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[B]$INFO[Container(101).ListItem.Label][/B]</label>
+                </control>
+                <control type="label">
+                    <posx>630</posx>
+                    <posy>355</posy>
+                    <width>310</width>
+                    <height>80</height>
+                    <font>font12</font>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[B]$INFO[Container(101).ListItem.Label2][/B]</label>
+                </control>
+            </control>
+            <control type="group">
+                <visible>IsEmpty(Container(101).ListItem.Label2)</visible>
+                <control type="label">
+                    <posx>0</posx>
+                    <posy>355</posy>
+                    <width>630</width>
+                    <height>80</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[B]$INFO[Container(101).ListItem.Label][/B]</label>
+                </control>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>435</posy>
+                <width>630</width>
+                <height>2</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>40000000</colordiffuse>
+            </control>
+            <control type="textbox">
+                <posx>0</posx>
+                <posy>463</posy>
+                <width>630</width>
+                <height>307</height>
+                <font>font12</font>
+                <align>left</align>
+                <textcolor>FFDDDDDD</textcolor>
+                <label>$INFO[Container(101).ListItem.Property(camera.model),,[CR]]$INFO[Container(101).ListItem.Property(camera.lens),,[CR]]$INFO[Container(101).ListItem.Property(photo.dims),,[CR]]$INFO[Container(101).ListItem.Property(camera.settings),,[CR]]$INFO[Container(101).ListItem.Property(photo.summary),[CR],[CR]]$INFO[Container(101).ListItem.Property(summary)]</label>
             </control>
         </control>
 
         <control type="group" id="50">
-            <animation effect="slide" time="200" end="0,-135" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5)">Conditional</animation>
-            <animation effect="slide" time="200" end="0,-200" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IntegerGreaterThan(Container(101).Position,5)">Conditional</animation>
             <posx>0</posx>
             <posy>135</posy>
             <defaultcontrol>101</defaultcontrol>
 
             <control type="grouplist" id="300">
-                <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
-                <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>30</posx>
                 <posy>-25</posy>
@@ -43,6 +130,7 @@
                 <height>145</height>
                 <onup>200</onup>
                 <ondown>101</ondown>
+                <onright>101</onright>
                 <itemgap>-20</itemgap>
                 <orientation>horizontal</orientation>
                 <scrolltime tween="quadratic" easing="out">200</scrolltime>
@@ -85,6 +173,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="304">
+                    <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -101,249 +190,302 @@
             <control type="group" id="100">
                 <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
-                <posx>0</posx>
+                <posx>750</posx>
                 <posy>0</posy>
-                <width>1920</width>
+                <width>1170</width>
                 <height>1080</height>
-                <control type="panel" id="101">
+                <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
-                    <width>1800</width>
-                    <height>1280</height>
-                    <onup>300</onup>
+                    <width>1170</width>
+                    <height>1080</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>20000000</colordiffuse>
+                </control>
+                <control type="list" id="101">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1170</width>
+                    <height>945</height>
+                    <onup>600</onup>
                     <onright>151</onright>
+                    <onleft>304</onleft>
                     <scrolltime>200</scrolltime>
                     <orientation>vertical</orientation>
-                    <preloaditems>2</preloaditems>
+                    <preloaditems>4</preloaditems>
                     <pagecontrol>152</pagecontrol>
                     <!-- ITEM LAYOUT ########################################## -->
-                    <itemlayout width="287" height="460">
+                    <itemlayout height="76">
                         <control type="group">
-                            <posx>55</posx>
-                            <posy>97</posy>
+                            <posx>120</posx>
+                            <posy>24</posy>
                             <control type="group">
-                                <posx>5</posx>
-                                <posy>5</posy>
                                 <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>244</width>
-                                    <height>361</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
-                                </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>244</width>
-                                    <height>361</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
-                                    <aspectratio>scale</aspectratio>
-                                </control>
-                                <control type="group">
-                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
-                                    <posx>0</posx>
-                                    <posy>351</posy>
-                                    <control type="image">
-                                        <posx>0</posx>
-                                        <posy>0</posy>
-                                        <width>244</width>
-                                        <height>10</height>
-                                        <texture>script.plex/white-square.png</texture>
-                                        <colordiffuse>C0000000</colordiffuse>
-                                    </control>
-                                    <control type="image">
-                                        <posx>0</posx>
-                                        <posy>1</posy>
-                                        <width>244</width>
-                                        <height>8</height>
-                                        <texture>$INFO[ListItem.Property(progress)]</texture>
-                                        <colordiffuse>FFCC7B19</colordiffuse>
-                                    </control>
-                                </control>
-                                <control type="group">
-                                    <control type="image">
                                     <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
-                                        <posx>199</posx>
+                                    <posx>880</posx>
+                                    <posy>-3</posy>
+                                    <width>35</width>
+                                    <height>35</height>
+                                    <texture>script.plex/indicators/unwatched.png</texture>
+                                </control>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                    <posx>861</posx>
+                                    <posy>14</posy>
+                                    <control type="image">
+                                        <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>45</width>
-                                        <height>45</height>
+                                        <width>54</width>
+                                        <height>42</height>
+                                        <texture colordiffuse="FFCC7B19">script.plex/white-square-rounded.png</texture>
+                                    </control>
+                                    <control type="label">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>54</width>
+                                        <height>42</height>
+                                        <font>font10</font>
+                                        <align>center</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>FF000000</textcolor>
+                                        <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                    </control>
+                                </control>
+                                <control type="group">
+                                    <posx>0</posx>
+                                    <posy>0</posy>
+                                    <control type="label">
+                                        <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>915</width>
+                                        <height>72</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>[B]$INFO[ListItem.Label][/B]</label>
+                                    </control>
+                                    <control type="label">
+                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>915</width>
+                                        <height>72</height>
+                                        <font>font10</font>
+                                        <align>left</align>
+                                        <aligny>center</aligny>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>[B]$INFO[ListItem.Label][COLOR FFE5A00D]/[/COLOR][/B]</label>
+                                    </control>
+                                </control>
+                            </control>
+                            <control type="image">
+                                <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                <posx>0</posx>
+                                <posy>72</posy>
+                                <width>915</width>
+                                <height>2</height>
+                                <texture>script.plex/white-square.png</texture>
+                                <colordiffuse>40000000</colordiffuse>
+                            </control>
+                        </control>
+                    </itemlayout>
+
+                    <!-- FOCUSED LAYOUT ####################################### -->
+                    <focusedlayout height="76">
+                        <control type="group">
+                            <control type="group">
+                                <visible>!Control.HasFocus(101)</visible>
+                                <posx>120</posx>
+                                <posy>24</posy>
+                                <control type="group">
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <posx>880</posx>
+                                        <posy>-2</posy>
+                                        <width>35</width>
+                                        <height>35</height>
                                         <texture>script.plex/indicators/unwatched.png</texture>
                                     </control>
                                     <control type="group">
                                         <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <posx>861</posx>
+                                        <posy>14</posy>
                                         <control type="image">
-                                            <posx>193</posx>
+                                            <posx>0</posx>
                                             <posy>0</posy>
-                                            <width>51</width>
-                                            <height>39</height>
-                                            <texture>script.plex/white-square.png</texture>
-                                            <colordiffuse>FF000000</colordiffuse>
-                                        </control>
-                                        <control type="image">
-                                            <posx>194</posx>
-                                            <posy>0</posy>
-                                            <width>50</width>
-                                            <height>38</height>
-                                            <texture>script.plex/white-square.png</texture>
-                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                            <width>54</width>
+                                            <height>42</height>
+                                            <texture colordiffuse="FFCC7B19">script.plex/white-square-rounded.png</texture>
                                         </control>
                                         <control type="label">
-                                            <posx>194</posx>
+                                            <posx>0</posx>
                                             <posy>0</posy>
-                                            <width>50</width>
-                                            <height>38</height>
-                                            <font>font12</font>
+                                            <width>54</width>
+                                            <height>42</height>
+                                            <font>font10</font>
                                             <align>center</align>
                                             <aligny>center</aligny>
                                             <textcolor>FF000000</textcolor>
                                             <label>$INFO[ListItem.Property(unwatched.count)]</label>
                                         </control>
                                     </control>
-                                </control>
-                                <control type="label">
-                                    <scroll>false</scroll>
-                                    <posx>0</posx>
-                                    <posy>371</posy>
-                                    <width>244</width>
-                                    <height>30</height>
-                                    <font>font10</font>
-                                    <align>center</align>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>$INFO[ListItem.Label]</label>
-                                </control>
-                            </control>
-                        </control>
-                    </itemlayout>
-
-                    <!-- FOCUSED LAYOUT ####################################### -->
-                    <focusedlayout width="287" height="460">
-                        <control type="group">
-                            <posx>55</posx>
-                            <posy>97</posy>
-                            <control type="group">
-                                <animation effect="zoom" start="100" end="110" time="100" center="127,185" reversible="false">Focus</animation>
-                                <animation effect="zoom" start="110" end="100" time="100" center="127,185" reversible="false">UnFocus</animation>
-                                <posx>0</posx>
-                                <posy>0</posy>
-                                <control type="image">
-                                    <visible>Control.HasFocus(101)</visible>
-                                    <posx>-40</posx>
-                                    <posy>-40</posy>
-                                    <width>334</width>
-                                    <height>451</height>
-                                    <texture border="42">script.plex/drop-shadow.png</texture>
-                                </control>
-                                <control type="group">
-                                    <posx>5</posx>
-                                    <posy>5</posy>
-                                    <control type="image">
+                                    <control type="group">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>244</width>
-                                        <height>361</height>
-                                        <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
-                                    </control>
-                                    <control type="image">
-                                        <posx>0</posx>
-                                        <posy>0</posy>
-                                        <width>244</width>
-                                        <height>361</height>
-                                        <texture background="true">$INFO[ListItem.Thumb]</texture>
-                                        <aspectratio>scale</aspectratio>
-                                    </control>
-                                    <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
-                                        <posx>0</posx>
-                                        <posy>351</posy>
-                                        <control type="image">
-                                            <posx>0</posx>
-                                            <posy>0</posy>
-                                            <width>244</width>
-                                            <height>10</height>
-                                            <texture>script.plex/white-square.png</texture>
-                                            <colordiffuse>C0000000</colordiffuse>
-                                        </control>
-                                        <control type="image">
-                                            <posx>0</posx>
-                                            <posy>1</posy>
-                                            <width>244</width>
-                                            <height>8</height>
-                                            <texture>$INFO[ListItem.Property(progress)]</texture>
-                                            <colordiffuse>FFCC7B19</colordiffuse>
-                                        </control>
-                                    </control>
-                                    <control type="group">
-                                        <control type="image">
-                                            <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
-                                            <posx>199</posx>
-                                            <posy>0</posy>
-                                            <width>45</width>
-                                            <height>45</height>
-                                            <texture>script.plex/indicators/unwatched.png</texture>
-                                        </control>
                                         <control type="group">
-                                            <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
-                                            <control type="image">
-                                                <posx>193</posx>
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <control type="label">
+                                                <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                                <posx>0</posx>
                                                 <posy>0</posy>
-                                                <width>51</width>
-                                                <height>39</height>
-                                                <texture>script.plex/white-square.png</texture>
-                                                <colordiffuse>FF000000</colordiffuse>
-                                            </control>
-                                            <control type="image">
-                                                <posx>194</posx>
-                                                <posy>0</posy>
-                                                <width>50</width>
-                                                <height>38</height>
-                                                <texture>script.plex/white-square.png</texture>
-                                                <colordiffuse>FFCC7B19</colordiffuse>
+                                                <width>915</width>
+                                                <height>72</height>
+                                                <font>font10</font>
+                                                <align>left</align>
+                                                <aligny>center</aligny>
+                                                <textcolor>FFFFFFFF</textcolor>
+                                                <label>[B]$INFO[ListItem.Label][/B]</label>
                                             </control>
                                             <control type="label">
-                                                <posx>194</posx>
+                                                <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                                <posx>0</posx>
                                                 <posy>0</posy>
-                                                <width>50</width>
-                                                <height>38</height>
-                                                <font>font12</font>
-                                                <align>center</align>
+                                                <width>915</width>
+                                                <height>72</height>
+                                                <font>font10</font>
+                                                <align>left</align>
                                                 <aligny>center</aligny>
-                                                <textcolor>FF000000</textcolor>
-                                                <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                                <textcolor>FFFFFFFF</textcolor>
+                                                <label>[B]$INFO[ListItem.Label][COLOR FFE5A00D]/[/COLOR][/B]</label>
                                             </control>
                                         </control>
                                     </control>
-                                    <control type="label">
-                                        <scroll>false</scroll>
-                                        <posx>0</posx>
-                                        <posy>371</posy>
-                                        <width>244</width>
-                                        <height>30</height>
-                                        <font>font10</font>
-                                        <align>center</align>
-                                        <textcolor>FFFFFFFF</textcolor>
-                                        <label>$INFO[ListItem.Label]</label>
-                                    </control>
                                 </control>
                                 <control type="image">
-                                    <visible>Control.HasFocus(101)</visible>
+                                    <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                    <posx>0</posx>
+                                    <posy>72</posy>
+                                    <width>915</width>
+                                    <height>2</height>
+                                    <texture>script.plex/white-square.png</texture>
+                                    <colordiffuse>40000000</colordiffuse>
+                                </control>
+                            </control>
+
+                            <control type="group">
+                                <visible>Control.HasFocus(101)</visible>
+                                <posx>63</posx>
+                                <posy>21</posy>
+                                <control type="image">
+                                    <posx>-40</posx>
+                                    <posy>-40</posy>
+                                    <width>1085</width>
+                                    <height>156</height>
+                                    <texture border="40">script.plex/square-rounded-shadow.png</texture>
+                                </control>
+                                <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
-                                    <width>254</width>
-                                    <height>371</height>
-                                    <texture border="10">script.plex/home/selected.png</texture>
+                                    <width>1005</width>
+                                    <height>76</height>
+                                    <texture border="12">script.plex/white-square-rounded.png</texture>
+                                    <colordiffuse>FFE5A00D</colordiffuse>
+                                </control>
+
+                                <control type="group">
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <posx>957</posx>
+                                        <posy>0</posy>
+                                        <width>48</width>
+                                        <height>48</height>
+                                        <texture>script.plex/indicators/unwatched-rounded.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <posx>933</posx>
+                                        <posy>15</posy>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>57</width>
+                                            <height>46</height>
+                                            <texture colordiffuse="FFCC7B19">script.plex/white-square-rounded.png</texture>
+                                        </control>
+                                        <control type="label">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>57</width>
+                                            <height>46</height>
+                                            <font>font10</font>
+                                            <align>center</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FF000000</textcolor>
+                                            <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                        </control>
+                                    </control>
+                                    <control type="group">
+                                        <posx>60</posx>
+                                        <posy>0</posy>
+                                        <control type="label">
+                                            <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                            <posx>0</posx>
+                                            <posy>23</posy>
+                                            <width>885</width>
+                                            <height>30</height>
+                                            <font>font12</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>DF000000</textcolor>
+                                            <label>[B]$INFO[ListItem.Label][/B]</label>
+                                        </control>
+                                        <control type="label">
+                                            <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                            <posx>0</posx>
+                                            <posy>23</posy>
+                                            <width>885</width>
+                                            <height>30</height>
+                                            <font>font10</font>
+                                            <align>left</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FF000000</textcolor>
+                                            <label>[B]$INFO[ListItem.Label]/[/B]</label>
+                                        </control>
+                                    </control>
                                 </control>
                             </control>
                         </control>
                     </focusedlayout>
                 </control>
-            </control>
 
+                <control type="scrollbar" id="152">
+                    <left>1128</left>
+                    <top>33</top>
+                    <width>10</width>
+                    <height>879</height>
+                    <onleft>101</onleft>
+                    <visible>true</visible>
+                    <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
+                    <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
+                    <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
+                    <textureslidernib>-</textureslidernib>
+                    <textureslidernibfocus>-</textureslidernibfocus>
+                    <pulseonselect>false</pulseonselect>
+                    <orientation>vertical</orientation>
+                    <showonepage>false</showonepage>
+                    <onleft>151</onleft>
+                </control>
+            </control>
         </control>
 
         <control type="group" id="150">
             <visible>StringCompare(Window.Property(sort),titleSort) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
-            <posx>1780</posx>
+            <posx>1830</posx>
             <posy>150</posy>
             <width>20</width>
             <height>920</height>
@@ -465,33 +607,13 @@
             </control>
         </control>
 
-        <control type="scrollbar" id="152">
-            <left>1860</left>
-            <top>150</top>
-            <width>12</width>
-            <height>910</height>
-            <visible>true</visible>
-            <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
-            <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
-            <texturesliderbarfocus colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texturesliderbarfocus>
-            <textureslidernib>-</textureslidernib>
-            <textureslidernibfocus>-</textureslidernibfocus>
-            <pulseonselect>false</pulseonselect>
-            <orientation>vertical</orientation>
-            <showonepage>false</showonepage>
-            <onleft>151</onleft>
-        </control>
-
-
         <control type="group" id="200">
-            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>
             <height>135</height>
             <control type="image">
-                <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
                 <visible>ControlGroup(200).HasFocus(0) + IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -651,7 +773,8 @@
                     <info>Player.Progress</info>
                 </control>
             </control>
-            <control type="grouplist">
+            <control type="grouplist" id="600">
+                <defaultcontrol>311</defaultcontrol>
                 <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
                 <right>340</right>
                 <posy>35</posy>

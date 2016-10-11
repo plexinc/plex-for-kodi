@@ -195,12 +195,6 @@ class ManagedListItem(object):
             for k, v in properties.items():
                 self.setProperty(k, v)
 
-    @classmethod
-    def _addProperty(cls, prop):
-        if not cls._properties:
-            cls._properties = {}
-        cls._properties[prop] = 1
-
     def __nonzero__(self):
         return self._valid
 
@@ -218,6 +212,7 @@ class ManagedListItem(object):
         self._listItem.setProperty('__ID__', lid)
         li = self._listItem
         self._listItem = None
+        self._manager._properties.update(self.properties)
         return li
 
     def _updateListItem(self):
@@ -227,7 +222,7 @@ class ManagedListItem(object):
         self.listItem.setIconImage(self.iconImage)
         self.listItem.setThumbnailImage(self.thumbnailImage)
         self.listItem.setPath(self.path)
-        for k in self.__class__._properties.keys():
+        for k in self._manager._properties.keys():
             self.listItem.setProperty(k, self.properties.get(k) or '')
 
     def pos(self):
@@ -291,7 +286,8 @@ class ManagedListItem(object):
         return self.listItem.setPath(path)
 
     def setProperty(self, key, value):
-        self.__class__._addProperty(key)
+        if self._manager:
+            self._manager._properties[key] = 1
         self.properties[key] = value
         return self.listItem.setProperty(key, value)
 
@@ -312,6 +308,7 @@ class ManagedControlList(object):
         self._sortKey = None
         self._idCounter = 0
         self._maxViewIndex = max_view_index
+        self._properties = {}
 
     def __getattr__(self, name):
         return getattr(self.control, name)
@@ -329,7 +326,11 @@ class ManagedControlList(object):
     def __len__(self):
         return self.size()
 
-    def _updateItems(self, bottom, top):
+    def _updateItems(self, bottom=None, top=None):
+        if bottom is None:
+            bottom = 0
+            top = self.size()
+
         for idx in range(bottom, top):
             li = self.control.getListItem(idx)
             mli = self.items[idx]
@@ -540,6 +541,107 @@ class ManagedControlList(object):
 
     def bottomHasFocus(self):
         return self.getSelectedPosition() == self.size() - 1
+
+    def newControl(self, window=None, control_id=None):
+        self.controlID = control_id or self.controlID
+        self.window = window or self.window
+        self.control = self.window.getControl(self.controlID)
+        self.control.addItems([xbmcgui.ListItem() for i in range(self.size())])
+        self._updateItems()
+
+
+class _MWBackground(xbmcgui.WindowXML):
+    def __init__(self, *args, **kwargs):
+        self._multiWindow = kwargs.get('multi_window')
+        self.started = False
+        xbmcgui.WindowXML.__init__(self, *args, **kwargs)
+
+    def onInit(self):
+        if self.started:
+            return
+        self.started = True
+        self._multiWindow._open()
+        self.close()
+
+
+class MultiWindow(object):
+    def __init__(self, windows=None, default_window=None, **kwargs):
+        self._windows = windows
+        self._next = default_window or self._windows[0]
+        self._properties = {}
+        self._current = None
+        self._currentOnInit = None
+        self._allClosed = False
+        self.exitCommand = None
+
+    def __getattr__(self, name):
+        return getattr(self._current, name)
+
+    def nextWindow(self, window=None):
+        if not window:
+            idx = self._windows.index(self._current.__class__)
+            idx += 1
+            if idx >= len(self._windows):
+                idx = 0
+            window = self._windows[idx]
+
+        self._next = window
+        self._current.doClose()
+        return self._next
+
+    def _setupCurrent(self, cls):
+        self._current = cls(cls.xmlFile, cls.path, cls.theme, cls.res)
+        self._current.onFirstInit = self._onFirstInit
+        self._current.onReInit = self.onReInit
+        self._current.onClick = self.onClick
+        self._current.onFocus = self.onFocus
+
+        self._currentOnAction = self._current.onAction
+        self._current.onAction = self.onAction
+
+    @classmethod
+    def open(cls, **kwargs):
+        mw = cls(**kwargs)
+        b = _MWBackground(mw.bgXML, mw.path, mw.theme, mw.res, multi_window=mw)
+        b.doModal()
+        return mw
+
+    def _open(self):
+        while not xbmc.abortRequested and not self._allClosed:
+            self._setupCurrent(self._next)
+            self._current.doModal()
+
+        self._current.doClose()
+
+    def setProperty(self, key, value):
+        self._properties[key] = value
+        self._current.setProperty(key, value)
+
+    def _onFirstInit(self):
+        for k, v in self._properties.items():
+            self._current.setProperty(k, v)
+        self.onFirstInit()
+
+    def doClose(self):
+        self._allClosed = True
+        self._current.doClose()
+
+    def onFirstInit(self):
+        pass
+
+    def onReInit(self):
+        pass
+
+    def onAction(self, action):
+        if action == xbmcgui.ACTION_PREVIOUS_MENU or action == xbmcgui.ACTION_NAV_BACK:
+            self.doClose()
+        self._currentOnAction(action)
+
+    def onClick(self, controlID):
+        pass
+
+    def onFocus(self, controlID):
+        pass
 
 
 class SafeControlEdit(object):

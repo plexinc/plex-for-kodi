@@ -105,8 +105,8 @@ def trackClicked(track):
 
 
 def photoDirectoryClicked(photodirectory):
-    import posters
-    return handleOpen(posters.SquaresWindow, section=photodirectory)
+    import library
+    return handleOpen(library.SquaresWindow, section=photodirectory)
 
 
 def playlistClicked(pl):
@@ -114,22 +114,37 @@ def playlistClicked(pl):
     return handleOpen(playlist.PlaylistWindow, playlist=pl)
 
 
+def sectionClicked(section, filter_=None):
+    import library
+    key = section.key
+    if not key.isdigit():
+        key = section.getLibrarySectionId()
+    viewtype = util.getSetting('viewtype.{0}.{1}'.format(section.server.uuid, key))
+    if section.TYPE in ('artist', 'photo', 'photodirectory'):
+        default = library.VIEWS_SQUARE.get(viewtype)
+        return handleOpen(
+            library.LibraryWindow, windows=(library.SquaresWindow, library.ListViewSquareWindow), default_window=default, section=section, filter_=filter_
+        )
+    else:
+        default = library.VIEWS_POSTER.get(viewtype)
+        return handleOpen(
+            library.LibraryWindow, windows=(library.PostersWindow, library.ListView16x9Window), default_window=default, section=section, filter_=filter_
+        )
+
+
 def genreClicked(genre):
-    import posters
     section = plexlibrary.LibrarySection.fromFilter(genre)
     filter_ = {'type': genre.FILTER, 'display': 'Genre', 'sub': {'val': genre.id, 'display': genre.tag}}
-    return handleOpen(section.TYPE in ('artist', 'photo') and posters.SquaresWindow or posters.PostersWindow, section=section, filter_=filter_)
+    return sectionClicked(section, filter_)
 
 
 def directorClicked(director):
-    import posters
     section = plexlibrary.LibrarySection.fromFilter(director)
     filter_ = {'type': director.FILTER, 'display': 'Director', 'sub': {'val': director.id, 'display': director.tag}}
-    return handleOpen(section.TYPE in ('artist', 'photo') and posters.SquaresWindow or posters.PostersWindow, section=section, filter_=filter_)
+    return sectionClicked(section, filter_)
 
 
 def actorClicked(actor):
-    import posters
     section = plexlibrary.LibrarySection.fromFilter(actor)
     filter_ = {'type': actor.FILTER, 'display': 'Actor', 'sub': {'val': actor.id, 'display': actor.tag}}
-    return handleOpen(section.TYPE in ('artist', 'photo') and posters.SquaresWindow or posters.PostersWindow, section=section, filter_=filter_)
+    return sectionClicked(section, filter_)

@@ -160,6 +160,7 @@ def durationToText(seconds):
         return hours.rstrip()
     secs = int(left % 60000)
     if secs:
+        secs /= 1000
         return '{0} sec{1}'.format(secs, secs > 1 and 's' or '')
     return '0 seconds'
 
@@ -186,6 +187,7 @@ def durationToShortText(seconds):
         return hours.rstrip()
     secs = int(left % 60000)
     if secs:
+        secs /= 1000
         return '{0} s'.format(secs)
     return '0 s'
 

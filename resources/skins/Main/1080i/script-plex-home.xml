@@ -446,6 +446,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(400)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>622</width>
@@ -652,6 +653,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(401)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -857,6 +859,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(402)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -1062,6 +1065,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(403)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -1267,6 +1271,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(404)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -1678,6 +1683,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(406)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>622</width>
@@ -1884,6 +1890,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(407)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -2089,6 +2096,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(408)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -3729,6 +3737,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(413)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -3934,6 +3943,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(414)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -4139,6 +4149,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(415)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -4344,6 +4355,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(416)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>334</width>
@@ -4550,6 +4562,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(417)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>622</width>
@@ -4757,6 +4770,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(418)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>622</width>
@@ -4964,6 +4978,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(419)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>622</width>
@@ -5171,6 +5186,7 @@
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
+                                    <visible>Control.HasFocus(423)</visible>
                                     <posx>-40</posx>
                                     <posy>-40</posy>
                                     <width>622</width>

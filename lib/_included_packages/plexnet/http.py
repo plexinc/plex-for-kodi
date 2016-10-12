@@ -78,6 +78,8 @@ class HttpRequest(object):
                 res = self.session.put(self.url, timeout=10, stream=True)
             elif self.method == 'DELETE':
                 res = self.session.delete(self.url, timeout=10, stream=True)
+            elif self.method == 'HEAD':
+                res = self.session.head(self.url, timeout=10, stream=True)
             elif body is not None:
                 if not contentType:
                     self.session.headers.update({"Content-Type": "application/x-www-form-urlencoded"})
@@ -110,13 +112,18 @@ class HttpRequest(object):
         return self.getPostToStringWithTimeout(seconds, body)
 
     def getPostToStringWithTimeout(self, seconds=10, body=None):
-        # This is a blocking request, so make sure it uses a unique message port
         if self._cancel:
             return
 
         self.logRequest(body, seconds, False)
         try:
-            if body is not None:
+            if self.method == 'PUT':
+                res = self.session.put(self.url, timeout=seconds, stream=True)
+            elif self.method == 'DELETE':
+                res = self.session.delete(self.url, timeout=seconds, stream=True)
+            elif self.method == 'HEAD':
+                res = self.session.head(self.url, timeout=seconds, stream=True)
+            elif body is not None:
                 res = self.session.post(self.url, data=body, timeout=seconds, stream=True)
             else:
                 res = self.session.get(self.url, timeout=seconds, stream=True)
@@ -133,6 +140,12 @@ class HttpRequest(object):
             util.WARN_LOG("Request to {0} errored out after {1} ms: {0}".format(self.url, seconds, e.message))
 
         return ''
+
+    def wasOK(self):
+        return self.currentResponse and self.currentResponse.ok
+
+    def wasNotFound(self):
+        return self.currentResponse is not None and self.currentResponse.status_code == requests.codes.not_found
 
     def getIdentity(self):
         return str(id(self))

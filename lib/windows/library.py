@@ -234,7 +234,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if not mli:
             return
 
-        if not mli.dataSource.TYPE == 'photo':
+        if not mli.dataSource or not mli.dataSource.TYPE == 'photo':
             return
 
         self.showPhotoItemProperties(mli.dataSource)
@@ -535,28 +535,24 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if not mli or not mli.dataSource:
             return
 
+        updateWatched = False
         if self.section.TYPE == 'show':
-            self.showSeasons(mli.dataSource)
-            self.updateUnwatched(mli)
+            self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource))
+            updateWatched = True
         elif self.section.TYPE == 'movie':
-            self.showPreplay(mli.dataSource)
-            self.updateUnwatched(mli)
+            self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
+            updateWatched = True
         elif self.section.TYPE == 'artist':
-            self.showArtist(mli.dataSource)
+            self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource))
         elif self.section.TYPE in ('photo', 'photodirectory'):
             self.showPhoto(mli.dataSource)
 
-    def showSeasons(self, show):
-        w = subitems.ShowWindow.open(media_item=show)
-        self.onChildWindowClosed(w)
+        if not mli.dataSource.exists():
+            self.showPanelControl.removeItem(mli.pos())
+            return
 
-    def showPreplay(self, movie):
-        w = preplay.PrePlayWindow.open(video=movie)
-        self.onChildWindowClosed(w)
-
-    def showArtist(self, artist):
-        w = subitems.ArtistWindow.open(media_item=artist)
-        self.onChildWindowClosed(w)
+        if updateWatched:
+            self.updateUnwatched(mli)
 
     def showPhoto(self, photo):
         if isinstance(photo, plexnet.photo.Photo) or photo.TYPE == 'clip':

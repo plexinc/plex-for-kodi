@@ -1,5 +1,6 @@
 import plexobjects
 import plexstream
+import plexrequest
 import util
 
 METADATA_RELATED_TRAILER = 1
@@ -44,6 +45,23 @@ class MediaItem(plexobjects.PlexObject):
             server = self.getServer()
 
         return server.isLocalConnection() and util.QUALITY_LOCAL or util.QUALITY_REMOTE
+
+    def delete(self):
+        if not self.ratingKey:
+            return
+
+        req = plexrequest.PlexRequest(self.server, '/library/metadata/{0}'.format(self.ratingKey), method='DELETE')
+        req.getToStringWithTimeout(10)
+        self.deleted = req.wasOK()
+        return self.deleted
+
+    def exists(self):
+        if self.deleted:
+            return False
+
+        req = plexrequest.PlexRequest(self.server, '/library/metadata/{0}'.format(self.ratingKey), method='HEAD')
+        req.getToStringWithTimeout(10)
+        return not req.wasNotFound()
 
 
 class Media(plexobjects.PlexObject):

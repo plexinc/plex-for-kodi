@@ -50,6 +50,8 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
+        self.parentList = kwargs.get('parent_list')
+        self.videos = None
         self.exitCommand = None
         self.trailer = None
 
@@ -60,12 +62,6 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
         self.setup()
-        # import xbmc
-        # xbmc.sleep(100)
-        if self.video.viewOffset.asInt():
-            self.setFocusId(self.RESUME_BUTTON_ID)
-        # else:
-        #     self.setFocusId(self.PLAY_BUTTON_ID)
 
     def onReInit(self):
         self.video.reload()
@@ -77,6 +73,11 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+            if xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                if action in (xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_NEXT_ITEM):
+                    self.next()
+                elif action in (xbmcgui.ACTION_FIRST_PAGE, xbmcgui.ACTION_PREV_ITEM):
+                    self.prev()
         except:
             util.ERROR()
 
@@ -151,6 +152,8 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if self.video.type in ('episode', 'movie'):
             options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.video.getLibrarySectionTitle())})
 
+        if self.video.server.allowsMediaDeletion:
+            options.append({'key': 'delete', 'display': 'Delete'})
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
 
@@ -181,6 +184,22 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.processCommand(opener.open(self.video.grandparentRatingKey))
         elif choice['key'] == 'to_section':
             self.closeWithCommand('HOME:{0}'.format(self.video.getLibrarySectionId()))
+        elif choice['key'] == 'delete':
+            self.delete()
+
+    def delete(self):
+        yes = xbmcgui.Dialog().yesno('Really delete?', 'Are you sure you really want to delete this media?')
+        if yes:
+            if self._delete():
+                self.doClose()
+            else:
+                util.messageDialog('Message', 'There was a problem while attempting to delete the media.')
+
+    @busy.dialog()
+    def _delete(self):
+        success = self.video.delete()
+        util.LOG('Media DELETE: {0} - {1}'.format(self.video, success and 'SUCCESS' or 'FAILED'))
+        return success
 
     def roleClicked(self):
         mli = self.rolesListControl.getSelectedItem()
@@ -207,6 +226,82 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             role = sectionRoles[0]
 
         self.processCommand(opener.open(role))
+
+    def getVideos(self):
+        if not self.videos:
+            if self.video.TYPE == 'episode':
+                self.videos = self.video.show().episodes()
+
+        if not self.videos:
+            return False
+
+        return True
+
+    def next(self):
+        if not self._next():
+            return
+        self.setup()
+
+    @busy.dialog()
+    def _next(self):
+        if self.parentList:
+            mli = self.parentList.getListItemByDataSource(self.video)
+            if not mli:
+                return False
+
+            pos = mli.pos() + 1
+            if not self.parentList.positionIsValid(pos):
+                pos = 0
+
+            self.video = self.parentList.getListItem(pos).dataSource
+        else:
+            if not self.getVideos():
+                return False
+
+            if self.video not in self.videos:
+                return False
+
+            pos = self.videos.index(self.video)
+            pos += 1
+            if pos >= len(self.videos):
+                pos = 0
+
+            self.video = self.videos[pos]
+
+        return True
+
+    def prev(self):
+        if not self._prev():
+            return
+        self.setup()
+
+    @busy.dialog()
+    def _prev(self):
+        if self.parentList:
+            mli = self.parentList.getListItemByDataSource(self.video)
+            if not mli:
+                return False
+
+            pos = mli.pos() - 1
+            if pos < 0:
+                pos = self.parentList.size() - 1
+
+            self.video = self.parentList.getListItem(pos).dataSource
+        else:
+            if not self.getVideos():
+                return False
+
+            if self.video not in self.videos:
+                return False
+
+            pos = self.videos.index(self.video)
+            pos -= 1
+            if pos < 0:
+                pos = len(self.videos) - 1
+
+            self.video = self.videos[pos]
+
+        return True
 
     def getRoleItemDDPosition(self):
         y = 980
@@ -252,6 +347,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         hasPrev = self.fillRelated()
         self.fillRoles(hasPrev)
 
+        if self.video.viewOffset.asInt():
+            self.setFocusId(self.RESUME_BUTTON_ID)
+
     def setInfo(self):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
         self.setProperty('title', self.video.title)
@@ -263,6 +361,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.setProperty('directors', directors and u'{0}    {1}'.format(directorsLabel, directors) or '')
 
         if self.video.type == 'episode':
+            self.setProperty('content.rating', '')
             self.setProperty('thumb', self.video.defaultThumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
             self.setProperty('preview', self.video.thumb.asTranscodedImageURL(*self.PREVIEW_DIM))
             self.setProperty('info', 'Season {0} Episode {1}'.format(self.video.parentIndex, self.video.index))
@@ -273,6 +372,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('writers', writers and u'{0}    {1}'.format(writersLabel, writers) or '')
             self.setProperty('related.header', 'Related Shows')
         elif self.video.type == 'movie':
+            self.setProperty('preview', '')
             self.setProperty('thumb', self.video.thumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
             genres = u' / '.join([g.tag for g in self.video.genres()][:3])
             self.setProperty('info', genres)
@@ -284,6 +384,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
             self.setProperty('related.header', 'Related Movies')
 
+        self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image'), '')
         if self.video.userRating:
             stars = str(int(round((self.video.userRating.asFloat() / 10) * 5)))
             self.setProperty('user.stars', stars)
@@ -340,6 +441,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if not items:
             return False
 
+        self.extraListControl.reset()
         self.extraListControl.addItems(items)
         return True
 
@@ -363,6 +465,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
+        self.relatedListControl.reset()
         self.relatedListControl.addItems(items)
         return True
 
@@ -384,5 +487,6 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')
 
+        self.rolesListControl.reset()
         self.rolesListControl.addItems(items)
         return True

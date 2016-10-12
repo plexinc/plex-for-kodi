@@ -193,6 +193,8 @@ def durationToShortText(seconds):
 
 
 def cleanLeadingZeros(text):
+    if not text:
+        return ''
     return re.sub('(?<= )0(\d)', r'\1', text)
 
 

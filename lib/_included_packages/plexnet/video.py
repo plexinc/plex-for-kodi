@@ -33,6 +33,12 @@ class Video(media.MediaItem):
         self._settings = None
         media.MediaItem.__init__(self, *args, **kwargs)
 
+    def __eq__(self, other):
+        return self.ratingKey == other.ratingKey
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     @property
     def settings(self):
         if not self._settings:

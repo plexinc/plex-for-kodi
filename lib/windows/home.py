@@ -14,7 +14,6 @@ import plexnet
 from plexnet import plexapp
 
 import playlists
-import library
 import busy
 import opener
 import search

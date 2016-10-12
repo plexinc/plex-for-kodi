@@ -144,6 +144,7 @@ class PlexObject(object, Checks):
         self.container = container
         self.mediaChoice = None
         self.titleSort = PlexValue('')
+        self.deleted = False
 
         if data is None:
             return

@@ -106,12 +106,16 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         genres = self.mediaItem.genres()
         self.setProperty('info', genres and (u' / '.join([g.tag for g in genres][:3])) or '')
 
-        self.setProperty('content.rating', self.mediaItem.contentRating)
+        if self.mediaItem.userRating:
+            stars = str(int(round((self.mediaItem.userRating.asFloat() / 10) * 5)))
+            self.setProperty('user.stars', stars)
+        elif self.mediaItem.rating:
+            stars = str(int(round((self.mediaItem.rating.asFloat() / 10) * 5)))
+            self.setProperty('rating.stars', stars)
 
-        stars = self.mediaItem.rating and str(int(round((self.mediaItem.rating.asFloat() / 10) * 5))) or None
-        self.setProperty('rating', stars and stars or '')
-
-        self.setProperty('imdb', self.mediaItem.rating)
+        if self.mediaItem.ratingImage:
+            self.setProperty('rating', self.mediaItem.rating)
+            self.setProperty('rating.image', 'script.plex/ratings/{0}.png'.format(self.mediaItem.ratingImage.replace('://', '/')))
 
         sas = self.mediaItem.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')
@@ -179,13 +183,25 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if not mli:
             return
 
+        update = False
+
         if self.mediaItem.type == 'show':
             w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem)
+            update = True
+        elif self.mediaItem.type == 'artist':
+            w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
+
+        if not mli.dataSource.exists():
+            self.subItemListControl.removeItem(mli.pos())
+
+        if not self.subItemListControl.size():
+            self.closeWithCommand(w.exitCommand)
+            return
+
+        if update:
             mli.setProperty('unwatched.count', not mli.dataSource.isWatched and str(mli.dataSource.unViewedLeafCount) or '')
             self.mediaItem.reload()
             self.updateProperties()
-        elif self.mediaItem.type == 'artist':
-            w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
 
         try:
             self.processCommand(w.exitCommand)

@@ -126,9 +126,17 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             return
 
         command = opener.open(mli.dataSource)
-        mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
-        self.season.reload()
-        self.processCommand(command)
+        if mli.dataSource.exists():
+            mli.setProperty('watched', mli.dataSource.isWatched and '1' or '')
+            self.season.reload()
+            self.processCommand(command)
+        else:
+            self.episodePanelControl.removeItem(mli.pos())
+
+            if not self.episodePanelControl.size():
+                self.closeWithCommand(command)
+
+
 
     def optionsButtonClicked(self, item=None):
         options = []

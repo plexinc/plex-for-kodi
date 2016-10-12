@@ -203,6 +203,23 @@
                         <textcolor>FFFFFFFF</textcolor>
                         <label>$INFO[Window.Property(rating)]</label>
                     </control>
+                    <control type="image">
+                        <visible>!IsEmpty(Window.Property(rating2))</visible>
+                        <posy>2</posy>
+                        <width>63</width>
+                        <height>30</height>
+                        <texture>$INFO[Window.Property(rating2.image)]</texture>
+                        <aspectratio align="right">keep</aspectratio>
+                    </control>
+                    <control type="label">
+                        <visible>!IsEmpty(Window.Property(rating2))</visible>
+                        <width>auto</width>
+                        <height>30</height>
+                        <font>font12</font>
+                        <align>left</align>
+                        <textcolor>FFFFFFFF</textcolor>
+                        <label>$INFO[Window.Property(rating2)]</label>
+                    </control>
                 </control>
 
 

@@ -116,6 +116,9 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if self.mediaItem.ratingImage:
             self.setProperty('rating', self.mediaItem.rating)
             self.setProperty('rating.image', 'script.plex/ratings/{0}.png'.format(self.mediaItem.ratingImage.replace('://', '/')))
+            if self.mediaItem.audienceRatingImage:
+                self.setProperty('rating2', self.mediaItem.audienceRating)
+                self.setProperty('rating2.image', 'script.plex/ratings/{0}.png'.format(self.mediaItem.audienceRatingImage.replace('://', '/')))
 
         sas = self.mediaItem.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')

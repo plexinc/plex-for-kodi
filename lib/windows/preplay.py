@@ -384,7 +384,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
             self.setProperty('related.header', 'Related Movies')
 
-        self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image'), '')
+        self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
         if self.video.userRating:
             stars = str(int(round((self.video.userRating.asFloat() / 10) * 5)))
             self.setProperty('user.stars', stars)
@@ -395,6 +395,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if self.video.ratingImage:
             self.setProperty('rating', self.video.rating)
             self.setProperty('rating.image', 'script.plex/ratings/{0}.png'.format(self.video.ratingImage.replace('://', '/')))
+            if self.video.audienceRatingImage:
+                self.setProperty('rating2', self.video.audienceRating)
+                self.setProperty('rating2.image', 'script.plex/ratings/{0}.png'.format(self.video.audienceRatingImage.replace('://', '/')))
 
         sas = self.video.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')

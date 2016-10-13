@@ -425,6 +425,9 @@ class ManagedControlList(object):
             index = top
         self.control.selectItem(index)
 
+    def removeManagedItem(self, mli):
+        self.removeItem(mli.pos())
+
     def insertItem(self, index, managed_item):
         pos = self.getSelectedPosition() + 1
 

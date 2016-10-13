@@ -15,6 +15,7 @@ import musicplayer
 import videoplayer
 import dropdown
 import windowutils
+import search
 
 
 class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
@@ -51,6 +52,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
     PROGRESS_IMAGE_ID = 250
@@ -63,6 +65,8 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.mediaItem = kwargs.get('media_item')
+        self.parentList = kwargs.get('parent_list')
+        self.mediaItems = None
         self.exitCommand = None
 
     def onFirstInit(self):
@@ -71,14 +75,17 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
+        self.setup()
+
+        self.setFocusId(self.PLAY_BUTTON_ID)
+
+    def setup(self):
         self.mediaItem.reload(includeRelated=1, includeRelatedCount=10)
 
         self.updateProperties()
         self.fill()
         hasPrev = self.fillRelated(False)
         self.fillRoles(hasPrev)
-
-        self.setFocusId(self.PLAY_BUTTON_ID)
 
     def updateProperties(self):
         self.setProperty('title', self.mediaItem.title)
@@ -88,7 +95,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             'background',
             self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
-        self.setProperty('duration', util.durationToText(self.mediaItem.duration.asInt()))
+        self.setProperty('duration', util.durationToText(self.mediaItem.fixedDuration()))
         self.setProperty('info', '')
         self.setProperty('date', self.mediaItem.year)
 
@@ -105,6 +112,8 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         genres = self.mediaItem.genres()
         self.setProperty('info', genres and (u' / '.join([g.tag for g in genres][:3])) or '')
+
+        self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
 
         if self.mediaItem.userRating:
             stars = str(int(round((self.mediaItem.userRating.asFloat() / 10) * 5)))
@@ -140,6 +149,12 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
 
+            if xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                if action in (xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_NEXT_ITEM):
+                    self.next()
+                elif action in (xbmcgui.ACTION_FIRST_PAGE, xbmcgui.ACTION_PREV_ITEM):
+                    self.prev()
+
         except:
             util.ERROR()
 
@@ -164,6 +179,8 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.shuffleButtonClicked()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.optionsButtonClicked()
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -173,6 +190,78 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+    def getMediaItems(self):
+        return False
+
+    def next(self):
+        if not self._next():
+            return
+        self.setup()
+
+    @busy.dialog()
+    def _next(self):
+        if self.parentList:
+            mli = self.parentList.getListItemByDataSource(self.mediaItem)
+            if not mli:
+                return False
+
+            pos = mli.pos() + 1
+            if not self.parentList.positionIsValid(pos):
+                pos = 0
+
+            self.mediaItem = self.parentList.getListItem(pos).dataSource
+        else:
+            if not self.getMediaItems():
+                return False
+
+            if self.mediaItem not in self.mediaItems:
+                return False
+
+            pos = self.mediaItems.index(self.mediaItem)
+            pos += 1
+            if pos >= len(self.mediaItems):
+                pos = 0
+
+            self.mediaItem = self.mediaItems[pos]
+
+        return True
+
+    def prev(self):
+        if not self._prev():
+            return
+        self.setup()
+
+    @busy.dialog()
+    def _prev(self):
+        if self.parentList:
+            mli = self.parentList.getListItemByDataSource(self.mediaItem)
+            if not mli:
+                return False
+
+            pos = mli.pos() - 1
+            if pos < 0:
+                pos = self.parentList.size() - 1
+
+            self.mediaItem = self.parentList.getListItem(pos).dataSource
+        else:
+            if not self.getMediaItems():
+                return False
+
+            if self.mediaItem not in self.mediaItems:
+                return False
+
+            pos = self.mediaItems.index(self.mediaItem)
+            pos -= 1
+            if pos < 0:
+                pos = len(self.mediaItems) - 1
+
+            self.mediaItem = self.mediaItems[pos]
+
+        return True
+
+    def searchButtonClicked(self):
+        self.processCommand(search.dialog(section_id=self.mediaItem.getLibrarySectionId() or None))
 
     def relatedClicked(self):
         mli = self.relatedListControl.getSelectedItem()
@@ -189,10 +278,10 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         update = False
 
         if self.mediaItem.type == 'show':
-            w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem)
+            w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem, parent_list=self.subItemListControl)
             update = True
         elif self.mediaItem.type == 'artist':
-            w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem)
+            w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem, parent_list=self.subItemListControl)
 
         if not mli.dataSource.exists():
             self.subItemListControl.removeItem(mli.pos())
@@ -365,6 +454,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 items.append(mli)
                 idx += 1
 
+        self.relatedListControl.reset()
         self.relatedListControl.addItems(items)
         return True
 
@@ -382,6 +472,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             items.append(mli)
             idx += 1
 
+        self.rolesListControl.reset()
         self.rolesListControl.addItems(items)
         return True
 
@@ -394,17 +485,20 @@ class ArtistWindow(ShowWindow):
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
 
-        self.setProperties()
-        self.fill()
+        self.setup()
 
-        self.setFocusId(self.SUB_ITEM_LIST_ID)
+        self.setFocusId(self.PLAY_BUTTON_ID)
+
+    def setup(self):
+        self.updateProperties()
+        self.fill()
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer(), self.mediaItem)
         pl.startShuffled = shuffle
         musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
 
-    def setProperties(self):
+    def updateProperties(self):
         self.setProperty('summary', self.mediaItem.summary)
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
@@ -429,4 +523,5 @@ class ArtistWindow(ShowWindow):
                 items.append(mli)
                 idx += 1
 
+        self.subItemListControl.reset()
         self.subItemListControl.addItems(items)

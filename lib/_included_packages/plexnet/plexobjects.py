@@ -174,6 +174,10 @@ class PlexObject(object, Checks):
 
         return a
 
+    def exists(self):
+        # Used for media items - for others we just return True
+        return True
+
     def get(self, attr, default=''):
         ret = self.__dict__.get(attr)
         return ret is not None and ret or PlexValue(default, self)

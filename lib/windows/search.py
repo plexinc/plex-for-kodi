@@ -104,6 +104,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
+        self.sectionID = kwargs.get('section_id')
         self.resultsThread = None
         self.updateResultsTimeout = 0
 
@@ -235,7 +236,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         query = self.edit.getText()
         if query:
             with self.propertyContext('searching'):
-                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(count=10, search_query=query)
+                hubs = plexapp.SERVERMANAGER.selectedServer.hubs(count=10, search_query=query, section=self.sectionID)
                 self.showHubs(hubs)
         else:
             self.clearHubs()
@@ -279,7 +280,12 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
 
         self.doClose()
         try:
-            self.processCommand(opener.open(hubItem))
+            command = opener.open(hubItem)
+
+            if not hubItem.exists():
+                control.removeManagedItem(mli)
+
+            self.processCommand(command)
         finally:
             if not self.exitCommand:
                 self.show()
@@ -380,6 +386,5 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         self.setProperty('hub.focus', '')
 
 
-def dialog():
-    w = SearchDialog.open()
-    del w
+def dialog(section_id=None):
+    return opener.handleOpen(SearchDialog, section_id=section_id)

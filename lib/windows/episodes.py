@@ -13,6 +13,7 @@ import videoplayer
 import dropdown
 import windowutils
 import opener
+import search
 
 
 class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
@@ -32,6 +33,7 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
     PLAY_BUTTON_ID = 301
@@ -41,20 +43,34 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.season = kwargs.get('season')
+        self.parentList = kwargs.get('parentList')
+        self.seasons = None
         self.show = kwargs.get('show')
         self.exitCommand = None
 
     def onFirstInit(self):
         self.episodePanelControl = kodigui.ManagedControlList(self, self.EPISODE_PANEL_ID, 5)
 
-        self.setProperties()
-        self.fillEpisodes()
+        self.setup()
         self.setFocusId(self.EPISODE_PANEL_ID)
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
+
+    def setup(self):
+        self.updateProperties()
+        self.fillEpisodes()
 
     def onAction(self, action):
         controlID = self.getFocusId()
         try:
+            if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                self.next()
+            elif action == xbmcgui.ACTION_NEXT_ITEM:
+                self.next()
+            elif action == xbmcgui.ACTION_FIRST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                self.prev()
+            elif action == xbmcgui.ACTION_PREV_ITEM:
+                self.prev()
+
             if controlID == self.EPISODE_PANEL_ID:
                 self.checkForHeaderFocus(action)
             if controlID == self.LIST_OPTIONS_BUTTON_ID and self.checkOptionsAction(action):
@@ -111,6 +127,89 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             mli = self.episodePanelControl.getSelectedItem()
             if mli:
                 self.optionsButtonClicked(mli)
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
+
+    def getSeasons(self):
+        if not self.seasons:
+            if self.season.TYPE == 'season':
+                self.seasons = self.season.show().seasons()
+            elif self.season.TYPE == 'album':
+                self.seasons = self.season.artist().albums()
+
+        if not self.seasons:
+            return False
+
+        return True
+
+    def next(self):
+        if not self._next():
+            return
+        self.setup()
+
+    @busy.dialog()
+    def _next(self):
+        if self.parentList:
+            mli = self.parentList.getListItemByDataSource(self.season)
+            if not mli:
+                return False
+
+            pos = mli.pos() + 1
+            if not self.parentList.positionIsValid(pos):
+                pos = 0
+
+            self.season = self.parentList.getListItem(pos).dataSource
+        else:
+            if not self.getSeasons():
+                return False
+
+            if self.season not in self.seasons:
+                return False
+
+            pos = self.seasons.index(self.season)
+            pos += 1
+            if pos >= len(self.seasons):
+                pos = 0
+
+            self.season = self.seasons[pos]
+
+        return True
+
+    def prev(self):
+        if not self._prev():
+            return
+        self.setup()
+
+    @busy.dialog()
+    def _prev(self):
+        if self.parentList:
+            mli = self.parentList.getListItemByDataSource(self.season)
+            if not mli:
+                return False
+
+            pos = mli.pos() - 1
+            if pos < 0:
+                pos = self.parentList.size() - 1
+
+            self.season = self.parentList.getListItem(pos).dataSource
+        else:
+            if not self.getSeasons():
+                return False
+
+            if self.season not in self.seasons:
+                return False
+
+            pos = self.seasons.index(self.season)
+            pos -= 1
+            if pos < 0:
+                pos = len(self.seasons) - 1
+
+            self.season = self.seasons[pos]
+
+        return True
+
+    def searchButtonClicked(self):
+        self.processCommand(search.dialog(section_id=self.season.getLibrarySectionId() or None))
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
@@ -135,8 +234,6 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
             if not self.episodePanelControl.size():
                 self.closeWithCommand(command)
-
-
 
     def optionsButtonClicked(self, item=None):
         options = []
@@ -209,7 +306,7 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             if self.episodePanelControl.getSelectedItem().getProperty('is.header'):
                 xbmc.executebuiltin('Action(down)')
 
-    def setProperties(self):
+    def updateProperties(self):
         self.setProperty(
             'background',
             (self.show or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
@@ -245,11 +342,7 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 items.append(mli)
                 idx += 1
 
-        if update:
-            self.episodePanelControl.replaceItems(items)
-        else:
-            self.episodePanelControl.reset()
-            self.episodePanelControl.addItems(items)
+        self.episodePanelControl.replaceItems(items)
 
 
 class AlbumWindow(EpisodesWindow):
@@ -275,7 +368,7 @@ class AlbumWindow(EpisodesWindow):
         finally:
             del w
 
-    def setProperties(self):
+    def updateProperties(self):
         self.setProperty(
             'background',
             self.season.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
@@ -285,9 +378,7 @@ class AlbumWindow(EpisodesWindow):
         self.setProperty('album.title', self.season.title)
 
     def createListItem(self, obj):
-        mli = kodigui.ManagedListItem(
-            obj.title, thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM), data_source=obj
-        )
+        mli = kodigui.ManagedListItem(obj.title, data_source=obj)
         mli.setProperty('track.number', str(obj.index) or '')
         mli.setProperty('track.duration', util.simplifiedTimeDisplay(obj.duration.asInt()))
         return mli
@@ -322,4 +413,4 @@ class AlbumWindow(EpisodesWindow):
         if items:
             items[-1].setProperty('is.footer', '1')
 
-        self.episodePanelControl.addItems(items)
+        self.episodePanelControl.replaceItems(items)

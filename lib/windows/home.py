@@ -308,7 +308,7 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('off.sections', '1')
 
     def searchButtonClicked(self):
-        search.dialog()
+        self.processCommand(search.dialog())
 
     def updateOnDeckHubs(self, **kwargs):
         tasks = [UpdateHubTask().setup(hub, self.updateHubCallback) for hub in self.updateHubs.values()]
@@ -342,7 +342,12 @@ class HomeWindow(kodigui.BaseWindow):
         if not mli:
             return
 
-        self.processCommand(opener.open(mli.dataSource))
+        command = opener.open(mli.dataSource)
+
+        if not mli.dataSource.exists():
+            control.removeItem(mli.pos())
+
+        self.processCommand(command)
 
     def processCommand(self, command):
         if command.startswith('HOME:'):

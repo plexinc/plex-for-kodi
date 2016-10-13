@@ -63,6 +63,12 @@ class MediaItem(plexobjects.PlexObject):
         req.getToStringWithTimeout(10)
         return not req.wasNotFound()
 
+    def fixedDuration(self):
+        duration = self.duration.asInt()
+        if duration < 1000:
+            duration *= 60000
+        return duration
+
 
 class Media(plexobjects.PlexObject):
     TYPE = 'Media'

@@ -7,6 +7,7 @@ import opener
 import info
 import videoplayer
 import playersettings
+import search
 import dropdown
 import windowutils
 from plexnet import plexplayer, media
@@ -37,6 +38,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     PROGRESS_IMAGE_ID = 250
 
     HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
 
     INFO_BUTTON_ID = 304
     RESUME_BUTTON_ID = 301
@@ -106,6 +108,8 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.openItem(item=self.trailer)
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.optionsButtonClicked()
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -115,6 +119,9 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+    def searchButtonClicked(self):
+        self.processCommand(search.dialog(section_id=self.video.getLibrarySectionId() or None))
 
     def settingsButtonClicked(self):
         if not self.video.mediaChoice:

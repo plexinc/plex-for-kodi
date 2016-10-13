@@ -5,6 +5,7 @@ import kodigui
 import busy
 import playlist
 import windowutils
+import search
 
 from lib import util
 from lib import colors
@@ -35,6 +36,7 @@ class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
     def __init__(self, *args, **kwargs):
@@ -73,6 +75,11 @@ class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.playlistListClicked(self.videoPLListControl)
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
+
+    def searchButtonClicked(self):
+        self.processCommand(search.dialog())
 
     def playlistListClicked(self, list_control):
         mli = list_control.getSelectedItem()

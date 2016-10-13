@@ -6,6 +6,7 @@ import busy
 import videoplayer
 import windowutils
 import dropdown
+import search
 
 from lib import colors
 from lib import util
@@ -21,6 +22,7 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     height = 1080
 
     OPTIONS_GROUP_ID = 200
+    SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
     PLAY_BUTTON_ID = 301
@@ -68,6 +70,11 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.playlistListClicked(no_item=True, shuffle=True)
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.optionsButtonClicked()
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
+
+    def searchButtonClicked(self):
+        self.processCommand(search.dialog())
 
     def playlistListClicked(self, no_item=False, shuffle=False):
         if no_item:

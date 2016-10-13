@@ -13,6 +13,7 @@ from lib import backgroundthread
 import busy
 import subitems
 import preplay
+import search
 import plexnet
 import dropdown
 import opener
@@ -225,6 +226,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.sortButtonClicked()
         elif controlID == self.FILTER1_BUTTON_ID:
             self.filter1ButtonClicked()
+        elif controlID == self.SEARCH_BUTTON_ID:
+            self.searchButtonClicked()
 
     def onFocus(self, controlID):
         if controlID == self.KEY_LIST_ID:
@@ -262,6 +265,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if not li:
             return
         self.keyListControl.selectItem(li.pos())
+
+    def searchButtonClicked(self):
+        self.processCommand(search.dialog(section_id=self.section.key))
 
     def keyClicked(self):
         li = self.keyListControl.getSelectedItem()
@@ -537,13 +543,13 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         updateWatched = False
         if self.section.TYPE == 'show':
-            self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource))
+            self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'movie':
             self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'artist':
-            self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource))
+            self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
         elif self.section.TYPE in ('photo', 'photodirectory'):
             self.showPhoto(mli.dataSource)
 
@@ -801,10 +807,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             mli.setProperty('summary', obj.get('summary'))
 
             if showUnwatched:
-                duration = obj.duration.asInt()
-                if duration < 1000:
-                    duration *= 60000
-                mli.setLabel2(util.durationToText(duration))
+                mli.setLabel2(util.durationToText(obj.fixedDuration()))
                 mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
                 if not obj.isWatched:
                     if self.section.TYPE == 'show':
@@ -830,6 +833,7 @@ class PostersWindow(kodigui.BaseWindow):
     OPTIONS_GROUP_ID = 200
 
     HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
     SORT_BUTTON_ID = 210

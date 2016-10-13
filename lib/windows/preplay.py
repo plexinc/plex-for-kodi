@@ -75,11 +75,17 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
-            if xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
-                if action in (xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_NEXT_ITEM):
-                    self.next()
-                elif action in (xbmcgui.ACTION_FIRST_PAGE, xbmcgui.ACTION_PREV_ITEM):
-                    self.prev()
+
+            if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                self.next()
+            elif action == xbmcgui.ACTION_NEXT_ITEM:
+                self.setFocusId(300)
+                self.next()
+            elif action == xbmcgui.ACTION_FIRST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                self.prev()
+            elif action == xbmcgui.ACTION_PREV_ITEM:
+                self.setFocusId(300)
+                self.prev()
         except:
             util.ERROR()
 
@@ -114,6 +120,8 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def onFocus(self, controlID):
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
+        else:
+            self.setProperty('hub.focus', '')
 
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '')
@@ -431,6 +439,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         idx = 0
 
         if not self.video.extras:
+            self.extraListControl.reset()
             return False
 
         for extra in self.video.extras():
@@ -460,6 +469,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         idx = 0
 
         if not self.video.related:
+            self.relatedListControl.reset()
             return False
 
         for rel in self.video.related()[0].items:
@@ -484,6 +494,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         idx = 0
 
         if not self.video.roles:
+            self.rolesListControl.reset()
             return False
 
         for role in self.video.roles():

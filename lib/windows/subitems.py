@@ -149,11 +149,16 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
 
-            if xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
-                if action in (xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_NEXT_ITEM):
-                    self.next()
-                elif action in (xbmcgui.ACTION_FIRST_PAGE, xbmcgui.ACTION_PREV_ITEM):
-                    self.prev()
+            if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                self.next()
+            elif action == xbmcgui.ACTION_NEXT_ITEM:
+                self.setFocusId(300)
+                self.next()
+            elif action == xbmcgui.ACTION_FIRST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
+                self.prev()
+            elif action == xbmcgui.ACTION_PREV_ITEM:
+                self.setFocusId(300)
+                self.prev()
 
         except:
             util.ERROR()
@@ -185,6 +190,8 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def onFocus(self, controlID):
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
+        else:
+            self.setProperty('hub.focus', '')
 
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '')
@@ -438,6 +445,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         items = []
         idx = 0
         if not self.mediaItem.related:
+            self.relatedListControl.reset()
             return has_prev
 
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
@@ -462,6 +470,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         items = []
         idx = 0
         if not self.mediaItem.roles:
+            self.rolesListControl.reset()
             return has_prev
 
         self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')

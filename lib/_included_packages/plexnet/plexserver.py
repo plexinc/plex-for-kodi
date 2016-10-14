@@ -278,7 +278,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         minSeconds = 10
         for i in range(len(self.connections)):
             conn = self.connections[i]
-            diff = epoch - conn.lastTestedAt or 0
+            diff = epoch - (conn.lastTestedAt or 0)
             if conn.hasPendingRequest:
                 util.DEBUG_LOG("Skipping reachability test for {0} (has pending request)".format(conn))
             elif diff < minSeconds or (not self.isSecondary() and self.isReachable() and diff < retrySeconds):

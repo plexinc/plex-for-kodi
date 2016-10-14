@@ -395,6 +395,10 @@ class Timer(object):
         util.DEBUG_LOG('Timer {0}: {1}'.format(repr(self.function), self._reset and 'RESET'or 'STARTED'))
         while not self.event.isSet() and not self.shouldAbort():
             while not self.event.wait(self.timeout) and not self.shouldAbort():
+                if self._reset:
+                    self._reset = False
+                    return
+
                 self.function(*self.args, **self.kwargs)
                 if not self.repeat:
                     return
@@ -420,6 +424,7 @@ class Timer(object):
 
     def isExpired(self):
         return self.event.isSet()
+
 
 TIMER = Timer
 

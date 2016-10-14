@@ -1011,7 +1011,7 @@ class WindowProperty():
 class GlobalProperty():
     def __init__(self, prop, val='1'):
         import xbmcaddon
-        self.addonID = xbmcaddon.Addon().getInfo('id')
+        self._addonID = xbmcaddon.Addon().getAddonInfo('id')
         self.prop = prop
         self.val = val
 

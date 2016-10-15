@@ -1,6 +1,8 @@
 import time
 import threading
 
+import xbmcgui
+
 import kodigui
 import opener
 import windowutils
@@ -107,6 +109,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         self.sectionID = kwargs.get('section_id')
         self.resultsThread = None
         self.updateResultsTimeout = 0
+        self.isActive = True
 
     def onFirstInit(self):
         self.hubControls = (
@@ -190,7 +193,8 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
 
     def onAction(self, action):
         try:
-            pass
+            if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
+                self.isActive = False
         except:
             util.ERROR()
 
@@ -289,6 +293,8 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         finally:
             if not self.exitCommand:
                 self.show()
+            else:
+                self.isActive = False
 
     def createListItem(self, hubItem):
         if hubItem.TYPE in ('Genre', 'Director', 'Role'):
@@ -323,7 +329,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
 
     def showHubs(self, hubs):
         self.clearHubs()
-        self.setProperty('has.results', '')
+        self.opaqueBackground(on=False)
 
         allowed = None
         if self.getProperty('search.section') == 'movie':
@@ -342,7 +348,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
                 continue
 
             if h.size.asInt() > 0:
-                self.setProperty('has.results', '1')
+                self.opaqueBackground()
                 cid = self.showHub(h, i)
                 controlID = controlID or cid
                 i += 1
@@ -377,7 +383,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         return itemListControl.controlID
 
     def clearHubs(self):
-        self.setProperty('has.results', '')
+        self.opaqueBackground(on=False)
         self.setProperty('no.results', '')
         for controls in self.hubControls:
             for control in controls.values():
@@ -385,6 +391,22 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
                     control.reset()
         self.setProperty('hub.focus', '')
 
+    def opaqueBackground(self, on=True):
+        util.setGlobalProperty('search.dialog.hasresults', on and '1' or '')
+
+    def wait(self):
+        while self.isActive and not util.MONITOR.waitForAbort(0.1):
+            pass
+
 
 def dialog(section_id=None):
-    return opener.handleOpen(SearchDialog, section_id=section_id)
+    util.setGlobalProperty('search.dialog.hasresults', '')
+    with kodigui.GlobalProperty('search.dialog'):
+        try:
+            w = SearchDialog.open(section_id=section_id)
+            w.wait()
+            command = w.exitCommand or ''
+            del w
+            return command
+        finally:
+            util.setGlobalProperty('search.dialog.hasresults', '')

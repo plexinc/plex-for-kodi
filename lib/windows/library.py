@@ -267,7 +267,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.keyListControl.selectItem(li.pos())
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog(section_id=self.section.key))
+        self.processCommand(search.dialog(self, section_id=self.section.key))
 
     def keyClicked(self):
         li = self.keyListControl.getSelectedItem()

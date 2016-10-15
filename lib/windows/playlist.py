@@ -74,7 +74,7 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.searchButtonClicked()
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog())
+        self.processCommand(search.dialog(self))
 
     def playlistListClicked(self, no_item=False, shuffle=False):
         if no_item:

@@ -79,7 +79,7 @@ class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.searchButtonClicked()
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog())
+        self.processCommand(search.dialog(self))
 
     def playlistListClicked(self, list_control):
         mli = list_control.getSelectedItem()

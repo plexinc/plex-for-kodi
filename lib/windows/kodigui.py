@@ -995,29 +995,33 @@ class PropertyTimer():
 
 
 class WindowProperty():
-    def __init__(self, win, prop, val='1'):
+    def __init__(self, win, prop, val='1', end=None):
         self.win = win
         self.prop = prop
         self.val = val
+        self.end = end
+        self.old = self.win.getProperty(self.prop)
 
     def __enter__(self):
         self.win.setProperty(self.prop, self.val)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.win.setProperty(self.prop, '')
+        self.win.setProperty(self.prop, self.end or self.old)
 
 
 class GlobalProperty():
-    def __init__(self, prop, val='1'):
+    def __init__(self, prop, val='1', end=None):
         import xbmcaddon
         self._addonID = xbmcaddon.Addon().getAddonInfo('id')
         self.prop = prop
         self.val = val
+        self.end = end
+        self.old = xbmc.getInfoLabel('Window(10000).Property({0}}.{1})'.format(self._addonID, prop))
 
     def __enter__(self):
         xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self.prop), self.val)
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self.prop), '')
+        xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self.prop), self.end or self.old)

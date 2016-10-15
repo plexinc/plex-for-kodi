@@ -308,7 +308,7 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('off.sections', '1')
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog())
+        self.processCommand(search.dialog(self))
 
     def updateOnDeckHubs(self, **kwargs):
         tasks = [UpdateHubTask().setup(hub, self.updateHubCallback) for hub in self.updateHubs.values()]

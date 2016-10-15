@@ -209,7 +209,7 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         return True
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog(section_id=self.season.getLibrarySectionId() or None))
+        self.processCommand(search.dialog(self, section_id=self.season.getLibrarySectionId() or None))
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())

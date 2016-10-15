@@ -129,7 +129,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.setProperty('on.extras', '1')
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog(section_id=self.video.getLibrarySectionId() or None))
+        self.processCommand(search.dialog(self, section_id=self.video.getLibrarySectionId() or None))
 
     def settingsButtonClicked(self):
         if not self.video.mediaChoice:

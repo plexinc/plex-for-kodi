@@ -1014,14 +1014,23 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window(10000).Property(script.plex.search.dialog))</visible>
-            <control type="image">
-                <visible>!IsEmpty(Window(10000).Property(script.plex.search.dialog.hasresults))</visible>
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>1920</width>
-                <height>1080</height>
-                <texture>script.plex/home/background-fallback.jpg</texture>
+            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <control type="group" >
+                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture>script.plex/home/background-fallback.jpg</texture>
+                </control>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1920</width>
+                    <height>1080</height>
+                    <texture background="true">$INFO[Window.Property(background)]</texture>
+                </control>
             </control>
             <control type="image">
                 <posx>0</posx>

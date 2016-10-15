@@ -106,6 +106,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
+        self.parentWindow = kwargs.get('parent_window')
         self.sectionID = kwargs.get('section_id')
         self.resultsThread = None
         self.updateResultsTimeout = 0
@@ -392,21 +393,21 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         self.setProperty('hub.focus', '')
 
     def opaqueBackground(self, on=True):
-        util.setGlobalProperty('search.dialog.hasresults', on and '1' or '')
+        self.parentWindow.setProperty('search.dialog.hasresults', on and '1' or '')
 
     def wait(self):
         while self.isActive and not util.MONITOR.waitForAbort(0.1):
             pass
 
 
-def dialog(section_id=None):
-    util.setGlobalProperty('search.dialog.hasresults', '')
-    with kodigui.GlobalProperty('search.dialog'):
+def dialog(parent_window, section_id=None):
+    parent_window.setProperty('search.dialog.hasresults', '')
+    with parent_window.propertyContext('search.dialog'):
         try:
-            w = SearchDialog.open(section_id=section_id)
+            w = SearchDialog.open(parent_window=parent_window, section_id=section_id)
             w.wait()
             command = w.exitCommand or ''
             del w
             return command
         finally:
-            util.setGlobalProperty('search.dialog.hasresults', '')
+            parent_window.setProperty('search.dialog.hasresults', '')

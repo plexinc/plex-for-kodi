@@ -268,7 +268,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         return True
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog(section_id=self.mediaItem.getLibrarySectionId() or None))
+        self.processCommand(search.dialog(self, section_id=self.mediaItem.getLibrarySectionId() or None))
 
     def relatedClicked(self):
         mli = self.relatedListControl.getSelectedItem()

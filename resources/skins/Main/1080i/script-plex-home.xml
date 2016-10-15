@@ -5309,7 +5309,7 @@
                 <colordiffuse>C0000000</colordiffuse>
             </control>
             <control type="group">
-                <visible>IsEmpty(Window(10000).Property(script.plex.search.dialog))</visible>
+                <visible>IsEmpty(Window.Property(search.dialog))</visible>
                 <control type="button" id="203">
                     <animation effect="zoom" start="100" end="177" time="100" center="80,67.5" reversible="false">Focus</animation>
                     <animation effect="zoom" start="177" end="100" time="100" center="80,67.5" reversible="false">UnFocus</animation>
@@ -5940,9 +5940,10 @@
         </control>
 
         <control type="group">
-                <visible>!IsEmpty(Window(10000).Property(script.plex.search.dialog))</visible>
+            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <control type="group" >
+                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
-                    <visible>!IsEmpty(Window(10000).Property(script.plex.search.dialog.hasresults))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1920</width>
@@ -5954,9 +5955,17 @@
                     <posy>0</posy>
                     <width>1920</width>
                     <height>1080</height>
-                    <texture colordiffuse="99606060">script.plex/white-square.png</texture>
+                    <texture background="true">$INFO[Window.Property(background)]</texture>
                 </control>
             </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <texture colordiffuse="99606060">script.plex/white-square.png</texture>
+            </control>
+        </control>
 
         <control type="group">
             <visible>!IsEmpty(Window.Property(busy))</visible>

@@ -284,6 +284,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         update = False
 
+        w = None
         if self.mediaItem.type == 'show':
             w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem, parent_list=self.subItemListControl)
             update = True
@@ -295,6 +296,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
         if not self.subItemListControl.size():
             self.closeWithCommand(w.exitCommand)
+            del w
             return
 
         if update:
@@ -310,7 +312,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def infoButtonClicked(self):
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(self.mediaItem.type == 'show' and 'show' or 'music')
         genres = u' / '.join([g.tag for g in util.removeDups(self.mediaItem.genres())][:6])
-        info.InfoWindow.open(
+        w = info.InfoWindow.open(
             title=self.mediaItem.title,
             sub_title=genres,
             thumb=self.mediaItem.defaultThumb,
@@ -319,6 +321,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             background=self.getProperty('background'),
             is_square=bool(isinstance(self, ArtistWindow))
         )
+        del w
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
@@ -505,7 +508,8 @@ class ArtistWindow(ShowWindow):
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer(), self.mediaItem)
         pl.startShuffled = shuffle
-        musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
+        w = musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
+        del w
 
     def updateProperties(self):
         self.setProperty('summary', self.mediaItem.summary)

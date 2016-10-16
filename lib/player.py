@@ -479,7 +479,6 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.video = None
         self.hasOSD = False
         self.hasSeekOSD = False
-        self.xbmcMonitor = util.MONITOR
         self.handler = AudioPlayerHandler(self)
         self.playerObject = None
         self.currentTime = 0
@@ -696,6 +695,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     def onPlayBackStarted(self):
         self.started = True
         util.DEBUG_LOG('Player - STARTED')
+        self.trigger('playback.started')
         if not self.handler:
             return
         self.handler.onPlayBackStarted()
@@ -777,9 +777,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         if self.isPlaying():
             util.DEBUG_LOG('Player: Stopping and waiting...')
             self.stop()
-            while not self.xbmcMonitor.waitForAbort(0.1) and self.isPlaying():
+            while not util.MONITOR.waitForAbort(0.1) and self.isPlaying():
                 pass
-            self.xbmcMonitor.waitForAbort(0.2)
+            util.MONITOR.waitForAbort(0.2)
             util.DEBUG_LOG('Player: Stopping and waiting...Done')
 
     def monitor(self):
@@ -794,7 +794,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
                     util.DEBUG_LOG('Player: Idling...')
 
                 while not self.isPlaying() and not xbmc.abortRequested and not self._closed:
-                    self.xbmcMonitor.waitForAbort(0.1)
+                    util.MONITOR.waitForAbort(0.1)
 
                 if self.isPlayingVideo():
                     util.DEBUG_LOG('Monitoring video...')
@@ -814,7 +814,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def _preplayMonitor(self):
         while self.isPlaying() and not self.isPlayingVideo() and not self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
-            self.xbmcMonitor.waitForAbort(0.1)
+            util.MONITOR.waitForAbort(0.1)
 
         if not self.isPlayingVideo() and not self.isPlayingAudio():
             self.onPlayBackFailed()
@@ -827,7 +827,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
                 ct = 0
                 while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
                     self.currentTime = self.getTime()
-                    self.xbmcMonitor.waitForAbort(0.1)
+                    util.MONITOR.waitForAbort(0.1)
                     if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
                         if not self.hasOSD:
                             self.hasOSD = True
@@ -864,12 +864,18 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         ct = 0
         while self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
             self.currentTime = self.getTime()
-            self.xbmcMonitor.waitForAbort(0.1)
+            util.MONITOR.waitForAbort(0.1)
 
             ct += 1
             if ct > 9:
                 ct = 0
                 self.handler.tick()
+
+
+def shutdown():
+    global PLAYER
+    PLAYER.close(shutdown=True)
+    del PLAYER
 
 
 PLAYER = PlexPlayer().init()

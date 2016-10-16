@@ -577,7 +577,6 @@ class MultiWindow(object):
         self._next = default_window or self._windows[0]
         self._properties = {}
         self._current = None
-        self._currentOnInit = None
         self._allClosed = False
         self.exitCommand = None
 
@@ -619,6 +618,9 @@ class MultiWindow(object):
             self._current.doModal()
 
         self._current.doClose()
+        del self._current
+        del self._next
+        del self._currentOnAction
 
     def setProperty(self, key, value):
         self._properties[key] = value

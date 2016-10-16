@@ -351,22 +351,14 @@ class AlbumWindow(EpisodesWindow):
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
         pl.startShuffled = shuffle
-        w = musicplayer.MusicPlayerWindow.open(track=pl.current(), playlist=pl)
-        try:
-            self.processCommand(w.exitCommand)
-        finally:
-            del w
+        self.openWindow(musicplayer.MusicPlayerWindow, track=pl.current(), playlist=pl)
 
     def episodePanelClicked(self):
         mli = self.episodePanelControl.getSelectedItem()
         if not mli:
             return
 
-        w = musicplayer.MusicPlayerWindow.open(track=mli.dataSource, album=self.season)
-        try:
-            self.processCommand(w.exitCommand)
-        finally:
-            del w
+        self.openWindow(musicplayer.MusicPlayerWindow, track=mli.dataSource, album=self.season)
 
     def updateProperties(self):
         self.setProperty(

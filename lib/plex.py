@@ -198,9 +198,6 @@ class CallbackEvent(plexapp.CompatEvent):
     def __exit__(self, exc_type, exc_value, traceback):
         self.wait()
 
-    def __del__(self):
-        self.close()
-
     def __repr__(self):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.signal)
 

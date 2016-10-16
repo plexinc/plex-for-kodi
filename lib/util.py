@@ -18,6 +18,7 @@ import xbmcaddon
 from plexnet import signalsmixin
 
 DEBUG = True
+_SHUTDOWN = False
 
 ADDON = xbmcaddon.Addon()
 
@@ -39,8 +40,12 @@ def LOG(msg, level=xbmc.LOGNOTICE):
 
 
 def DEBUG_LOG(msg):
+    if _SHUTDOWN:
+        return
+
     if not getSetting('debug', False) and not xbmc.getCondVisibility('System.GetBool(debug.showloginfo)'):
         return
+
     LOG(msg)
 
 
@@ -431,15 +436,6 @@ def trackIsPlaying(track):
     return xbmc.getCondVisibility('SubString(MusicPlayer.Comment,{0},Left)'.format('PLEX-{0}:'.format(track.ratingKey)))
 
 
-class PlayerMonitor(xbmc.Player):
-    def init(self, callback):
-        self.callback = callback
-        return self
-
-    def onPlayBackStarted(self):
-        self.callback()
-
-
 def addURLParams(url, params):
         if '?' in url:
             url += '&'
@@ -447,3 +443,11 @@ def addURLParams(url, params):
             url += '?'
         url += urllib.urlencode(params)
         return url
+
+
+def shutdown():
+    global MONITOR, ADDON, T, _SHUTDOWN
+    _SHUTDOWN = True
+    del MONITOR
+    del T
+    del ADDON

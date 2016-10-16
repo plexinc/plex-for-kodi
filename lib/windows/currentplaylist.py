@@ -111,7 +111,7 @@ class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
             self.updateSelectedProgress()
 
-    def onPlayBackStarted(self):
+    def onPlayBackStarted(self, **kwargs):
         self.setDuration()
 
     def repeatButtonClicked(self):
@@ -240,7 +240,7 @@ class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.selectionBox = self.getControl(self.SELECTION_BOX)
         self.selectionBoxHalf = self.SELECTION_BOX_WIDTH / 2
         self.selectionBoxMax = self.SEEK_IMAGE_WIDTH
-        self.playerMonitor = util.PlayerMonitor().init(self.onPlayBackStarted)
+        player.PLAYER.on('playback.started', self.onPlayBackStarted)
 
     def checkSeekActions(self, action, controlID):
         if controlID == self.SEEK_BUTTON_ID:

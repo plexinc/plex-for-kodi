@@ -35,13 +35,13 @@ class MutablePriorityQueue(Queue.PriorityQueue):
         """Return the lowest priority item in the queue (not reliable!)."""
         self.mutex.acquire()
         try:
-            l = self.queue and min(self.queue) or None
+            lowest = self.queue and min(self.queue) or None
         except:
-            l = None
+            lowest = None
             util.ERROR()
         finally:
             self.mutex.release()
-        return l
+        return lowest
 
 
 class BackgroundWorker:

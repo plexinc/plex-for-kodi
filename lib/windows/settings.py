@@ -503,3 +503,8 @@ def showQualityDialog(video):
     video.settings.setPrefOverride('local_quality', choice)
     video.settings.setPrefOverride('remote_quality', choice)
     video.settings.setPrefOverride('online_quality', choice)
+
+
+def openWindow():
+    w = SettingsWindow.open()
+    del w

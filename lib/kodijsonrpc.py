@@ -46,4 +46,5 @@ class KodiJSONRPC:
     def __getattr__(self, family):
         return self.methodHandler(family)
 
+
 rpc = KodiJSONRPC()

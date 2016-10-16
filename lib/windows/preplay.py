@@ -138,7 +138,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         playersettings.showDialog(video=self.video, non_playback=True)
 
     def infoButtonClicked(self):
-        info.InfoWindow.open(
+        w = info.InfoWindow.open(
             title=self.video.title,
             sub_title=self.getProperty('info'),
             thumb=self.video.type == 'episode' and self.video.thumb or self.video.defaultThumb,
@@ -147,6 +147,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             background=self.getProperty('background'),
             is_16x9=self.video.type == 'episode'
         )
+        del w
 
     def optionsButtonClicked(self):
         options = []

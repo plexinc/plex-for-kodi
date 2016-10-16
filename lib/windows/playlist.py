@@ -22,6 +22,7 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     height = 1080
 
     OPTIONS_GROUP_ID = 200
+    HOME_BUTTON_ID = 201
     SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
@@ -60,7 +61,9 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         kodigui.BaseWindow.onAction(self, action)
 
     def onClick(self, controlID):
-        if controlID == self.PLAYLIST_LIST_ID:
+        if controlID == self.HOME_BUTTON_ID:
+            self.closeWithCommand('HOME')
+        elif controlID == self.PLAYLIST_LIST_ID:
             self.playlistListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()

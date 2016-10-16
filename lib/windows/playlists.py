@@ -86,12 +86,7 @@ class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if not mli:
             return
 
-        w = playlist.PlaylistWindow.open(playlist=mli.dataSource)
-
-        try:
-            self.processCommand(w.exitCommand)
-        finally:
-            del w
+        self.openWindow(playlist.PlaylistWindow, playlist=mli.dataSource)
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(

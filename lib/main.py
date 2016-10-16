@@ -34,7 +34,7 @@ def _main():
     util.DEBUG_LOG('STARTED: {0}'.format(util.ADDON.getAddonInfo('version')))
     back = background.BackgroundWindow.create()
     background.setSplash()
-    hw = None
+
     try:
         while not xbmc.abortRequested:
             if plex.init():
@@ -45,6 +45,7 @@ def _main():
                         if not userselect.start():
                             return
 
+                    hw = None
                     try:
                         done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
                         if not plexapp.SERVERMANAGER.selectedServer:
@@ -81,8 +82,9 @@ def _main():
     except:
         util.ERROR()
     finally:
+        util.DEBUG_LOG('SHUTTING DOWN...')
         background.setShutdown()
-        player.PLAYER.close(shutdown=True)
+        player.shutdown()
         plexapp.APP.preShutdown()
         util.CRON.stop()
         backgroundthread.BGThreader.shutdown()
@@ -93,8 +95,11 @@ def _main():
         back.doClose()
         del back
 
-        import gc
-        util.DEBUG_LOG(gc.collect(2))
-
         util.DEBUG_LOG('FINISHED')
+
+        util.shutdown()
+
+        import gc
+        gc.collect(2)
+
         sys.exit()

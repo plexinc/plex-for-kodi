@@ -1,8 +1,9 @@
 import kodigui
+import windowutils
 from lib import util
 
 
-class InfoWindow(kodigui.BaseWindow):
+class InfoWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-info.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -42,8 +43,3 @@ class InfoWindow(kodigui.BaseWindow):
     def onClick(self, controlID):
         if controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
-
-    def showAudioPlayer(self):
-        import musicplayer
-        w = musicplayer.MusicPlayerWindow.open()
-        del w

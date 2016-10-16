@@ -726,7 +726,7 @@ class HomeWindow(kodigui.BaseWindow):
 
         if option == 'settings':
             import settings
-            settings.SettingsWindow.open()
+            settings.openWindow()
         else:
             self.closeOption = option
             self.doClose()

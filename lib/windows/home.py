@@ -13,6 +13,7 @@ from lib import player
 import plexnet
 from plexnet import plexapp
 
+import windowutils
 import playlists
 import busy
 import opener
@@ -187,7 +188,7 @@ class HomeWindow(kodigui.BaseWindow):
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.lastSection = HomeSection
-        self.tasks = None
+        self.tasks = []
         self.closeOption = None
         self.hubControls = None
         self.backgroundSet = False
@@ -195,6 +196,7 @@ class HomeWindow(kodigui.BaseWindow):
         self.sectionChangeTimeout = 0
         self.sectionHubs = {}
         self.updateHubs = {}
+        windowutils.HOME = self
 
     def onFirstInit(self):
         self.sectionList = kodigui.ManagedControlList(self, self.SECTION_LIST_ID, 7)

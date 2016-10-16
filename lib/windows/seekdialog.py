@@ -173,10 +173,13 @@ class SeekDialog(kodigui.BaseDialog):
         elif controlID == 500:
             self.bigSeekSelected()
 
-    def doClose(self):
+    def doClose(self, delete=False):
         try:
             if self.playlistDialog:
                 self.playlistDialog.doClose()
+                if delete:
+                    del self.playlistDialog
+                    self.playlistDialog = None
         finally:
             kodigui.BaseDialog.doClose(self)
 

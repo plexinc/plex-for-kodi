@@ -44,8 +44,7 @@ class PlayerBackgroundContext(object):
         self.window = PlayerBackground.create(**self.kwargs)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.window.doClose()
-        del self.window
+        self.close()
 
     def close(self):
         if self.window:

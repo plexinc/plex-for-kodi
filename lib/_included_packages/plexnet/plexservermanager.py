@@ -354,6 +354,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
                     'name': server.name,
                     'uuid': server.uuid,
                     'owned': server.owned,
+                    'sameNetwork': server.sameNetwork,
                     'connections': []
                 }
 

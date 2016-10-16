@@ -93,7 +93,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.closeWithCommand('HOME')
+            self.goHome()
         elif controlID == self.EXTRA_LIST_ID:
             self.openItem(self.extraListControl)
         elif controlID == self.RELATED_LIST_ID:

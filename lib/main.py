@@ -4,7 +4,7 @@ import xbmc
 import plex
 from plexnet import plexapp
 from plexnet import threadutils
-from windows import background, userselect, home
+from windows import background, userselect, home, windowutils
 import player
 import backgroundthread
 import util
@@ -39,13 +39,10 @@ def _main():
         while not xbmc.abortRequested:
             if plex.init():
                 background.setSplash(False)
-                tries = 0
                 while not xbmc.abortRequested:
                     if not plexapp.ACCOUNT.isAuthenticated and (len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected):
                         if not userselect.start():
                             return
-
-                    hw = None
                     try:
                         done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
                         if not plexapp.SERVERMANAGER.selectedServer:
@@ -56,27 +53,22 @@ def _main():
                             finally:
                                 background.setBusy(False)
 
-                        tries += 1
-                        if not plexapp.SERVERMANAGER.selectedServer and tries <= 1:
-                            util.DEBUG_LOG('No servers found. Waiting for selected server one more time...')
-                            continue
-
                         util.DEBUG_LOG('STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
 
-                        hw = home.HomeWindow.open()
+                        windowutils.HOME = home.HomeWindow.open()
 
-                        if not hw.closeOption:
+                        if not windowutils.HOME.closeOption:
                             return
 
-                        if hw.closeOption == 'signout':
+                        if windowutils.HOME.closeOption == 'signout':
                             util.setSetting('auth.token', '')
                             util.DEBUG_LOG('Signing out...')
                             plexapp.ACCOUNT.signOut()
                             break
-                        elif hw.closeOption == 'switch':
+                        elif windowutils.HOME.closeOption == 'switch':
                             plexapp.ACCOUNT.isAuthenticated = False
                     finally:
-                        del hw
+                        windowutils.shutdownHome()
             else:
                 break
     except:

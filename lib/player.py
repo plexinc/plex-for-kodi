@@ -206,10 +206,13 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.player.control('play')
             self.player.seekTime(self.seekOnStart / 1000.0)
 
-    def closeSeekDialog(self):
+    def closeSeekDialog(self, delete=False):
         util.CRON.forceTick()
         if self.dialog:
-            self.dialog.doClose()
+            self.dialog.doClose(delete)
+            if delete:
+                del self.dialog
+                self.dialog = None
 
     def onPlayBackStarted(self):
         self.updateNowPlaying(refreshQueue=True)
@@ -303,7 +306,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.dialog.tick()
 
     def close(self):
-        self.closeSeekDialog()
+        self.closeSeekDialog(delete=True)
 
     def sessionEnded(self):
         if self.ended:

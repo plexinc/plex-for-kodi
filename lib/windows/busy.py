@@ -19,6 +19,7 @@ def dialog(msg='LOADING'):
                 return func(*args, **kwargs)
             finally:
                 w.doClose()
+                del w
         return inner
     return methodWrap
 

@@ -3,6 +3,7 @@ from lib import util
 
 util.setGlobalProperty('background.busy', '')
 util.setGlobalProperty('background.shutdown', '')
+util.setGlobalProperty('background.splash', '')
 
 
 class BackgroundWindow(kodigui.BaseWindow):
@@ -12,6 +13,14 @@ class BackgroundWindow(kodigui.BaseWindow):
     res = '1080i'
     width = 1920
     height = 1080
+
+    def __init__(self, *args, **kwargs):
+        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        self.function = kwargs.get('function')
+
+    def onFirstInit(self):
+        self.function()
+        self.doClose()
 
 
 def setBusy(on=True):

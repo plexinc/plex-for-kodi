@@ -1,14 +1,19 @@
 import gc
 import atexit
 import threading
+
 import xbmc
 import plex
+
 from plexnet import plexapp
 from plexnet import threadutils
 from windows import background, userselect, home, windowutils
 import player
 import backgroundthread
 import util
+
+
+BACKGROUND = None
 
 
 def waitForThreads():
@@ -33,13 +38,15 @@ def realExit():
 
 
 def main():
+    global BACKGROUND
     with util.Cron(5):
-        _main()
+        BACKGROUND = background.BackgroundWindow.create(function=_main)
+        BACKGROUND.modal()
+        del BACKGROUND
 
 
 def _main():
     util.DEBUG_LOG('STARTED: {0}'.format(util.ADDON.getAddonInfo('version')))
-    back = background.BackgroundWindow.create()
     background.setSplash()
 
     try:
@@ -76,8 +83,9 @@ def _main():
                             plexapp.ACCOUNT.isAuthenticated = False
                     finally:
                         windowutils.shutdownHome()
+                        BACKGROUND.activate()
                         gc.collect(2)
-                        back.show()
+
             else:
                 break
     except:
@@ -93,8 +101,6 @@ def _main():
         waitForThreads()
         background.setBusy(False)
         background.setSplash(False)
-        back.doClose()
-        del back
 
         util.DEBUG_LOG('FINISHED')
 

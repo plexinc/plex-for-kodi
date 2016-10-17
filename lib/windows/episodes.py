@@ -16,7 +16,7 @@ import opener
 import search
 
 
-class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-episodes.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -41,11 +41,11 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     OPTIONS_BUTTON_ID = 303
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.season = kwargs.get('season')
         self.parentList = kwargs.get('parentList')
         self.seasons = None
-        self.show = kwargs.get('show')
+        self.show_ = kwargs.get('show')
         self.exitCommand = None
 
     def onFirstInit(self):
@@ -86,7 +86,7 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.ControlledWindow.onAction(self, action)
 
     def checkOptionsAction(self, action):
         if action == xbmcgui.ACTION_MOVE_UP:
@@ -112,11 +112,11 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.closeWithCommand('HOME')
+            self.goHome()
         elif controlID == self.EPISODE_PANEL_ID:
             self.episodePanelClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
-            self.showAudioPlayer()
+            self.show_AudioPlayer()
         elif controlID == self.PLAY_BUTTON_ID:
             self.playButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:
@@ -296,7 +296,7 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         elif choice['key'] == 'to_show':
             self.processCommand(opener.open(self.season.parentRatingKey))
         elif choice['key'] == 'to_section':
-            self.closeWithCommand('HOME:{0}'.format(self.season.getLibrarySectionId()))
+            self.goHome(self.season.getLibrarySectionId())
 
     def checkForHeaderFocus(self, action):
         if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):
@@ -309,10 +309,10 @@ class EpisodesWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     def updateProperties(self):
         self.setProperty(
             'background',
-            (self.show or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            (self.show_ or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
-        self.setProperty('show.title', self.show and self.show.title or '')
+        self.setProperty('show.title', self.show_ and self.show_.title or '')
         self.setProperty('season.title', self.season.title)
 
     def createListItem(self, obj):

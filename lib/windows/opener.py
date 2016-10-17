@@ -1,3 +1,4 @@
+import gc
 
 import busy
 
@@ -65,6 +66,7 @@ def handleOpen(winclass, **kwargs):
         pass
     finally:
         del w
+        gc.collect(2)
 
     return ''
 

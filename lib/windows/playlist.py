@@ -13,7 +13,7 @@ from lib import util
 from lib import player
 
 
-class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -22,7 +22,7 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     height = 1080
 
     OPTIONS_GROUP_ID = 200
-    HOME_BUTTON_ID = 201
+    s_BUTTON_ID = 201
     SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 
@@ -38,7 +38,7 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     PLAYLIST_LIST_ID = 101
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.playlist = kwargs.get('playlist')
         self.exitCommand = None
 
@@ -58,11 +58,11 @@ class PlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.ControlledWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.closeWithCommand('HOME')
+            self.goHome()
         elif controlID == self.PLAYLIST_LIST_ID:
             self.playlistListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:

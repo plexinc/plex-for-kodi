@@ -236,6 +236,9 @@ class HomeWindow(kodigui.BaseWindow):
         if self.serverRefresh():
             self.setFocusId(self.SECTION_LIST_ID)
 
+        self. hookSignals()
+
+    def hookSignals(self):
         plexapp.SERVERMANAGER.on('new:server', self.onNewServer)
         plexapp.SERVERMANAGER.on('remove:server', self.onRemoveServer)
         plexapp.SERVERMANAGER.on('reachable:server', self.onReachableServer)
@@ -244,6 +247,19 @@ class HomeWindow(kodigui.BaseWindow):
 
         player.PLAYER.on('session.ended', self.updateOnDeckHubs)
         util.MONITOR.on('changed.watchstatus', self.updateOnDeckHubs)
+
+    def unhookSignals(self):
+        plexapp.SERVERMANAGER.off('new:server', self.onNewServer)
+        plexapp.SERVERMANAGER.off('remove:server', self.onRemoveServer)
+        plexapp.SERVERMANAGER.off('reachable:server', self.onReachableServer)
+
+        plexapp.APP.off('change:selectedServer', self.onSelectedServerChange)
+
+        player.PLAYER.off('session.ended', self.updateOnDeckHubs)
+        util.MONITOR.off('changed.watchstatus', self.updateOnDeckHubs)
+
+    def shutdown(self):
+        self.unhookSignals()
 
     def onAction(self, action):
         controlID = self.getFocusId()

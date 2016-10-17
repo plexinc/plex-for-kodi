@@ -3,7 +3,7 @@ import windowutils
 from lib import util
 
 
-class InfoWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class InfoWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-info.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -17,7 +17,7 @@ class InfoWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     THUMB_DIM_SQUARE = (519, 519)
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.title = kwargs.get('title')
         self.subTitle = kwargs.get('sub_title')
         self.thumb = kwargs.get('thumb')

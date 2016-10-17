@@ -207,7 +207,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.closeWithCommand('HOME')
+            self.goHome()
         elif controlID == self.POSTERS_PANEL_ID:
             self.showPanelClicked()
         elif controlID == self.KEY_LIST_ID:
@@ -332,7 +332,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice['key'] == 'to_section':
-            self.closeWithCommand('HOME:{0}'.format(self.section.getLibrarySectionId()))
+            self.goHome(self.section.getLibrarySectionId())
 
     def sortButtonClicked(self):
         desc = 'script.plex/indicators/arrow-down.png'
@@ -577,12 +577,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             else:
                 mli.setProperty('unwatched', '1')
 
-    def onChildWindowClosed(self, w):
-        try:
-            self.processCommand(w.exitCommand)
-        finally:
-            del w
-
     def setTitle(self):
         if self.section.TYPE == 'artist':
             self.setProperty('screen.title', 'MUSIC')
@@ -818,7 +812,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             pos += 1
 
 
-class PostersWindow(kodigui.BaseWindow):
+class PostersWindow(kodigui.ControlledWindow):
     xmlFile = 'script-plex-posters.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'

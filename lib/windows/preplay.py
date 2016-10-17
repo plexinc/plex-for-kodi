@@ -16,7 +16,7 @@ from lib import colors
 from lib import util
 
 
-class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -50,7 +50,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     PLAYER_STATUS_BUTTON_ID = 204
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
         self.parentList = kwargs.get('parent_list')
         self.videos = None
@@ -89,7 +89,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.ControlledWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
@@ -138,7 +138,8 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         playersettings.showDialog(video=self.video, non_playback=True)
 
     def infoButtonClicked(self):
-        w = info.InfoWindow.open(
+        opener.handleOpen(
+            info.InfoWindow,
             title=self.video.title,
             sub_title=self.getProperty('info'),
             thumb=self.video.type == 'episode' and self.video.thumb or self.video.defaultThumb,
@@ -147,7 +148,6 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             background=self.getProperty('background'),
             is_16x9=self.video.type == 'episode'
         )
-        del w
 
     def optionsButtonClicked(self):
         options = []
@@ -199,7 +199,7 @@ class PrePlayWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         elif choice['key'] == 'to_show':
             self.processCommand(opener.open(self.video.grandparentRatingKey))
         elif choice['key'] == 'to_section':
-            self.closeWithCommand('HOME:{0}'.format(self.video.getLibrarySectionId()))
+            self.goHome(self.video.getLibrarySectionId())
         elif choice['key'] == 'delete':
             self.delete()
 

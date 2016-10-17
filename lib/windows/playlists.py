@@ -13,7 +13,7 @@ from lib import colors
 from plexnet import plexapp
 
 
-class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-playlists.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -40,7 +40,7 @@ class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     PLAYER_STATUS_BUTTON_ID = 204
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.exitCommand = None
 
     def onFirstInit(self):
@@ -64,11 +64,11 @@ class PlaylistsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.ControlledWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.closeWithCommand('HOME')
+            self.goHome()
         elif controlID == self.AUDIO_PL_LIST_ID:
             self.playlistListClicked(self.audioPLListControl)
         elif controlID == self.VIDEO_PL_LIST_ID:

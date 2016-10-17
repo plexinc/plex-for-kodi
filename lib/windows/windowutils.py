@@ -7,9 +7,12 @@ class UtilMixin():
     def __init__(self):
         self.exitCommand = None
 
-    def goHome(self):
+    def goHome(self, section=None):
         HOME.show()
-        self.closeWithCommand('HOME')
+        if section:
+            self.closeWithCommand('HOME:{0}'.format(section))
+        else:
+            self.closeWithCommand('HOME')
 
     def openWindow(self, window_class, **kwargs):
         self.processCommand(opener.handleOpen(window_class, **kwargs))
@@ -28,6 +31,10 @@ class UtilMixin():
         self.processCommand(opener.handleOpen(musicplayer.MusicPlayerWindow, **kwargs))
 
 
-def shutdownHome(self):
+def shutdownHome():
     global HOME
+    if HOME:
+        HOME.shutdown()
     del HOME
+    HOME = None
+    HOME

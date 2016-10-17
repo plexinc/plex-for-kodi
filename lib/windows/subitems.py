@@ -1,3 +1,5 @@
+import gc
+
 import xbmc
 import xbmcgui
 import kodigui
@@ -18,7 +20,7 @@ import windowutils
 import search
 
 
-class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-seasons.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -63,7 +65,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     OPTIONS_BUTTON_ID = 304
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.mediaItem = kwargs.get('media_item')
         self.parentList = kwargs.get('parent_list')
         self.mediaItems = None
@@ -163,11 +165,11 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.ControlledWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
-            self.closeWithCommand('HOME')
+            self.goHome()
         elif controlID == self.SUB_ITEM_LIST_ID:
             self.subItemListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
@@ -297,6 +299,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         if not self.subItemListControl.size():
             self.closeWithCommand(w.exitCommand)
             del w
+            gc.collect(2)
             return
 
         if update:
@@ -308,6 +311,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.processCommand(w.exitCommand)
         finally:
             del w
+            gc.collect(2)
 
     def infoButtonClicked(self):
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(self.mediaItem.type == 'show' and 'show' or 'music')
@@ -322,6 +326,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             is_square=bool(isinstance(self, ArtistWindow))
         )
         del w
+        gc.collect(2)
 
     def playButtonClicked(self, shuffle=False):
         pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
@@ -368,7 +373,7 @@ class ShowWindow(kodigui.BaseWindow, windowutils.UtilMixin):
             self.updateProperties()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_section':
-            self.closeWithCommand('HOME:{0}'.format(self.mediaItem.getLibrarySectionId()))
+            self.goHome(self.mediaItem.getLibrarySectionId())
 
     def roleClicked(self):
         mli = self.rolesListControl.getSelectedItem()

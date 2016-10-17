@@ -5,6 +5,8 @@ import time
 import threading
 import traceback
 
+MONITOR = None
+
 
 class BaseFunctions:
     xmlFile = ''
@@ -127,6 +129,29 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
 
     def onClosed(self):
         pass
+
+
+class ControlledWindow(BaseWindow):
+    def onAction(self, action):
+        try:
+            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+                self.doClose()
+                return
+        except:
+            traceback.print_exc()
+
+        BaseWindow.onAction(self, action)
+
+    def doModal(self):
+        self.show()
+        self.wait()
+
+    def wait(self):
+        while not self._closing and not MONITOR.waitForAbort(0.1):
+            pass
+
+    def close(self):
+        self._closing = True
 
 
 class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
@@ -557,11 +582,11 @@ class ManagedControlList(object):
         self._updateItems()
 
 
-class _MWBackground(xbmcgui.WindowXML):
+class _MWBackground(ControlledWindow):
     def __init__(self, *args, **kwargs):
         self._multiWindow = kwargs.get('multi_window')
         self.started = False
-        xbmcgui.WindowXML.__init__(self, *args, **kwargs)
+        BaseWindow.__init__(self, *args, **kwargs)
 
     def onInit(self):
         if self.started:
@@ -609,13 +634,16 @@ class MultiWindow(object):
     def open(cls, **kwargs):
         mw = cls(**kwargs)
         b = _MWBackground(mw.bgXML, mw.path, mw.theme, mw.res, multi_window=mw)
-        b.doModal()
+        b.modal()
+        del b
+        import gc
+        gc.collect(2)
         return mw
 
     def _open(self):
         while not xbmc.abortRequested and not self._allClosed:
             self._setupCurrent(self._next)
-            self._current.doModal()
+            self._current.modal()
 
         self._current.doClose()
         del self._current

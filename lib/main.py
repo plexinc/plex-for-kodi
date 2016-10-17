@@ -1,4 +1,5 @@
-import sys
+import gc
+import atexit
 import threading
 import xbmc
 import plex
@@ -12,17 +13,23 @@ import util
 
 def waitForThreads():
     util.DEBUG_LOG('Checking for any remaining threads')
-    for t in threading.enumerate():
-        if t != threading.currentThread():
-            if t.isAlive():
-                util.DEBUG_LOG('Waiting on: {0}...'.format(t.name))
-                if isinstance(t, threading._Timer):
-                    t.cancel()
-                    t.join()
-                elif isinstance(t, threadutils.KillableThread):
-                    t.kill(force_and_wait=True)
-                else:
-                    t.join()
+    while len(threading.enumerate()) > 1:
+        for t in threading.enumerate():
+            if t != threading.currentThread():
+                if t.isAlive():
+                    util.DEBUG_LOG('Waiting on: {0}...'.format(t.name))
+                    if isinstance(t, threading._Timer):
+                        t.cancel()
+                        t.join()
+                    elif isinstance(t, threadutils.KillableThread):
+                        t.kill(force_and_wait=True)
+                    else:
+                        t.join()
+
+
+@atexit.register
+def realExit():
+    xbmc.log('script.plex: REALLY FINISHED', xbmc.LOGNOTICE)
 
 
 def main():
@@ -69,6 +76,8 @@ def _main():
                             plexapp.ACCOUNT.isAuthenticated = False
                     finally:
                         windowutils.shutdownHome()
+                        gc.collect(2)
+                        back.show()
             else:
                 break
     except:
@@ -89,9 +98,8 @@ def _main():
 
         util.DEBUG_LOG('FINISHED')
 
+        from windows import kodigui
+        kodigui.MONITOR = None
         util.shutdown()
 
-        import gc
         gc.collect(2)
-
-        sys.exit()

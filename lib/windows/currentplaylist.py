@@ -12,7 +12,7 @@ from lib import player
 from lib import kodijsonrpc
 
 
-class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
+class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-music_current_playlist.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -50,7 +50,7 @@ class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
     BAR_BOTTOM = 969
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.selectedOffset = 0
         self.setDuration()
         self.exitCommand = None
@@ -79,7 +79,7 @@ class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         except:
             util.ERROR()
 
-        kodigui.BaseWindow.onAction(self, action)
+        kodigui.ControlledWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_LIST_ID:
@@ -164,7 +164,7 @@ class CurrentPlaylistWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         elif choice['key'] == 'to_artist':
             self.processCommand(opener.open(track.grandparentRatingKey))
         elif choice['key'] == 'to_section':
-            self.closeWithCommand('HOME:{0}'.format(track.getLibrarySectionId()))
+            self.goHome(track.getLibrarySectionId())
 
     def selectPlayingItem(self):
         for mli in self.playlistListControl:

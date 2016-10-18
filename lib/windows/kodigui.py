@@ -327,7 +327,6 @@ class ManagedListItem(object):
 class ManagedControlList(object):
     def __init__(self, window, control_id, max_view_index):
         self.controlID = control_id
-        self.window = window
         self.control = window.getControl(control_id)
         self.items = []
         self._sortKey = None
@@ -369,7 +368,6 @@ class ManagedControlList(object):
 
     def reInit(self, window, control_id):
         self.controlID = control_id
-        self.window = window
         self.control = window.getControl(control_id)
         self.control.addItems([i._takeListItem(self, self._nextID()) for i in self.items])
 
@@ -576,8 +574,7 @@ class ManagedControlList(object):
 
     def newControl(self, window=None, control_id=None):
         self.controlID = control_id or self.controlID
-        self.window = window or self.window
-        self.control = self.window.getControl(self.controlID)
+        self.control = window.getControl(self.controlID)
         self.control.addItems([xbmcgui.ListItem() for i in range(self.size())])
         self._updateItems()
 

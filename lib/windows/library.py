@@ -164,8 +164,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
     def onFirstInit(self):
         if self.showPanelControl:
-            self.showPanelControl.newControl()
-            self.keyListControl.newControl()
+            self.showPanelControl.newControl(self)
+            self.keyListControl.newControl(self)
             self.setFocusId(self.VIEWTYPE_BUTTON_ID)
         else:
             self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)

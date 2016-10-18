@@ -280,7 +280,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('video.title', self.title)
         self.setProperty('video.title2', self.title2)
         self.setProperty('is.show', (self.player.video.type == 'episode') and '1' or '')
-        self.setProperty('time.duration', util.timeDisplay(self.duration))
+        self.setProperty('time.left', util.timeDisplay(self.duration))
 
         pq = self.handler.playlist
         if pq:
@@ -310,6 +310,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.positionControl.setWidth(w)
         to = self.trueOffset()
         self.setProperty('time.current', util.timeDisplay(to))
+        self.setProperty('time.left', util.timeDisplay(self.duration - to))
         self.setProperty('time.end', time.strftime('%I:%M %p', time.localtime(time.time() + ((self.duration - to) / 1000))).lstrip('0'))
 
     def seekForward(self, offset):

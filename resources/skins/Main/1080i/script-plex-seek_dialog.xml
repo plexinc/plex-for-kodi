@@ -112,7 +112,7 @@
                 <align>right</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>
-                <label>$INFO[Window.Property(time.duration)]</label>
+                <label>$INFO[Window.Property(time.left)]</label>
             </control>
             <control type="label">
                 <posx>1860</posx>

@@ -316,9 +316,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
 
 class AudioPlayerHandler(BasePlayerHandler):
-    def __init__(self, player, window=None):
+    def __init__(self, player):
         BasePlayerHandler.__init__(self, player)
-        self.window = window
         self.timelineType = 'music'
         self.extractTrackInfo()
 
@@ -456,13 +455,6 @@ class AudioPlayerHandler(BasePlayerHandler):
 
     def finish(self):
         self.player.trigger('session.ended')
-
-        if not self.window:
-            return
-
-        self.window.doClose()
-        del self.window
-        self.window = None
 
     def tick(self):
         self.stampCurrentTime()
@@ -628,14 +620,14 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         return url, li
 
-    def playAudio(self, track, window=None, fanart=None):
-        self.handler = AudioPlayerHandler(self, window)
+    def playAudio(self, track, fanart=None):
+        self.handler = AudioPlayerHandler(self)
         url, li = self.createTrackListItem(track, fanart)
         self.stopAndWait()
         self.play(url, li)
 
-    def playAlbum(self, album, startpos=-1, window=None, fanart=None):
-        self.handler = AudioPlayerHandler(self, window)
+    def playAlbum(self, album, startpos=-1, fanart=None):
+        self.handler = AudioPlayerHandler(self)
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         plist.clear()
         index = 1
@@ -647,8 +639,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.stopAndWait()
         self.play(plist, startpos=startpos)
 
-    def playAudioPlaylist(self, playlist, startpos=-1, window=None, fanart=None):
-        self.handler = AudioPlayerHandler(self, window)
+    def playAudioPlaylist(self, playlist, startpos=-1, fanart=None):
+        self.handler = AudioPlayerHandler(self)
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         plist.clear()
         index = 1

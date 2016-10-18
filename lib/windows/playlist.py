@@ -22,7 +22,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     height = 1080
 
     OPTIONS_GROUP_ID = 200
-    s_BUTTON_ID = 201
+    HOME_BUTTON_ID = 201
     SEARCH_BUTTON_ID = 202
     PLAYER_STATUS_BUTTON_ID = 204
 

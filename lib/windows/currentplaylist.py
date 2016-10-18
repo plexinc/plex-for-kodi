@@ -55,6 +55,13 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setDuration()
         self.exitCommand = None
 
+    def doClose(self, **kwargs):
+        player.PLAYER.off('playback.started', self.onPlayBackStarted)
+        player.PLAYER.off('playlist.changed', self.playQueueCallback)
+        if player.PLAYER.handler.playQueue and player.PLAYER.handler.playQueue.isRemote:
+            player.PLAYER.handler.playQueue.off('change', self.updateProperties)
+        kodigui.ControlledWindow.doClose(self)
+
     def onFirstInit(self):
         self.playlistListControl = kodigui.ManagedControlList(self, self.PLAYLIST_LIST_ID, 9)
         self.setupSeekbar()
@@ -72,9 +79,6 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         try:
             controlID = self.getFocusId()
             if self.checkSeekActions(action, controlID):
-                return
-            elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
-                self.doClose()
                 return
         except:
             util.ERROR()

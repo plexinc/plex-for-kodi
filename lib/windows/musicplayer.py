@@ -1,5 +1,4 @@
 import xbmc
-import xbmcgui
 import kodigui
 import currentplaylist
 import opener
@@ -41,7 +40,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
     BAR_RIGHT = 1920
 
     def __init__(self, *args, **kwargs):
-        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+        kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.track = kwargs.get('track')
         self.playlist = kwargs.get('playlist')
         self.album = kwargs.get('album')
@@ -54,6 +53,7 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
             self.setDuration()
 
     def onFirstInit(self):
+        player.PLAYER.on('session.ended', self.doClose)
         if self.playlist and self.playlist.isRemote:
             self.playlist.on('change', self.updateProperties)
         self.setupSeekbar()
@@ -63,18 +63,12 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         self.play()
         self.setFocusId(406)
 
-    def onAction(self, action):
-        try:
-            controlID = self.getFocusId()
-            if self.checkSeekActions(action, controlID):
-                return
-            elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
-                self.doClose()
-                return
-        except:
-            util.ERROR()
-
-        kodigui.BaseWindow.onAction(self, action)
+    def doClose(self, **kwargs):
+        player.PLAYER.off('session.ended', self.doClose)
+        player.PLAYER.off('playback.started', self.onPlayBackStarted)
+        if self.playlist and self.playlist.isRemote:
+            self.playlist.off('change', self.updateProperties)
+        kodigui.ControlledWindow.doClose(self)
 
     def onClick(self, controlID):
         if controlID == self.PLAYLIST_BUTTON_ID:
@@ -146,10 +140,10 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
         fanart = None
         if self.playlist:
             fanart = self.playlist.get('composite') or self.playlist.defaultArt
-        # player.PLAYER.playAudio(self.track, window=self, fanart=self.getProperty('background'))
+        # player.PLAYER.playAudio(self.track, fanart=self.getProperty('background'))
         if self.album:
-            player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, window=self, fanart=fanart)
+            player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, fanart=fanart)
         elif self.playlist:
-            player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), window=self, fanart=fanart)
+            player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), fanart=fanart)
         else:
-            player.PLAYER.playAudio(self.track, window=self)
+            player.PLAYER.playAudio(self.track)

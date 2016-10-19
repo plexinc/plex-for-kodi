@@ -949,11 +949,12 @@ class MultiSelectDialog(BaseDialog):
 
 
 class PropertyTimer():
-    def __init__(self, window_id, timeout, property_, value, addon_id=None, callback=None):
+    def __init__(self, window_id, timeout, property_, value='', init_value='1', addon_id=None, callback=None):
         self._winID = window_id
         self._timeout = timeout
         self._property = property_
         self._value = value
+        self._initValue = init_value
         self._endTime = 0
         self._thread = None
         self._addonID = addon_id
@@ -987,6 +988,7 @@ class PropertyTimer():
         self._endTime = time.time() + self._timeout
 
     def _start(self):
+        self.init(self._initValue)
         self._thread = threading.Thread(target=self._wait)
         self._thread.start()
 
@@ -1007,10 +1009,12 @@ class PropertyTimer():
     def reset(self, close_win=None, init=None):
         if init:
             self.init(init)
+        else:
+            self.init(self._initValue)
 
         if self._closed:
-
             return
+
         if not self._timeout:
             return
 

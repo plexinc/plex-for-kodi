@@ -8,27 +8,20 @@
     <!-- <zorder>100</zorder> -->
     <controls>
         <control type="group">
+            <visible>Window.IsActive(seekbar) | Window.IsActive(videoosd) | Player.ShowInfo</visible>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image">
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
-                <height>140</height>
-                <texture>script.plex/white-square.png</texture>
-                <colordiffuse>A0000000</colordiffuse>
-            </control>
-            <control type="image">
-                <posx>0</posx>
-                <posy>940</posy>
-                <width>1920</width>
-                <height>140</height>
-                <texture>script.plex/white-square.png</texture>
-                <colordiffuse>A0000000</colordiffuse>
+                <height>1080</height>
+                <texture>script.plex/player-fade.png</texture>
+                <colordiffuse>FF080808</colordiffuse>
             </control>
         </control>
+
         <control type="group">
-            <visible>Window.IsActive(seekbar)</visible>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image">
@@ -37,7 +30,7 @@
                 <width>1920</width>
                 <height>140</height>
                 <texture>script.plex/white-square.png</texture>
-                <colordiffuse>FF000000</colordiffuse>
+                <colordiffuse>A0000000</colordiffuse>
             </control>
             <control type="image">
                 <posx>0</posx>
@@ -45,7 +38,7 @@
                 <width>1920</width>
                 <height>140</height>
                 <texture>script.plex/white-square.png</texture>
-                <colordiffuse>FF000000</colordiffuse>
+                <colordiffuse>A0000000</colordiffuse>
             </control>
         </control>
 
@@ -128,7 +121,7 @@
         </control>
 
         <control type="group" id="300">
-            <visible>!IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(500)]</visible>
+            <visible>!IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(501)]</visible>
             <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
             <posx>0</posx>
             <posy>752</posy>
@@ -493,7 +486,7 @@
                 <posy>0</posy>
                 <width>1920</width>
                 <height>10</height>
-                <onup>500</onup>
+                <onup>501</onup>
                 <ondown>400</ondown>
                 <texturefocus>script.plex/white-square.png</texturefocus>
                 <texturenofocus>script.plex/white-square.png</texturenofocus>
@@ -502,7 +495,7 @@
         </control>
 
         <control type="image" id="201">
-            <visible>!Control.HasFocus(100) + !Control.HasFocus(500)</visible>
+            <visible>!Control.HasFocus(100) + !Control.HasFocus(501)</visible>
             <animation effect="fade" time="100" delay="100" end="0">Hidden</animation>
             <posx>0</posx>
             <posy>942</posy>
@@ -523,45 +516,67 @@
             <colordiffuse>FFE5A00D</colordiffuse>
         </control>
 
-        <control type="list" id="500">
-            <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
-            <hitrect x="-20" y="-20" w="10" h="10" />
-            <visible allowhiddenfocus="true">Control.HasFocus(500)</visible>
+        <control type="group" id="500">
+            <animation effect="slide" time="100" start="0,0" end="0,20" reversible="true" condition="Control.HasFocus(501)">Conditional</animation>
+            <visible>IsEmpty(Window.Property(mouse.mode)) + IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)]</visible>
             <posx>-8</posx>
-            <posy>937</posy>
-            <width>1928</width>
-            <height>16</height>
-            <ondown>100</ondown>
-            <scrolltime>200</scrolltime>
-            <orientation>horizontal</orientation>
-            <preloaditems>4</preloaditems>
-            <!-- ITEM LAYOUT ########################################## -->
-            <itemlayout width="160">
-                <control type="image">
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texture>script.plex/indicators/seek-selection-marker.png</texture>
-                    <colordiffuse>FF606060</colordiffuse>
-                </control>
-            </itemlayout>
+            <posy>917</posy>
+            <control type="image">
+                <posx>-200</posx>
+                <posy>5</posy>
+                <width>2320</width>
+                <height>6</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>FF000000</colordiffuse>
+            </control>
+            <control type="list" id="501">
+                <hitrect x="-20" y="-20" w="10" h="10" />
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1928</width>
+                <height>16</height>
+                <ondown>100</ondown>
+                <scrolltime>200</scrolltime>
+                <orientation>horizontal</orientation>
+                <preloaditems>4</preloaditems>
+                <!-- ITEM LAYOUT ########################################## -->
+                <itemlayout width="160">
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texture>script.plex/indicators/seek-selection-marker.png</texture>
+                        <colordiffuse>FF606060</colordiffuse>
+                    </control>
+                </itemlayout>
 
-            <!-- FOCUSED LAYOUT ####################################### -->
-            <focusedlayout width="160">
-                <control type="image">
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>16</width>
-                    <height>16</height>
-                    <texture>script.plex/indicators/seek-selection-marker.png</texture>
-                    <colordiffuse>FFE5A00D</colordiffuse>
-                </control>
-            </focusedlayout>
+                <!-- FOCUSED LAYOUT ####################################### -->
+                <focusedlayout width="160">
+                    <control type="image">
+                        <visible>!Control.HasFocus(501)</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texture>script.plex/indicators/seek-selection-marker.png</texture>
+                        <colordiffuse>FF606060</colordiffuse>
+                    </control>
+                    <control type="image">
+                        <visible>Control.HasFocus(501)</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>16</width>
+                        <height>16</height>
+                        <texture>script.plex/indicators/seek-selection-marker.png</texture>
+                        <colordiffuse>FFE5A00D</colordiffuse>
+                    </control>
+                </focusedlayout>
+            </control>
         </control>
 
         <control type="group" id="202">
-            <visible>Control.HasFocus(100) | Control.HasFocus(500)</visible>
+            <visible>Control.HasFocus(100) | Control.HasFocus(501)</visible>
             <posx>0</posx>
             <posy>896</posy>
             <control type="group" id="203">

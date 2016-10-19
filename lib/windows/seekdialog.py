@@ -10,6 +10,15 @@ import dropdown
 
 from lib import util
 
+KEY_MOVE_SET = frozenset(
+    (
+        xbmcgui.ACTION_MOVE_LEFT,
+        xbmcgui.ACTION_MOVE_RIGHT,
+        xbmcgui.ACTION_MOVE_UP,
+        xbmcgui.ACTION_MOVE_DOWN
+    )
+)
+
 
 class SeekDialog(kodigui.BaseDialog):
     xmlFile = 'script-plex-seek_dialog.xml'
@@ -36,6 +45,9 @@ class SeekDialog(kodigui.BaseDialog):
     NEXT_BUTTON_ID = 409
     PLAYLIST_BUTTON_ID = 410
     OPTIONS_BUTTON_ID = 411
+
+    BIG_SEEK_GROUP_ID = 500
+    BIG_SEEK_LIST_ID = 501
 
     BAR_X = 0
     BAR_Y = 921
@@ -65,6 +77,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.playlistDialog = None
         self.timeout = None
         self.hasDialog = False
+        self.lastFocusID = None
 
     @property
     def player(self):
@@ -89,6 +102,8 @@ class SeekDialog(kodigui.BaseDialog):
     def _onFirstInit(self):
         self.resetTimeout()
 
+        self.bigSeekHideTimer = kodigui.PropertyTimer(self._winID, 0.5, 'hide.bigseek')
+
         if self.handler.playlist:
             self.handler.playlist.on('change', self.updateProperties)
 
@@ -97,7 +112,8 @@ class SeekDialog(kodigui.BaseDialog):
         self.bifImageControl = self.getControl(self.BIF_IMAGE_ID)
         self.selectionIndicator = self.getControl(self.SELECTION_INDICATOR)
         self.selectionBox = self.getControl(203)
-        self.bigSeekControl = kodigui.ManagedControlList(self, 500, 12)
+        self.bigSeekControl = kodigui.ManagedControlList(self, self.BIG_SEEK_LIST_ID, 12)
+        self.bigSeekGroupControl = self.getControl(self.BIG_SEEK_GROUP_ID)
         self.initialized = True
         self.updateProperties()
         self.videoSettingsHaveChanged()
@@ -115,6 +131,15 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetTimeout()
 
             controlID = self.getFocusId()
+            if action.getId() in KEY_MOVE_SET:
+                self.setProperty('mouse.mode', '')
+                if not controlID:
+                    self.setBigSeekShift()
+                    self.setFocusId(400)
+                    return
+            elif action == xbmcgui.ACTION_MOUSE_MOVE:
+                self.setProperty('mouse.mode', '1')
+
             if controlID == self.MAIN_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
@@ -128,7 +153,7 @@ class SeekDialog(kodigui.BaseDialog):
                 #     self.seekForward(60000)
                 # elif action == xbmcgui.ACTION_MOVE_DOWN:
                 #     self.seekBack(60000)
-            elif controlID == 500:
+            elif controlID == self.BIG_SEEK_LIST_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
                     return self.updateBigSeek()
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
@@ -146,10 +171,17 @@ class SeekDialog(kodigui.BaseDialog):
     def onFocus(self, controlID):
         if controlID == self.MAIN_BUTTON_ID:
             self.selectedOffset = self.trueOffset()
+            if self.lastFocusID == self.BIG_SEEK_LIST_ID:
+                xbmc.sleep(100)
+                self.updateBigSeek()
+            else:
+                self.setBigSeekShift()
             self.updateProgress()
-        elif controlID == 500:
+        elif controlID == self.BIG_SEEK_LIST_ID:
             self.setBigSeekShift()
             self.updateBigSeek()
+
+        self.lastFocusID = controlID
 
     def onClick(self, controlID):
         if controlID == self.MAIN_BUTTON_ID:
@@ -170,7 +202,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.playlistDialog.show()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.handleDialog(self.optionsButtonClicked)
-        elif controlID == 500:
+        elif controlID == self.BIG_SEEK_LIST_ID:
             self.bigSeekSelected()
 
     def doClose(self, delete=False):
@@ -254,9 +286,9 @@ class SeekDialog(kodigui.BaseDialog):
             closest = mli
         self.bigSeekOffset = self.selectedOffset - closest.dataSource
         pxOffset = int(self.bigSeekOffset / float(self.duration) * 1920)
-        self.bigSeekControl.setPosition(-8 + pxOffset, 937)
+        self.bigSeekGroupControl.setPosition(-8 + pxOffset, 917)
         self.bigSeekControl.selectItem(closest.pos())
-        xbmc.sleep(100)
+        # xbmc.sleep(100)
 
     def updateBigSeek(self):
         self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
@@ -264,8 +296,6 @@ class SeekDialog(kodigui.BaseDialog):
 
     def bigSeekSelected(self):
         self.setFocusId(self.MAIN_BUTTON_ID)
-        xbmc.sleep(100)
-        self.updateBigSeek()
 
     def updateProperties(self, **kwargs):
         if not self.started:
@@ -319,6 +349,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectedOffset = self.duration
 
         self.updateProgress()
+        self.setBigSeekShift()
+        self.bigSeekHideTimer.reset()
 
     def seekBack(self, offset):
         self.selectedOffset -= offset
@@ -326,6 +358,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectedOffset = 0
 
         self.updateProgress()
+        self.setBigSeekShift()
+        self.bigSeekHideTimer.reset()
 
     def seekMouse(self, action):
         x = self.mouseXTrans(action.getAmount1())
@@ -395,6 +429,7 @@ class SeekDialog(kodigui.BaseDialog):
             return
 
         if time.time() > self.timeout and not self.hasDialog:
+            self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
             self.doClose()
 
         try:

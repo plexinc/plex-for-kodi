@@ -393,7 +393,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             genres = u' / '.join([g.tag for g in self.video.genres()][:3])
             self.setProperty('info', genres)
             self.setProperty('date', self.video.year)
-            self.setProperty('content.rating', self.video.contentRating)
+            self.setProperty('content.rating', self.video.contentRating.split('/', 1)[-1])
 
             cast = u' / '.join([r.tag for r in self.video.roles()][:5])
             castLabel = 'CAST'

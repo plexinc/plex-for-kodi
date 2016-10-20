@@ -212,10 +212,10 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli = kodigui.ManagedListItem(pi['title'], label2, thumbnailImage=pi['thumbnail'], data_source=pi)
         mli.setProperty('track.duration', util.simplifiedTimeDisplay(pi['duration'] * 1000))
         if plexInfo.startswith('PLEX-'):
-            mli.setProperty('plex.ID', pi['comment'])
+            mli.setProperty('track.ID', plexInfo.split('-', 1)[-1].split(':', 1)[0])
             mli.setProperty('track.number', str(pi['playcount']))
         else:
-            mli.setProperty('plex.ID', '!NONE!')
+            mli.setProperty('track.ID', '!NONE!')
             mli.setProperty('track.number', str(pi['track']))
             mli.setProperty('playlist.position', str(idx))
 

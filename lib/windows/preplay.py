@@ -400,6 +400,12 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
             self.setProperty('related.header', 'Related Movies')
 
+        self.setProperty('video.res', self.video.resolutionString())
+        self.setProperty('audio.codec', self.video.audioCodecString())
+        self.setProperty('audio.channels', self.video.audioChannelsString())
+
+        util.TEST(self.video.resolutionString())
+
         self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
         if self.video.userRating:
             stars = str(int(round((self.video.userRating.asFloat() / 10) * 5)))

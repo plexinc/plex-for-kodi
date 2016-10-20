@@ -394,6 +394,7 @@ class AlbumWindow(EpisodesWindow):
 
             mli = self.createListItem(track)
             if mli:
+                mli.setProperty('track.ID', track.ratingKey)
                 mli.setProperty('index', str(idx))
                 mli.setProperty('artist', self.season.parentTitle)
                 mli.setProperty('disc', str(disc))

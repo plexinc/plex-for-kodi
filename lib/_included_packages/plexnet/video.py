@@ -133,6 +133,38 @@ class Video(media.MediaItem):
         return server.buildUrl('/{0}/:/transcode/universal/start.m3u8?{1}'.format(streamtype, compat.urlencode(final)), includeToken=True)
         # path = "/video/:/transcode/universal/" + command + "?session=" + AppSettings().GetGlobal("clientIdentifier")
 
+    def resolutionString(self):
+        res = self.media[0].videoResolution
+        if not res:
+            return ''
+
+        if res.isdigit():
+            return '{0}p'.format(self.media[0].videoResolution)
+        else:
+            return res.upper()
+
+    def audioCodecString(self):
+        codec = self.media[0].audioCodec or ''
+
+        if codec == "dca":
+            codec = "DTS"
+        else:
+            codec = codec.upper()
+
+        return codec
+
+    def audioChannelsString(self):
+        channels = self.media[0].audioChannels.asInt()
+
+        if channels == 1:
+            return "Mono"
+        elif channels == 2:
+            return "Stereo"
+        elif channels > 0:
+            return "{0}.1".format(channels - 1)
+        else:
+            return ""
+
 
 class PlayableVideo(Video):
     TYPE = None

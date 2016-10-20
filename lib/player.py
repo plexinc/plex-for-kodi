@@ -319,6 +319,7 @@ class AudioPlayerHandler(BasePlayerHandler):
     def __init__(self, player):
         BasePlayerHandler.__init__(self, player)
         self.timelineType = 'music'
+        util.setGlobalProperty('track.ID', '')
         self.extractTrackInfo()
 
     def extractTrackInfo(self):
@@ -352,6 +353,7 @@ class AudioPlayerHandler(BasePlayerHandler):
             pobj = plexplayer.PlexAudioPlayer(track)
             self.player.playerObject = pobj
             self.updatePlayQueueTrack(track)
+            util.setGlobalProperty('track.ID', track.ratingKey)  # This is used in the skins to match a listitem
         except:
             util.ERROR()
 
@@ -455,6 +457,7 @@ class AudioPlayerHandler(BasePlayerHandler):
 
     def finish(self):
         self.player.trigger('session.ended')
+        util.setGlobalProperty('track.ID', '')
 
     def tick(self):
         self.stampCurrentTime()

@@ -155,12 +155,10 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         items = []
         idx = 1
         for pi in self.playlist.unshuffledItems():
-            # util.TEST('')
             mli = self.createListItem(pi)
             if mli:
                 mli.setProperty('track.number', str(idx))
-                mli.setProperty('plex.ID', 'PLEX-{0}'.format(pi.ratingKey))
-                mli.setProperty('file', '!NONE!')
+                mli.setProperty('track.ID', pi.ratingKey)
                 items.append(mli)
                 idx += 1
 

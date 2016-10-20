@@ -404,8 +404,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('audio.codec', self.video.audioCodecString())
         self.setProperty('audio.channels', self.video.audioChannelsString())
 
-        util.TEST(self.video.resolutionString())
-
         self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
         if self.video.userRating:
             stars = str(int(round((self.video.userRating.asFloat() / 10) * 5)))

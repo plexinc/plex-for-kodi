@@ -429,8 +429,9 @@ class SeekDialog(kodigui.BaseDialog):
             return
 
         if time.time() > self.timeout and not self.hasDialog:
-            self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
-            self.doClose()
+            if not xbmc.getCondVisibility('Window.IsActive(seekbar) | Window.IsActive(videoosd)'):
+                self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
+                self.doClose()
 
         try:
             self.offset = int(self.handler.player.getTime() * 1000)

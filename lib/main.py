@@ -37,6 +37,12 @@ def realExit():
     xbmc.log('script.plex: REALLY FINISHED', xbmc.LOGNOTICE)
 
 
+def signout():
+    util.setSetting('auth.token', '')
+    util.DEBUG_LOG('Signing out...')
+    plexapp.ACCOUNT.signOut()
+
+
 def main():
     global BACKGROUND
     with util.Cron(5):
@@ -55,8 +61,12 @@ def _main():
                 background.setSplash(False)
                 while not xbmc.abortRequested:
                     if not plexapp.ACCOUNT.isAuthenticated and (len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected):
-                        if not userselect.start():
+                        result = userselect.start()
+                        if not result:
                             return
+                        elif result == 'signout':
+                            signout()
+                            break
                     try:
                         done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
                         if not plexapp.SERVERMANAGER.selectedServer:
@@ -75,9 +85,7 @@ def _main():
                             return
 
                         if windowutils.HOME.closeOption == 'signout':
-                            util.setSetting('auth.token', '')
-                            util.DEBUG_LOG('Signing out...')
-                            plexapp.ACCOUNT.signOut()
+                            signout()
                             break
                         elif windowutils.HOME.closeOption == 'switch':
                             plexapp.ACCOUNT.isAuthenticated = False

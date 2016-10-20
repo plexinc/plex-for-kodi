@@ -1,6 +1,9 @@
 import xbmc
 import xbmcgui
+
 import kodigui
+import dropdown
+
 from lib import util, image, backgroundthread
 from plexnet import plexapp
 
@@ -30,6 +33,7 @@ class UserSelectWindow(kodigui.BaseWindow):
 
     USER_LIST_ID = 101
     PIN_ENTRY_GROUP_ID = 400
+    SHUTDOWN_BUTTON_ID = 500
 
     def __init__(self, *args, **kwargs):
         self.task = None
@@ -78,6 +82,8 @@ class UserSelectWindow(kodigui.BaseWindow):
                 self.userSelected(item)
         elif 200 < controlID < 212:
             self.pinEntryClicked(controlID)
+        elif controlID == self.SHUTDOWN_BUTTON_ID:
+            self.shutdownClicked()
 
     def onFocus(self, controlID):
         if controlID == self.USER_LIST_ID:
@@ -114,6 +120,22 @@ class UserSelectWindow(kodigui.BaseWindow):
             self.setProperty('initialized', '1')
         finally:
             self.setProperty('busy', '')
+
+    def shutdownClicked(self):
+        options = []
+        options.append({'key': 'sign_out', 'display': 'Sign Out'})
+        options.append({'key': 'exit', 'display': 'Exit'})
+
+        with self.propertyContext('dropdown'):
+            choice = dropdown.showDropdown(options, (60, 101))
+            if not choice:
+                return
+
+        if choice['key'] == 'sign_out':
+            self.selected = 'signout'
+            self.doClose()
+        elif choice['key'] == 'exit':
+            self.doClose()
 
     def pinEntryClicked(self, controlID):
         item = self.userList.getSelectedItem()

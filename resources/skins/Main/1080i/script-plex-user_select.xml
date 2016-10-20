@@ -8,13 +8,22 @@
     </coordinates>
     <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
-
-        <control type="image">
-            <posx>812</posx>
-            <posy>135</posy>
-            <width>300</width>
-            <height>97</height>
-            <texture>script.plex/user_select/plex.png</texture>
+        <control type="group">
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <texture colordiffuse="80FFFFFF">script.plex/home/background-fallback.jpg</texture>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <fadetime>1000</fadetime>
+                <texture  background="true">$INFO[Window.Property(background)]</texture>
+            </control>
         </control>
 
         <control type="group" id="100">
@@ -28,6 +37,7 @@
                 <width>2100</width>
                 <height>375</height>
                 <scrolltime>200</scrolltime>
+                <onup>500</onup>
                 <onleft>100</onleft>
                 <onright>100</onright>
                 <ondown condition="!IsEmpty(Container(101).ListItem.Property(protected))">400</ondown>
@@ -46,7 +56,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <texture diffuse="script.plex/user_select/item-background.png" fallback="script.plex/gray-square.png">$INFO[ListItem.Property(back.image)]</texture>
-                            <colordiffuse>FF808080</colordiffuse>
+                            <colordiffuse>FFA0A0A0</colordiffuse>
                         </control>
 
                         <control type="image">
@@ -129,15 +139,25 @@
                         <posx>0</posx>
                         <posy>0</posy>
                         <control type="image">
+                            <visible>Control.HasFocus(101) | ControlGroup(400).HasFocus(0)</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>300</width>
                             <height>300</height>
                             <texture diffuse="script.plex/user_select/item-background-top.png" fallback="script.plex/gray-square.png">$INFO[ListItem.Property(back.image)]</texture>
-                            <colordiffuse>80FFFFFF</colordiffuse>
+                            <colordiffuse>FFA0A0A0</colordiffuse>
+                        </control>
+                        <control type="image">
+                            <visible>!Control.HasFocus(101) + !ControlGroup(400).HasFocus(0)</visible>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>300</width>
+                            <height>300</height>
+                            <texture diffuse="script.plex/user_select/item-background.png" fallback="script.plex/gray-square.png">$INFO[ListItem.Property(back.image)]</texture>
+                            <colordiffuse>FFA0A0A0</colordiffuse>
                         </control>
                         <control type="group">
-                            <visible>!ControlGroup(400).HasFocus(0)</visible>
+                            <visible>Control.HasFocus(101)</visible>
                             <control type="image">
                                 <posx>0</posx>
                                 <posy>300</posy>
@@ -158,7 +178,7 @@
                         </control>
 
                         <control type="image">
-                            <visible>!Control.HasFocus(101)</visible>
+                            <visible>!Control.HasFocus(101) + !ControlGroup(400).HasFocus(0)</visible>
                             <posx>45</posx>
                             <posy>45</posy>
                             <width>210</width>
@@ -167,13 +187,22 @@
                             <colordiffuse>E0C0C0C0</colordiffuse>
                         </control>
                         <control type="image">
-                            <visible>Control.HasFocus(101)</visible>
+                            <visible>ControlGroup(400).HasFocus(0)</visible>
                             <posx>45</posx>
                             <posy>45</posy>
                             <width>210</width>
                             <height>210</height>
                             <texture>script.plex/user_select/avatar-background.png</texture>
                             <colordiffuse>FFCC7B19</colordiffuse>
+                        </control>
+                        <control type="image">
+                            <visible>Control.HasFocus(101)</visible>
+                            <posx>45</posx>
+                            <posy>45</posy>
+                            <width>210</width>
+                            <height>210</height>
+                            <texture>script.plex/user_select/avatar-background.png</texture>
+                            <colordiffuse>FFE5A00D</colordiffuse>
                         </control>
 
                         <control type="image">
@@ -239,6 +268,7 @@
                         </control>
 
                         <control type="label">
+                            <visible>Control.HasFocus(101)</visible>
                             <posx>10</posx>
                             <posy>300</posy>
                             <width>280</width>
@@ -529,6 +559,134 @@
             </control>
 
         </control>
+
+        <control type="group">
+            <defaultcontrol always="true">201</defaultcontrol>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>135</height>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>135</height>
+                <texture>script.plex/white-square.png</texture>
+                <colordiffuse>19000000</colordiffuse>
+            </control>
+
+            <control type="grouplist">
+                <posx>60</posx>
+                <posy>34.5</posy>
+                <width>1000</width>
+                <height>66</height>
+                <align>left</align>
+                <itemgap>60</itemgap>
+                <orientation>horizontal</orientation>
+                <ondown>101</ondown>
+                <usecontrolcoords>true</usecontrolcoords>
+                <control type="group">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>124</width>
+                    <height>66</height>
+                    <control type="button" id="500">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>124</width>
+                        <height>66</height>
+                        <ondown>101</ondown>
+                        <onright>101</onright>
+                        <align>right</align>
+                        <aligny>center</aligny>
+                        <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <label> </label>
+                    </control>
+                    <control type="image">
+                        <visible>!IsEmpty(Window.Property(dropdown))</visible>
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>124</width>
+                        <height>66</height>
+                        <texture colordiffuse="FFCC7B19" border="10">script.plex/white-square-rounded.png</texture>
+                    </control>
+                    <control type="group">
+                        <posx>27</posx>
+                        <posy>13</posy>
+                        <control type="group">
+                            <visible>!Control.HasFocus(500) + IsEmpty(Window.Property(dropdown))</visible>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>40</height>
+                                <texture colordiffuse="99FFFFFF">script.plex/buttons/power.png</texture>
+                            </control>
+                            <control type="image">
+                                <posx>55</posx>
+                                <posy>13.5</posy>
+                                <width>15</width>
+                                <height>13</height>
+                                <texture colordiffuse="99FFFFFF">script.plex/indicators/dropdown-triangle.png</texture>
+                            </control>
+                        </control>
+                        <control type="group">
+                            <visible>Control.HasFocus(500) | !IsEmpty(Window.Property(dropdown))</visible>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <control type="image">
+                                <posx>0</posx>
+                                <posy>0</posy>
+                                <width>40</width>
+                                <height>40</height>
+                                <texture colordiffuse="FF000000">script.plex/buttons/power.png</texture>
+                            </control>
+                            <control type="image">
+                                <posx>55</posx>
+                                <posy>13.5</posy>
+                                <width>15</width>
+                                <height>13</height>
+                                <texture colordiffuse="FF000000">script.plex/indicators/dropdown-triangle.png</texture>
+                            </control>
+                        </control>
+                    </control>
+                </control>
+                <control type="label">
+                    <posx>-27</posx>
+                    <posy>0</posy>
+                    <width max="500">auto</width>
+                    <height>66</height>
+                    <font>font12</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>[UPPERCASE]WELCOME[/UPPERCASE]</label>
+                </control>
+            </control>
+
+            <control type="label">
+                <right>213</right>
+                <posy>35</posy>
+                <width>200</width>
+                <height>65</height>
+                <font>font12</font>
+                <align>right</align>
+                <aligny>center</aligny>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>$INFO[System.Time]</label>
+            </control>
+            <control type="image">
+                <posx>153r</posx>
+                <posy>54</posy>
+                <width>93</width>
+                <height>30</height>
+                <texture>script.plex/home/plex.png</texture>
+            </control>
+        </control>
+
 
         <control type="group">
             <visible>!IsEmpty(Window.Property(busy))</visible>

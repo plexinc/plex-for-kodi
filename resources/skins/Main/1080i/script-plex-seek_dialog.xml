@@ -9,6 +9,7 @@
     <controls>
         <control type="group">
             <visible>Window.IsActive(seekbar) | Window.IsActive(videoosd) | Player.ShowInfo</visible>
+            <animation effect="fade" time="100" delay="200" start="100" end="0">Hidden</animation>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image">

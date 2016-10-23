@@ -93,7 +93,15 @@ class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
 
         return True
 
+    def getPosFromItem(self, item):
+        if item not in self._items:
+            return -1
+        return self._items.index(item)
+
     def setCurrent(self, pos):
+        if not isinstance(pos, int):
+            pos = self.getPosFromItem(pos)
+
         if pos < 0 or pos >= len(self._items):
             return False
 
@@ -102,6 +110,11 @@ class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
 
     def current(self):
         return self[self.pos]
+
+    def prevItem(self):
+        if self.pos < 1:
+            return None
+        return self[self.pos - 1]
 
     def shuffle(self, on=True, first=False):
         if on and self._items:

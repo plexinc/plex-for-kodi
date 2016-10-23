@@ -14,7 +14,7 @@ from plexnet import signalsmixin
 
 
 class BasePlayerHandler(object):
-    def __init__(self, player):
+    def __init__(self, player, session_id=None):
         self.player = player
         self.media = None
         self.baseOffset = 0
@@ -22,6 +22,7 @@ class BasePlayerHandler(object):
         self.lastTimelineState = None
         self.ignoreTimelines = False
         self.playQueue = None
+        self.sessionID = session_id
 
     def onPlayBackStarted(self):
         pass
@@ -116,8 +117,8 @@ class SeekPlayerHandler(BasePlayerHandler):
     MODE_ABSOLUTE = 0
     MODE_RELATIVE = 1
 
-    def __init__(self, player):
-        BasePlayerHandler.__init__(self, player)
+    def __init__(self, player, session_id=None):
+        BasePlayerHandler.__init__(self, player, session_id)
         self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
         self.playlist = None
         self.playQueue = None
@@ -148,11 +149,27 @@ class SeekPlayerHandler(BasePlayerHandler):
         else:
             return self.player.currentTime
 
-    def next(self):
+    def showPostPlay(self):
+        if not self.playlist:
+            return False
+
+        self.closeSeekDialog()
+
+        from windows import postplay
+        if not postplay.show(playlist=self.playlist, handler=self):
+            self.sessionEnded()
+
+        return True
+
+    def next(self, on_end=False):
         if not self.playlist or not self.playlist.next():
             return False
 
         self.seeking = self.SEEK_PLAYLIST
+        if on_end:
+            if self.showPostPlay():
+                return
+
         self.player.playVideoPlaylist(self.playlist, handler=self)
 
         return True
@@ -252,7 +269,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackEnded(self):
         self.updateNowPlaying()
-        if self.next():
+        if self.next(on_end=True):
             return
 
         if self.seeking != self.SEEK_PLAYLIST:
@@ -312,7 +329,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.ended:
             return
         self.ended = True
-        self.player.trigger('session.ended')
+        self.player.trigger('session.ended', session_id=self.sessionID)
 
 
 class AudioPlayerHandler(BasePlayerHandler):
@@ -555,8 +572,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.started = False
         xbmc.Player.play(self, *args, **kwargs)
 
-    def playVideo(self, video, resume=False, force_update=False):
-        self.handler = SeekPlayerHandler(self)
+    def playVideo(self, video, resume=False, force_update=False, session_id=None):
+        self.handler = SeekPlayerHandler(self, session_id)
         self.video = video
         self.open()
         self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)
@@ -592,9 +609,12 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         else:
             self.handler.mode = self.handler.MODE_RELATIVE
 
-    def playVideoPlaylist(self, playlist, resume=True, handler=None):
-        if not handler:
-            self.handler = SeekPlayerHandler(self)
+    def playVideoPlaylist(self, playlist, resume=True, handler=None, session_id=None):
+        if handler:
+            self.handler = handler
+        else:
+            self.handler = SeekPlayerHandler(self, session_id)
+
         self.handler.playlist = playlist
         if playlist.isRemote:
             self.handler.playQueue = playlist

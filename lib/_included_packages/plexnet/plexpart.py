@@ -34,7 +34,7 @@ class PlexPart(plexobjects.PlexObject):
 
     def isAccessible(self):
         # If we haven't fetched accessibility info, assume it's accessible.
-        return (hasattr(self, 'accessible') and self.accessible.asBool()) or True
+        return self.accessible.asBool() if self.accessible else True
 
     def isAvailable(self):
         # If we haven't fetched availability info, assume it's available

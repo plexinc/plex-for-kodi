@@ -10,7 +10,7 @@ import playersettings
 import search
 import dropdown
 import windowutils
-from plexnet import plexplayer, media
+from plexnet import plexplayer, media, playlist
 
 from lib import colors
 from lib import util
@@ -338,6 +338,14 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return x, y
 
     def playVideo(self, resume=False):
+        if self.video.type == 'episode':
+            show = self.video.show()
+            pl = playlist.LocalPlaylist(show.all(), show.getServer())
+            if len(pl):  # Don't use playlist if it's only this video
+                pl.setCurrent(self.video)
+                videoplayer.play(play_queue=pl, resume=resume)
+                return
+
         videoplayer.play(video=self.video, resume=resume)
 
     def openItem(self, control=None, item=None):
@@ -357,7 +365,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif self.video.type == 'movie':
             self.setProperty('preview.no', '1')
 
-        self.video.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.video.reload(checkFiles=1, includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.setInfo()
         self.fillExtras()
         hasPrev = self.fillRelated()
@@ -408,16 +416,25 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self.video.userRating:
             stars = str(int(round((self.video.userRating.asFloat() / 10) * 5)))
             self.setProperty('user.stars', stars)
-        elif self.video.rating:
-            stars = str(int(round((self.video.rating.asFloat() / 10) * 5)))
-            self.setProperty('rating.stars', stars)
+        # elif self.video.rating:
+        #     stars = str(int(round((self.video.rating.asFloat() / 10) * 5)))
+        #     self.setProperty('rating.stars', stars)
 
         if self.video.ratingImage:
-            self.setProperty('rating', self.video.rating)
+            rating = self.video.rating
+            audienceRating = self.video.audienceRating
+            if self.video.ratingImage.startswith('rottentomatoes:'):
+                rating = '{0}%'.format(int(rating.asFloat() * 10))
+                if audienceRating:
+                    audienceRating = '{0}%'.format(int(audienceRating.asFloat() * 10))
+
+            self.setProperty('rating', rating)
             self.setProperty('rating.image', 'script.plex/ratings/{0}.png'.format(self.video.ratingImage.replace('://', '/')))
             if self.video.audienceRatingImage:
-                self.setProperty('rating2', self.video.audienceRating)
+                self.setProperty('rating2', audienceRating)
                 self.setProperty('rating2.image', 'script.plex/ratings/{0}.png'.format(self.video.audienceRatingImage.replace('://', '/')))
+        else:
+            self.setProperty('rating', self.video.rating)
 
         sas = self.video.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')

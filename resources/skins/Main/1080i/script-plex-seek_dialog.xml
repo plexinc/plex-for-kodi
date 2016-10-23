@@ -519,7 +519,7 @@
 
         <control type="group" id="500">
             <animation effect="slide" time="100" start="0,0" end="0,20" reversible="true" condition="Control.HasFocus(501)">Conditional</animation>
-            <visible>IsEmpty(Window.Property(mouse.mode)) + IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)]</visible>
+            <visible allowhiddenfocus="true">IsEmpty(Window.Property(mouse.mode)) + IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)]</visible>
             <posx>-8</posx>
             <posy>917</posy>
             <control type="image">
@@ -537,6 +537,7 @@
                 <width>1928</width>
                 <height>16</height>
                 <ondown>100</ondown>
+                <onfocus>SetProperty(hide.bigseek,)</onfocus>
                 <scrolltime>200</scrolltime>
                 <orientation>horizontal</orientation>
                 <preloaditems>4</preloaditems>

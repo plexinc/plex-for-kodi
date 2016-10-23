@@ -35,17 +35,24 @@ class VideoPlayerWindow(kodigui.BaseWindow):
                 self.playQueue.defaultArt.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
             )
 
-    def sessionEnded(self, **kwargs):
-        util.DEBUG_LOG('VideoPlayerWindow: Session ended - closing')
+    def sessionEnded(self, session_id=None, **kwargs):
+        if session_id != id(self):
+            util.DEBUG_LOG('VideoPlayerWindow: Ignoring session end ----------- (ID: {0} - SessionID: {1})'.format(id(self), session_id))
+            return
+
+        util.DEBUG_LOG('VideoPlayerWindow: Session ended - closing --------------------------- (ID: {0})'.format(id(self)))
         self.doClose()
 
     def play(self):
+        util.DEBUG_LOG('VideoPlayerWindow: Starting session ----------------------------- (ID: {0})'.format(id(self)))
         if self.playQueue:
-            player.PLAYER.playVideoPlaylist(self.playQueue)
+            player.PLAYER.playVideoPlaylist(self.playQueue, resume=self.resume, session_id=id(self))
         elif self.video:
-            player.PLAYER.playVideo(self.video, resume=self.resume, force_update=True)
+            player.PLAYER.playVideo(self.video, resume=self.resume, force_update=True, session_id=id(self))
 
 
 def play(video=None, play_queue=None, resume=False):
     w = VideoPlayerWindow.open(video=video, play_queue=play_queue, resume=resume)
+    player.PLAYER.off('session.ended', w.sessionEnded)
     del w
+    util.garbageCollect()

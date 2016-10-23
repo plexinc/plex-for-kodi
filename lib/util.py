@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import gc
 import sys
 import re
 import binascii
@@ -443,6 +444,10 @@ def addURLParams(url, params):
             url += '?'
         url += urllib.urlencode(params)
         return url
+
+
+def garbageCollect():
+    gc.collect(2)
 
 
 def shutdown():

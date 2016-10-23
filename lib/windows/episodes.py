@@ -212,9 +212,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.processCommand(search.dialog(self, section_id=self.season.getLibrarySectionId() or None))
 
     def playButtonClicked(self, shuffle=False):
-        pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
+        items = self.season.all()
+        pl = playlist.LocalPlaylist(items, self.season.getServer())
+        resume = False
+        if not shuffle:
+            resume = self.getPlaylistResume(pl, items, self.season.parentTitle)
+            if resume is None:
+                return
+
         pl.shuffle(shuffle, first=True)
-        videoplayer.play(play_queue=pl)
+        videoplayer.play(play_queue=pl, resume=resume)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)

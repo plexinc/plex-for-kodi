@@ -120,16 +120,22 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self.mediaItem.userRating:
             stars = str(int(round((self.mediaItem.userRating.asFloat() / 10) * 5)))
             self.setProperty('user.stars', stars)
-        elif self.mediaItem.rating:
-            stars = str(int(round((self.mediaItem.rating.asFloat() / 10) * 5)))
-            self.setProperty('rating.stars', stars)
 
         if self.mediaItem.ratingImage:
-            self.setProperty('rating', self.mediaItem.rating)
+            rating = self.mediaItem.rating
+            audienceRating = self.mediaItem.audienceRating
+            if self.mediaItem.ratingImage.startswith('rottentomatoes:'):
+                rating = '{0}%'.format(int(rating.asFloat() * 10))
+                if audienceRating:
+                    audienceRating = '{0}%'.format(int(audienceRating.asFloat() * 10))
+
+            self.setProperty('rating', rating)
             self.setProperty('rating.image', 'script.plex/ratings/{0}.png'.format(self.mediaItem.ratingImage.replace('://', '/')))
             if self.mediaItem.audienceRatingImage:
-                self.setProperty('rating2', self.mediaItem.audienceRating)
+                self.setProperty('rating2', audienceRating)
                 self.setProperty('rating2.image', 'script.plex/ratings/{0}.png'.format(self.mediaItem.audienceRatingImage.replace('://', '/')))
+        else:
+            self.setProperty('rating', self.mediaItem.rating)
 
         sas = self.mediaItem.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')
@@ -137,8 +143,10 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         sss = self.mediaItem.selectedSubtitleStream()
         self.setProperty('subtitles', sss and sss.getTitle() or 'None')
 
-        width = (int((self.mediaItem.viewedLeafCount.asInt() / self.mediaItem.leafCount.asFloat()) * self.width)) or 1
-        self.progressImageControl.setWidth(width)
+        leafcount = self.mediaItem.leafCount.asFloat()
+        if leafcount:
+            width = (int((self.mediaItem.viewedLeafCount.asInt() / leafcount) * self.width)) or 1
+            self.progressImageControl.setWidth(width)
 
     def onAction(self, action):
         try:
@@ -326,12 +334,19 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             is_square=bool(isinstance(self, ArtistWindow))
         )
         del w
-        gc.collect(2)
+        util.garbageCollect()
 
     def playButtonClicked(self, shuffle=False):
-        pl = playlist.LocalPlaylist(self.mediaItem.all(), self.mediaItem.getServer())
+        items = self.mediaItem.all()
+        pl = playlist.LocalPlaylist(items, self.mediaItem.getServer())
+        resume = False
+        if not shuffle and self.mediaItem.type == 'show':
+            resume = self.getPlaylistResume(pl, items, self.mediaItem.title)
+            if resume is None:
+                return
+
         pl.shuffle(shuffle, first=True)
-        videoplayer.play(play_queue=pl)
+        videoplayer.play(play_queue=pl, resume=resume)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)

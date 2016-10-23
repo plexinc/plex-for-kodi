@@ -571,6 +571,15 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
         return None
 
+    def prevItem(self):
+        last = None
+        for item in self.items():
+            if item.playQueueItemID.asInt() == self.selectedId:
+                return last
+            last = item
+
+        return None
+
 
 def createRemotePlayQueue(item, contentType, options, args):
     obj = PlayQueue(item.getServer(), contentType, options)

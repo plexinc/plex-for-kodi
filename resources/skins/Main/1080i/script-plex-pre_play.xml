@@ -289,7 +289,7 @@
                         <posy>2</posy>
                         <width>63</width>
                         <height>30</height>
-                        <texture>$INFO[Window.Property(rating.image)]</texture>
+                        <texture fallback="script.plex/ratings/other/image.rating.png">$INFO[Window.Property(rating.image)]</texture>
                         <aspectratio align="right">keep</aspectratio>
                     </control>
                     <control type="label">

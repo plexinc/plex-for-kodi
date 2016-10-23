@@ -297,6 +297,10 @@ class Show(Video):
     def refresh(self):
         self.server.query('/library/metadata/%s/refresh' % self.ratingKey)
 
+    def sectionOnDeck(self):
+        query = '/library/sections/{0}/onDeck'.format(self.getLibrarySectionId())
+        return plexobjects.listItems(self.server, query)
+
 
 @plexobjects.registerLibType
 class Season(Video):

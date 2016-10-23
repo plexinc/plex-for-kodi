@@ -1,4 +1,6 @@
+from lib import util
 import opener
+import dropdown
 
 HOME = None
 
@@ -29,6 +31,38 @@ class UtilMixin():
     def showAudioPlayer(self, **kwargs):
         import musicplayer
         self.processCommand(opener.handleOpen(musicplayer.MusicPlayerWindow, **kwargs))
+
+    def getPlaylistResume(self, pl, items, title):
+        resume = False
+        watched = False
+        for i in items:
+            if (watched and not i.isWatched) or i.get('viewOffset'):
+                if i.get('viewOffset'):
+                    choice = dropdown.showDropdown(
+                        options=[
+                            {'key': 'resume', 'display': 'Resume from {0}'.format(util.timeDisplay(i.viewOffset.asInt()).lstrip('0').lstrip(':'))},
+                            {'key': 'play', 'display': 'Play from beginning'}
+                        ],
+                        pos=(660, 441),
+                        close_direction='none',
+                        set_dropdown_prop=False,
+                        header=u'{0} - S{1} \u2022 E{2}'.format(title, i.parentIndex, i.index)
+                    )
+
+                    if not choice:
+                        return None
+
+                    if choice['key'] == 'resume':
+                        resume = True
+
+                    pl.setCurrent(i)
+                break
+            elif i.isWatched:
+                watched = True
+            else:
+                break
+
+        return resume
 
 
 def shutdownHome():

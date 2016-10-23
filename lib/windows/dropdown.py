@@ -26,6 +26,7 @@ class DropdownDialog(kodigui.BaseDialog):
         self.withIndicator = kwargs.get('with_indicator', False)
         self.suboptionCallback = kwargs.get('suboption_callback')
         self.closeOnPlaybackEnded = kwargs.get('close_on_playback_ended', False)
+        self.header = kwargs.get('header')
         self.choice = None
 
     @property
@@ -41,11 +42,19 @@ class DropdownDialog(kodigui.BaseDialog):
 
     def onFirstInit(self):
         self.setProperty('dropdown', self.setDropdownProp and '1' or '')
+        self.setProperty('header', self.header)
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
         self.showOptions()
         height = min(66 * 14, (len(self.options) * 66)) + 80
         self.getControl(100).setPosition(self.x, self.y)
-        self.getControl(110).setHeight(height)
+
+        shadowControl = self.getControl(110)
+        if self.header:
+            shadowControl.setHeight(height + 86)
+            self.getControl(111).setHeight(height + 6)
+        else:
+            shadowControl.setHeight(height)
+
         self.setProperty('show', '1')
         self.setProperty('close.direction', self.closeDirection)
         if self.closeOnPlaybackEnded:
@@ -117,6 +126,10 @@ class DropdownDialog(kodigui.BaseDialog):
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
+class DropdownHeaderDialog(DropdownDialog):
+    xmlFile = 'script-plex-dropdown_header.xml'
+
+
 def showDropdown(
     options, pos=(0, 0),
     pos_is_bottom=False,
@@ -124,17 +137,32 @@ def showDropdown(
     set_dropdown_prop=True,
     with_indicator=False,
     suboption_callback=None,
-    close_on_playback_ended=False
+    close_on_playback_ended=False,
+    header=None
 ):
-    w = DropdownDialog.open(
-        options=options, pos=pos,
-        pos_is_bottom=pos_is_bottom,
-        close_direction=close_direction,
-        set_dropdown_prop=set_dropdown_prop,
-        with_indicator=with_indicator,
-        suboption_callback=suboption_callback,
-        close_on_playback_ended=close_on_playback_ended
-    )
+    if header:
+        w = DropdownHeaderDialog.open(
+            options=options, pos=pos,
+            pos_is_bottom=pos_is_bottom,
+            close_direction=close_direction,
+            set_dropdown_prop=set_dropdown_prop,
+            with_indicator=with_indicator,
+            suboption_callback=suboption_callback,
+            close_on_playback_ended=close_on_playback_ended,
+            header=header
+        )
+    else:
+        w = DropdownDialog.open(
+            options=options, pos=pos,
+            pos_is_bottom=pos_is_bottom,
+            close_direction=close_direction,
+            set_dropdown_prop=set_dropdown_prop,
+            with_indicator=with_indicator,
+            suboption_callback=suboption_callback,
+            close_on_playback_ended=close_on_playback_ended,
+            header=header
+        )
     choice = w.choice
     del w
+    util.garbageCollect()
     return choice

@@ -734,6 +734,13 @@ class HomeWindow(kodigui.BaseWindow):
         server = mli.dataSource
         self.setFocusId(self.SERVER_BUTTON_ID)
 
+        if not server.isReachable():
+            if server.pendingReachabilityRequests > 0:
+                util.messageDialog('Server is not accessible', 'Connection tests are in progress. Please wait.')
+            else:
+                util.messageDialog('Server is not accessible', 'Server is not accessible. Please sign into your server and check your connection.')
+            return
+
         plexapp.SERVERMANAGER.setSelectedServer(server, force=True)
 
     def showUserMenu(self):

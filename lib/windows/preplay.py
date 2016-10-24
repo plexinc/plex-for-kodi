@@ -57,6 +57,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.exitCommand = None
         self.trailer = None
 
+        util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
+
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
         self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
@@ -359,6 +361,9 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     @busy.dialog()
     def setup(self):
+        if not self.video.viewOffset.asInt():
+            self.setFocusId(self.PLAY_BUTTON_ID)
+
         util.DEBUG_LOG('PrePlay: Showing video info: {0}'.format(self.video))
         if self.video.type == 'episode':
             self.setProperty('preview.yes', '1')
@@ -370,9 +375,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.fillExtras()
         hasPrev = self.fillRelated()
         self.fillRoles(hasPrev)
-
-        if self.video.viewOffset.asInt():
-            self.setFocusId(self.RESUME_BUTTON_ID)
 
     def setInfo(self):
         self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
@@ -447,10 +449,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self.video.viewOffset.asInt():
             width = self.video.viewOffset.asInt() and (1 + int((self.video.viewOffset.asInt() / self.video.duration.asFloat()) * self.width)) or 1
             self.progressImageControl.setWidth(width)
-            self.setProperty('hide.resume', '')
         else:
             self.progressImageControl.setWidth(1)
-            self.setProperty('hide.resume', '1')
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=obj)

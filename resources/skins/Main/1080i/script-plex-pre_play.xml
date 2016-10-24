@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <window>
-    <defaultcontrol>302</defaultcontrol>
+    <defaultcontrol>301</defaultcontrol>
     <coordinates>
         <system>1</system>
         <posx>0</posx>
@@ -67,7 +67,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="301">
-                    <visible>IsEmpty(Window.Property(hide.resume))</visible>
+                    <visible>IsEmpty(Window(10000).Property(script.plex.hide.resume))</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>

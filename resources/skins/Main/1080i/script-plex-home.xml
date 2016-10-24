@@ -5621,20 +5621,20 @@
                                     </control>
 
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(secure)) + IsEmpty(ListItem.Property(current))</visible>
+                                        <visible>!IsEmpty(ListItem.Property(status)) + IsEmpty(ListItem.Property(current))</visible>
                                         <posx>456</posx>
                                         <posy>38</posy>
                                         <width>24</width>
                                         <height>24</height>
-                                        <texture colordiffuse="FF5CB85C">script.plex/home/device/lock-24px.png</texture>
+                                        <texture>script.plex/home/device/$INFO[ListItem.Property(status)]</texture>
                                     </control>
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(secure)) + !IsEmpty(ListItem.Property(current))</visible>
+                                        <visible>!IsEmpty(ListItem.Property(status)) + !IsEmpty(ListItem.Property(current))</visible>
                                         <posx>415</posx>
                                         <posy>38</posy>
                                         <width>24</width>
                                         <height>24</height>
-                                        <texture colordiffuse="FF5CB85C">script.plex/home/device/lock-24px.png</texture>
+                                        <texture>script.plex/home/device/$INFO[ListItem.Property(status)]</texture>
                                     </control>
                                     <control type="image">
                                         <visible>!IsEmpty(ListItem.Property(current))</visible>
@@ -5718,20 +5718,20 @@
                                     </control>
 
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(secure)) + IsEmpty(ListItem.Property(current))</visible>
+                                        <visible>!IsEmpty(ListItem.Property(status)) + IsEmpty(ListItem.Property(current))</visible>
                                         <posx>456</posx>
                                         <posy>38</posy>
                                         <width>24</width>
                                         <height>24</height>
-                                        <texture>script.plex/home/device/lock-black-24px.png</texture>
+                                        <texture>script.plex/home/device/focus-$INFO[ListItem.Property(status)]</texture>
                                     </control>
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(secure)) + !IsEmpty(ListItem.Property(current))</visible>
+                                        <visible>!IsEmpty(ListItem.Property(status)) + !IsEmpty(ListItem.Property(current))</visible>
                                         <posx>415</posx>
                                         <posy>38</posy>
                                         <width>24</width>
                                         <height>24</height>
-                                        <texture>script.plex/home/device/lock-black-24px.png</texture>
+                                        <texture>script.plex/home/device/focus-$INFO[ListItem.Property(status)]</texture>
                                     </control>
                                     <control type="image">
                                         <visible>!IsEmpty(ListItem.Property(current))</visible>

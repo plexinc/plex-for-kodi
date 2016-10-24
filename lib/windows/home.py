@@ -78,6 +78,29 @@ class PlaylistsSection(object):
     title = 'Playlists'
 
 
+class ServerListItem(kodigui.ManagedListItem):
+    def init(self):
+        self.dataSource.on('completed:reachability', self.onUpdate)
+        self.dataSource.on('started:reachability', self.onUpdate)
+        return self
+
+    def onUpdate(self, **kwargs):
+        if not self.dataSource.isSupported or not self.dataSource.isReachable():
+            if self.dataSource.pendingReachabilityRequests > 0:
+                self.setProperty('status', 'refreshing.gif')
+            else:
+                self.setProperty('status', 'unreachable.png')
+        else:
+            self.setProperty('status', self.dataSource.isSecure and 'secure.png' or '')
+
+        self.setProperty('current', plexapp.SERVERMANAGER.selectedServer == self.dataSource and '1' or '')
+        self.setLabel(self.dataSource.name)
+
+    def onDestroy(self):
+        self.dataSource.off('completed:reachability', self.onUpdate)
+        self.dataSource.off('started:reachability', self.onUpdate)
+
+
 class HomeWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-home.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -674,14 +697,14 @@ class HomeWindow(kodigui.BaseWindow):
             plexapp.refreshResources()
 
         servers = sorted(
-            [s for s in plexapp.SERVERMANAGER.getServers() if s.isReachable()],
+            plexapp.SERVERMANAGER.getServers(),
             key=lambda x: (x.owned and '0' or '1') + x.name.lower()
         )
 
         items = []
         for s in servers:
-            item = kodigui.ManagedListItem(s.name, not s.owned and s.owner or '', data_source=s)
-            item.setProperty('secure', s.isSecure and '1' or '')
+            item = ServerListItem(s.name, not s.owned and s.owner or '', data_source=s).init()
+            item.onUpdate()
             item.setProperty('current', plexapp.SERVERMANAGER.selectedServer == s and '1' or '')
             items.append(item)
 

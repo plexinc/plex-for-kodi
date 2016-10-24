@@ -323,6 +323,9 @@ class ManagedListItem(object):
         self.thumbnailImage = thumb
         return self.listItem.setThumbnailImage(thumb)
 
+    def onDestroy(self):
+        pass
+
 
 class ManagedControlList(object):
     def __init__(self, window, control_id, max_view_index):
@@ -390,6 +393,7 @@ class ManagedControlList(object):
         oldSize = self.size()
 
         for i in self.items:
+            i.onDestroy()
             i._valid = False
 
         self.items = managed_items
@@ -438,6 +442,7 @@ class ManagedControlList(object):
 
     def removeItem(self, index):
         old = self.items.pop(index)
+        old.onDestroy()
         old._valid = False
 
         self.control.removeItem(index)
@@ -527,6 +532,7 @@ class ManagedControlList(object):
 
     def reset(self):
         for i in self.items:
+            i.onDestroy()
             i._valid = False
         self.items = []
         self.control.reset()

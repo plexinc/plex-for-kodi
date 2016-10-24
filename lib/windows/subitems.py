@@ -115,11 +115,11 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         genres = self.mediaItem.genres()
         self.setProperty('info', genres and (u' / '.join([g.tag for g in genres][:3])) or '')
 
-        self.setProperties(('user.stars', 'rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
+        self.setProperties(('rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
 
         if self.mediaItem.userRating:
             stars = str(int(round((self.mediaItem.userRating.asFloat() / 10) * 5)))
-            self.setProperty('user.stars', stars)
+            self.setProperty('rating.stars', stars)
 
         if self.mediaItem.ratingImage:
             rating = self.mediaItem.rating

@@ -221,20 +221,13 @@
                         <label>$INFO[Window.Property(duration)]$INFO[Window.Property(info), &#8226; ]$INFO[Window.Property(date), &#8226; ]$INFO[Window.Property(content.rating), &#8226; ]</label>
                     </control>
                     <control type="label">
-                        <visible>!IsEmpty(Window.Property(user.stars)) | !IsEmpty(Window.Property(rating.stars))</visible>
+                        <visible>!IsEmpty(Window.Property(rating.stars))</visible>
                         <width>auto</width>
                         <height>30</height>
                         <font>font12</font>
                         <align>left</align>
                         <textcolor>FFFFFFFF</textcolor>
                         <label> &#8226; </label>
-                    </control>
-                    <control type="image">
-                        <visible>!IsEmpty(Window.Property(user.stars))</visible>
-                        <posy>4</posy>
-                        <width>134</width>
-                        <height>22</height>
-                        <texture colordiffuse="FFE5A00D">script.plex/stars/$INFO[Window.Property(user.stars)].png</texture>
                     </control>
                     <control type="image">
                         <visible>!IsEmpty(Window.Property(rating.stars))</visible>

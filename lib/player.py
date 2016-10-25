@@ -113,6 +113,7 @@ class SeekPlayerHandler(BasePlayerHandler):
     SEEK_INIT = 1
     SEEK_IN_PROGRESS = 2
     SEEK_PLAYLIST = 3
+    SEEK_REWIND = 4
 
     MODE_ABSOLUTE = 0
     MODE_RELATIVE = 1
@@ -153,7 +154,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         if not self.playlist:
             return False
 
-        self.closeSeekDialog()
+        self.hideOSD()
 
         from windows import postplay
         if not postplay.show(playlist=self.playlist, handler=self):
@@ -197,15 +198,22 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.seeking = self.NO_SEEK
             self.player.control('play')
 
-    def showSeekDialog(self, from_seek=False):
-        xbmc.executebuiltin('Dialog.Close(videoosd,true)')
-        if xbmc.getCondVisibility('Player.showinfo'):
-            xbmc.executebuiltin('Action(Info)')
+    def showOSD(self, from_seek=False):
         self.updateOffset()
         self.dialog.update(self.offset, from_seek)
-        self.dialog.show()
+        self.dialog.showOSD()
 
-    def seek(self, offset, settings_changed=False):
+    def hideOSD(self, delete=False):
+        util.CRON.forceTick()
+        if self.dialog:
+            self.dialog.hideOSD()
+            if delete:
+                self.dialog.doClose()
+                del self.dialog
+                self.dialog = None
+                util.garbageCollect()
+
+    def seek(self, offset, settings_changed=False, seeking=SEEK_IN_PROGRESS):
         if self.mode == self.MODE_ABSOLUTE and not settings_changed:
             self.offset = offset
             util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
@@ -217,21 +225,23 @@ class SeekPlayerHandler(BasePlayerHandler):
         util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
         self.player._playVideo(offset, seeking=self.seeking, force_update=settings_changed)
 
+    def fastforward(self):
+        xbmc.executebuiltin('PlayerControl(forward)')
+
+    def rewind(self):
+        if self.mode == self.MODE_ABSOLUTE:
+            xbmc.executebuiltin('PlayerControl(rewind)')
+        else:
+            self.seek(max(self.offset - 30000, 0), seeking=self.SEEK_REWIND)
+
     def seekAbsolute(self, seek=None):
         self.seekOnStart = seek or self.seekOnStart
         if self.seekOnStart:
             self.player.control('play')
             self.player.seekTime(self.seekOnStart / 1000.0)
 
-    def closeSeekDialog(self, delete=False):
-        util.CRON.forceTick()
-        if self.dialog:
-            self.dialog.doClose(delete)
-            if delete:
-                del self.dialog
-                self.dialog = None
-
     def onPlayBackStarted(self):
+        self.dialog.show()
         self.updateNowPlaying(refreshQueue=True)
         if self.mode == self.MODE_ABSOLUTE:
             self.seekAbsolute()
@@ -257,12 +267,12 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackResumed(self):
         self.updateNowPlaying()
-        # self.closeSeekDialog()
+        # self.hideOSD()
 
     def onPlayBackStopped(self):
         self.updateNowPlaying()
         if self.seeking != self.SEEK_PLAYLIST:
-            self.closeSeekDialog()
+            self.hideOSD()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.sessionEnded()
@@ -273,7 +283,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             return
 
         if self.seeking != self.SEEK_PLAYLIST:
-            self.closeSeekDialog()
+            self.hideOSD()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.sessionEnded()
@@ -287,9 +297,8 @@ class SeekPlayerHandler(BasePlayerHandler):
             return
 
         self.seeking = self.SEEK_INIT
-        self.player.control('pause')
         self.updateOffset()
-        self.showSeekDialog(from_seek=True)
+        # self.showOSD(from_seek=True)
 
     def updateOffset(self):
         self.offset = int(self.player.getTime() * 1000)
@@ -301,12 +310,10 @@ class SeekPlayerHandler(BasePlayerHandler):
         return True
 
     def onSeekOSD(self):
-        if self.dialog.isOpen:
-            self.closeSeekDialog()
-            self.showSeekDialog()
+        self.dialog.activate()
 
     def onVideoWindowClosed(self):
-        self.closeSeekDialog()
+        self.hideOSD()
         util.DEBUG_LOG('Video window closed - Seeking={0}'.format(self.seeking))
         if not self.seeking:
             self.player.stop()
@@ -315,21 +322,22 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onVideoOSD(self):
         # xbmc.executebuiltin('Dialog.Close(seekbar,true)')  # Doesn't work :)
-        # if not self.seeking:
-        self.showSeekDialog()
+        self.showOSD()
 
     def tick(self):
         self.updateNowPlaying(force=True)
-        self.dialog.tick()
+        if self.dialog:
+            self.dialog.tick()
 
     def close(self):
-        self.closeSeekDialog(delete=True)
+        self.hideOSD(delete=True)
 
     def sessionEnded(self):
         if self.ended:
             return
         self.ended = True
         self.player.trigger('session.ended', session_id=self.sessionID)
+        self.hideOSD(delete=True)
 
 
 class AudioPlayerHandler(BasePlayerHandler):
@@ -579,6 +587,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)
 
     def _playVideo(self, offset=0, seeking=0, force_update=False):
+        self.trigger(
+            'change.background',
+            url=self.video.defaultArt.asTranscodedImageURL(1920, 1080, opacity=60, background=colors.noAlpha.Background)
+        )
         self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
         meta = self.playerObject.build()
         url = meta.streamUrls[0]
@@ -599,6 +611,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'season': self.video.parentIndex.asInt(),
             'year': self.video.year.asInt(),
             'plot': self.video.summary
+        })
+        li.setArt({
+            'poster': self.video.defaultThumb.asTranscodedImageURL(347, 518),
+            'fanart': self.video.defaultArt.asTranscodedImageURL(1920, 1080),
         })
         self.stopAndWait()
         self.play(url, li)
@@ -622,26 +638,26 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.open()
         self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0)
 
-    def createVideoListItem(self, video, index=0):
-        url = 'plugin://script.plex/play?{0}'.format(base64.urlsafe_b64encode(video.serialize()))
-        li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
-        vtype = self.video.type if self.video.vtype in ('movie', 'episode', 'musicvideo') else 'video'
-        li.setInfo('video', {
-            'mediatype': vtype,
-            'playcount': index,
-            'title': video.title,
-            'tvshowtitle': video.grandparentTitle,
-            'episode': video.index.asInt(),
-            'season': video.parentIndex.asInt(),
-            'year': video.year.asInt(),
-            'plot': video.summary
-        })
-        li.setArt({
-            'poster': self.video.defaultThumb.asTranscodedImageURL(347, 518),
-            'fanart': self.video.defaultArt.asTranscodedImageURL(1920, 1080),
-        })
+    # def createVideoListItem(self, video, index=0):
+    #     url = 'plugin://script.plex/play?{0}'.format(base64.urlsafe_b64encode(video.serialize()))
+    #     li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
+    #     vtype = self.video.type if self.video.vtype in ('movie', 'episode', 'musicvideo') else 'video'
+    #     li.setInfo('video', {
+    #         'mediatype': vtype,
+    #         'playcount': index,
+    #         'title': video.title,
+    #         'tvshowtitle': video.grandparentTitle,
+    #         'episode': video.index.asInt(),
+    #         'season': video.parentIndex.asInt(),
+    #         'year': video.year.asInt(),
+    #         'plot': video.summary
+    #     })
+    #     li.setArt({
+    #         'poster': self.video.defaultThumb.asTranscodedImageURL(347, 518),
+    #         'fanart': self.video.defaultArt.asTranscodedImageURL(1920, 1080),
+    #     })
 
-        return url, li
+    #     return url, li
 
     def playAudio(self, track, fanart=None):
         self.handler = AudioPlayerHandler(self)

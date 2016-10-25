@@ -18,6 +18,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
+        self.viaOSD = kwargs.get('via_osd')
         self.nonPlayback = kwargs.get('non_playback')
 
         if not self.video.mediaChoice:
@@ -27,6 +28,8 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
     def onFirstInit(self):
         self.settingsList = kodigui.ManagedControlList(self, self.SETTINGS_LIST_ID, 6)
         self.setProperty('heading', 'Settings')
+        if self.viaOSD:
+            self.setProperty('via.OSD', '1')
         self.showSettings(True)
         util.CRON.registerReceiver(self)
 
@@ -215,6 +218,6 @@ def showQualityDialog(video, non_playback=False):
     video.settings.setPrefOverride('online_quality', choice)
 
 
-def showDialog(video, non_playback=False):
-    w = VideoSettingsDialog.open(video=video, non_playback=non_playback)
+def showDialog(video, non_playback=False, via_osd=False):
+    w = VideoSettingsDialog.open(video=video, non_playback=non_playback, via_osd=via_osd)
     del w

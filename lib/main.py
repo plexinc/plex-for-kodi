@@ -45,7 +45,7 @@ def signout():
 
 def main():
     global BACKGROUND
-    with util.Cron(5):
+    with util.Cron(1):
         BACKGROUND = background.BackgroundWindow.create(function=_main)
         BACKGROUND.modal()
         del BACKGROUND

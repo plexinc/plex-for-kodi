@@ -49,6 +49,8 @@ class SeekDialog(kodigui.BaseDialog):
     BIG_SEEK_GROUP_ID = 500
     BIG_SEEK_LIST_ID = 501
 
+    NO_OSD_BUTTON_ID = 800
+
     BAR_X = 0
     BAR_Y = 921
     BAR_RIGHT = 1920
@@ -78,6 +80,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.timeout = None
         self.hasDialog = False
         self.lastFocusID = None
+        self.playlistDialogVisible = False
 
     @property
     def player(self):
@@ -128,6 +131,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onAction(self, action):
         try:
+            util.TEST((action.getId(), action.getButtonCode(), action.getAmount1(), action.getAmount2()))
             self.resetTimeout()
 
             controlID = self.getFocusId()
@@ -153,6 +157,16 @@ class SeekDialog(kodigui.BaseDialog):
                 #     self.seekForward(60000)
                 # elif action == xbmcgui.ACTION_MOVE_DOWN:
                 #     self.seekBack(60000)
+            elif controlID == self.NO_OSD_BUTTON_ID:
+                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
+                    self.showOSD()
+                    self.setFocusId(self.MAIN_BUTTON_ID)
+                elif action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN):
+                    self.showOSD()
+                    self.setFocusId(self.BIG_SEEK_LIST_ID)
+                elif action.getButtonCode() == 61519:
+                    xbmc.executebuiltin('Action(PlayerProcessInfo)')
+                    xbmc.executebuiltin('Action(CodecInfo)')
             elif controlID == self.BIG_SEEK_LIST_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
                     return self.updateBigSeek()
@@ -160,8 +174,12 @@ class SeekDialog(kodigui.BaseDialog):
                     return self.updateBigSeek()
 
             if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
-                self.doClose()
-                self.handler.onSeekAborted()
+                if self.osdVisible():
+                    self.hideOSD()
+                else:
+                    self.doClose()
+                    # self.handler.onSeekAborted()
+                    self.handler.player.stop()
                 return
         except:
             util.ERROR()
@@ -186,7 +204,8 @@ class SeekDialog(kodigui.BaseDialog):
     def onClick(self, controlID):
         if controlID == self.MAIN_BUTTON_ID:
             self.handler.seek(self.selectedOffset)
-            self.doClose()
+        elif controlID == self.NO_OSD_BUTTON_ID:
+            self.showOSD()
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.handleDialog(self.showSettings)
         elif controlID == self.REPEAT_BUTTON_ID:
@@ -198,12 +217,15 @@ class SeekDialog(kodigui.BaseDialog):
         elif controlID == self.NEXT_BUTTON_ID:
             self.handler.next()
         elif controlID == self.PLAYLIST_BUTTON_ID:
-            self.playlistDialog = PlaylistDialog.create(show=False, handler=self.handler)
-            self.playlistDialog.show()
+            self.showPlaylistDialog()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.handleDialog(self.optionsButtonClicked)
         elif controlID == self.BIG_SEEK_LIST_ID:
             self.bigSeekSelected()
+        elif controlID == self.SKIP_BACK_BUTTON_ID:
+            self.handler.rewind()
+        elif controlID == self.SKIP_FORWARD_BUTTON_ID:
+            self.handler.fastforward()
 
     def doClose(self, delete=False):
         try:
@@ -212,6 +234,7 @@ class SeekDialog(kodigui.BaseDialog):
                 if delete:
                     del self.playlistDialog
                     self.playlistDialog = None
+                    util.garbageCollect()
         finally:
             kodigui.BaseDialog.doClose(self)
 
@@ -274,10 +297,10 @@ class SeekDialog(kodigui.BaseDialog):
             xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
 
     def showSettings(self):
-        playersettings.showDialog(self.player.video)
+        with self.propertyContext('settings.visible'):
+            playersettings.showDialog(self.player.video, via_osd=True)
         if self.videoSettingsHaveChanged():
             self.handler.seek(self.trueOffset(), settings_changed=True)
-            self.doClose()
 
     def setBigSeekShift(self):
         for mli in self.bigSeekControl:
@@ -303,8 +326,6 @@ class SeekDialog(kodigui.BaseDialog):
         if self.fromSeek:
             self.setFocusId(self.MAIN_BUTTON_ID)
             self.fromSeek = 0
-        else:
-            self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
 
         self.setProperty('has.bif', self.bifURL and '1' or '')
         self.setProperty('video.title', self.title)
@@ -428,10 +449,13 @@ class SeekDialog(kodigui.BaseDialog):
         if not self.initialized:
             return
 
+        if xbmc.getCondVisibility('Window.IsActive(busydialog) + !Player.Caching'):
+            util.DEBUG_LOG('SeekDialog: Possible stuck busy dialog - closing')
+            xbmc.executebuiltin('Dialog.Close(busydialog,1)')
+
         if time.time() > self.timeout and not self.hasDialog:
-            if not xbmc.getCondVisibility('Window.IsActive(seekbar) | Window.IsActive(videoosd)'):
-                self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
-                self.doClose()
+            if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding') and not self.playlistDialogVisible:
+                self.hideOSD()
 
         try:
             self.offset = int(self.handler.player.getTime() * 1000)
@@ -439,6 +463,32 @@ class SeekDialog(kodigui.BaseDialog):
             return
 
         self.updateCurrent()
+
+    def showPlaylistDialog(self):
+        if not self.playlistDialog:
+            self.playlistDialog = PlaylistDialog.create(show=False, handler=self.handler)
+
+        self.playlistDialogVisible = True
+        self.playlistDialog.doModal()
+        self.resetTimeout()
+        self.playlistDialogVisible = False
+
+    def osdVisible(self):
+        return xbmc.getCondVisibility('Control.IsVisible(801)')
+
+    def showOSD(self):
+        self.setProperty('show.OSD', '1')
+        xbmc.executebuiltin('Dialog.Close(videoosd,true)')
+        if xbmc.getCondVisibility('Player.showinfo'):
+            xbmc.executebuiltin('Action(Info)')
+        self.setFocusId(self.PLAY_PAUSE_BUTTON_ID)
+
+    def hideOSD(self):
+        self.setProperty('show.OSD', '')
+        self.setFocusId(self.NO_OSD_BUTTON_ID)
+        if self.playlistDialog:
+            self.playlistDialog.doClose()
+            self.playlistDialogVisible = False
 
 
 class PlaylistDialog(kodigui.BaseDialog):
@@ -479,6 +529,7 @@ class PlaylistDialog(kodigui.BaseDialog):
         self.updatePlayingItem()
 
     def sessionEnded(self, **kwargs):
+        util.DEBUG_LOG('Video OSD: Session ended - closing')
         self.doClose()
 
     def createListItem(self, pi):

@@ -20,6 +20,7 @@ class VideoPlayerWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         player.PLAYER.on('session.ended', self.sessionEnded)
+        player.PLAYER.on('change.background', self.changeBackground)
         self.setBackground()
         self.play()
 
@@ -27,24 +28,22 @@ class VideoPlayerWindow(kodigui.BaseWindow):
         self.setBackground()
 
     def setBackground(self):
-        if self.video:
-            self.setProperty('background', self.video.defaultArt.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background))
-        else:
-            self.setProperty(
-                'background',
-                self.playQueue.defaultArt.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
-            )
+        video = self.video if self.video else self.playQueue.current()
+        self.setProperty('background', video.defaultArt.asTranscodedImageURL(1920, 1080, opacity=60, background=colors.noAlpha.Background))
+
+    def changeBackground(self, url, **kwargs):
+        self.setProperty('background', url)
 
     def sessionEnded(self, session_id=None, **kwargs):
         if session_id != id(self):
-            util.DEBUG_LOG('VideoPlayerWindow: Ignoring session end ----------- (ID: {0} - SessionID: {1})'.format(id(self), session_id))
+            util.DEBUG_LOG('VideoPlayerWindow: Ignoring session end (ID: {0} - SessionID: {1})'.format(id(self), session_id))
             return
 
-        util.DEBUG_LOG('VideoPlayerWindow: Session ended - closing --------------------------- (ID: {0})'.format(id(self)))
+        util.DEBUG_LOG('VideoPlayerWindow: Session ended - closing (ID: {0})'.format(id(self)))
         self.doClose()
 
     def play(self):
-        util.DEBUG_LOG('VideoPlayerWindow: Starting session ----------------------------- (ID: {0})'.format(id(self)))
+        util.DEBUG_LOG('VideoPlayerWindow: Starting session (ID: {0})'.format(id(self)))
         if self.playQueue:
             player.PLAYER.playVideoPlaylist(self.playQueue, resume=self.resume, session_id=id(self))
         elif self.video:
@@ -54,5 +53,6 @@ class VideoPlayerWindow(kodigui.BaseWindow):
 def play(video=None, play_queue=None, resume=False):
     w = VideoPlayerWindow.open(video=video, play_queue=play_queue, resume=resume)
     player.PLAYER.off('session.ended', w.sessionEnded)
+    player.PLAYER.off('change.background', w.changeBackground)
     del w
     util.garbageCollect()

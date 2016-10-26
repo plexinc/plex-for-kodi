@@ -293,6 +293,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackSeek(self, stime, offset):
         if self.seekOnStart:
+            self.dialog.tick(stime)
             self.seekOnStart = 0
             return
 

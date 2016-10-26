@@ -9,22 +9,21 @@
     <defaultcontrol>800</defaultcontrol>
     <controls>
         <control type="button" id="800">
-            <animation effect="slide" end="0,1080">Visible</animation>
             <visible allowhiddenfocus="true">IsEmpty(Window.Property(show.OSD))</visible>
             <posx>0</posx>
-            <posy>-1080</posy>
+            <posy>0</posy>
             <width>1920</width>
             <height>1080</height>
             <texturefocus>-</texturefocus>
             <texturenofocus>-</texturenofocus>
             <label> </label>
             <onclick>SetProperty(show.OSD,1)</onclick>
-            <onfocus>SetProperty(show.OSD,)</onfocus>
         </control>
-        <control type="group" id="801">
-            <visible>!IsEmpty(Window.Property(show.OSD)) + !Window.IsActive(osdvideosettings) + !Window.IsActive(osdaudiosettings)</visible>
+        <control type="group" id="802">
+            <visible>[!IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar)] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsActive(playerprocessinfo)</visible>
+            <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group">
-                <visible>IsEmpty(Window.Property(settings.visible)) + [Window.IsActive(seekbar) | Window.IsActive(videoosd) | Player.ShowInfo]</visible>
+                <visible>IsEmpty(Window.Property(settings.visible)) + [Window.IsVisible(seekbar) | Window.IsVisible(videoosd) | Player.ShowInfo]</visible>
                 <animation effect="fade" start="100" end="0">Hidden</animation>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -135,8 +134,54 @@
                     <textcolor>A0FFFFFF</textcolor>
                     <label>$INFO[Window.Property(time.end)]</label>
                 </control>
+                <control type="label">
+                    <visible>Player.Paused + IsEmpty(Window.Property(show.OSD))</visible>
+                    <animation effect="fade" time="200" delay="200" end="100">Visible</animation>
+                    <posx>0</posx>
+                    <posy>20</posy>
+                    <width>1920</width>
+                    <height>60</height>
+                    <font>font13</font>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <textcolor>FFCC7B19</textcolor>
+                    <label>[UPPERCASE]Paused[/UPPERCASE]</label>
+                </control>
             </control>
 
+            <control type="group">
+                <posx>0</posx>
+                <posy>940</posy>
+                <control type="image">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1920</width>
+                    <height>10</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>A0000000</colordiffuse>
+                </control>
+                <control type="image" id="200">
+                    <visible>Control.HasFocus(100)</visible>
+                    <posx>0</posx>
+                    <posy>1</posy>
+                    <width>1</width>
+                    <height>8</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>FFE5A00D</colordiffuse>
+                </control>
+                <control type="image" id="201">
+                    <posx>0</posx>
+                    <posy>2</posy>
+                    <width>1</width>
+                    <height>6</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>FFAC5B00</colordiffuse>
+                </control>
+            </control>
+        </control>
+        <control type="group" id="801">
+            <visible>!IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings)</visible>
+            <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group" id="300">
                 <visible>!IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(501)]</visible>
                 <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
@@ -503,32 +548,9 @@
                     <height>10</height>
                     <onup>501</onup>
                     <ondown>400</ondown>
-                    <texturefocus>script.plex/white-square.png</texturefocus>
-                    <texturenofocus>script.plex/white-square.png</texturenofocus>
-                    <colordiffuse>A0000000</colordiffuse>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
                 </control>
-            </control>
-
-            <control type="image" id="201">
-                <visible>!Control.HasFocus(100) + !Control.HasFocus(501)</visible>
-                <animation effect="fade" time="100" delay="100" end="0">Hidden</animation>
-                <posx>0</posx>
-                <posy>942</posy>
-                <width>1</width>
-                <height>6</height>
-                <texture>script.plex/white-square.png</texture>
-                <colordiffuse>FFCC7B19</colordiffuse>
-            </control>
-
-            <control type="image" id="200">
-                <visible>Control.HasFocus(100)</visible>
-                <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
-                <posx>0</posx>
-                <posy>942</posy>
-                <width>1</width>
-                <height>6</height>
-                <texture>script.plex/white-square.png</texture>
-                <colordiffuse>FFE5A00D</colordiffuse>
             </control>
 
             <control type="group" id="500">
@@ -542,7 +564,7 @@
                     <width>2320</width>
                     <height>6</height>
                     <texture>script.plex/white-square.png</texture>
-                    <colordiffuse>FF000000</colordiffuse>
+                    <colordiffuse>A0000000</colordiffuse>
                 </control>
                 <control type="list" id="501">
                     <hitrect x="-20" y="-20" w="10" h="10" />

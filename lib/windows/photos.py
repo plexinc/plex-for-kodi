@@ -68,7 +68,6 @@ class PhotoWindow(kodigui.BaseWindow):
     def onAction(self, action):
         try:
             # controlID = self.getFocusId()
-            # util.TEST(action.getId())
             if action == xbmcgui.ACTION_MOVE_LEFT:
                 if not self.osdVisible() or self.getFocusId() == self.PQUEUE_LIST_OVERLAY_BUTTON_ID:
                     self.prev()

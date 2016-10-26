@@ -131,7 +131,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onAction(self, action):
         try:
-            util.TEST((action.getId(), action.getButtonCode(), action.getAmount1(), action.getAmount2()))
+            # util.TEST((action.getId(), action.getButtonCode(), action.getAmount1(), action.getAmount2()))
             self.resetTimeout()
 
             controlID = self.getFocusId()
@@ -162,6 +162,9 @@ class SeekDialog(kodigui.BaseDialog):
                     self.showOSD()
                     self.setFocusId(self.MAIN_BUTTON_ID)
                 elif action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN):
+                    self.selectedOffset = self.trueOffset()
+                    self.setBigSeekShift()
+                    self.updateProgress()
                     self.showOSD()
                     self.setFocusId(self.BIG_SEEK_LIST_ID)
                 elif action.getButtonCode() == 61519:
@@ -198,6 +201,9 @@ class SeekDialog(kodigui.BaseDialog):
         elif controlID == self.BIG_SEEK_LIST_ID:
             self.setBigSeekShift()
             self.updateBigSeek()
+        elif xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
+            self.selectedOffset = self.trueOffset()
+            self.updateProgress()
 
         self.lastFocusID = controlID
 
@@ -323,6 +329,7 @@ class SeekDialog(kodigui.BaseDialog):
     def updateProperties(self, **kwargs):
         if not self.started:
             return
+
         if self.fromSeek:
             self.setFocusId(self.MAIN_BUTTON_ID)
             self.fromSeek = 0
@@ -445,7 +452,7 @@ class SeekDialog(kodigui.BaseDialog):
 
         self.seekbarControl.setWidth(w)
 
-    def tick(self):
+    def tick(self, offset=None):
         if not self.initialized:
             return
 
@@ -458,7 +465,7 @@ class SeekDialog(kodigui.BaseDialog):
                 self.hideOSD()
 
         try:
-            self.offset = int(self.handler.player.getTime() * 1000)
+            self.offset = offset or int(self.handler.player.getTime() * 1000)
         except RuntimeError:  # Playback has stopped
             return
 
@@ -582,7 +589,6 @@ class PlaylistDialog(kodigui.BaseDialog):
         items = []
         idx = 1
         for pi in self.playlist.items():
-            # util.TEST('')
             mli = self.createListItem(pi)
             if mli:
                 mli.setProperty('track.number', str(idx))

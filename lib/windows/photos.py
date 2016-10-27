@@ -59,7 +59,7 @@ class PhotoWindow(kodigui.BaseWindow):
         self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 14)
         self.getPlayQueue()
         self.start()
-        self.osdTimer = kodigui.PropertyTimer(self._winID, 4, 'OSD', '', callback=self.osdTimerCallback)
+        self.osdTimer = kodigui.PropertyTimer(self._winID, 4, 'OSD', '', init_value=False, callback=self.osdTimerCallback)
         self.imageControl = self.getControl(600)
 
     def osdTimerCallback(self):
@@ -104,7 +104,7 @@ class PhotoWindow(kodigui.BaseWindow):
                 self.doClose()
                 return
 
-            self.osdTimer.reset()
+            self.osdTimer.reset(init=False)
         except:
             util.ERROR()
 
@@ -381,7 +381,7 @@ class PhotoWindow(kodigui.BaseWindow):
         plexapp.APP.nowplayingmanager.updatePlaybackState(self.timelineType, self.playerObject, state, time, self.playQueue)
 
     def showOSD(self):
-        self.osdTimer.reset()
+        self.osdTimer.reset(init=False)
 
     def hideOSD(self):
         self.osdTimer.stop(trigger=True)

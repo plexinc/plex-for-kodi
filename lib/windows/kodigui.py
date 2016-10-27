@@ -1008,15 +1008,17 @@ class PropertyTimer():
         self.stop()
 
     def init(self, val):
+        if val is False:
+            return
+        elif val is None:
+            val = self._initValue
+
         xbmcgui.Window(self._winID).setProperty(self._property, val)
         if self._addonID:
             xbmcgui.Window(10000).setProperty('{0}.{1}'.format(self._addonID, self._property), val)
 
     def reset(self, close_win=None, init=None):
-        if init:
-            self.init(init)
-        else:
-            self.init(self._initValue)
+        self.init(init)
 
         if self._closed:
             return

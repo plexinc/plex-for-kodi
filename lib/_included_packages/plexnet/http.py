@@ -15,16 +15,16 @@ status_codes = requests.status_codes._codes
 
 
 def GET(*args, **kwargs):
-    return requests.get(*args, headers=util.BASE_HEADERS, timeout=util.TIMEOUT, **kwargs)
+    return requests.get(*args, headers=util.BASE_HEADERS.copy(), timeout=util.TIMEOUT, **kwargs)
 
 
 def POST(*args, **kwargs):
-    return requests.post(*args, headers=util.BASE_HEADERS, timeout=util.TIMEOUT, **kwargs)
+    return requests.post(*args, headers=util.BASE_HEADERS.copy(), timeout=util.TIMEOUT, **kwargs)
 
 
 def Session():
     s = requests.Session()
-    s.headers = util.BASE_HEADERS
+    s.headers = util.BASE_HEADERS.copy()
     s.timeout = util.TIMEOUT
 
     return s
@@ -45,7 +45,7 @@ class HttpRequest(object):
         self.hasParams = '?' in url
         self.ignoreResponse = False
         self.session = requests.session()
-        self.session.headers = util.BASE_HEADERS
+        self.session.headers = util.BASE_HEADERS.copy()
         self.currentResponse = None
         self.method = method
         self.url = url
@@ -82,14 +82,13 @@ class HttpRequest(object):
                 res = self.session.head(self.url, timeout=10, stream=True)
             elif body is not None:
                 if not contentType:
-                    self.session.headers.update({"Content-Type": "application/x-www-form-urlencoded"})
+                    self.session.headers["Content-Type"] = "application/x-www-form-urlencoded"
                 else:
-                    self.session.headers.update({"Content-Type": mimetypes.guess_type(contentType)})
+                    self.session.headers["Content-Type"] = mimetypes.guess_type(contentType)
 
                 res = self.session.post(self.url, data=body or None, timeout=10, stream=True)
             else:
                 res = self.session.get(self.url, timeout=10, stream=True)
-
             self.currentResponse = res
 
             if self._cancel:
@@ -185,7 +184,7 @@ class HttpRequest(object):
             self.url += "?" + encodedName + "=" + urllib.quote_plus(value)
 
     def addHeader(self, name, value):
-        self.session.headers.update({name: value})
+        self.session.headers[name] = value
 
     def createRequestContext(self, requestType, callback_=None):
         context = RequestContext()

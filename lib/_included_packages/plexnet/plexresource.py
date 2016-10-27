@@ -126,7 +126,7 @@ class ResourceConnection(plexobjects.PlexObject):
         return False
 
     def headers(self, token=None):
-        headers = util.BASE_HEADERS
+        headers = util.BASE_HEADERS.copy()
         if token:
             headers['X-Plex-Token'] = token
         return headers
@@ -169,7 +169,7 @@ class PlexResourceList(plexobjects.PlexItemList):
 
 
 def fetchResources(token):
-    headers = util.BASE_HEADERS
+    headers = util.BASE_HEADERS.copy()
     headers['X-Plex-Token'] = token
     util.LOG('GET {0}?X-Plex-Token={1}'.format(RESOURCES, util.hideToken(token)))
     response = http.GET(RESOURCES)

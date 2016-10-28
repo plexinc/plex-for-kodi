@@ -18,6 +18,7 @@ import playlists
 import busy
 import opener
 import search
+import dropdown
 
 
 class SectionHubsTask(backgroundthread.Task):
@@ -313,6 +314,9 @@ class HomeWindow(kodigui.BaseWindow):
                 elif self.getFocusId() == self.SERVER_LIST_ID:
                     self.setFocusId(self.SERVER_BUTTON_ID)
                     return
+
+                if not self.confirmExit():
+                    return
         except:
             util.ERROR()
 
@@ -347,6 +351,23 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('off.sections', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
             self.setProperty('off.sections', '1')
+
+    def confirmExit(self):
+        choice = dropdown.showDropdown(
+            options=[
+                {'key': 'cancel', 'display': 'Cancel'},
+                {'key': 'exit', 'display': 'Exit'}
+            ],
+            pos=(660, 441),
+            close_direction='none',
+            set_dropdown_prop=False,
+            header=u'Are you ready to exit Plex?'
+        )
+
+        if not choice:
+            return None
+
+        return choice['key'] == 'exit'
 
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self))

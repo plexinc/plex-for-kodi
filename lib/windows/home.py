@@ -289,6 +289,9 @@ class HomeWindow(kodigui.BaseWindow):
         controlID = self.getFocusId()
 
         try:
+            if controlID == self.SECTION_LIST_ID:
+                self.checkSectionItem()
+
             if controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.USER_BUTTON_ID)
             elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
@@ -300,9 +303,8 @@ class HomeWindow(kodigui.BaseWindow):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
-            if controlID == self.SECTION_LIST_ID:
-                self.checkSectionItem()
-            elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
@@ -418,9 +420,9 @@ class HomeWindow(kodigui.BaseWindow):
                 if mli.dataSource and mli.dataSource.key == sectionID:
                     self.sectionList.selectItem(mli.pos())
                     self.lastSection = mli.dataSource
-                    self.sectionChanged(mli.dataSource)
+                    self.sectionChanged()
 
-    def checkSectionItem(self):
+    def checkSectionItem(self, force=False):
         item = self.sectionList.getSelectedItem()
         if not item:
             return
@@ -431,7 +433,7 @@ class HomeWindow(kodigui.BaseWindow):
 
         if item.dataSource != self.lastSection:
             self.lastSection = item.dataSource
-            self.sectionChanged(item.dataSource)
+            self.sectionChanged(force)
 
     def displayServerAndUser(self):
         self.setProperty('user.name', plexapp.ACCOUNT.title or plexapp.ACCOUNT.username)
@@ -446,9 +448,9 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('server.icon', 'script.plex/home/device/error.png')
             self.setProperty('server.iconmod', '')
 
-    def sectionChanged(self, section):
+    def sectionChanged(self, force=False):
         self.sectionChangeTimeout = time.time() + 0.3
-        if not self.sectionChangeThread or not self.sectionChangeThread.isAlive():
+        if not self.sectionChangeThread or not self.sectionChangeThread.isAlive() or force:
             self.sectionChangeThread = threading.Thread(target=self._sectionChanged, name="sectionchanged")
             self.sectionChangeThread.start()
 
@@ -464,6 +466,8 @@ class HomeWindow(kodigui.BaseWindow):
         self.setProperty('hub.focus', '')
         util.DEBUG_LOG('Section chaged ({0}): {1}'.format(section.key, repr(section.title)))
         self.showHubs(section)
+        self.lastSection = section
+        self.checkSectionItem(force=True)
 
     def sectionHubsCallback(self, section, hubs):
         self.sectionHubs[section.key] = hubs

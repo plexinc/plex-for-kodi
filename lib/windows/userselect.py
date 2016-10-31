@@ -144,14 +144,15 @@ class UserSelectWindow(kodigui.BaseWindow):
         else:
             pin = ''
 
+        if len(pin) > 3:
+            return
+
         if controlID < 210:
             pin += str(controlID - 200)
         elif controlID == 210:
             pin += '0'
         elif controlID == 211:
             pin = pin[:-1]
-
-        pin = pin[:4]
 
         if pin:
             item.setProperty('pin', ' '.join(list(u"\u2022" * len(pin))))

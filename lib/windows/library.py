@@ -397,7 +397,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.sort = choice
         self.setProperty('sort', choice)
-        self.setProperty('sort.display', result['display'])
+        self.setProperty('sort.display', result['title'])
 
         self.sortShowPanel(choice)
 
@@ -529,7 +529,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.filter:
             disp = self.filter['display']
             if self.filter.get('sub'):
-                disp = self.filter['sub']['display']
+                disp = u'{0}: {1}'.format(disp, self.filter['sub']['display'])
             self.setProperty('filter1.display', disp)
             self.setProperty('filter2.display', self.filterUnwatched and 'unwatched' or '')
         else:

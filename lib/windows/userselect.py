@@ -125,6 +125,15 @@ class UserSelectWindow(kodigui.BaseWindow):
         options = []
         options.append({'key': 'sign_out', 'display': 'Sign Out'})
         options.append({'key': 'exit', 'display': 'Exit'})
+        if util.getSetting('kiosk.mode', False):
+            if xbmc.getCondVisibility('System.CanPowerDown'):
+                options.append({'key': 'shutdown', 'display': 'Shutdown'})
+            if xbmc.getCondVisibility('System.CanSuspend'):
+                options.append({'key': 'suspend', 'display': 'Suspend'})
+            if xbmc.getCondVisibility('System.CanHibernate'):
+                options.append({'key': 'hibernate', 'display': 'Hibernate'})
+            if xbmc.getCondVisibility('System.CanReboot'):
+                options.append({'key': 'reboot', 'display': 'Reboot'})
 
         with self.propertyContext('dropdown'):
             choice = dropdown.showDropdown(options, (60, 101))
@@ -136,6 +145,14 @@ class UserSelectWindow(kodigui.BaseWindow):
             self.doClose()
         elif choice['key'] == 'exit':
             self.doClose()
+        elif choice['key'] == 'shutdown':
+            xbmc.executebuiltin('Powerdown()')
+        elif choice['key'] == 'suspend':
+            xbmc.executebuiltin('Suspend()')
+        elif choice['key'] == 'hibernate':
+            xbmc.executebuiltin('Hibernate()')
+        elif choice['key'] == 'reboot':
+            xbmc.executebuiltin('Reset()')
 
     def pinEntryClicked(self, controlID):
         item = self.userList.getSelectedItem()

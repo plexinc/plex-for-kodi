@@ -529,7 +529,7 @@
                 <control type="label">
                     <width max="500">auto</width>
                     <height>40</height>
-                    <font>font12</font>
+                    <font>font10</font>
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
@@ -655,7 +655,7 @@
                 <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
                 <right>340</right>
                 <posy>35</posy>
-                <width>1000</width>
+                <width>870</width>
                 <height>65</height>
                 <align>right</align>
                 <itemgap>30</itemgap>
@@ -667,10 +667,10 @@
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
-                    <font>font12</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <focusedcolor>FFFFFFFF</focusedcolor>
-                    <disabledcolor>FFFFFFFF</disabledcolor>
+                    <font>font10</font>
+                    <textcolor>A0FFFFFF</textcolor>
+                    <focusedcolor>A0FFFFFF</focusedcolor>
+                    <disabledcolor>A0FFFFFF</disabledcolor>
                     <align>center</align>
                     <aligny>center</aligny>
                     <texturefocus>-</texturefocus>
@@ -680,10 +680,10 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="211">
-                    <width max="500">auto</width>
+                    <width max="400">auto</width>
                     <height>65</height>
-                    <font>font12</font>
-                    <textcolor>FFFFFFFF</textcolor>
+                    <font>font10</font>
+                    <textcolor>A0FFFFFF</textcolor>
                     <focusedcolor>FF000000</focusedcolor>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -697,10 +697,10 @@
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
-                    <font>font12</font>
-                    <textcolor>FFFFFFFF</textcolor>
-                    <focusedcolor>FFFFFFFF</focusedcolor>
-                    <disabledcolor>FFFFFFFF</disabledcolor>
+                    <font>font10</font>
+                    <textcolor>A0FFFFFF</textcolor>
+                    <focusedcolor>A0FFFFFF</focusedcolor>
+                    <disabledcolor>A0FFFFFF</disabledcolor>
                     <align>center</align>
                     <aligny>center</aligny>
                     <texturefocus>-</texturefocus>
@@ -712,8 +712,8 @@
                 <control type="button" id="210">
                     <width max="300">auto</width>
                     <height>65</height>
-                    <font>font12</font>
-                    <textcolor>FFFFFFFF</textcolor>
+                    <font>font10</font>
+                    <textcolor>A0FFFFFF</textcolor>
                     <focusedcolor>FF000000</focusedcolor>
                     <align>center</align>
                     <aligny>center</aligny>
@@ -729,7 +729,7 @@
                 <posy>35</posy>
                 <width>200</width>
                 <height>65</height>
-                <font>font12</font>
+                <font>font10</font>
                 <align>right</align>
                 <aligny>center</aligny>
                 <textcolor>FFFFFFFF</textcolor>

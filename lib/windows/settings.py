@@ -198,6 +198,7 @@ class Settings(object):
                     'allow_insecure', T(32032), 'never', (('never', T(32033)), ('same_network', T(32034)), ('always', T(32035)))
                 ),
                 BoolSetting('gdm_discovery', 'Server Discovery (GDM)', True),
+                BoolSetting('kiosk.mode', 'Start Plex On Kodi Startup', False),
             )
         ),
         'manual': (

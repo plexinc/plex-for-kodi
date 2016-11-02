@@ -345,7 +345,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             pl = playlist.LocalPlaylist(show.all(), show.getServer())
             if len(pl):  # Don't use playlist if it's only this video
                 pl.setCurrent(self.video)
-                videoplayer.play(play_queue=pl, resume=resume)
+                self.processCommand(videoplayer.play(play_queue=pl, resume=resume))
                 return
 
         videoplayer.play(video=self.video, resume=resume)

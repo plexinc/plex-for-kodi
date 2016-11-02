@@ -1,10 +1,13 @@
 import kodigui
+import windowutils
+import postplay
+import opener
 from lib import util
 from lib import player
 from lib import colors
 
 
-class VideoPlayerWindow(kodigui.BaseWindow):
+class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-video_player.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -20,6 +23,7 @@ class VideoPlayerWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         player.PLAYER.on('session.ended', self.sessionEnded)
+        player.PLAYER.on('post.play', self.postPlay)
         player.PLAYER.on('change.background', self.changeBackground)
         self.setBackground()
         self.play()
@@ -33,6 +37,13 @@ class VideoPlayerWindow(kodigui.BaseWindow):
 
     def changeBackground(self, url, **kwargs):
         self.setProperty('background', url)
+
+    def postPlay(self, playlist=None, handler=None, **kwargs):
+        command = opener.handleOpen(postplay.PostPlayWindow, playlist=playlist, handler=handler)
+        if command == 'abort':
+            player.PLAYER.handler.sessionEnded()
+        else:
+            self.processCommand(command)
 
     def sessionEnded(self, session_id=None, **kwargs):
         if session_id != id(self):
@@ -53,6 +64,9 @@ class VideoPlayerWindow(kodigui.BaseWindow):
 def play(video=None, play_queue=None, resume=False):
     w = VideoPlayerWindow.open(video=video, play_queue=play_queue, resume=resume)
     player.PLAYER.off('session.ended', w.sessionEnded)
+    player.PLAYER.off('post.play', w.postPlay)
     player.PLAYER.off('change.background', w.changeBackground)
+    command = w.exitCommand
     del w
     util.garbageCollect()
+    return command

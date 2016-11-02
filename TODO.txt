@@ -1,5 +1,3 @@
-Hook to completed:reachability and update server drop down
-
 Containers:
 
 * Play (All)

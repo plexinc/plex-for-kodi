@@ -46,13 +46,13 @@ class PostPlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
+        windowutils.UtilMixin.__init__(self)
         self.playlist = kwargs.get('playlist')
         self.handler = kwargs.get('handler')
         self.video = self.playlist.current()
         self.prev = self.playlist.prevItem()
         self.show_ = self.video.show()
         self.videos = None
-        self.exitCommand = None
         self.trailer = None
         self.aborted = True
         self.timeout = None
@@ -80,6 +80,10 @@ class PostPlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
+                self.closeWithCommand('abort')
+                return
 
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()
@@ -210,6 +214,9 @@ class PostPlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         threading.Thread(target=self.countdown).start()
 
     def cancelTimer(self):
+        if self.timeout is None:
+            return
+
         util.DEBUG_LOG('Canceling post-play timer')
         self.timeout = None
         self.setProperty('countdown', '')

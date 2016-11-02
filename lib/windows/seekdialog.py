@@ -234,6 +234,9 @@ class SeekDialog(kodigui.BaseDialog):
             self.handler.fastforward()
 
     def doClose(self, delete=False):
+        if self.handler.playlist:
+            self.handler.playlist.off('change', self.updateProperties)
+
         try:
             if self.playlistDialog:
                 self.playlistDialog.doClose()

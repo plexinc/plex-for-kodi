@@ -156,9 +156,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
         self.hideOSD()
 
-        from windows import postplay
-        if not postplay.show(playlist=self.playlist, handler=self):
-            self.sessionEnded()
+        self.dialog.doClose()
+        self.player.trigger('post.play', playlist=self.playlist, handler=self)
 
         return True
 

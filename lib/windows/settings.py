@@ -170,6 +170,7 @@ class Settings(object):
         'main': (
             'Main', (
                 BoolSetting('auto_signin', 'Automatically Sign In', False),
+                BoolSetting('post_play_auto', 'Post Play Auto Play', True),
             )
         ),
         'audio': (

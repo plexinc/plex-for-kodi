@@ -12,6 +12,8 @@ from plexnet import plexapp
 
 from plexnet import signalsmixin
 
+FIVE_MINUTES_MILLIS = 300000
+
 
 class BasePlayerHandler(object):
     def __init__(self, player, session_id=None):
@@ -114,17 +116,21 @@ class SeekPlayerHandler(BasePlayerHandler):
     SEEK_IN_PROGRESS = 2
     SEEK_PLAYLIST = 3
     SEEK_REWIND = 4
+    SEEK_POST_PLAY = 5
 
     MODE_ABSOLUTE = 0
     MODE_RELATIVE = 1
 
     def __init__(self, player, session_id=None):
         BasePlayerHandler.__init__(self, player, session_id)
-        self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
+        self.dialog = None
         self.playlist = None
         self.playQueue = None
         self.timelineType = 'video'
         self.ended = False
+        self.bifURL = ''
+        self.title = ''
+        self.title2 = ''
         self.reset()
 
     def reset(self):
@@ -141,7 +147,16 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.baseOffset = offset / 1000.0
         self.seeking = seeking
         self.duration = duration
-        self.dialog.setup(duration, offset, bif_url, title, title2)
+        self.bifURL = bif_url
+        self.title = title
+        self.title2 = title2
+        self.getDialog()
+
+    def getDialog(self):
+        if not self.dialog:
+            self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
+            self.dialog.setup(self.duration, int(self.baseOffset * 1000), self.bifURL, self.title, self.title2)
+        return self.dialog
 
     @property
     def trueTime(self):
@@ -150,25 +165,36 @@ class SeekPlayerHandler(BasePlayerHandler):
         else:
             return self.player.currentTime
 
-    def showPostPlay(self):
-        if not self.playlist:
+    def shouldShowPostPlay(self):
+        if self.playlist and self.playlist.TYPE == 'playlist':
             return False
 
-        self.hideOSD()
+        if self.player.video.duration.asInt() <= FIVE_MINUTES_MILLIS:
+            return False
 
-        self.dialog.doClose()
-        self.player.trigger('post.play', playlist=self.playlist, handler=self)
+        return True
+
+    def showPostPlay(self):
+        if not self.shouldShowPostPlay():
+            return
+
+        self.seeking = self.SEEK_POST_PLAY
+        self.hideOSD(delete=True)
+
+        self.player.trigger('post.play', video=self.player.video, playlist=self.playlist, handler=self)
 
         return True
 
     def next(self, on_end=False):
-        if not self.playlist or not self.playlist.next():
-            return False
+        if self.playlist and self.playlist.next():
+            self.seeking = self.SEEK_PLAYLIST
 
-        self.seeking = self.SEEK_PLAYLIST
         if on_end:
             if self.showPostPlay():
-                return
+                return True
+
+        if not self.playlist:
+            return False
 
         self.player.playVideoPlaylist(self.playlist, handler=self)
 
@@ -199,17 +225,19 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def showOSD(self, from_seek=False):
         self.updateOffset()
-        self.dialog.update(self.offset, from_seek)
-        self.dialog.showOSD()
+        if self.dialog:
+            self.dialog.update(self.offset, from_seek)
+            self.dialog.showOSD()
 
     def hideOSD(self, delete=False):
         util.CRON.forceTick()
         if self.dialog:
             self.dialog.hideOSD()
             if delete:
-                self.dialog.doClose()
-                del self.dialog
+                d = self.dialog
                 self.dialog = None
+                d.doClose()
+                del d
                 util.garbageCollect()
 
     def seek(self, offset, settings_changed=False, seeking=SEEK_IN_PROGRESS):
@@ -240,7 +268,6 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.player.seekTime(self.seekOnStart / 1000.0)
 
     def onPlayBackStarted(self):
-        self.dialog.show()
         self.updateNowPlaying(refreshQueue=True)
         if self.mode == self.MODE_ABSOLUTE:
             self.seekAbsolute()
@@ -270,8 +297,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackStopped(self):
         self.updateNowPlaying()
-        if self.seeking != self.SEEK_PLAYLIST:
-            self.hideOSD()
+        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
+            self.hideOSD(delete=True)
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.sessionEnded()
@@ -292,7 +319,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackSeek(self, stime, offset):
         if self.seekOnStart:
-            self.dialog.tick(stime)
+            if self.dialog:
+                self.dialog.tick(stime)
             self.seekOnStart = 0
             return
 
@@ -309,8 +337,11 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.seeking = self.NO_SEEK
         return True
 
-    def onSeekOSD(self):
-        self.dialog.activate()
+    # def onSeekOSD(self):
+    #     self.dialog.activate()
+
+    def onVideoWindowOpened(self):
+        self.getDialog().show()
 
     def onVideoWindowClosed(self):
         self.hideOSD()
@@ -318,7 +349,8 @@ class SeekPlayerHandler(BasePlayerHandler):
         if not self.seeking:
             self.player.stop()
             if not self.playlist or not self.playlist.hasNext():
-                self.sessionEnded()
+                if not self.shouldShowPostPlay():
+                    self.sessionEnded()
 
     def onVideoOSD(self):
         # xbmc.executebuiltin('Dialog.Close(seekbar,true)')  # Doesn't work :)
@@ -336,6 +368,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.ended:
             return
         self.ended = True
+        util.DEBUG_LOG('Player: Video session ended')
         self.player.trigger('session.ended', session_id=self.sessionID)
         self.hideOSD(delete=True)
 
@@ -580,8 +613,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.started = False
         xbmc.Player.play(self, *args, **kwargs)
 
-    def playVideo(self, video, resume=False, force_update=False, session_id=None):
-        self.handler = SeekPlayerHandler(self, session_id)
+    def playVideo(self, video, resume=False, force_update=False, session_id=None, handler=None):
+        self.handler = handler or SeekPlayerHandler(self, session_id)
         self.video = video
         self.open()
         self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)

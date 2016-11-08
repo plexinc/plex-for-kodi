@@ -6,7 +6,6 @@ import xbmcgui
 
 import kodigui
 import playersettings
-import dropdown
 
 from lib import util
 
@@ -289,21 +288,22 @@ class SeekDialog(kodigui.BaseDialog):
         if self.handler.playlist:
             self.handler.playlist.setShuffle()
 
-    def optionsButtonClicked(self):
-        options = []
+    def optionsButtonClicked(self):  # Button currently commented out.
+        pass
+        # options = []
 
-        options.append({'key': 'kodi_video', 'display': 'Video Options'})
-        options.append({'key': 'kodi_audio', 'display': 'Audio Options'})
+        # options.append({'key': 'kodi_video', 'display': 'Video Options'})
+        # options.append({'key': 'kodi_audio', 'display': 'Audio Options'})
 
-        choice = dropdown.showDropdown(options, (1360, 1060), close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
+        # choice = dropdown.showDropdown(options, (1360, 1060), close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
 
-        if not choice:
-            return
+        # if not choice:
+        #     return
 
-        if choice['key'] == 'kodi_video':
-            xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
-        elif choice['key'] == 'kodi_audio':
-            xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
+        # if choice['key'] == 'kodi_video':
+        #     xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
+        # elif choice['key'] == 'kodi_audio':
+        #     xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
 
     def showSettings(self):
         with self.propertyContext('settings.visible'):

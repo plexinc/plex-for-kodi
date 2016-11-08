@@ -145,6 +145,7 @@ class PlexObject(object, Checks):
         self.mediaChoice = None
         self.titleSort = PlexValue('')
         self.deleted = False
+        self._reloaded = False
 
         if data is None:
             return
@@ -207,13 +208,17 @@ class PlexObject(object, Checks):
         import requests
         self.server.query('%s/refresh' % self.key, method=requests.put)
 
-    def reload(self, **kwargs):
+    def reload(self, _soft=False, **kwargs):
         """ Reload the data for this object from PlexServer XML. """
+        if _soft and self._reloaded:
+            return
+
         try:
             if self.get('ratingKey'):
                 data = self.server.query('/library/metadata/{0}'.format(self.ratingKey), params=kwargs)
             else:
                 data = self.server.query(self.key, params=kwargs)
+            self._reloaded = True
         except Exception, e:
             import traceback
             traceback.print_exc()

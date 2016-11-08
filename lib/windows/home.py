@@ -650,13 +650,14 @@ class HomeWindow(kodigui.BaseWindow):
             control.reset()
 
     def _showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False, text2lines=False, **kwargs):
+        control = self.hubControls[index]
+
         if not hub.items:
+            control.reset()
             return
 
         self.setProperty('hub.4{0:02d}'.format(index), hub.title)
         self.setProperty('hub.text2lines.4{0:02d}'.format(index), text2lines and '1' or '')
-
-        control = self.hubControls[index]
 
         items = []
 

@@ -160,6 +160,7 @@ def createPlayQueueForItem(item, children=None, options=None, args=None):
 
 
 class PlayQueue(signalsmixin.SignalsMixin):
+    TYPE = 'playqueue'
 
     isRemote = True
 

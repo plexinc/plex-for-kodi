@@ -131,29 +131,6 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
         pass
 
 
-class ControlledWindow(BaseWindow):
-    def onAction(self, action):
-        try:
-            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
-                self.doClose()
-                return
-        except:
-            traceback.print_exc()
-
-        BaseWindow.onAction(self, action)
-
-    def doModal(self):
-        self.show()
-        self.wait()
-
-    def wait(self):
-        while not self._closing and not MONITOR.waitForAbort(0.1):
-            pass
-
-    def close(self):
-        self._closing = True
-
-
 class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
     def __init__(self, *args, **kwargs):
         BaseFunctions.__init__(self)
@@ -199,6 +176,43 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
 
     def onClosed(self):
         pass
+
+
+class ControlledBase:
+    def doModal(self):
+        self.show()
+        self.wait()
+
+    def wait(self):
+        while not self._closing and not MONITOR.waitForAbort(0.1):
+            pass
+
+    def close(self):
+        self._closing = True
+
+
+class ControlledWindow(ControlledBase, BaseWindow):
+    def onAction(self, action):
+        try:
+            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+                self.doClose()
+                return
+        except:
+            traceback.print_exc()
+
+        BaseWindow.onAction(self, action)
+
+
+class ControlledDialog(ControlledBase, BaseDialog):
+    def onAction(self, action):
+        try:
+            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+                self.doClose()
+                return
+        except:
+            traceback.print_exc()
+
+        BaseDialog.onAction(self, action)
 
 
 class ManagedListItem(object):

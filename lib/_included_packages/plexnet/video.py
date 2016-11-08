@@ -173,7 +173,6 @@ class PlayableVideo(Video):
         Video._setData(self, data)
         if self.isFullObject():
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
-            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
 
     def reload(self, *args, **kwargs):
         if self.get('viewCount'):
@@ -181,6 +180,17 @@ class PlayableVideo(Video):
         if self.get('viewOffset'):
             del self.viewOffset
         Video.reload(self, *args, **kwargs)
+
+    def postPlay(self, **params):
+        query = '/hubs/metadata/{0}/postplay'.format(self.ratingKey)
+        data = self.server.query(query, params=params)
+        container = plexobjects.PlexContainer(data, initpath=query, server=self.server, address=query)
+
+        hubs = {}
+        for elem in data:
+            hub = plexlibrary.Hub(elem, server=self.server, container=container)
+            hubs[hub.hubIdentifier] = hub
+        return hubs
 
 
 @plexobjects.registerLibType
@@ -198,6 +208,7 @@ class Movie(PlayableVideo):
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
+            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
         else:
             if data.find(media.Media.TYPE) is not None:
                 self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
@@ -343,6 +354,10 @@ class Season(Video):
 class Episode(PlayableVideo):
     TYPE = 'episode'
 
+    def init(self, data):
+        self._show = None
+        self._season = None
+
     def _setData(self, data):
         PlayableVideo._setData(self, data)
         if self.isFullObject():
@@ -394,10 +409,27 @@ class Episode(PlayableVideo):
         return self._getStreamURL(**params)
 
     def season(self):
-        return plexobjects.listItems(self.server, self.parentKey)[0]
+        if not self._season:
+            self._season = plexobjects.listItems(self.server, self.parentKey)[0]
+        return self._season
 
     def show(self):
-        return plexobjects.listItems(self.server, self.grandparentKey)[0]
+        if not self._show:
+            self._show = plexobjects.listItems(self.server, self.grandparentKey)[0]
+        return self._show
+
+    @property
+    def genres(self):
+        return self.show().genres
+
+    @property
+    def roles(self):
+        return self.show().roles
+
+    @property
+    def related(self):
+        self.show().reload(_soft=True, includeRelated=1, includeRelatedCount=10)
+        return self.show().related
 
 
 @plexobjects.registerLibType

@@ -259,7 +259,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.mode == self.MODE_ABSOLUTE:
             xbmc.executebuiltin('PlayerControl(rewind)')
         else:
-            self.seek(max(self.offset - 30000, 0), seeking=self.SEEK_REWIND)
+            self.seek(max(self.trueTime - 30, 0) * 1000, seeking=self.SEEK_REWIND)
 
     def seekAbsolute(self, seek=None):
         self.seekOnStart = seek or self.seekOnStart

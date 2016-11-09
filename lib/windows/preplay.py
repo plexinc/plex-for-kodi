@@ -69,7 +69,21 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onReInit(self):
         self.video.reload()
+        self.refreshInfo()
+
+    def refreshInfo(self):
+        oldFocusId = self.getFocusId()
+
+        util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
         self.setInfo()
+        xbmc.sleep(100)
+
+        if self.video.viewOffset.asInt():
+            if oldFocusId == self.PLAY_BUTTON_ID:
+                self.setFocusId(self.RESUME_BUTTON_ID)
+        else:
+            if oldFocusId == self.RESUME_BUTTON_ID:
+                self.setFocusId(self.PLAY_BUTTON_ID)
 
     def onAction(self, action):
         try:
@@ -178,7 +192,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         # if False:
         #     options.append({'key': 'add_to_playlist', 'display': 'Add To Playlist'})
         posy = 880
-        if not self.getProperty('hide.resume'):
+        if not util.getGlobalProperty('hide.resume'):
             posy += 106
         if self.getProperty('trailer.button'):
             posy += 106
@@ -190,11 +204,11 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice['key'] == 'mark_watched':
             self.video.markWatched()
-            self.setInfo()
+            self.refreshInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
             self.video.markUnwatched()
-            self.setInfo()
+            self.refreshInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_season':
             self.processCommand(opener.open(self.video.parentRatingKey))

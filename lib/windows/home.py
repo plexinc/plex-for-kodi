@@ -20,7 +20,7 @@ import opener
 import search
 import dropdown
 
-HUBS_REFRESH_INTERVAL = 10  # 5 Minutes
+HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
 
 
 class HubsList(list):

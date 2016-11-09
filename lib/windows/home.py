@@ -290,7 +290,7 @@ class HomeWindow(kodigui.BaseWindow):
 
         try:
             if controlID == self.SECTION_LIST_ID:
-                self.checkSectionItem()
+                self.checkSectionItem(action=action)
 
             if controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.USER_BUTTON_ID)
@@ -422,14 +422,18 @@ class HomeWindow(kodigui.BaseWindow):
                     self.lastSection = mli.dataSource
                     self.sectionChanged()
 
-    def checkSectionItem(self, force=False):
+    def checkSectionItem(self, force=False, action=None):
         item = self.sectionList.getSelectedItem()
         if not item:
             return
 
         if not item.getProperty('item'):
-            self.sectionList.selectItem(self.bottomItem)
-            item = self.sectionList[self.bottomItem]
+            if action and action == xbmcgui.ACTION_MOVE_RIGHT:
+                self.sectionList.selectItem(0)
+                item = self.sectionList[0]
+            else:
+                self.sectionList.selectItem(self.bottomItem)
+                item = self.sectionList[self.bottomItem]
 
         if item.dataSource != self.lastSection:
             self.lastSection = item.dataSource

@@ -164,7 +164,7 @@
                     <posy>0</posy>
                     <width>2430</width>
                     <height>240</height>
-                    <onleft>100</onleft>
+                    <onleft>101</onleft>
                     <onup condition="!Player.HasAudio">203</onup>
                     <onup condition="Player.HasAudio">204</onup>
                     <ondown>400</ondown>

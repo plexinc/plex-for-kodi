@@ -9,12 +9,17 @@ class Task:
     def __init__(self, priority=None):
         self._priority = priority
         self._canceled = False
+        self.finished = False
 
     def __cmp__(self, other):
         return self._priority - other._priority
 
     def start(self):
         BGThreader.addTask(self)
+
+    def _run(self):
+        self.run()
+        self.finished = True
 
     def run(self):
         pass
@@ -24,6 +29,9 @@ class Task:
 
     def isCanceled(self):
         return self._canceled or xbmc.abortRequested
+
+    def isValid(self):
+        return not self.finished and not self._canceled
 
 
 class MutablePriorityQueue(Queue.PriorityQueue):
@@ -56,7 +64,7 @@ class BackgroundWorker:
         if task._canceled:
             return
         try:
-            task.run()
+            task._run()
         except:
             util.ERROR()
 

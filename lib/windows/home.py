@@ -20,6 +20,14 @@ import opener
 import search
 import dropdown
 
+HUBS_REFRESH_INTERVAL = 10  # 5 Minutes
+
+
+class HubsList(list):
+    def init(self):
+        self.lastUpdated = time.time()
+        return self
+
 
 class SectionHubsTask(backgroundthread.Task):
     def setup(self, section, callback):
@@ -36,7 +44,7 @@ class SectionHubsTask(backgroundthread.Task):
             return
 
         try:
-            hubs = plexapp.SERVERMANAGER.selectedServer.hubs(self.section.key, count=10)
+            hubs = HubsList(plexapp.SERVERMANAGER.selectedServer.hubs(self.section.key, count=10)).init()
             if self.isCanceled():
                 return
             self.callback(self.section, hubs)
@@ -102,7 +110,7 @@ class ServerListItem(kodigui.ManagedListItem):
         self.dataSource.off('started:reachability', self.onUpdate)
 
 
-class HomeWindow(kodigui.BaseWindow):
+class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     xmlFile = 'script-plex-home.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
@@ -260,7 +268,8 @@ class HomeWindow(kodigui.BaseWindow):
         if self.serverRefresh():
             self.setFocusId(self.SECTION_LIST_ID)
 
-        self. hookSignals()
+        self.hookSignals()
+        util.CRON.registerReceiver(self)
 
     def hookSignals(self):
         plexapp.SERVERMANAGER.on('new:server', self.onNewServer)
@@ -281,6 +290,17 @@ class HomeWindow(kodigui.BaseWindow):
 
         player.PLAYER.off('session.ended', self.updateOnDeckHubs)
         util.MONITOR.off('changed.watchstatus', self.updateOnDeckHubs)
+
+    def tick(self):
+        if not self.lastSection:
+            return
+
+        hubs = self.sectionHubs[self.lastSection.key]
+        if not hubs:
+            return
+
+        if time.time() - hubs.lastUpdated > HUBS_REFRESH_INTERVAL:
+            self.showHubs(self.lastSection, update=True)
 
     def shutdown(self):
         self.unhookSignals()
@@ -452,6 +472,9 @@ class HomeWindow(kodigui.BaseWindow):
             self.setProperty('server.icon', 'script.plex/home/device/error.png')
             self.setProperty('server.iconmod', '')
 
+    def cleanTasks(self):
+        self.tasks = [t for t in self.tasks if t.isValid()]
+
     def sectionChanged(self, force=False):
         self.sectionChangeTimeout = time.time() + 0.3
         if not self.sectionChangeThread or not self.sectionChangeThread.isAlive() or force:
@@ -474,9 +497,10 @@ class HomeWindow(kodigui.BaseWindow):
         self.checkSectionItem(force=True)
 
     def sectionHubsCallback(self, section, hubs):
+        update = bool(self.sectionHubs.get(section.key))
         self.sectionHubs[section.key] = hubs
         if self.lastSection == section:
-            self.showHubs(section)
+            self.showHubs(section, update=update)
 
     def updateHubCallback(self, hub):
         for mli in self.sectionList:
@@ -535,15 +559,17 @@ class HomeWindow(kodigui.BaseWindow):
         else:
             self.setFocusId(self.SERVER_BUTTON_ID)
 
-    def showHubs(self, section=None):
-        self.setProperty('drawing', '1')
+    def showHubs(self, section=None, update=False):
+        if not update:
+            self.setProperty('drawing', '1')
         try:
-            self._showHubs(section=section)
+            self._showHubs(section=section, update=update)
         finally:
             self.setProperty('drawing', '')
 
-    def _showHubs(self, section=None):
-        self.clearHubs()
+    def _showHubs(self, section=None, update=False):
+        if not update:
+            self.clearHubs()
 
         if not plexapp.SERVERMANAGER.selectedServer.hasHubs():
             return
@@ -562,11 +588,39 @@ class HomeWindow(kodigui.BaseWindow):
                     break
             return
 
+        if time.time() - hubs.lastUpdated > HUBS_REFRESH_INTERVAL:
+            util.DEBUG_LOG('Section is stale: REFRESHING - update: {0}'.format(update))
+            self.cleanTasks()
+            if not update:
+                if section.key in self.sectionHubs:
+                    self.sectionHubs[section.key] = None
+            self.tasks.append(SectionHubsTask().setup(section, self.sectionHubsCallback))
+            backgroundthread.BGThreader.addTask(self.tasks[-1])
+            return
+
+        util.DEBUG_LOG('Showing hubs - Section: {0} - Update: {1}'.format(section.key, update))
         try:
+            skip = {}
             for hub in hubs:
+                skip[self.HUBMAP[hub.hubIdentifier]['index']] = 1
+
                 if self.showHub(hub):
                     if self.HUBMAP[hub.hubIdentifier].get('do_updates'):
                         self.updateHubs[hub.hubIdentifier] = hub
+
+            lastSkip = min(skip.keys())
+            focus = None
+            if update:
+                for i, control in enumerate(self.hubControls):
+                    if i in skip:
+                        lastSkip = i
+                        continue
+                    if self.getFocusId() == control.getId():
+                        focus = lastSkip
+                    control.reset()
+
+                if focus is not None:
+                    self.setFocusId(focus)
         finally:
             self.showBusy(False)
 

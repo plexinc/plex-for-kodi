@@ -80,6 +80,7 @@ def _main():
                         util.DEBUG_LOG('STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
 
                         windowutils.HOME = home.HomeWindow.open()
+                        util.CRON.cancelReceiver(windowutils.HOME)
 
                         if not windowutils.HOME.closeOption:
                             return

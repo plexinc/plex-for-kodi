@@ -9,6 +9,7 @@ import kodigui
 import playersettings
 
 from lib import util
+from lib.kodijsonrpc import builtin
 
 KEY_MOVE_SET = frozenset(
     (
@@ -83,7 +84,6 @@ class SeekDialog(kodigui.BaseDialog):
         self.playlistDialogVisible = False
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
-        self._autoMode = None
 
     @property
     def player(self):
@@ -136,7 +136,6 @@ class SeekDialog(kodigui.BaseDialog):
         try:
             # util.TEST((action.getId(), action.getButtonCode(), action.getAmount1(), action.getAmount2()))
             self.resetTimeout()
-            self._autoMode = None
 
             controlID = self.getFocusId()
             if action.getId() in KEY_MOVE_SET:
@@ -147,13 +146,6 @@ class SeekDialog(kodigui.BaseDialog):
                     return
             elif action == xbmcgui.ACTION_MOUSE_MOVE:
                 self.setProperty('mouse.mode', '1')
-            elif action == xbmcgui.ACTION_CONTEXT_MENU:
-                if controlID == self.SKIP_FORWARD_BUTTON_ID:
-                    self._autoMode = 'FORWARD'
-                    self.skipForward()
-                elif controlID == self.SKIP_BACK_BUTTON_ID:
-                    self._autoMode = 'BACK'
-                    self.skipBack()
 
             if controlID == self.MAIN_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
@@ -268,11 +260,8 @@ class SeekDialog(kodigui.BaseDialog):
 
     def delayedSeek(self):
         self.setProperty('button.seek', '1')
-        if self._autoMode:
-            self._delayedSeekTimeout = time.time() + 0.2
-        else:
-            self._delayedSeekTimeout = time.time() + 0.4
-        xbmc.sleep(100)
+        self._delayedSeekTimeout = time.time() + 0.5
+
         if not self._delayedSeekThread or not self._delayedSeekThread.isAlive():
             self._delayedSeekThread = threading.Thread(target=self._delayedSeek)
             self._delayedSeekThread.start()
@@ -283,18 +272,10 @@ class SeekDialog(kodigui.BaseDialog):
                 if time.time() > self._delayedSeekTimeout:
                     break
 
-            if self._autoMode == 'FORWARD':
-                xbmc.executebuiltin('SendClick(,{0})'.format(self.SKIP_FORWARD_BUTTON_ID))
-                return
-            elif self._autoMode == 'BACK':
-                xbmc.executebuiltin('SendClick(,{0})'.format(self.SKIP_BACK_BUTTON_ID))
-                return
-
             if not xbmc.abortRequested:
                 self.handler.seek(self.selectedOffset)
         finally:
-            if not self._autoMode:
-                self.setProperty('button.seek', '')
+            self.setProperty('button.seek', '')
 
     def handleDialog(self, func):
         self.hasDialog = True
@@ -455,6 +436,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.updateProgress()
 
     def setup(self, duration, offset=0, bif_url=None, title='', title2=''):
+        util.TEST(offset)
         self.title = title
         self.title2 = title2
         self.setProperty('video.title', title)
@@ -513,7 +495,7 @@ class SeekDialog(kodigui.BaseDialog):
             util.DEBUG_LOG('SeekDialog: Possible stuck busy dialog - closing')
             xbmc.executebuiltin('Dialog.Close(busydialog,1)')
 
-        if time.time() > self.timeout and not self.hasDialog and not self._autoMode:
+        if time.time() > self.timeout and not self.hasDialog:
             if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding') and not self.playlistDialogVisible:
                 self.hideOSD()
 

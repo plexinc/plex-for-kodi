@@ -150,12 +150,13 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.bifURL = bif_url
         self.title = title
         self.title2 = title2
-        self.getDialog()
+        self.getDialog(setup=True)
+        self.dialog.setup(self.duration, int(self.baseOffset * 1000), self.bifURL, self.title, self.title2)
 
-    def getDialog(self):
+    def getDialog(self, setup=False):
         if not self.dialog:
             self.dialog = seekdialog.SeekDialog.create(show=False, handler=self)
-            self.dialog.setup(self.duration, int(self.baseOffset * 1000), self.bifURL, self.title, self.title2)
+
         return self.dialog
 
     @property
@@ -296,6 +297,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         # self.hideOSD()
 
     def onPlayBackStopped(self):
+        util.DEBUG_LOG('SeekHandler: onPlayBackStopped - Seeking={0}'.format(self.seeking))
         self.updateNowPlaying()
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.hideOSD(delete=True)
@@ -304,6 +306,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.sessionEnded()
 
     def onPlayBackEnded(self):
+        util.DEBUG_LOG('SeekHandler: onPlayBackEnded - Seeking={0}'.format(self.seeking))
         self.updateNowPlaying()
         if self.next(on_end=True):
             return
@@ -332,9 +335,15 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.offset = int(self.player.getTime() * 1000)
 
     def onPlayBackFailed(self):
-        if self.seeking != self.SEEK_PLAYLIST:
+        util.DEBUG_LOG('SeekHandler: onPlayBackFailed - Seeking={0}'.format(self.seeking))
+        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.sessionEnded()
-        self.seeking = self.NO_SEEK
+
+        if self.seeking == self.SEEK_IN_PROGRESS:
+            return False
+        else:
+            self.seeking = self.NO_SEEK
+
         return True
 
     # def onSeekOSD(self):
@@ -345,7 +354,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onVideoWindowClosed(self):
         self.hideOSD()
-        util.DEBUG_LOG('Video window closed - Seeking={0}'.format(self.seeking))
+        util.DEBUG_LOG('SeekHandler: onVideoWindowClosed - Seeking={0}'.format(self.seeking))
         if not self.seeking:
             self.player.stop()
             if not self.playlist or not self.playlist.hasNext():
@@ -538,8 +547,6 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.handler = AudioPlayerHandler(self)
         self.playerObject = None
         self.currentTime = 0
-        self.seekStepsSetting = util.SettingControl('videoplayer.seeksteps', 'Seek steps', disable_value=[-10, 10])
-        self.seekDelaySetting = util.SettingControl('videoplayer.seekdelay', 'Seek delay', disable_value=0)
         self.thread = None
         if xbmc.getCondVisibility('Player.HasMedia'):
             self.started = True
@@ -804,6 +811,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.handler.onPlayBackSeek(time, offset)
 
     def onPlayBackFailed(self):
+        util.DEBUG_LOG('Player - FAILED')
         if not self.handler:
             return
 
@@ -887,43 +895,41 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             self.onPlayBackFailed()
 
     def _videoMonitor(self):
-        with self.seekDelaySetting.suspend():
-            with self.seekStepsSetting.suspend():
+        hasFullScreened = False
+
+        ct = 0
+        while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
+            self.currentTime = self.getTime()
+            util.MONITOR.waitForAbort(0.1)
+            if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
+                if not self.hasOSD:
+                    self.hasOSD = True
+                    self.onVideoOSD()
+            else:
+                self.hasOSD = False
+
+            if xbmc.getCondVisibility('Window.IsActive(seekbar)'):
+                if not self.hasSeekOSD:
+                    self.hasSeekOSD = True
+                    self.onSeekOSD()
+            else:
+                self.hasSeekOSD = False
+
+            if xbmc.getCondVisibility('VideoPlayer.IsFullscreen'):
+                if not hasFullScreened:
+                    hasFullScreened = True
+                    self.onVideoWindowOpened()
+            elif hasFullScreened and not xbmc.getCondVisibility('Window.IsVisible(busydialog)'):
                 hasFullScreened = False
+                self.onVideoWindowClosed()
 
+            ct += 1
+            if ct > 9:
                 ct = 0
-                while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
-                    self.currentTime = self.getTime()
-                    util.MONITOR.waitForAbort(0.1)
-                    if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
-                        if not self.hasOSD:
-                            self.hasOSD = True
-                            self.onVideoOSD()
-                    else:
-                        self.hasOSD = False
+                self.handler.tick()
 
-                    if xbmc.getCondVisibility('Window.IsActive(seekbar)'):
-                        if not self.hasSeekOSD:
-                            self.hasSeekOSD = True
-                            self.onSeekOSD()
-                    else:
-                        self.hasSeekOSD = False
-
-                    if xbmc.getCondVisibility('VideoPlayer.IsFullscreen'):
-                        if not hasFullScreened:
-                            hasFullScreened = True
-                            self.onVideoWindowOpened()
-                    elif hasFullScreened and not xbmc.getCondVisibility('Window.IsVisible(busydialog)'):
-                        hasFullScreened = False
-                        self.onVideoWindowClosed()
-
-                    ct += 1
-                    if ct > 9:
-                        ct = 0
-                        self.handler.tick()
-
-                if hasFullScreened:
-                    self.onVideoWindowClosed()
+        if hasFullScreened:
+            self.onVideoWindowClosed()
 
     def _audioMonitor(self):
         self.started = True

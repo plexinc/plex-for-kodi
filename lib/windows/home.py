@@ -295,7 +295,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if not self.lastSection:
             return
 
-        hubs = self.sectionHubs[self.lastSection.key]
+        hubs = self.sectionHubs.get(self.lastSection.key)
         if not hubs:
             return
 

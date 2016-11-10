@@ -48,3 +48,58 @@ class KodiJSONRPC:
 
 
 rpc = KodiJSONRPC()
+
+
+class BuiltInMethod:
+
+    class Exception(Exception):
+        pass
+
+    def __init__(self):
+        self.module = None
+
+    def __getattr__(self, method):
+        def handler(*args, **kwargs):
+            args = [str(a).replace(',', '\,') for a in args]
+            for k, v in kwargs.items():
+                args.append('{0}={v}'.format(k, str(v).replace(',', '\,')))
+
+            if args:
+                command = '{0}.{1}({2})'.format(self.module, method, ','.join(args))
+            else:
+                command = '{0}.{1}'.format(self.module, method)
+
+            xbmc.log(command, xbmc.LOGNOTICE)
+
+            xbmc.executebuiltin(command)
+
+        return handler
+
+    def __call__(self, *args, **kwargs):
+        args = [str(a).replace(',', '\,') for a in args]
+        for k, v in kwargs.items():
+            args.append('{0}={v}'.format(k, str(v).replace(',', '\,')))
+
+        if args:
+            command = '{0}({1})'.format(self.module, ','.join(args))
+        else:
+            command = '{0}'.format(self.module)
+
+        xbmc.log(command, xbmc.LOGNOTICE)
+
+        xbmc.executebuiltin(command)
+
+    def initModule(self, module):
+        self.module = module
+        return self
+
+
+class KodiBuiltin:
+    def __init__(self):
+        self.methodHandler = BuiltInMethod()
+
+    def __getattr__(self, module):
+        return self.methodHandler.initModule(module)
+
+
+builtin = KodiBuiltin()

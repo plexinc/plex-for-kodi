@@ -303,6 +303,11 @@ class SettingControl:
         yield
         self.restore()
 
+    @contextlib.contextmanager
+    def save(self):
+        yield
+        self.restore()
+
 
 def timeInDayLocalSeconds():
     now = datetime.datetime.now()

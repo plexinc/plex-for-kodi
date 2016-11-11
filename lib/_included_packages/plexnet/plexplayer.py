@@ -144,7 +144,7 @@ class PlexPlayer(object):
 
         if self.choice.subtitleDecision == self.choice.SUBTITLES_SOFT_ANY:
             builder.addParam("skipSubtitles", "1")
-        elif self.choice.hasBurnedInSubtitles is True:
+        else:  # elif self.choice.hasBurnedInSubtitles is True:  # Must burn transcoded because we can't set offset
             captionSize = captions.CAPTIONS.getBurnedSize()
             if captionSize is not None:
                 builder.addParam("subtitleSize", captionSize)
@@ -167,7 +167,7 @@ class PlexPlayer(object):
         builder.addParam("copyts", "1")
 
         obj.subtitleUrl = None
-        if self.choice.subtitleDecision == self.choice.SUBTITLES_BURN:
+        if True:  # if self.choice.subtitleDecision == self.choice.SUBTITLES_BURN:  # Must burn transcoded because we can't set offset
             builder.addParam("subtitles", "burn")
             captionSize = captions.CAPTIONS.getBurnedSize()
             if captionSize is not None:

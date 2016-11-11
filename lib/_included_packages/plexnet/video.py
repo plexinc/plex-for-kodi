@@ -68,12 +68,15 @@ class Video(media.MediaItem):
         return True
 
     def _findStreams(self, streamtype):
+        idx = 0
         streams = []
         for media_ in self.media():
             for part in media_.parts:
                 for stream in part.streams:
                     if stream.streamType.asInt() == streamtype:
+                        stream.typeIndex = idx
                         streams.append(stream)
+                        idx += 1
         return streams
 
     def analyze(self):

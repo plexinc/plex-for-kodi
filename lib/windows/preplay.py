@@ -362,7 +362,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.processCommand(videoplayer.play(play_queue=pl, resume=resume))
                 return
 
-        videoplayer.play(video=self.video, resume=resume)
+        self.processCommand(videoplayer.play(video=self.video, resume=resume))
 
     def openItem(self, control=None, item=None):
         if not item:

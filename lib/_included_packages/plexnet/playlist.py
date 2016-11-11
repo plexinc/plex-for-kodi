@@ -100,7 +100,9 @@ class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
 
     def setCurrent(self, pos):
         if not isinstance(pos, int):
-            pos = self.getPosFromItem(pos)
+            item = pos
+            pos = self.getPosFromItem(item)
+            self._items[pos] = item
 
         if pos < 0 or pos >= len(self._items):
             return False

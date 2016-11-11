@@ -339,12 +339,12 @@ class MediaDecisionEngine(object):
         if plexapp.INTERFACE.getPreference("burn_subtitles") == "always":
             # If the user prefers them burned, always burn
             return mediachoice.MediaChoice.SUBTITLES_BURN
-        elif stream.codec != "srt":
-            # We only support soft subtitles for SRT. Anything else has to use the
-            # transcoder, and we defer to it on whether the subs will have to be
-            # burned or can be converted to SRT and muxed.
+        # elif stream.codec != "srt":
+        #     # We only support soft subtitles for SRT. Anything else has to use the
+        #     # transcoder, and we defer to it on whether the subs will have to be
+        #     # burned or can be converted to SRT and muxed.
 
-            return mediachoice.MediaChoice.SUBTITLES_DEFAULT
+        #     return mediachoice.MediaChoice.SUBTITLES_DEFAULT
         elif stream.key is None:
             # Embedded subs don't have keys and can only be direct played
             result = mediachoice.MediaChoice.SUBTITLES_SOFT_DP

@@ -190,7 +190,9 @@ class Settings(object):
         ),
         'subtitles': (
             'Subtitles', (
-                OptionsSetting('burn_subtitles', 'Burn Subtitles', 'auto', (('auto', 'Auto'), ('image', 'Only Image Formats'), ('always', 'Always'))),
+                OptionsSetting(
+                    'burn_subtitles', 'Burn Subtitles (Direct Play Only)', 'auto', (('auto', 'Auto'), ('image', 'Only Image Formats'), ('always', 'Always'))
+                ),
             )
         ),
         'advanced': (

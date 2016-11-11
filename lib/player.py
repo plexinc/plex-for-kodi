@@ -26,6 +26,9 @@ class BasePlayerHandler(object):
         self.playQueue = None
         self.sessionID = session_id
 
+    def onPrePlayStarted(self):
+        pass
+
     def onPlayBackStarted(self):
         pass
 
@@ -273,22 +276,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.mode == self.MODE_ABSOLUTE:
             self.seekAbsolute()
 
-        subs = self.player.video.selectedSubtitleStream()
-        if subs:
-            xbmc.sleep(100)
-            self.player.showSubtitles(False)
-            path = subs.getSubtitleServerPath()
-            if path:
-                util.DEBUG_LOG('Setting subtitle path: {0}'.format(path))
-                self.player.setSubtitles(path)
-            else:
-                # util.TEST(subs.__dict__)
-                # util.TEST(self.player.video.mediaChoice.__dict__)
-                util.DEBUG_LOG('Enabling embedded subtitles at: {0}'.format(subs.index))
-                util.DEBUG_LOG('Kodi reported subtitles: {0}'.format(self.player.getAvailableSubtitleStreams()))
-                self.player.setSubtitleStream(subs.index.asInt())
-
-            self.player.showSubtitles(True)
+        self.setSubtitles()
 
         self.seeking = self.NO_SEEK
 
@@ -330,6 +318,30 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.seeking = self.SEEK_INIT
         self.updateOffset()
         # self.showOSD(from_seek=True)
+
+    def setSubtitles(self):
+        subs = self.player.video.selectedSubtitleStream()
+        if subs:
+            xbmc.sleep(100)
+            self.player.showSubtitles(False)
+            path = subs.getSubtitleServerPath()
+            if path:
+                if self.mode == self.MODE_ABSOLUTE:
+                    util.DEBUG_LOG('Setting subtitle path: {0}'.format(path))
+                    self.player.setSubtitles(path)
+                    self.player.showSubtitles(True)
+                else:
+                    util.DEBUG_LOG('Transcoded. Skipping subtitle path: {0}'.format(path))
+            else:
+                # util.TEST(subs.__dict__)
+                # util.TEST(self.player.video.mediaChoice.__dict__)
+                if self.mode == self.MODE_ABSOLUTE:
+                    util.DEBUG_LOG('Enabling embedded subtitles at: {0}'.format(subs.typeIndex))
+                    util.DEBUG_LOG('Kodi reported subtitles: {0}'.format(self.player.getAvailableSubtitleStreams()))
+                    self.player.setSubtitleStream(subs.typeIndex)
+                    self.player.showSubtitles(True)
+        else:
+            self.player.showSubtitles(False)
 
     def updateOffset(self):
         self.offset = int(self.player.getTime() * 1000)
@@ -676,7 +688,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             self.handler.playQueue = playlist
         self.video = playlist.current()
         self.open()
-        self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0)
+        self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0, force_update=True)
 
     # def createVideoListItem(self, video, index=0):
     #     url = 'plugin://script.plex/play?{0}'.format(base64.urlsafe_b64encode(video.serialize()))
@@ -765,6 +777,13 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         if fanart:
             li.setArt({'fanart': fanart})
         return (url, li)
+
+    def onPrePlayStarted(self):
+        util.DEBUG_LOG('Player - PRE-PLAY')
+        self.trigger('preplay.started')
+        if not self.handler:
+            return
+        self.handler.onPrePlayStarted()
 
     def onPlayBackStarted(self):
         self.started = True
@@ -888,6 +907,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             self.trigger('session.ended')
 
     def _preplayMonitor(self):
+        self.onPrePlayStarted()
         while self.isPlaying() and not self.isPlayingVideo() and not self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
             util.MONITOR.waitForAbort(0.1)
 

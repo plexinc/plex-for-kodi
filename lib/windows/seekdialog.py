@@ -287,17 +287,23 @@ class SeekDialog(kodigui.BaseDialog):
             self.hasDialog = False
 
     def videoSettingsHaveChanged(self):
+        changed = False
         if (
             self.player.video.settings.prefOverrides != self.initialVideoSettings or
-            self.player.video.selectedAudioStream() != self.initialAudioStream or
-            self.player.video.selectedSubtitleStream() != self.initialSubtitleStream
+            self.player.video.selectedAudioStream() != self.initialAudioStream
         ):
             self.initialVideoSettings = dict(self.player.video.settings.prefOverrides)
             self.initialAudioStream = self.player.video.selectedAudioStream()
-            self.initialSubtitleStream = self.player.video.selectedSubtitleStream()
-            return True
+            changed = True
 
-        return False
+        if self.player.video.selectedSubtitleStream() != self.initialSubtitleStream:
+            self.initialSubtitleStream = self.player.video.selectedSubtitleStream()
+            if changed or self.handler.mode == self.handler.MODE_RELATIVE:
+                return True
+            else:
+                return 'SUBTITLE'
+
+        return changed
 
     def repeatButtonClicked(self):
         pl = self.handler.playlist
@@ -339,7 +345,11 @@ class SeekDialog(kodigui.BaseDialog):
     def showSettings(self):
         with self.propertyContext('settings.visible'):
             playersettings.showDialog(self.player.video, via_osd=True)
-        if self.videoSettingsHaveChanged():
+
+        changed = self.videoSettingsHaveChanged()
+        if changed == 'SUBTITLE':
+            self.handler.setSubtitles()
+        elif changed:
             self.handler.seek(self.trueOffset(), settings_changed=True)
 
     def setBigSeekShift(self):
@@ -436,7 +446,6 @@ class SeekDialog(kodigui.BaseDialog):
         self.updateProgress()
 
     def setup(self, duration, offset=0, bif_url=None, title='', title2=''):
-        util.TEST(offset)
         self.title = title
         self.title2 = title2
         self.setProperty('video.title', title)

@@ -238,7 +238,7 @@
                     <textcolor>99FFFFFF</textcolor>
                     <label>$INFO[Window.Property(writers)]</label>
                 </control>
-                <control type="grouplist">
+                <!-- <control type="grouplist">
                     <posx>466</posx>
                     <posy>225</posy>
                     <width>1360</width>
@@ -301,6 +301,16 @@
                     <width>1360</width>
                     <height>113</height>
                     <font>font13</font>
+                    <align>left</align>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <label>$INFO[Window.Property(summary)]</label>
+                </control> -->
+                <control type="textbox">
+                    <posx>466</posx>
+                    <posy>234</posy>
+                    <width>1360</width>
+                    <height>179</height>
+                    <font>font12</font>
                     <align>left</align>
                     <textcolor>FFFFFFFF</textcolor>
                     <label>$INFO[Window.Property(summary)]</label>

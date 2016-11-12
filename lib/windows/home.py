@@ -161,7 +161,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     HUBMAP = {
         # HOME
         'home.continue': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True, 'text2lines': True},
-        'home.ondeck': {'index': 1, 'do_updates': True, 'text2lines': True},
+        'home.ondeck': {'index': 1, 'with_progress': True, 'do_updates': True, 'text2lines': True},
         'home.television.recent': {'index': 2, 'text2lines': True, 'text2lines': True},
         'home.movies.recent': {'index': 4, 'text2lines': True},
         'home.music.recent': {'index': 5, 'text2lines': True},
@@ -169,7 +169,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         'home.playlists': {'index': 9},
         'home.photos.recent': {'index': 10, 'text2lines': True},
         # SHOW
-        'tv.ondeck': {'index': 1, 'do_updates': True, 'text2lines': True},
+        'tv.ondeck': {'index': 1, 'with_progress': True, 'do_updates': True, 'text2lines': True},
         'tv.recentlyaired': {'index': 2, 'text2lines': True},
         'tv.recentlyadded': {'index': 3, 'text2lines': True},
         'tv.inprogress': {'index': 4, 'with_progress': True, 'do_updates': True, 'text2lines': True},
@@ -661,20 +661,28 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             else:
                 mli.setLabel2(u'S{0} \u2022 E{1}'.format(obj.parentIndex, obj.index))
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+            if not obj.isWatched:
+                mli.setProperty('unwatched', '1')
             return mli
         elif obj.type == 'season':
             mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
             # mli.setLabel2('Season {0}'.format(obj.index))
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+            if not obj.isWatched:
+                mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
             return mli
         elif obj.type == 'movie':
             mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
             mli.setLabel2(obj.year)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
+            if not obj.isWatched:
+                mli.setProperty('unwatched', '1')
             return mli
         elif obj.type == 'show':
             mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+            if not obj.isWatched:
+                mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
             return mli
         elif obj.type == 'album':
             mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)

@@ -13,6 +13,28 @@ class Background(kodigui.BaseWindow):
     height = 1080
 
 
+class SignInMessage(kodigui.BaseWindow):
+    xmlFile = 'script-plex-signin_blank.xml'
+    path = util.ADDON.getAddonInfo('path')
+    theme = 'Main'
+    res = '1080i'
+    width = 1920
+    height = 1080
+
+    SCREEN_BUTTON_ID = 100
+
+    def __init__(self, *args, **kwargs):
+        self.message = kwargs.get('message')
+        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+
+    def onFirstInit(self):
+        self.setProperty('message', self.message)
+
+    def onClick(self, controlID):
+        if controlID == self.SCREEN_BUTTON_ID:
+            self.doClose()
+
+
 class PreSignInWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-pre_signin.xml'
     path = util.ADDON.getAddonInfo('path')

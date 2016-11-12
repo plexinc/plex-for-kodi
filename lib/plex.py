@@ -249,6 +249,20 @@ def init():
     #     return False
 
     # util.DEBUG_LOG('SIGN IN: Connected to server: {0} - {1}'.format(PLEX.friendlyName, PLEX.baseuri))
+    return requirePlexPass()
+
+
+def requirePlexPass():
+    if not plexapp.ACCOUNT.isPlexPass:
+        from windows import signin, background
+        background.setSplash(False)
+        w = signin.SignInMessage.open(message="We're sorry, but you currently need a PlexPass to use this beta release")
+        if w:  # This is just to suppress IDE warnings about not used
+            del w
+        util.DEBUG_LOG('PlexPass required. Signing out...')
+        plexapp.ACCOUNT.signOut()
+        return False
+
     return True
 
 

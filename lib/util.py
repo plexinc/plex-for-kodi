@@ -115,6 +115,10 @@ def setGlobalProperty(key, val):
     xbmcgui.Window(10000).setProperty('script.plex.{0}'.format(key), val)
 
 
+def setGlobalBoolProperty(key, boolean):
+    xbmcgui.Window(10000).setProperty('script.plex.{0}'.format(key), boolean and '1' or '')
+
+
 def getGlobalProperty(key):
     return xbmc.getInfoLabel('Window(10000).Property(script.plex.{0})'.format(key))
 

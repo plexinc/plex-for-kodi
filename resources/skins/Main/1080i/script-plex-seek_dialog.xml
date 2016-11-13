@@ -20,7 +20,7 @@
             <onclick>SetProperty(show.OSD,1)</onclick>
         </control>
         <control type="group" id="802">
-            <visible>[!IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar)] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsActive(playerprocessinfo)</visible>
+            <visible>[!IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar)] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(playerprocessinfo)</visible>
             <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group">
                 <visible>IsEmpty(Window.Property(settings.visible)) + [Window.IsVisible(seekbar) | Window.IsVisible(videoosd) | Player.ShowInfo]</visible>
@@ -232,7 +232,7 @@
                         <height>101</height>
                         <onup>100</onup>
                         <onright>402</onright>
-                        <onleft>411</onleft>
+                        <onleft>412</onleft>
                         <font>font12</font>
                         <texturefocus>-</texturefocus>
                         <texturenofocus>-</texturenofocus>
@@ -522,7 +522,8 @@
                     <texturenofocus colordiffuse="40FFFFFF">script.plex/buttons/pqueue.png</texturenofocus>
                     <label> </label>
                 </control>
-                <!-- <control type="button" id="411">
+                <control type="button" id="412">
+                    <visible>!IsEmpty(Window.Property(subtitle.downloads))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <hitrect x="28" y="28" w="69" h="45" />
@@ -531,10 +532,10 @@
                     <width>125</width>
                     <height>101</height>
                     <font>font12</font>
-                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/more-focus.png</texturefocus>
-                    <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/more.png</texturenofocus>
+                    <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/subtitle-focus.png</texturefocus>
+                    <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/subtitle.png</texturenofocus>
                     <label> </label>
-                </control> -->
+                </control>
             </control>
 
             <control type="group">

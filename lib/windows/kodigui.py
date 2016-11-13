@@ -78,6 +78,9 @@ class BaseFunctions:
     def propertyContext(self, prop, val='1'):
         return WindowProperty(self, prop, val)
 
+    def setBoolProperty(self, key, boolean):
+        self.setProperty(key, boolean and '1' or '')
+
 
 class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
     def __init__(self, *args, **kwargs):

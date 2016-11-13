@@ -275,7 +275,7 @@ class PlexPlayer(object):
         obj.transcodeServer = server
         obj.isTranscoded = True
 
-        if server.supportsFeature("mkv_transcode") and self.item.settings.getPreference("transcode_format") == "mkv":
+        if server.supportsFeature("mkv_transcode") and self.item.settings.getPreference("transcode_format", 'mkv') != "hls":
             builder = self.buildTranscodeMkv(obj)
         else:
             builder = self.buildTranscodeHls(obj)

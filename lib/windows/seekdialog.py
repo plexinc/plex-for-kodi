@@ -7,6 +7,7 @@ import xbmcgui
 
 import kodigui
 import playersettings
+import dropdown
 
 from lib import util
 from lib.kodijsonrpc import builtin
@@ -46,6 +47,7 @@ class SeekDialog(kodigui.BaseDialog):
     NEXT_BUTTON_ID = 409
     PLAYLIST_BUTTON_ID = 410
     OPTIONS_BUTTON_ID = 411
+    SUBTITLE_BUTTON_ID = 412
 
     BIG_SEEK_GROUP_ID = 500
     BIG_SEEK_LIST_ID = 501
@@ -121,6 +123,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.bigSeekControl = kodigui.ManagedControlList(self, self.BIG_SEEK_LIST_ID, 12)
         self.bigSeekGroupControl = self.getControl(self.BIG_SEEK_GROUP_ID)
         self.initialized = True
+        self.setBoolProperty('subtitle.downloads', util.getSetting('subtitle_downloads', False))
         self.updateProperties()
         self.videoSettingsHaveChanged()
         self.update()
@@ -179,7 +182,9 @@ class SeekDialog(kodigui.BaseDialog):
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
                     return self.updateBigSeek()
 
-            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+            if action == xbmcgui.ACTION_CYCLE_SUBTITLE:
+                builtin.CycleSubtitle()
+            elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
                 if self.osdVisible():
                     self.hideOSD()
                 else:
@@ -229,6 +234,8 @@ class SeekDialog(kodigui.BaseDialog):
             self.showPlaylistDialog()
         elif controlID == self.OPTIONS_BUTTON_ID:
             self.handleDialog(self.optionsButtonClicked)
+        elif controlID == self.SUBTITLE_BUTTON_ID:
+            self.handleDialog(self.subtitleButtonClicked)
         elif controlID == self.BIG_SEEK_LIST_ID:
             self.bigSeekSelected()
         elif controlID == self.SKIP_BACK_BUTTON_ID:
@@ -341,6 +348,34 @@ class SeekDialog(kodigui.BaseDialog):
         #     xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
         # elif choice['key'] == 'kodi_audio':
         #     xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
+
+    def subtitleButtonClicked(self):
+        options = []
+
+        options.append({'key': 'download', 'display': 'Download Subtitles'})
+        if xbmc.getCondVisibility('VideoPlayer.HasSubtitles'):
+            if xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled'):
+                options.append({'key': 'delay', 'display': 'Subtitle Delay'})
+                # options.append({'key': 'cycle', 'display': 'Next Subtitle'})
+            options.append(
+                {
+                    'key': 'enable',
+                    'display': xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled + VideoPlayer.HasSubtitles') and 'Disable Subtitles' or 'Enable Subtitles'}
+            )
+
+        choice = dropdown.showDropdown(options, (1360, 1060), close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
+
+        if not choice:
+            return
+
+        if choice['key'] == 'download':
+            builtin.ActivateWindow('SubtitleSearch')
+        elif choice['key'] == 'delay':
+            builtin.SubtitleDelay()
+        elif choice['key'] == 'cycle':
+            builtin.CycleSubtitle()
+        elif choice['key'] == 'enable':
+            self.handler.player.showSubtitles(not xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled'))
 
     def showSettings(self):
         with self.propertyContext('settings.visible'):

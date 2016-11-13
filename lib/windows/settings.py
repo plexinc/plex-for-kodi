@@ -193,6 +193,7 @@ class Settings(object):
                 OptionsSetting(
                     'burn_subtitles', 'Burn Subtitles (Direct Play Only)', 'auto', (('auto', 'Auto'), ('image', 'Only Image Formats'), ('always', 'Always'))
                 ),
+                BoolSetting('subtitle_downloads', 'Enable Subtitle Downloading', False)
             )
         ),
         'advanced': (

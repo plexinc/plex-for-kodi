@@ -658,6 +658,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         li.setInfo('video', {
             'mediatype': vtype,
             'title': self.video.title,
+            'originaltitle': self.video.title,
             'tvshowtitle': self.video.grandparentTitle,
             'episode': self.video.index.asInt(),
             'season': self.video.parentIndex.asInt(),

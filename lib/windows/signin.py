@@ -35,6 +35,26 @@ class SignInMessage(kodigui.BaseWindow):
             self.doClose()
 
 
+class SignInPlexPass(kodigui.BaseWindow):
+    xmlFile = 'script-plex-plex_pass.xml'
+    path = util.ADDON.getAddonInfo('path')
+    theme = 'Main'
+    res = '1080i'
+    width = 1920
+    height = 1080
+
+    RETRY_BUTTON_ID = 100
+
+    def __init__(self, *args, **kwargs):
+        self.retry = False
+        kodigui.BaseWindow.__init__(self, *args, **kwargs)
+
+    def onClick(self, controlID):
+        if controlID == self.RETRY_BUTTON_ID:
+            self.retry = True
+            self.doClose()
+
+
 class PreSignInWindow(kodigui.BaseWindow):
     xmlFile = 'script-plex-pre_signin.xml'
     path = util.ADDON.getAddonInfo('path')

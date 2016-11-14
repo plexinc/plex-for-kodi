@@ -232,36 +232,48 @@ def init():
         plexapp.init()
         util.DEBUG_LOG('Waiting for account initialization...')
 
-    if not plexapp.ACCOUNT.authToken:
-        token = authorize()
+    retry = True
 
-        if not token:
-            util.DEBUG_LOG('FAILED TO AUTHORIZE')
-            return False
+    while retry:
+        retry = False
+        if not plexapp.ACCOUNT.authToken:
+            token = authorize()
 
-        with CallbackEvent(plexapp.APP, 'account:response'):
-            plexapp.ACCOUNT.validateToken(token)
-            util.DEBUG_LOG('Waiting for account initialization...')
+            if not token:
+                util.DEBUG_LOG('FAILED TO AUTHORIZE')
+                return False
 
-    # if not PLEX:
-    #     util.messageDialog('Connection Error', u'Unable to connect to any servers')
-    #     util.DEBUG_LOG('SIGN IN: Failed to connect to any servers')
-    #     return False
+            with CallbackEvent(plexapp.APP, 'account:response'):
+                plexapp.ACCOUNT.validateToken(token)
+                util.DEBUG_LOG('Waiting for account initialization...')
 
-    # util.DEBUG_LOG('SIGN IN: Connected to server: {0} - {1}'.format(PLEX.friendlyName, PLEX.baseuri))
-    return requirePlexPass()
+        # if not PLEX:
+        #     util.messageDialog('Connection Error', u'Unable to connect to any servers')
+        #     util.DEBUG_LOG('SIGN IN: Failed to connect to any servers')
+        #     return False
+
+        # util.DEBUG_LOG('SIGN IN: Connected to server: {0} - {1}'.format(PLEX.friendlyName, PLEX.baseuri))
+        success = requirePlexPass()
+        if success == 'RETRY':
+            retry = True
+            continue
+
+        return success
 
 
 def requirePlexPass():
     if not plexapp.ACCOUNT.isPlexPass:
         from windows import signin, background
         background.setSplash(False)
-        w = signin.SignInMessage.open(message="We're sorry, but you currently need a PlexPass to use this beta release")
-        if w:  # This is just to suppress IDE warnings about not used
-            del w
+        w = signin.SignInPlexPass.open()
+        retry = w.retry
+        del w
         util.DEBUG_LOG('PlexPass required. Signing out...')
         plexapp.ACCOUNT.signOut()
-        return False
+        if retry:
+            return 'RETRY'
+        else:
+            return False
 
     return True
 

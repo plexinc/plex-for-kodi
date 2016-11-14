@@ -370,6 +370,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>532</width>
+                                        <height>299</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>202</posx>
+                                        <posy>85.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -456,6 +474,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>532</width>
+                                            <height>299</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>202</posx>
+                                            <posy>85.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -579,6 +615,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -699,9 +753,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -861,6 +932,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -981,9 +1070,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -1143,6 +1249,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -1263,9 +1387,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -1425,6 +1566,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -1545,9 +1704,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -1707,6 +1883,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -1791,6 +1985,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -1911,6 +2123,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>532</width>
+                                        <height>299</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>202</posx>
+                                        <posy>85.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -1997,6 +2227,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>532</width>
+                                            <height>299</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>202</posx>
+                                            <posy>85.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -2120,6 +2368,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -2240,9 +2506,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -2402,6 +2685,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -2522,9 +2823,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -2684,6 +3002,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -2768,6 +3104,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -2889,6 +3243,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -2973,6 +3345,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -3094,6 +3484,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -3178,6 +3586,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -3299,6 +3725,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -3383,6 +3827,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -3504,6 +3966,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -3588,6 +4068,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -3709,6 +4207,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -3793,6 +4309,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -3914,6 +4448,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>361</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>116.5</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -3998,6 +4550,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>361</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>116.5</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -4119,6 +4689,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -4239,9 +4827,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -4401,6 +5006,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -4521,9 +5144,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -4683,6 +5323,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -4803,9 +5461,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -4965,6 +5640,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>244</width>
+                                        <height>361</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>58</posx>
+                                        <posy>116.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -5085,9 +5778,26 @@
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -5246,6 +5956,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>532</width>
+                                        <height>299</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>202</posx>
+                                        <posy>85.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -5332,6 +6060,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>532</width>
+                                            <height>299</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>202</posx>
+                                            <posy>85.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -5454,6 +6200,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>532</width>
+                                        <height>299</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>202</posx>
+                                        <posy>85.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -5540,6 +6304,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>532</width>
+                                            <height>299</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>202</posx>
+                                            <posy>85.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -5662,6 +6444,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>532</width>
+                                        <height>299</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>202</posx>
+                                        <posy>85.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -5748,6 +6548,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>532</width>
+                                            <height>299</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>202</posx>
+                                            <posy>85.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -5870,6 +6688,24 @@
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
+                                <control type="group">
+                                    <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                    <control type="image">
+                                        <posx>0</posx>
+                                        <posy>0</posy>
+                                        <width>532</width>
+                                        <height>299</height>
+                                        <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                    </control>
+                                    <control type="image">
+                                        <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                        <posx>202</posx>
+                                        <posy>85.5</posy>
+                                        <width>128</width>
+                                        <height>128</height>
+                                        <texture>script.plex/home/busy.gif</texture>
+                                    </control>
+                                </control>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -5956,6 +6792,24 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!IsEmpty(ListItem.Property(is.end))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>532</width>
+                                            <height>299</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>202</posx>
+                                            <posy>85.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>

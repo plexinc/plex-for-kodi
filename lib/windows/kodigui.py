@@ -330,6 +330,9 @@ class ManagedListItem(object):
         self.properties[key] = value
         return self.listItem.setProperty(key, value)
 
+    def setBoolProperty(self, key, boolean):
+        self.setProperty(key, boolean and '1' or '')
+
     def setSubtitles(self, subtitles):
         return self.listItem.setSubtitles(subtitles)  # List of strings - HELIX
 
@@ -342,7 +345,7 @@ class ManagedListItem(object):
 
 
 class ManagedControlList(object):
-    def __init__(self, window, control_id, max_view_index):
+    def __init__(self, window, control_id, max_view_index, data_source=None):
         self.controlID = control_id
         self.control = window.getControl(control_id)
         self.items = []
@@ -350,6 +353,7 @@ class ManagedControlList(object):
         self._idCounter = 0
         self._maxViewIndex = max_view_index
         self._properties = {}
+        self.dataSource = data_source
 
     def __getattr__(self, name):
         return getattr(self.control, name)
@@ -398,6 +402,15 @@ class ManagedControlList(object):
     def addItems(self, managed_items):
         self.items += managed_items
         self.control.addItems([i._takeListItem(self, self._nextID()) for i in managed_items])
+
+    def replaceItem(self, pos, mli):
+        self[pos].onDestroy()
+        self[pos]._valid = False
+        self.items[pos] = mli
+        li = self.control.getListItem(pos)
+        mli._manager = self
+        mli._listItem = li
+        mli._updateListItem()
 
     def replaceItems(self, managed_items):
         if not self.items:
@@ -545,6 +558,7 @@ class ManagedControlList(object):
                 self.selectItem(fix)
 
     def reset(self):
+        self.dataSource = None
         for i in self.items:
             i.onDestroy()
             i._valid = False

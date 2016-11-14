@@ -432,6 +432,26 @@ class Hub(plexobjects.PlexObject):
         self._setData(data)
         self.init(data)
 
+    def extend(self, start=None, size=None):
+        path = self.key
+
+        args = {}
+
+        if size is not None:
+            args['X-Plex-Container-Start'] = start
+            args['X-Plex-Container-Size'] = size
+
+        if args:
+            path += util.joinArgs(args) if '?' not in path else '&' + util.joinArgs(args).lstrip('?')
+
+        items = plexobjects.listItems(self.server, path)
+        self.offset = plexobjects.PlexValue(start)
+        self.size = plexobjects.PlexValue(len(items))
+        self.more = plexobjects.PlexValue(
+            (items[0].container.offset.asInt() + items[0].container.size.asInt() < items[0].container.totalSize.asInt()) and '1' or ''
+        )
+        return items
+
 
 SECTION_TYPES = {
     MovieSection.TYPE: MovieSection,

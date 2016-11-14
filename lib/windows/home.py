@@ -21,6 +21,7 @@ import search
 import dropdown
 
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
+HUB_PAGE_SIZE = 10
 
 
 class HubsList(list):
@@ -44,7 +45,7 @@ class SectionHubsTask(backgroundthread.Task):
             return
 
         try:
-            hubs = HubsList(plexapp.SERVERMANAGER.selectedServer.hubs(self.section.key, count=10)).init()
+            hubs = HubsList(plexapp.SERVERMANAGER.selectedServer.hubs(self.section.key, count=HUB_PAGE_SIZE)).init()
             if self.isCanceled():
                 return
             self.callback(self.section, hubs)
@@ -73,6 +74,30 @@ class UpdateHubTask(backgroundthread.Task):
             self.callback(self.hub)
         except plexnet.exceptions.BadRequest:
             util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
+
+
+class ExtendHubTask(backgroundthread.Task):
+    def setup(self, hub, callback):
+        self.hub = hub
+        self.callback = callback
+        return self
+
+    def run(self):
+        if self.isCanceled():
+            return
+
+        if not plexapp.SERVERMANAGER.selectedServer:
+            # Could happen during sign-out for instance
+            return
+
+        try:
+            start = self.hub.offset.asInt() + self.hub.size.asInt()
+            items = self.hub.extend(start=start, size=HUB_PAGE_SIZE)
+            if self.isCanceled():
+                return
+            self.callback(self.hub, items)
+        except plexnet.exceptions.BadRequest:
+            util.DEBUG_LOG('404 on hub: {0}'.format(repr(self.hub.hubIdentifier)))
 
 
 class HomeSection(object):
@@ -323,6 +348,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
+            elif 399 < controlID < 500 and action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_PAGE_DOWN, xbmcgui.ACTION_LAST_PAGE):
+                self.checkHubItem(controlID)
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
@@ -459,6 +486,18 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.lastSection = item.dataSource
             self.sectionChanged(force)
 
+    def checkHubItem(self, controlID):
+        control = self.hubControls[controlID - 400]
+        mli = control.getSelectedItem()
+        if not mli or not mli.getProperty('is.end'):
+            return
+
+        mli.setBoolProperty('is.updating', True)
+        self.cleanTasks()
+        task = ExtendHubTask().setup(control.dataSource, self.extendHubCallback)
+        self.tasks.append(task)
+        backgroundthread.BGThreader.addTask(task)
+
     def displayServerAndUser(self):
         self.setProperty('user.name', plexapp.ACCOUNT.title or plexapp.ACCOUNT.username)
         self.setProperty('user.avatar', plexapp.ACCOUNT.thumb)
@@ -502,7 +541,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if self.lastSection == section:
             self.showHubs(section, update=update)
 
-    def updateHubCallback(self, hub):
+    def updateHubCallback(self, hub, items=None):
         for mli in self.sectionList:
             section = mli.dataSource
             if not section:
@@ -514,8 +553,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     if self.lastSection == section:
                         util.DEBUG_LOG('Hub {0} updated - refreshing section: {1}'.format(hub.hubIdentifier, repr(section.title)))
                         hubs[idx] = hub
-                        self.showHub(hub)
+                        self.showHub(hub, items=items)
                         return
+
+    def extendHubCallback(self, hub, items):
+        self.updateHubCallback(hub, items)
 
     def showSections(self):
         self.sectionHubs = {}
@@ -624,10 +666,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         finally:
             self.showBusy(False)
 
-    def showHub(self, hub):
+    def showHub(self, hub, items=None):
         if hub.hubIdentifier in self.HUBMAP:
             util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
-            self._showHub(hub, **self.HUBMAP[hub.hubIdentifier])
+            self._showHub(hub, hubitems=items, **self.HUBMAP[hub.hubIdentifier])
             return True
         else:
             util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
@@ -715,10 +757,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         for control in self.hubControls:
             control.reset()
 
-    def _showHub(self, hub, index=None, with_progress=False, with_art=False, ar16x9=False, text2lines=False, **kwargs):
+    def _showHub(self, hub, hubitems=None, index=None, with_progress=False, with_art=False, ar16x9=False, text2lines=False, **kwargs):
         control = self.hubControls[index]
+        control.dataSource = hub
 
-        if not hub.items:
+        if not hub.items and not hubitems:
             control.reset()
             return
 
@@ -727,7 +770,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         items = []
 
-        for obj in hub.items:
+        for obj in hubitems or hub.items:
             if not self.backgroundSet:
                 self.backgroundSet = True
                 self.setProperty(
@@ -748,7 +791,18 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             for mli in items:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
 
-        control.replaceItems(items)
+        if hub.more.asBool():
+            end = kodigui.ManagedListItem('')
+            end.setBoolProperty('is.end', True)
+            items.append(end)
+
+        if hubitems:
+            end = control.size() - 1
+            control.replaceItem(end, items[0])
+            control.addItems(items[1:])
+            control.selectItem(end)
+        else:
+            control.replaceItems(items)
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()

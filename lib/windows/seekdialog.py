@@ -182,8 +182,10 @@ class SeekDialog(kodigui.BaseDialog):
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
                     return self.updateBigSeek()
 
-            if action == xbmcgui.ACTION_CYCLE_SUBTITLE:
-                builtin.CycleSubtitle()
+            if action.getButtonCode() == 61516:
+                builtin.Action('CycleSubtitle')
+            elif action.getButtonCode() == 61524:
+                builtin.Action('ShowSubtitles')
             elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
                 if self.osdVisible():
                     self.hideOSD()
@@ -356,7 +358,7 @@ class SeekDialog(kodigui.BaseDialog):
         if xbmc.getCondVisibility('VideoPlayer.HasSubtitles'):
             if xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled'):
                 options.append({'key': 'delay', 'display': 'Subtitle Delay'})
-                # options.append({'key': 'cycle', 'display': 'Next Subtitle'})
+                options.append({'key': 'cycle', 'display': 'Next Subtitle'})
             options.append(
                 {
                     'key': 'enable',
@@ -369,13 +371,15 @@ class SeekDialog(kodigui.BaseDialog):
             return
 
         if choice['key'] == 'download':
+            self.hideOSD()
             builtin.ActivateWindow('SubtitleSearch')
         elif choice['key'] == 'delay':
-            builtin.SubtitleDelay()
+            self.hideOSD()
+            builtin.Action('SubtitleDelay')
         elif choice['key'] == 'cycle':
-            builtin.CycleSubtitle()
+            builtin.Action('CycleSubtitle')
         elif choice['key'] == 'enable':
-            self.handler.player.showSubtitles(not xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled'))
+            builtin.Action('ShowSubtitles')
 
     def showSettings(self):
         with self.propertyContext('settings.visible'):

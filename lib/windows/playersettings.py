@@ -60,8 +60,6 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
 
     def showSettings(self, init=False):
         video = self.video
-        sas = video.selectedAudioStream()
-        sss = video.selectedSubtitleStream()
         override = video.settings.getPrefOverride('local_quality')
         if override is not None and override < 13:
             current = T((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014)[13 - override])
@@ -71,9 +69,12 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
                 video.mediaChoice.media.getVideoResolutionString(),
                 video.mediaChoice.media.title or 'Original'
             )
+
+        audio, subtitle = self.getAudioAndSubtitleInfo()
+
         options = [
-            ('audio', 'Audio', u'{0}'.format(sas and sas.getTitle() or 'None')),
-            ('subs', 'Subtitles', u'{0}'.format(sss and sss.getTitle() or 'None')),
+            ('audio', 'Audio', audio),
+            ('subs', 'Subtitles', subtitle),
             ('quality', 'Quality', u'{0}'.format(current)),
             ('kodi_video', 'Kodi Video Settings', ''),
             ('kodi_audio', 'Kodi Audio Settings', '')
@@ -90,6 +91,24 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
             self.settingsList.replaceItems(items)
 
         self.setFocusId(self.SETTINGS_LIST_ID)
+
+    def getAudioAndSubtitleInfo(self):
+        sas = self.video.selectedAudioStream()
+        audio = sas and sas.getTitle() or 'None'
+
+        sss = self.video.selectedSubtitleStream()
+        if sss:
+            if len(self.video.subtitleStreams) > 1:
+                subtitle = u'{0} \u2022 {1} More'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1)
+            else:
+                subtitle = sss.getTitle()
+        else:
+            if self.video.subtitleStreams:
+                subtitle = u'None \u2022 {0} Available'.format(len(self.video.subtitleStreams))
+            else:
+                subtitle = u'None'
+
+        return audio, subtitle
 
     def editSetting(self):
         mli = self.settingsList.getSelectedItem()

@@ -152,6 +152,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             playerObject = plexplayer.PlexPlayer(self.video)
             playerObject.build()
         playersettings.showDialog(video=self.video, non_playback=True)
+        self.setAudioAndSubtitleInfo()
 
     def infoButtonClicked(self):
         opener.handleOpen(
@@ -452,11 +453,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         else:
             self.setProperty('rating', self.video.rating)
 
-        sas = self.video.selectedAudioStream()
-        self.setProperty('audio', sas and sas.getTitle() or 'None')
-
-        sss = self.video.selectedSubtitleStream()
-        self.setProperty('subtitles', sss and sss.getTitle() or 'None')
+        self.setAudioAndSubtitleInfo()
 
         self.setProperty('unavailable', not self.video.media()[0].isAccessible() and '1' or '')
 
@@ -465,6 +462,22 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.progressImageControl.setWidth(width)
         else:
             self.progressImageControl.setWidth(1)
+
+    def setAudioAndSubtitleInfo(self):
+        sas = self.video.selectedAudioStream()
+        self.setProperty('audio', sas and sas.getTitle() or 'None')
+
+        sss = self.video.selectedSubtitleStream()
+        if sss:
+            if len(self.video.subtitleStreams) > 1:
+                self.setProperty('subtitles', u'{0} \u2022 {1} More'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1))
+            else:
+                self.setProperty('subtitles', sss.getTitle())
+        else:
+            if self.video.subtitleStreams:
+                self.setProperty('subtitles', u'None \u2022 {0} Available'.format(len(self.video.subtitleStreams)))
+            else:
+                self.setProperty('subtitles', u'None')
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=obj)

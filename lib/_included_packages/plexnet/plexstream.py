@@ -72,7 +72,7 @@ class PlexStream(plexobjects.PlexObject):
         return title
 
     def getCodec(self):
-        codec = self.codec or ''
+        codec = (self.codec or '').lower()
 
         if codec in ('dca-ma', 'dca'):
             codec = "DTS"

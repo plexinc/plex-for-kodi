@@ -147,9 +147,9 @@ class Video(media.MediaItem):
             return res.upper()
 
     def audioCodecString(self):
-        codec = self.media[0].audioCodec or ''
+        codec = (self.media[0].audioCodec or '').lower()
 
-        if codec == "dca":
+        if codec in ('dca-ma', 'dca'):
             codec = "DTS"
         else:
             codec = codec.upper()

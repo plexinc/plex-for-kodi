@@ -275,6 +275,7 @@ class Show(Video):
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
+            self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
 
     @property
     def unViewedLeafCount(self):
@@ -320,6 +321,11 @@ class Show(Video):
 @plexobjects.registerLibType
 class Season(Video):
     TYPE = 'season'
+
+    def _setData(self, data):
+        Video._setData(self, data)
+        if self.isFullObject():
+            self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
 
     @property
     def defaultTitle(self):

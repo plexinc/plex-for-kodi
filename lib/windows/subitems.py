@@ -6,6 +6,7 @@ import kodigui
 
 from lib import colors
 from lib import util
+from lib import metadata
 
 from plexnet import playlist
 
@@ -44,12 +45,14 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         }
     }
 
+    EXTRA_DIM = (329, 185)
     RELATED_DIM = (268, 397)
     ROLES_DIM = (268, 268)
 
     SUB_ITEM_LIST_ID = 400
 
-    RELATED_LIST_ID = 401
+    EXTRA_LIST_ID = 401
+    RELATED_LIST_ID = 402
     ROLES_LIST_ID = 403
 
     OPTIONS_GROUP_ID = 200
@@ -74,6 +77,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
+        self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
         self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
         self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
@@ -87,7 +91,8 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.updateProperties()
         self.fill()
-        hasPrev = self.fillRelated(False)
+        hasPrev = self.fillExtras()
+        hasPrev = self.fillRelated(hasPrev)
         self.fillRoles(hasPrev)
 
     def updateProperties(self):
@@ -102,6 +107,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('info', '')
         self.setProperty('date', self.mediaItem.year)
 
+        self.setProperty('extras.header', 'Extras')
         self.setProperty('related.header', 'Related Shows')
 
         if self.mediaItem.creator:
@@ -183,8 +189,10 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.subItemListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
+        elif controlID == self.EXTRA_LIST_ID:
+            self.openItem(self.extraListControl)
         elif controlID == self.RELATED_LIST_ID:
-            self.relatedClicked()
+            self.openItem(self.relatedListControl)
         elif controlID == self.ROLES_LIST_ID:
             self.roleClicked()
         elif controlID == self.INFO_BUTTON_ID:
@@ -279,12 +287,14 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.mediaItem.getLibrarySectionId() or None))
 
-    def relatedClicked(self):
-        mli = self.relatedListControl.getSelectedItem()
-        if not mli:
-            return
+    def openItem(self, control=None, item=None):
+        if not item:
+            mli = control.getSelectedItem()
+            if not mli:
+                return
+            item = mli.dataSource
 
-        self.processCommand(opener.open(mli.dataSource))
+        self.processCommand(opener.open(item))
 
     def subItemListClicked(self):
         mli = self.subItemListControl.getSelectedItem()
@@ -420,12 +430,16 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if xbmc.getCondVisibility('Control.IsVisible(500)'):
             y += 360
         if xbmc.getCondVisibility('Control.IsVisible(501)'):
+            y += 360
+        if xbmc.getCondVisibility('Control.IsVisible(502)'):
             y += 520
         if xbmc.getCondVisibility('!IsEmpty(Window.Property(on.extras))'):
             y -= 300
         if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
             y -= 500
         if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
+            y -= 360
+        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(502)'):
             y -= 500
 
         focus = int(xbmc.getInfoLabel('Container(403).Position'))
@@ -462,6 +476,37 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         else:
             self.subItemListControl.reset()
             self.subItemListControl.addItems(items)
+
+    def fillExtras(self):
+        items = []
+        idx = 0
+
+        if not self.mediaItem.extras:
+            self.extraListControl.reset()
+            return False
+
+        for extra in self.mediaItem.extras():
+            mli = kodigui.ManagedListItem(
+                extra.title or '',
+                metadata.EXTRA_MAP.get(extra.extraType.asInt(), ''),
+                thumbnailImage=extra.thumb.asTranscodedImageURL(*self.EXTRA_DIM),
+                data_source=extra
+            )
+
+            if mli:
+                mli.setProperty('index', str(idx))
+                mli.setProperty(
+                    'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(extra.type in ('show', 'season', 'episode') and 'show' or 'movie')
+                )
+                items.append(mli)
+                idx += 1
+
+        if not items:
+            return False
+
+        self.extraListControl.reset()
+        self.extraListControl.addItems(items)
+        return True
 
     def fillRelated(self, has_prev=False):
         items = []

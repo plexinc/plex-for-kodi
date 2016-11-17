@@ -5,6 +5,7 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import backgroundthread
+from lib import metadata
 
 from plexnet import plexapp, playlist, plexplayer
 
@@ -198,6 +199,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.infoButtonClicked()
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
+        elif controlID == self.EXTRA_LIST_ID:
+            self.openItem(self.extraListControl)
+        elif controlID == self.RELATED_LIST_ID:
+            self.openItem(self.relatedListControl)
+        elif controlID == self.ROLES_LIST_ID:
+            self.roleClicked()
 
     def onFocus(self, controlID):
         if 399 < controlID < 500:
@@ -207,6 +214,63 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+    def openItem(self, control=None, item=None):
+        if not item:
+            mli = control.getSelectedItem()
+            if not mli:
+                return
+            item = mli.dataSource
+
+        self.processCommand(opener.open(item))
+
+    def roleClicked(self):
+        mli = self.rolesListControl.getSelectedItem()
+        if not mli:
+            return
+
+        sectionRoles = busy.widthDialog(mli.dataSource.sectionRoles, '')
+
+        if not sectionRoles:
+            util.DEBUG_LOG('No sections found for actor')
+            return
+
+        if len(sectionRoles) > 1:
+            x, y = self.getRoleItemDDPosition()
+
+            options = [{'role': r, 'display': r.reasonTitle} for r in sectionRoles]
+            choice = dropdown.showDropdown(options, (x, y), pos_is_bottom=True, close_direction='bottom')
+
+            if not choice:
+                return
+
+            role = choice['role']
+        else:
+            role = sectionRoles[0]
+
+        self.processCommand(opener.open(role))
+
+    def getRoleItemDDPosition(self):
+        y = 980
+        if xbmc.getCondVisibility('Control.IsVisible(500)'):
+            y += 360
+        if xbmc.getCondVisibility('Control.IsVisible(501)'):
+            y += 520
+        if xbmc.getCondVisibility('Control.IsVisible(502)'):
+            y += 520
+        if xbmc.getCondVisibility('!IsEmpty(Window.Property(on.extras))'):
+            y -= 125
+        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
+            y -= 500
+        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
+            y -= 500
+        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(502)'):
+            y -= 500
+
+        focus = int(xbmc.getInfoLabel('Container(403).Position'))
+
+        x = ((focus + 1) * 304) - 100
+        return x, y
 
     def getSeasons(self):
         if not self.seasons:
@@ -598,7 +662,13 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             return False
 
         for extra in self.season.extras():
-            mli = kodigui.ManagedListItem(extra.title or '', thumbnailImage=extra.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=extra)
+            mli = kodigui.ManagedListItem(
+                extra.title or '',
+                metadata.EXTRA_MAP.get(extra.extraType.asInt(), ''),
+                thumbnailImage=extra.thumb.asTranscodedImageURL(*self.EXTRA_DIM),
+                data_source=extra
+            )
+
             if mli:
                 mli.setProperty('index', str(idx))
                 mli.setProperty(

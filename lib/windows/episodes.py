@@ -9,7 +9,6 @@ from lib import backgroundthread
 from plexnet import plexapp, playlist, plexplayer
 
 import busy
-import musicplayer
 import videoplayer
 import dropdown
 import windowutils
@@ -75,11 +74,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         windowutils.UtilMixin.__init__(self)
         self.season = kwargs.get('season')
         self.parentList = kwargs.get('parentList')
+        self.show_ = kwargs.get('show') or self.season.show()
         self.seasons = None
-        if isinstance(self, AlbumWindow):
-            self._show_ = kwargs.get('show')
-        else:
-            self.show_ = kwargs.get('show') or self.season.show()
         self.lastItem = None
         self.tasks = backgroundthread.Tasks()
 
@@ -168,10 +164,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def getSeasons(self):
         if not self.seasons:
-            if self.season.TYPE == 'season':
-                self.seasons = self.season.show().seasons()
-            elif self.season.TYPE == 'album':
-                self.seasons = self.season.artist().albums()
+            self.seasons = self.season.show().seasons()
 
         if not self.seasons:
             return False
@@ -322,11 +315,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
             options.append({'key': 'play_next', 'display': 'Play Next'})
 
-        if not isinstance(self, AlbumWindow):
-            if self.season.isWatched:
-                options.append({'key': 'mark_season_unwatched', 'display': 'Mark Season Unwatched'})
-            else:
-                options.append({'key': 'mark_season_watched', 'display': 'Mark Season Watched'})
+        if self.season.isWatched:
+            options.append({'key': 'mark_season_unwatched', 'display': 'Mark Season Unwatched'})
+        else:
+            options.append({'key': 'mark_season_watched', 'display': 'Mark Season Watched'})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
@@ -334,7 +326,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if options:
             options.append(dropdown.SEPARATOR)
 
-        options.append({'key': 'to_show', 'display': isinstance(self, AlbumWindow) and 'Go to Artist' or 'Go To Show'})
+        options.append({'key': 'to_show', 'display': 'Go To Show'})
         options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.season.getLibrarySectionTitle())})
 
         pos = (460, 685)
@@ -524,67 +516,3 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if mli.dataSource == episode:
                 self.setPostReloadItemInfo(episode, mli)
                 return
-
-
-class AlbumWindow(EpisodesWindow):
-    xmlFile = 'script-plex-album.xml'
-
-    def playButtonClicked(self, shuffle=False):
-        pl = playlist.LocalPlaylist(self.season.all(), self.season.getServer())
-        pl.startShuffled = shuffle
-        self.openWindow(musicplayer.MusicPlayerWindow, track=pl.current(), playlist=pl)
-
-    def episodePanelClicked(self):
-        mli = self.episodePanelControl.getSelectedItem()
-        if not mli:
-            return
-
-        self.openWindow(musicplayer.MusicPlayerWindow, track=mli.dataSource, album=self.season)
-
-    def updateProperties(self):
-        self.setProperty(
-            'background',
-            self.season.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
-        )
-        self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
-        self.setProperty('artist.title', self.season.parentTitle or '')
-        self.setProperty('album.title', self.season.title)
-
-    def createListItem(self, obj):
-        mli = kodigui.ManagedListItem(obj.title, data_source=obj)
-        mli.setProperty('track.number', str(obj.index) or '')
-        mli.setProperty('track.duration', util.simplifiedTimeDisplay(obj.duration.asInt()))
-        return mli
-
-    @busy.dialog()
-    def fillEpisodes(self):
-        items = []
-        idx = 0
-        multiDisc = 0
-
-        for track in self.season.tracks():
-            disc = track.parentIndex.asInt()
-            if disc > 1:
-                if not multiDisc:
-                    items.insert(0, kodigui.ManagedListItem('DISC 1', properties={'is.header': '1'}))
-
-                if disc != multiDisc:
-                    items[-1].setProperty('is.footer', '1')
-                    multiDisc = disc
-                    items.append(kodigui.ManagedListItem('DISC {0}'.format(disc), properties={'is.header': '1'}))
-
-            mli = self.createListItem(track)
-            if mli:
-                mli.setProperty('track.ID', track.ratingKey)
-                mli.setProperty('index', str(idx))
-                mli.setProperty('artist', self.season.parentTitle)
-                mli.setProperty('disc', str(disc))
-                mli.setProperty('album', self.season.title)
-                mli.setProperty('number', '{0:0>2}'.format(track.index))
-                items.append(mli)
-                idx += 1
-
-        if items:
-            items[-1].setProperty('is.footer', '1')
-
-        self.episodePanelControl.replaceItems(items)

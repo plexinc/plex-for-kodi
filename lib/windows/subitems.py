@@ -11,6 +11,7 @@ from plexnet import playlist
 
 import busy
 import episodes
+import album
 import opener
 import info
 import musicplayer
@@ -299,7 +300,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             w = episodes.EpisodesWindow.open(season=mli.dataSource, show=self.mediaItem, parent_list=self.subItemListControl)
             update = True
         elif self.mediaItem.type == 'artist':
-            w = episodes.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem, parent_list=self.subItemListControl)
+            w = album.AlbumWindow.open(season=mli.dataSource, show=self.mediaItem, parent_list=self.subItemListControl)
 
         if not mli.dataSource.exists():
             self.subItemListControl.removeItem(mli.pos())
@@ -547,11 +548,11 @@ class ArtistWindow(ShowWindow):
         self.setProperty('artist.genre', genres)
         items = []
         idx = 0
-        for album in sorted(self.mediaItem.albums(), key=lambda x: x.year):
-            mli = self.createListItem(album)
+        for album_ in sorted(self.mediaItem.albums(), key=lambda x: x.year):
+            mli = self.createListItem(album_)
             if mli:
                 mli.setProperty('index', str(idx))
-                mli.setProperty('year', album.year)
+                mli.setProperty('year', album_.year)
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
                 items.append(mli)
                 idx += 1

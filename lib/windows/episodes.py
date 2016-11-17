@@ -458,6 +458,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('episodes.header', u'{0} \u2022 Season {1}'.format(self.getProperty('show.title'), self.season.index))
         self.setProperty('extras.header', u'Extras \u2022 Season {0}'.format(self.season.index))
         self.setProperty('related.header', 'Related Shows')
+        self.genre = self.show_.genres() and self.show_.genres()[0].tag or ''
 
     def updateItems(self, item=None):
         if item:
@@ -481,8 +482,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         # mli.setProperty('related.header', 'Related Shows')
         mli.setProperty('year', video.year)
         mli.setProperty('content.rating', video.contentRating.split('/', 1)[-1])
-        genres = self.show_.genres()[0].tag  # u' / '.join([g.tag for g in self.video.genres()][:3])
-        mli.setProperty('genre', genres)
+        mli.setProperty('genre', self.genre)
 
         if video.get('userRating'):
             stars = str(int(round((video.userRating.asFloat() / 10) * 5)))

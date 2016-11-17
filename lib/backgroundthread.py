@@ -5,6 +5,22 @@ import util
 from plexnet import threadutils
 
 
+class Tasks(list):
+    def add(self, task):
+        for t in self:
+            if not t.isValid():
+                self.remove(t)
+
+        if isinstance(task, list):
+            self += task
+        else:
+            self.append(task)
+
+    def cancel(self):
+        for t in self:
+            t.cancel()
+
+
 class Task:
     def __init__(self, priority=None):
         self._priority = priority

@@ -183,6 +183,7 @@ class PlayableVideo(Video):
         if self.get('viewOffset'):
             del self.viewOffset
         Video.reload(self, *args, **kwargs)
+        return self
 
     def postPlay(self, **params):
         query = '/hubs/metadata/{0}/postplay'.format(self.ratingKey)

@@ -132,7 +132,7 @@ class HttpRequest(object):
             if self._cancel:
                 return
 
-            util.LOG("Got a {0} from {1}".format(res.status_code, self.url))
+            util.LOG("Got a {0} from {1}".format(res.status_code, util.cleanToken(self.url)))
             # self.event = msg
             return res.text.encode('utf8')
         except Exception, e:

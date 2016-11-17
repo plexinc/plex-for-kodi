@@ -1,4 +1,5 @@
 import simpleobjects
+import re
 import sys
 import time
 import platform
@@ -91,6 +92,10 @@ def hideToken(token):
     if not token:
         return token
     return '*' * (len(token) - 4) + token[-4:]
+
+
+def cleanToken(url):
+    return re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', url)
 
 
 def now(local=False):

@@ -51,9 +51,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     THUMB_AR16X9_DIM = (657, 393)
     POSTER_DIM = (420, 630)
+    RELATED_DIM = (268, 397)
+    EXTRA_DIM = (329, 185)
+    ROLES_DIM = (268, 268)
 
     EPISODE_LIST_ID = 400
     LIST_OPTIONS_BUTTON_ID = 111
+
+    EXTRA_LIST_ID = 401
+    RELATED_LIST_ID = 402
+    ROLES_LIST_ID = 403
 
     OPTIONS_GROUP_ID = 200
 
@@ -72,9 +79,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
-        self.season = kwargs.get('season')
+        self.episode = kwargs.get('episode')
+        self.season = kwargs.get('season') or self.episode.season()
         self.parentList = kwargs.get('parentList')
-        self.show_ = kwargs.get('show') or self.season.show()
+        self.show_ = kwargs.get('show') or self.season.show().reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.seasons = None
         self.lastItem = None
         self.tasks = backgroundthread.Tasks()
@@ -87,8 +95,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
+        self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
+        self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
+        self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
+
         self.setup()
-        self.setFocusId(self.EPISODE_LIST_ID)
+        self.selectEpisode()
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
 
     def onReInit(self):
@@ -98,9 +110,23 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.reloadItems(items=[mli])
 
+    @busy.dialog()
     def setup(self):
+        self.season.reload(includeExtras=1, includeExtrasCount=10)
         self.updateProperties()
         self.fillEpisodes()
+        hasPrev = self.fillExtras()
+        hasPrev = self.fillRelated(hasPrev)
+        self.fillRoles(hasPrev)
+
+    def selectEpisode(self):
+        if not self.episode:
+            return
+
+        for mli in self.episodeListControl:
+            if mli.dataSource == self.episode:
+                self.episodeListControl.selectItem(mli.pos())
+                return
 
     def onAction(self, action):
         controlID = self.getFocusId()
@@ -172,6 +198,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.infoButtonClicked()
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
+
+    def onFocus(self, controlID):
+        if 399 < controlID < 500:
+            self.setProperty('hub.focus', str(controlID - 400))
+
+        if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
+            self.setProperty('on.extras', '')
+        elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
+            self.setProperty('on.extras', '1')
 
     def getSeasons(self):
         if not self.seasons:
@@ -421,6 +456,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('show.title', self.show_ and self.show_.title or '')
         self.setProperty('season.title', self.season.title)
         self.setProperty('episodes.header', u'{0} \u2022 Season {1}'.format(self.getProperty('show.title'), self.season.index))
+        self.setProperty('extras.header', u'Extras \u2022 Season {0}'.format(self.season.index))
+        self.setProperty('related.header', 'Related Shows')
 
     def updateItems(self, item=None):
         if item:
@@ -551,3 +588,77 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 if mli == selected:
                     self.setProgress(mli)
                 return
+
+    def fillExtras(self):
+        items = []
+        idx = 0
+
+        if not self.season.extras:
+            self.extraListControl.reset()
+            return False
+
+        for extra in self.season.extras():
+            mli = kodigui.ManagedListItem(extra.title or '', thumbnailImage=extra.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=extra)
+            if mli:
+                mli.setProperty('index', str(idx))
+                mli.setProperty(
+                    'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(extra.type in ('show', 'season', 'episode') and 'show' or 'movie')
+                )
+                items.append(mli)
+                idx += 1
+
+        if not items:
+            return False
+
+        self.extraListControl.reset()
+        self.extraListControl.addItems(items)
+        return True
+
+    def fillRelated(self, has_prev=False):
+        items = []
+        idx = 0
+
+        if not self.show_.related:
+            self.relatedListControl.reset()
+            return has_prev
+
+        self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
+
+        for rel in self.show_.related()[0].items:
+            mli = kodigui.ManagedListItem(
+                rel.title or '',
+                thumbnailImage=rel.defaultThumb.asTranscodedImageURL(*self.RELATED_DIM),
+                data_source=rel
+            )
+            if mli:
+                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
+                mli.setProperty('index', str(idx))
+                items.append(mli)
+                idx += 1
+
+        self.relatedListControl.reset()
+        self.relatedListControl.addItems(items)
+        return True
+
+    def fillRoles(self, has_prev=False):
+        items = []
+        idx = 0
+
+        if not self.show_.roles:
+            self.rolesListControl.reset()
+            return False
+
+        for role in self.show_.roles():
+            mli = kodigui.ManagedListItem(role.tag, role.role, thumbnailImage=role.thumb.asTranscodedImageURL(*self.ROLES_DIM), data_source=role)
+            mli.setProperty('index', str(idx))
+            items.append(mli)
+            idx += 1
+
+        if not items:
+            return False
+
+        self.setProperty('divider.{0}'.format(self.ROLES_LIST_ID), has_prev and '1' or '')
+
+        self.rolesListControl.reset()
+        self.rolesListControl.addItems(items)
+        return True

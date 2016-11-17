@@ -29,7 +29,7 @@ def open(obj):
             key = '/library/metadata/{0}'.format(obj)
         return open(plexapp.SERVERMANAGER.selectedServer.getObject(key))
     elif obj.TYPE in ('episode', 'movie'):
-        return playableClicked(obj)
+        return episodeClicked(obj)
     elif obj.TYPE in ('show'):
         return showClicked(obj)
     elif obj.TYPE in ('artist'):
@@ -74,6 +74,11 @@ def handleOpen(winclass, **kwargs):
 def playableClicked(playable):
     import preplay
     return handleOpen(preplay.PrePlayWindow, video=playable)
+
+
+def episodeClicked(episode):
+    import episodes
+    return handleOpen(episodes.EpisodesWindow, episode=episode)
 
 
 def showClicked(show):

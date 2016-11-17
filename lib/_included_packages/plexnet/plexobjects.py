@@ -211,7 +211,7 @@ class PlexObject(object, Checks):
     def reload(self, _soft=False, **kwargs):
         """ Reload the data for this object from PlexServer XML. """
         if _soft and self._reloaded:
-            return
+            return self
 
         try:
             if self.get('ratingKey'):
@@ -224,10 +224,12 @@ class PlexObject(object, Checks):
             traceback.print_exc()
             util.ERROR(err=e)
             self.initpath = self.key
-            return
+            return self
 
         self.initpath = self.key
         self._setData(data[0])
+
+        return self
 
     def getLibrarySectionId(self):
         ID = self.get('librarySectionID')

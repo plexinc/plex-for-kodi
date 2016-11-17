@@ -83,7 +83,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setFocusId(self.PLAY_BUTTON_ID)
 
     def setup(self):
-        self.mediaItem.reload(includeRelated=1, includeRelatedCount=10)
+        self.mediaItem.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
 
         self.updateProperties()
         self.fill()
@@ -201,8 +201,6 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def onFocus(self, controlID):
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
-        else:
-            self.setProperty('hub.focus', '')
 
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '')
@@ -313,7 +311,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if update:
             mli.setProperty('unwatched.count', not mli.dataSource.isWatched and str(mli.dataSource.unViewedLeafCount) or '')
-            self.mediaItem.reload()
+            self.mediaItem.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
             self.updateProperties()
 
         try:
@@ -542,7 +540,7 @@ class ArtistWindow(ShowWindow):
 
     @busy.dialog()
     def fill(self):
-        self.mediaItem.reload()
+        self.mediaItem.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.setProperty('artist.title', self.mediaItem.title)
         genres = u' / '.join([g.tag for g in util.removeDups(self.mediaItem.genres())][:6])
         self.setProperty('artist.genre', genres)

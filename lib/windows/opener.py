@@ -91,9 +91,9 @@ def seasonClicked(season):
     return handleOpen(episodes.EpisodesWindow, season=season)
 
 
-def albumClicked(album_):
-    import album
-    return handleOpen(album.AlbumWindow, season=album_)
+def albumClicked(album):
+    import tracks
+    return handleOpen(tracks.AlbumWindow, album=album)
 
 
 def photoClicked(photo):

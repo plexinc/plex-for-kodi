@@ -61,7 +61,7 @@
                     <posy>142</posy>
                     <width>630</width>
                     <height>630</height>
-                    <texture>$INFO[Window.Property(season.thumb)]</texture>
+                    <texture>$INFO[Window.Property(album.thumb)]</texture>
                     <aspectratio>scale</aspectratio>
                 </control>
             </control>

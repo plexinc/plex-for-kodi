@@ -133,7 +133,7 @@
                         <posy>0</posy>
                         <width>657</width>
                         <height>393</height>
-                        <texture background="true">script.plex/thumb_fallbacks/movie.png</texture>
+                        <texture background="true">script.plex/thumb_fallbacks/show.png</texture>
                         <aspectratio>scale</aspectratio>
                     </control>
                     <control type="image">
@@ -413,8 +413,8 @@
                         <font>font12</font>
                         <align>left</align>
                         <aligny>center</aligny>
-                        <textcolor>FFFFFFFF</textcolor>
-                        <label>EXTRAS</label>
+                        <textcolor>AAFFFFFF</textcolor>
+                        <label>[UPPERCASE]$INFO[Window.Property(episodes.header)][/UPPERCASE]</label>
                     </control>
                     <control type="list" id="400">
                         <posx>0</posx>
@@ -482,13 +482,24 @@
                                     <control type="label">
                                         <scroll>false</scroll>
                                         <posx>0</posx>
-                                        <posy>180</posy>
+                                        <posy>175</posy>
                                         <width>299</width>
                                         <height>60</height>
-                                        <font>font10</font>
+                                        <font>font12</font>
                                         <align>center</align>
-                                        <textcolor>FFFFFFFF</textcolor>
+                                        <textcolor>AAFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                    <control type="label">
+                                        <scroll>false</scroll>
+                                        <posx>0</posx>
+                                        <posy>210</posy>
+                                        <width>299</width>
+                                        <height>60</height>
+                                        <font>font12</font>
+                                        <align>center</align>
+                                        <textcolor>AAFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Label2]</label>
                                     </control>
                                 </control>
                             </control>
@@ -565,13 +576,24 @@
                                             <control type="label">
                                                 <scroll>false</scroll>
                                                 <posx>0</posx>
-                                                <posy>180</posy>
+                                                <posy>175</posy>
                                                 <width>299</width>
                                                 <height>60</height>
-                                                <font>font10</font>
+                                                <font>font12</font>
                                                 <align>center</align>
-                                                <textcolor>FFFFFFFF</textcolor>
+                                                <textcolor>AAFFFFFF</textcolor>
                                                 <label>$INFO[ListItem.Label]</label>
+                                            </control>
+                                            <control type="label">
+                                                <scroll>false</scroll>
+                                                <posx>0</posx>
+                                                <posy>210</posy>
+                                                <width>299</width>
+                                                <height>60</height>
+                                                <font>font12</font>
+                                                <align>center</align>
+                                                <textcolor>AAFFFFFF</textcolor>
+                                                <label>$INFO[ListItem.Label2]</label>
                                             </control>
                                         </control>
                                         <control type="group">
@@ -579,13 +601,24 @@
                                             <control type="label">
                                                 <scroll>false</scroll>
                                                 <posx>0</posx>
-                                                <posy>180</posy>
+                                                <posy>175</posy>
                                                 <width>299</width>
                                                 <height>60</height>
-                                                <font>font10</font>
+                                                <font>font12</font>
                                                 <align>center</align>
                                                 <textcolor>FFCC7B19</textcolor>
                                                 <label>$INFO[ListItem.Label]</label>
+                                            </control>
+                                            <control type="label">
+                                                <scroll>false</scroll>
+                                                <posx>0</posx>
+                                                <posy>210</posy>
+                                                <width>299</width>
+                                                <height>60</height>
+                                                <font>font12</font>
+                                                <align>center</align>
+                                                <textcolor>FFCC7B19</textcolor>
+                                                <label>$INFO[ListItem.Label2]</label>
                                             </control>
                                         </control>
                                     </control>

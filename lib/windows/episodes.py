@@ -52,7 +52,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     THUMB_AR16X9_DIM = (657, 393)
     POSTER_DIM = (420, 630)
 
-    EPISODE_PANEL_ID = 400
+    EPISODE_LIST_ID = 400
     LIST_OPTIONS_BUTTON_ID = 111
 
     OPTIONS_GROUP_ID = 200
@@ -79,13 +79,24 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.lastItem = None
         self.tasks = backgroundthread.Tasks()
 
+    def doClose(self):
+        kodigui.ControlledWindow.doClose(self)
+        self.tasks.cancel()
+
     def onFirstInit(self):
-        self.episodePanelControl = kodigui.ManagedControlList(self, self.EPISODE_PANEL_ID, 5)
+        self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
         self.setup()
-        self.setFocusId(self.EPISODE_PANEL_ID)
+        self.setFocusId(self.EPISODE_LIST_ID)
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
+
+    def onReInit(self):
+        mli = self.episodeListControl.getSelectedItem()
+        if not mli:
+            return
+
+        self.reloadItems(items=[mli])
 
     def setup(self):
         self.updateProperties()
@@ -103,7 +114,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             elif action == xbmcgui.ACTION_PREV_ITEM:
                 self.prev()
 
-            if controlID == self.EPISODE_PANEL_ID:
+            if controlID == self.EPISODE_LIST_ID:
                 self.checkForHeaderFocus(action)
             if controlID == self.LIST_OPTIONS_BUTTON_ID and self.checkOptionsAction(action):
                 return
@@ -122,22 +133,22 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def checkOptionsAction(self, action):
         if action == xbmcgui.ACTION_MOVE_UP:
-            mli = self.episodePanelControl.getSelectedItem()
+            mli = self.episodeListControl.getSelectedItem()
             if not mli:
                 return False
             pos = mli.pos() - 1
-            if self.episodePanelControl.positionIsValid(pos):
-                self.setFocusId(self.EPISODE_PANEL_ID)
-                self.episodePanelControl.selectItem(pos)
+            if self.episodeListControl.positionIsValid(pos):
+                self.setFocusId(self.EPISODE_LIST_ID)
+                self.episodeListControl.selectItem(pos)
             return True
         elif action == xbmcgui.ACTION_MOVE_DOWN:
-            mli = self.episodePanelControl.getSelectedItem()
+            mli = self.episodeListControl.getSelectedItem()
             if not mli:
                 return False
             pos = mli.pos() + 1
-            if self.episodePanelControl.positionIsValid(pos):
-                self.setFocusId(self.EPISODE_PANEL_ID)
-                self.episodePanelControl.selectItem(pos)
+            if self.episodeListControl.positionIsValid(pos):
+                self.setFocusId(self.EPISODE_LIST_ID)
+                self.episodeListControl.selectItem(pos)
             return True
 
         return False
@@ -145,8 +156,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:
             self.goHome()
-        elif controlID == self.EPISODE_PANEL_ID:
-            self.episodePanelClicked()
+        elif controlID == self.EPISODE_LIST_ID:
+            self.episodeListClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.show_AudioPlayer()
         elif controlID == self.PLAY_BUTTON_ID:
@@ -244,18 +255,17 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if shuffle:
             items = self.season.all()
             pl = playlist.LocalPlaylist(items, self.season.getServer())
-            resume = False
 
             pl.shuffle(shuffle, first=True)
-            videoplayer.play(play_queue=pl, resume=resume)
+            videoplayer.play(play_queue=pl)
         else:
-            self.episodePanelClicked()
+            self.episodeListClicked()
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)
 
     def settingsButtonClicked(self):
-        mli = self.episodePanelControl.getSelectedItem()
+        mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
 
@@ -268,7 +278,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setItemAudioAndSubtitleInfo(episode, mli)
 
     def infoButtonClicked(self):
-        mli = self.episodePanelControl.getSelectedItem()
+        mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
 
@@ -279,18 +289,36 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             title=episode.title,
             sub_title='Season {0} Episode {1}'.format(episode.parentIndex, episode.index),
             thumb=episode.thumb,
-            thumb_fallback='script.plex/thumb_fallbacks/episode.png',
+            thumb_fallback='script.plex/thumb_fallbacks/show.png',
             info=episode.summary,
             background=self.getProperty('background'),
             is_16x9=True
         )
 
-    def episodePanelClicked(self, resume=False):
-        mli = self.episodePanelControl.getSelectedItem()
+    def episodeListClicked(self):
+        mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
 
         episode = mli.dataSource
+
+        resume = False
+        if episode.viewOffset.asInt():
+            choice = dropdown.showDropdown(
+                options=[
+                    {'key': 'resume', 'display': 'Resume'},
+                    {'key': 'play', 'display': 'Play From Beginning'}
+                ],
+                pos=(660, 441),
+                close_direction='none',
+                set_dropdown_prop=False,
+                header=u'Resume?'
+            )
+
+            if not choice:
+                return None
+
+            resume = choice['key'] == 'resume'
 
         pl = playlist.LocalPlaylist(self.show_.all(), self.show_.getServer())
         if len(pl):  # Don't use playlist if it's only this video
@@ -301,7 +329,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def optionsButtonClicked(self, from_item=False):
         options = []
 
-        mli = self.episodePanelControl.getSelectedItem()
+        mli = self.episodeListControl.getSelectedItem()
 
         if mli:
             if mli.dataSource.isWatched:
@@ -333,7 +361,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         bottom = False
         setDropdownProp = False
         if from_item:
-            viewPos = self.episodePanelControl.getViewPosition()
+            viewPos = self.episodeListControl.getViewPosition()
             if viewPos > 6:
                 pos = (1490, 312 + (viewPos * 100))
                 bottom = True
@@ -341,29 +369,27 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 pos = (1490, 167 + (viewPos * 100))
                 bottom = False
             setDropdownProp = True
-        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='right', set_dropdown_prop=setDropdownProp)
+        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='top', set_dropdown_prop=setDropdownProp)
         if not choice:
             return
 
         if choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice['key'] == 'mark_watched':
-            media = mli.dataSource
-            media.markWatched()
+            mli.dataSource.markWatched()
             self.updateItems(mli)
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
-            media = mli.dataSource
-            media.markUnwatched()
+            mli.dataSource.markUnwatched()
             self.updateItems(mli)
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_season_watched':
-            media = self.season
-            media.markWatched()
+            self.season.markWatched()
+            self.updateItems()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_season_unwatched':
-            media = self.season
-            media.markUnwatched()
+            self.season.markUnwatched()
+            self.updateItems()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_show':
             self.processCommand(opener.open(self.season.parentRatingKey))
@@ -371,7 +397,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.goHome(self.season.getLibrarySectionId())
 
     def checkForHeaderFocus(self, action):
-        mli = self.episodePanelControl.getSelectedItem()
+        mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
 
@@ -394,21 +420,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', self.show_ and self.show_.title or '')
         self.setProperty('season.title', self.season.title)
-
-    def createListItem(self, obj):
-        mli = kodigui.ManagedListItem(
-            obj.title, obj.originallyAvailableAt.asDatetime('%b %d, %Y'), thumbnailImage=obj.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM), data_source=obj
-        )
-        mli.setProperty('episode.number', str(obj.index) or '')
-        mli.setProperty('episode.duration', util.durationToText(obj.duration.asInt()))
-        mli.setProperty('unwatched', not obj.isWatched and '1' or '')
-        # mli.setProperty('progress', util.getProgressImage(obj))
-        return mli
+        self.setProperty('episodes.header', u'{0} \u2022 Season {1}'.format(self.getProperty('show.title'), self.season.index))
 
     def updateItems(self, item=None):
         if item:
-            self.season.reload()
-            item.setProperty('watched', item.dataSource.isWatched and '1' or '')
+            item.setProperty('unwatched', not item.dataSource.isWatched and '1' or '')
+            self.setProgress(item)
         else:
             self.fillEpisodes(update=True)
 
@@ -455,7 +472,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setPostReloadItemInfo(self, video, mli):
         self.setItemAudioAndSubtitleInfo(video, mli)
-
+        mli.setProperty('unwatched', not video.isWatched and '1' or '')
         mli.setProperty('video.res', video.resolutionString())
         mli.setProperty('audio.codec', video.audioCodecString())
         mli.setProperty('audio.channels', video.audioChannelsString())
@@ -486,6 +503,20 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         else:
             self.progressImageControl.setWidth(1)
 
+    def createListItem(self, episode):
+        mli = kodigui.ManagedListItem(
+            episode.title,
+            u'S{0} \u2022 E{1}'.format(episode.parentIndex, episode.index),
+            thumbnailImage=episode.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM),
+            data_source=episode
+        )
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+        mli.setProperty('episode.number', str(episode.index) or '')
+        mli.setProperty('episode.duration', util.durationToText(episode.duration.asInt()))
+        mli.setProperty('unwatched', not episode.isWatched and '1' or '')
+        # mli.setProperty('progress', util.getProgressImage(obj))
+        return mli
+
     @busy.dialog()
     def fillEpisodes(self, update=False):
         items = []
@@ -498,7 +529,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 items.append(mli)
                 idx += 1
 
-        self.episodePanelControl.replaceItems(items)
+        self.episodeListControl.replaceItems(items)
 
         self.reloadItems(items)
 
@@ -512,7 +543,11 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         backgroundthread.BGThreader.addTasks(tasks)
 
     def reloadItemCallback(self, episode):
-        for mli in self.episodePanelControl:
+        selected = self.episodeListControl.getSelectedItem()
+
+        for mli in self.episodeListControl:
             if mli.dataSource == episode:
                 self.setPostReloadItemInfo(episode, mli)
+                if mli == selected:
+                    self.setProgress(mli)
                 return

@@ -75,10 +75,14 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         options = [
             ('audio', 'Audio', audio),
             ('subs', 'Subtitles', subtitle),
-            ('quality', 'Quality', u'{0}'.format(current)),
-            ('kodi_video', 'Kodi Video Settings', ''),
-            ('kodi_audio', 'Kodi Audio Settings', '')
+            ('quality', 'Quality', u'{0}'.format(current))
         ]
+
+        if not self.nonPlayback:
+            options += [
+                ('kodi_video', 'Kodi Video Settings', ''),
+                ('kodi_audio', 'Kodi Audio Settings', '')
+            ]
 
         items = []
         for o in options:

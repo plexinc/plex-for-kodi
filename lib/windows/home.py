@@ -467,6 +467,18 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if not mli.dataSource.exists():
             control.removeItem(mli.pos())
 
+        if not control.size():
+            idx = self.hubFocusIndexes[hubControlID - 400]
+            while idx > -1:
+                idx -= 1
+                controlID = 400 + self.hubFocusIndexes.index(idx)
+                control = self.hubControls[self.hubFocusIndexes.index(idx)]
+                if control.size():
+                    self.setFocusId(controlID)
+                    break
+            else:
+                self.setFocusId(self.SECTION_LIST_ID)
+
         self.processCommand(command)
 
     def processCommand(self, command):
@@ -814,6 +826,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             control.replaceItems(items)
 
     def updateListItem(self, mli):
+        if not mli:  # May have become invalid
+            return
+
         obj = mli.dataSource
         if obj.type in ('episode', 'movie'):
             mli.setProperty('unwatched', not obj.isWatched and '1' or '')

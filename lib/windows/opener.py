@@ -28,8 +28,10 @@ def open(obj):
         if not obj.startswith('/'):
             key = '/library/metadata/{0}'.format(obj)
         return open(plexapp.SERVERMANAGER.selectedServer.getObject(key))
-    elif obj.TYPE in ('episode', 'movie'):
+    elif obj.TYPE == 'episode':
         return episodeClicked(obj)
+    elif obj.TYPE == 'movie':
+        return playableClicked(obj)
     elif obj.TYPE in ('show'):
         return showClicked(obj)
     elif obj.TYPE in ('artist'):

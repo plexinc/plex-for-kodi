@@ -528,8 +528,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if item:
             item.setProperty('unwatched', not item.dataSource.isWatched and '1' or '')
             self.setProgress(item)
+            self.season.reload()
         else:
             self.fillEpisodes(update=True)
+
+        if self.episode:
+            self.episode.reload()
 
     def setItemInfo(self, video, mli):
         # video.reload(checkFiles=1)

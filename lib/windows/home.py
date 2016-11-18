@@ -251,6 +251,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.backgroundSet = False
         self.sectionChangeThread = None
         self.sectionChangeTimeout = 0
+        self.lastFocusID = None
         self.sectionHubs = {}
         self.updateHubs = {}
         windowutils.HOME = self
@@ -334,6 +335,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         controlID = self.getFocusId()
 
         try:
+            if not controlID and not action == xbmcgui.ACTION_MOUSE_MOVE:
+                if self.lastFocusID:
+                    self.setFocusId(self.lastFocusID)
+
             if controlID == self.SECTION_LIST_ID:
                 self.checkSectionItem(action=action)
 
@@ -390,6 +395,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.searchButtonClicked()
 
     def onFocus(self, controlID):
+        self.lastFocusID = controlID
+
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(self.hubFocusIndexes[controlID - 400]))
 
@@ -454,6 +461,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             return
 
         command = opener.open(mli.dataSource)
+
+        self.updateListItem(mli)
 
         if not mli.dataSource.exists():
             control.removeItem(mli.pos())
@@ -803,6 +812,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             control.selectItem(end)
         else:
             control.replaceItems(items)
+
+    def updateListItem(self, mli):
+        obj = mli.dataSource
+        if obj.type in ('episode', 'movie'):
+            mli.setProperty('unwatched', not obj.isWatched and '1' or '')
+        elif obj.type in ('season', 'show', 'album'):
+            if obj.isWatched:
+                mli.setProperty('unwatched.count', '')
+            else:
+                mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
 
     def sectionClicked(self):
         item = self.sectionList.getSelectedItem()

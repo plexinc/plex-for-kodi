@@ -342,6 +342,23 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             if controlID == self.SECTION_LIST_ID:
                 self.checkSectionItem(action=action)
 
+            if controlID == self.SERVER_BUTTON_ID:
+                if action == xbmcgui.ACTION_SELECT_ITEM:
+                    self.showServers()
+                    return
+                elif action == xbmcgui.ACTION_MOUSE_LEFT_CLICK:
+                    self.showServers(mouse=True)
+                    self.setBoolProperty('show.servers', True)
+                    return
+            elif controlID == self.USER_BUTTON_ID:
+                if action == xbmcgui.ACTION_SELECT_ITEM:
+                    self.showUserMenu()
+                    return
+                elif action == xbmcgui.ACTION_MOUSE_LEFT_CLICK:
+                    self.showUserMenu(mouse=True)
+                    self.setBoolProperty('show.options', True)
+                    return
+
             if controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.USER_BUTTON_ID)
             elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
@@ -379,14 +396,17 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def onClick(self, controlID):
         if controlID == self.SECTION_LIST_ID:
             self.sectionClicked()
-        elif controlID == self.SERVER_BUTTON_ID:
-            self.showServers()
+        # elif controlID == self.SERVER_BUTTON_ID:
+        #     self.showServers()
         elif controlID == self.SERVER_LIST_ID:
+            self.setBoolProperty('show.servers', False)
             self.selectServer()
-        elif controlID == self.USER_BUTTON_ID:
-            self.showUserMenu()
+        # elif controlID == self.USER_BUTTON_ID:
+        #     self.showUserMenu()
         elif controlID == self.USER_LIST_ID:
             self.doUserOption()
+            self.setBoolProperty('show.options', False)
+            self.setFocusId(self.USER_BUTTON_ID)
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
             self.showAudioPlayer()
         elif 399 < controlID < 500:
@@ -867,7 +887,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if self.serverRefresh():
             self.setFocusId(self.SECTION_LIST_ID)
 
-    def showServers(self, from_refresh=False):
+    def showServers(self, from_refresh=False, mouse=False):
         selection = None
         if from_refresh:
             mli = self.serverList.getSelectedItem()
@@ -903,7 +923,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                 if mli.dataSource == selection:
                     self.serverList.selectItem(mli.pos())
 
-        if not from_refresh and items:
+        if not from_refresh and items and not mouse:
             self.setFocusId(self.SERVER_LIST_ID)
 
     def selectServer(self):
@@ -923,7 +943,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         plexapp.SERVERMANAGER.setSelectedServer(server, force=True)
 
-    def showUserMenu(self):
+    def showUserMenu(self, mouse=False):
         items = []
         if len(plexapp.ACCOUNT.homeUsers) > 1:
             items.append(kodigui.ManagedListItem('Switch User', data_source='switch'))
@@ -941,7 +961,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         self.getControl(801).setHeight((len(items) * 66) + 80)
 
-        self.setFocusId(self.USER_LIST_ID)
+        if not mouse:
+            self.setFocusId(self.USER_LIST_ID)
 
     def doUserOption(self):
         mli = self.userList.getSelectedItem()

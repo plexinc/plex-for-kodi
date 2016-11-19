@@ -7566,6 +7566,7 @@
                         <font>font12</font>
                         <textcolor>FFFFFFFF</textcolor>
                         <focusedcolor>FF000000</focusedcolor>
+                        <disabledcolor>FFFFFFFF</disabledcolor>
                         <align>right</align>
                         <aligny>center</aligny>
                         <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
@@ -7573,6 +7574,7 @@
                         <textoffsetx>100</textoffsetx>
                         <textoffsety>0</textoffsety>
                         <label>$INFO[Window.Property(server.name)]</label>
+                        <onunfocus condition="!IsEmpty(Window.Property(show.servers))">SetFocus(260)</onunfocus>
                     </control>
                     <control type="group">
                         <posx>-93</posx>
@@ -7611,7 +7613,7 @@
                             <colordiffuse>FF222222</colordiffuse>
                         </control>
                         <control type="group">
-                            <visible>Control.HasFocus(260)</visible>
+                            <visible>Control.HasFocus(260) | !IsEmpty(Window.Property(show.servers))</visible>
                             <posx>-413</posx>
                             <posy>70</posy>
                             <control type="image" id="800">
@@ -7630,6 +7632,7 @@
                                 <colordiffuse>FF1F1F1F</colordiffuse>
                             </control>
                             <control type="list" id="260">
+                                <hitrect x="0" y="-10" w="500" h="910" />
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>500</width>
@@ -7638,6 +7641,7 @@
                                 <ondown>noop</ondown>
                                 <onleft>203</onleft>
                                 <onright>202</onright>
+                                <onunfocus>SetProperty(show.servers,)</onunfocus>
                                 <scrolltime>200</scrolltime>
                                 <orientation>vertical</orientation>
                                 <pagecontrol>261</pagecontrol>
@@ -7869,6 +7873,7 @@
                         <textoffsetx>100</textoffsetx>
                         <textoffsety>0</textoffsety>
                         <label>$INFO[Window.Property(user.name)]</label>
+                        <onunfocus condition="!IsEmpty(Window.Property(show.options))">SetFocus(250)</onunfocus>
                     </control>
                     <control type="group">
                         <posx>-87</posx>
@@ -7900,7 +7905,7 @@
                             <colordiffuse>FF222222</colordiffuse>
                         </control>
                         <control type="group">
-                            <visible>Control.HasFocus(250)</visible>
+                            <visible>Control.HasFocus(250) | !IsEmpty(Window.Property(show.options))</visible>
                             <posx>-213</posx>
                             <posy>70</posy>
                             <control type="image" id="801">
@@ -7919,6 +7924,7 @@
                                 <colordiffuse>FF1F1F1F</colordiffuse>
                             </control>
                             <control type="list" id="250">
+                                <hitrect x="0" y="-10" w="300" h="208" />
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>300</width>
@@ -7926,6 +7932,7 @@
                                 <onup>202</onup>
                                 <ondown>noop</ondown>
                                 <onleft>201</onleft>
+                                <onunfocus>SetProperty(show.options,)</onunfocus>
                                 <scrolltime>200</scrolltime>
                                 <orientation>vertical</orientation>
                                 <!-- ITEM LAYOUT ########################################## -->

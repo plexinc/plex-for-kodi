@@ -561,6 +561,7 @@
                 </control>
 
                 <control type="scrollbar" id="152">
+                    <hitrect x="1108" y="33" w="90" h="879" />
                     <left>1128</left>
                     <top>33</top>
                     <width>10</width>

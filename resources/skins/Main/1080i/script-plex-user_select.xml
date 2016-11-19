@@ -475,6 +475,19 @@
                 <visible allowhiddenfocus="true">!IsEmpty(Container(101).ListItem.Property(protected)) + ControlGroup(400).HasFocus(0) + !IsEmpty(Window.Property(initialized))</visible>
                 <posx>810</posx>
                 <posy>375</posy>
+                <control type="button">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>300</width>
+                    <height>239</height>
+                    <onleft>400</onleft>
+                    <onright>400</onright>
+                    <onup>400</onup>
+                    <ondown>400</ondown>
+                    <texturefocus>-</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <label> </label>
+                </control>
                 <control type="image">
                     <posx>0</posx>
                     <posy>-75</posy>

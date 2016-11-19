@@ -370,7 +370,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
-            elif 399 < controlID < 500 and action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_PAGE_DOWN, xbmcgui.ACTION_LAST_PAGE):
+            elif 399 < controlID < 500 and action in (
+                xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_PAGE_DOWN, xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_MOUSE_MOVE, xbmcgui.ACTION_MOUSE_WHEEL_DOWN
+            ):
                 self.checkHubItem(controlID)
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
@@ -478,6 +480,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         control = self.hubControls[hubControlID - 400]
         mli = control.getSelectedItem()
         if not mli:
+            return
+
+        if not mli.dataSource:
             return
 
         command = opener.open(mli.dataSource)

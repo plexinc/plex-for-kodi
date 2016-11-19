@@ -53,7 +53,7 @@
                     <posx>0</posx>
                     <posy>30</posy>
                     <width>1920</width>
-                    <height>700</height>
+                    <height>390</height>
                     <onup>200</onup>
                     <ondown>301</ondown>
                     <scrolltime>200</scrolltime>

@@ -137,6 +137,7 @@
                     <colordiffuse>20000000</colordiffuse>
                 </control>
                 <control type="list" id="101">
+                    <hitrect x="40" y="0" w="1090" h="945" />
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1170</width>
@@ -378,6 +379,7 @@
                 </control>
 
                 <control type="scrollbar" id="152">
+                    <hitrect x="1088" y="33" w="110" h="874" />
                     <left>1128</left>
                     <top>33</top>
                     <width>10</width>

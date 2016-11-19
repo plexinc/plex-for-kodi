@@ -124,6 +124,7 @@
                     <label>$INFO[Window.Property(info)]</label>
                 </control>
                 <control type="scrollbar" id="152">
+                    <hitrect x="1754" y="157" w="126" h="718" />
                     <left>1794</left>
                     <top>157</top>
                     <width>6</width>

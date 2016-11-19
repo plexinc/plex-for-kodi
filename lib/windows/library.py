@@ -33,7 +33,9 @@ MOVE_SET = frozenset(
         xbmcgui.ACTION_PAGE_UP,
         xbmcgui.ACTION_PAGE_DOWN,
         xbmcgui.ACTION_FIRST_PAGE,
-        xbmcgui.ACTION_LAST_PAGE
+        xbmcgui.ACTION_LAST_PAGE,
+        xbmcgui.ACTION_MOUSE_WHEEL_DOWN,
+        xbmcgui.ACTION_MOUSE_WHEEL_UP
     )
 )
 

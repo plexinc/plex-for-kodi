@@ -48,6 +48,7 @@
                 <scrolltime tween="quadratic" easing="out">200</scrolltime>
                 <usecontrolcoords>true</usecontrolcoords>
                 <control type="button" id="301">
+                    <hitrect x="20" y="20" w="86" h="60" />
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -60,6 +61,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="302">
+                    <hitrect x="20" y="20" w="86" h="60" />
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -72,6 +74,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="303">
+                    <hitrect x="20" y="20" w="86" h="60" />
                     <visible>IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
@@ -85,6 +88,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="304">
+                    <hitrect x="20" y="20" w="86" h="60" />
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -106,6 +110,7 @@
                 <width>1920</width>
                 <height>1080</height>
                 <control type="panel" id="101">
+                    <hitrect x="0" y="95" w="1780" h="1185" />
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1800</width>
@@ -466,6 +471,7 @@
         </control>
 
         <control type="scrollbar" id="152">
+            <hitrect x="1820" y="150" w="100" h="910" />
             <left>1860</left>
             <top>150</top>
             <width>12</width>

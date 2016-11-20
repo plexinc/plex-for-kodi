@@ -86,6 +86,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.show_ = kwargs.get('show') or self.season.show().reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
         self.seasons = None
         self.lastItem = None
+        self.lastFocusID = None
         self.tasks = backgroundthread.Tasks()
 
     def doClose(self):
@@ -103,6 +104,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setup()
         self.selectEpisode()
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
+        self.setFocusId(self.PLAY_BUTTON_ID)
 
     def onReInit(self):
         mli = self.episodeListControl.getSelectedItem()
@@ -131,6 +133,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onAction(self, action):
         controlID = self.getFocusId()
+
+        if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
+            self.setFocusId(self.lastFocusID)
+
         try:
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()
@@ -150,7 +156,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) or not controlID:
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
         except:
@@ -207,6 +213,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.roleClicked()
 
     def onFocus(self, controlID):
+        self.lastFocusID = controlID
+
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
 

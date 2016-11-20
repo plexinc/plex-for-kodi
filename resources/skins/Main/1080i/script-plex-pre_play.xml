@@ -425,7 +425,7 @@
                 <posx>0</posx>
                 <posy>565</posy>
                 <width>1920</width>
-                <height>1610</height>
+                <height>1800</height>
 
                 <onup>300</onup>
                 <itemgap>0</itemgap>
@@ -798,15 +798,31 @@
                                         <texture background="true" diffuse="script.plex/masks/role.png">$INFO[ListItem.Thumb]</texture>
                                         <aspectratio scalediffuse="false" aligny="top">scale</aspectratio>
                                     </control>
-                                    <control type="textbox">
+                                    <control type="group">
                                         <posx>0</posx>
                                         <posy>253</posy>
-                                        <width>244</width>
-                                        <height>90</height>
-                                        <font>font10</font>
-                                        <align>center</align>
-                                        <textcolor>FFFFFFFF</textcolor>
-                                        <label>$INFO[ListItem.Label][CR]$INFO[ListItem.Label2]</label>
+                                        <control type="label">
+                                            <scroll>false</scroll>
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>60</height>
+                                            <font>font10</font>
+                                            <align>center</align>
+                                            <textcolor>AAFFFFFF</textcolor>
+                                            <label>$INFO[ListItem.Label]</label>
+                                        </control>
+                                        <control type="label">
+                                            <scroll>false</scroll>
+                                            <posx>0</posx>
+                                            <posy>30</posy>
+                                            <width>244</width>
+                                            <height>60</height>
+                                            <font>font10</font>
+                                            <align>center</align>
+                                            <textcolor>AAFFFFFF</textcolor>
+                                            <label>$INFO[ListItem.Label2]</label>
+                                        </control>
                                     </control>
                                 </control>
                             </control>
@@ -848,15 +864,31 @@
                                             <texture background="true" diffuse="script.plex/masks/role.png">$INFO[ListItem.Thumb]</texture>
                                             <aspectratio scalediffuse="false" aligny="top">scale</aspectratio>
                                         </control>
-                                        <control type="textbox">
+                                        <control type="group">
                                             <posx>0</posx>
                                             <posy>253</posy>
-                                            <width>244</width>
-                                            <height>90</height>
-                                            <font>font10</font>
-                                            <align>center</align>
-                                            <textcolor>FFFFFFFF</textcolor>
-                                            <label>$INFO[ListItem.Label][CR]$INFO[ListItem.Label2]</label>
+                                            <control type="label">
+                                                <scroll>false</scroll>
+                                                <posx>0</posx>
+                                                <posy>0</posy>
+                                                <width>244</width>
+                                                <height>60</height>
+                                                <font>font10</font>
+                                                <align>center</align>
+                                                <textcolor>AAFFFFFF</textcolor>
+                                                <label>$INFO[ListItem.Label]</label>
+                                            </control>
+                                            <control type="label">
+                                                <scroll>false</scroll>
+                                                <posx>0</posx>
+                                                <posy>30</posy>
+                                                <width>244</width>
+                                                <height>60</height>
+                                                <font>font10</font>
+                                                <align>center</align>
+                                                <textcolor>AAFFFFFF</textcolor>
+                                                <label>$INFO[ListItem.Label2]</label>
+                                            </control>
                                         </control>
                                     </control>
                                     <control type="image">

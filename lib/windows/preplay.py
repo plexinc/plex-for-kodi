@@ -56,6 +56,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.videos = None
         self.exitCommand = None
         self.trailer = None
+        self.lastFocusID = None
 
         util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
 
@@ -87,6 +88,11 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onAction(self, action):
         try:
+            controlID = self.getFocusId()
+
+            if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
+                self.setFocusId(self.lastFocusID)
+
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -134,15 +140,18 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.searchButtonClicked()
 
     def onFocus(self, controlID):
+        self.lastFocusID = controlID
+
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
-        else:
-            self.setProperty('hub.focus', '')
 
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+        util.TEST(self.getProperty('hub.focus'))
+        util.TEST(self.getProperty('on.extras'))
 
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.video.getLibrarySectionId() or None))
@@ -376,7 +385,9 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     @busy.dialog()
     def setup(self):
-        if not self.video.viewOffset.asInt():
+        if self.video.viewOffset.asInt():
+            self.setFocusId(self.RESUME_BUTTON_ID)
+        else:
             self.setFocusId(self.PLAY_BUTTON_ID)
 
         util.DEBUG_LOG('PrePlay: Showing video info: {0}'.format(self.video))

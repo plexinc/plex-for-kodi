@@ -74,6 +74,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.parentList = kwargs.get('parent_list')
         self.mediaItems = None
         self.exitCommand = None
+        self.lastFocusID = None
 
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
@@ -157,6 +158,11 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def onAction(self, action):
         try:
+            controlID = self.getFocusId()
+
+            if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
+                self.setFocusId(self.lastFocusID)
+
             if action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -207,6 +213,8 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.searchButtonClicked()
 
     def onFocus(self, controlID):
+        self.lastFocusID = controlID
+
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
 

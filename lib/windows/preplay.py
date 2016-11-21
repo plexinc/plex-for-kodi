@@ -150,9 +150,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
 
-        util.TEST(self.getProperty('hub.focus'))
-        util.TEST(self.getProperty('on.extras'))
-
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.video.getLibrarySectionId() or None))
 

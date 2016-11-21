@@ -1,5 +1,3 @@
-import gc
-
 import busy
 
 from plexnet import playqueue, plexapp, plexlibrary
@@ -68,7 +66,7 @@ def handleOpen(winclass, **kwargs):
         pass
     finally:
         del w
-        gc.collect(2)
+        util.garbageCollect()
 
     return ''
 

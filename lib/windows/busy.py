@@ -20,6 +20,7 @@ def dialog(msg='LOADING'):
             finally:
                 w.doClose()
                 del w
+                util.garbageCollect()
         return inner
     return methodWrap
 

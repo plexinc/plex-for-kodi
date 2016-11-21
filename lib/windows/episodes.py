@@ -93,6 +93,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         kodigui.ControlledWindow.doClose(self)
         self.tasks.cancel()
 
+    @busy.dialog()
     def onFirstInit(self):
         self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
@@ -101,7 +102,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.relatedListControl = kodigui.ManagedControlList(self, self.RELATED_LIST_ID, 5)
         self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
 
-        self.setup()
+        self._setup()
         self.selectEpisode()
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
         self.setFocusId(self.PLAY_BUTTON_ID)
@@ -115,6 +116,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     @busy.dialog()
     def setup(self):
+        self._setup()
+
+    def _setup(self):
         self.season.reload(includeExtras=1, includeExtrasCount=10)
         self.updateProperties()
         self.fillEpisodes()
@@ -129,15 +133,17 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         for mli in self.episodeListControl:
             if mli.dataSource == self.episode:
                 self.episodeListControl.selectItem(mli.pos())
-                return
+                break
+
+        self.episode = None
 
     def onAction(self, action):
-        controlID = self.getFocusId()
-
-        if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
-            self.setFocusId(self.lastFocusID)
-
         try:
+            controlID = self.getFocusId()
+
+            if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
+                self.setFocusId(self.lastFocusID)
+
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()
             elif action == xbmcgui.ACTION_NEXT_ITEM:

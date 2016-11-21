@@ -317,6 +317,7 @@
                     <orientation>horizontal</orientation>
                     <usecontrolcoords>true</usecontrolcoords>
                     <control type="button">
+                        <visible>!IsEmpty(Container(400).ListItem.Property(audio))</visible>
                         <width>auto</width>
                         <height>30</height>
                         <font>font12</font>

@@ -219,8 +219,6 @@ class ControlledDialog(ControlledBase, BaseDialog):
 
 
 class ManagedListItem(object):
-    _properties = None
-
     def __init__(self, label='', label2='', iconImage='', thumbnailImage='', path='', data_source=None, properties=None):
         self._listItem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, path)
         self.dataSource = data_source
@@ -331,10 +329,11 @@ class ManagedListItem(object):
         if self._manager:
             self._manager._properties[key] = 1
         self.properties[key] = value
-        return self.listItem.setProperty(key, value)
+        self.listItem.setProperty(key, value)
+        return self
 
     def setBoolProperty(self, key, boolean):
-        self.setProperty(key, boolean and '1' or '')
+        return self.setProperty(key, boolean and '1' or '')
 
     def setSubtitles(self, subtitles):
         return self.listItem.setSubtitles(subtitles)  # List of strings - HELIX
@@ -382,6 +381,7 @@ class ManagedControlList(object):
         for idx in range(bottom, top):
             li = self.control.getListItem(idx)
             mli = self.items[idx]
+            self._properties.update(mli.properties)
             mli._manager = self
             mli._listItem = li
             mli._updateListItem()

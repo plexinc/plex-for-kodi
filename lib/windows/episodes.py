@@ -532,6 +532,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('related.header', 'Related Shows')
         self.genre = self.show_.genres() and self.show_.genres()[0].tag or ''
 
+    @busy.dialog()
     def updateItems(self, item=None):
         if item:
             item.setProperty('unwatched', not item.dataSource.isWatched and '1' or '')
@@ -630,11 +631,19 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         # mli.setProperty('progress', util.getProgressImage(obj))
         return mli
 
-    @busy.dialog()
     def fillEpisodes(self, update=False):
         items = []
         idx = 0
-        for episode in self.season.episodes():
+
+        episodes = self.season.episodes()
+        self.episodeListControl.addItems(
+            [kodigui.ManagedListItem(properties={'thumb.fallback': 'script.plex/thumb_fallbacks/show.png'}) for x in range(len(episodes))]
+        )
+
+        if self.episode and self.episode in episodes:
+            self.episodeListControl.selectItem(episodes.index(self.episode))
+
+        for episode in episodes:
             mli = self.createListItem(episode)
             self.setItemInfo(episode, mli)
             if mli:

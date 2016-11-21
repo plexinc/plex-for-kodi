@@ -34,7 +34,7 @@ class Video(media.MediaItem):
         media.MediaItem.__init__(self, *args, **kwargs)
 
     def __eq__(self, other):
-        return self.ratingKey == other.ratingKey
+        return other and self.ratingKey == other.ratingKey
 
     def __ne__(self, other):
         return not self.__eq__(other)

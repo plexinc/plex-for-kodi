@@ -19,6 +19,7 @@ import busy
 import opener
 import search
 import dropdown
+import optionsdialog
 
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
 HUB_PAGE_SIZE = 10
@@ -431,21 +432,14 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.setProperty('off.sections', '1')
 
     def confirmExit(self):
-        choice = dropdown.showDropdown(
-            options=[
-                {'key': 'cancel', 'display': 'Cancel'},
-                {'key': 'exit', 'display': 'Exit'}
-            ],
-            pos=(660, 441),
-            close_direction='none',
-            set_dropdown_prop=False,
-            header=u'Are you ready to exit Plex?'
+        button = optionsdialog.show(
+            'Confirm Exit',
+            'Are you ready to exit Plex?',
+            'Exit',
+            'Cancel'
         )
 
-        if not choice:
-            return None
-
-        return choice['key'] == 'exit'
+        return button == 0
 
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self))

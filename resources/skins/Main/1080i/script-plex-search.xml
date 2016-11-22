@@ -21,7 +21,7 @@
                 <posy>135</posy>
                 <width>564</width>
                 <height>810</height>
-                <texture colordiffuse="2FF2D2D2D">script.plex/white-square.png</texture>
+                <texture colordiffuse="FF2D2D2D">script.plex/white-square.png</texture>
             </control>
             <control type="image">
                 <posx>0</posx>

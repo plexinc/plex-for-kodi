@@ -6,7 +6,6 @@
         <posx>0</posx>
         <posy>0</posy>
     </coordinates>
-    <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
         <control type="button" id="700">
             <!-- dummy for clicks off list -->

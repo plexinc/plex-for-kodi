@@ -7,7 +7,6 @@
         <posy>0</posy>
     </coordinates>
     <zorder>100</zorder>
-    <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
         <control type="button" id="700">
             <!-- dummy for clicks off list -->

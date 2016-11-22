@@ -136,7 +136,8 @@ def videoIsPlaying():
 
 
 def messageDialog(heading='Message', msg=''):
-    xbmcgui.Dialog().ok(heading, msg)
+    from windows import optionsdialog
+    optionsdialog.show(heading, msg, 'OK')
 
 
 def showTextDialog(heading, text):

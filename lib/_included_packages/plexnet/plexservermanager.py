@@ -375,6 +375,9 @@ class PlexServerManager(signalsmixin.SignalsMixin):
 
         plexapp.INTERFACE.setRegistry("PlexServerManager", json.dumps(obj))
 
+    def clearState(self):
+        plexapp.INTERFACE.setRegistry("PlexServerManager", '')
+
     def isValidForTranscoding(self, server):
         return server and server.activeConnection and server.owned and not server.synced and not server.isSecondary()
 

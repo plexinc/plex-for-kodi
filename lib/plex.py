@@ -270,6 +270,7 @@ def requirePlexPass():
         del w
         util.DEBUG_LOG('PlexPass required. Signing out...')
         plexapp.ACCOUNT.signOut()
+        plexapp.SERVERMANAGER.clearState()
         if retry:
             return 'RETRY'
         else:

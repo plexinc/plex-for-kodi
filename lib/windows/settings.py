@@ -20,6 +20,7 @@ class Setting(object):
     type = None
     ID = None
     label = None
+    desc = None
     default = None
 
     def translate(self, val):
@@ -43,10 +44,15 @@ class Setting(object):
 
 
 class BasicSetting(Setting):
-    def __init__(self, ID, label, default):
+    def __init__(self, ID, label, default, desc=''):
         self.ID = ID
         self.label = label
         self.default = default
+        self.desc = desc
+
+    def description(self, desc):
+        self.desc = desc
+        return self
 
 
 class QualitySetting(BasicSetting):
@@ -123,6 +129,7 @@ class InfoSetting(BasicSetting):
 
 class PlatformSetting(InfoSetting):
     def __init__(self):
+        InfoSetting.__init__(self, None, None, None)
         self.ID = 'platfom_version'
         self.label = 'Platform Version'
 
@@ -157,6 +164,14 @@ class PlatformSetting(InfoSetting):
         return plat or 'Unknown'
 
 
+class ServerVersionSetting(InfoSetting):
+    def valueLabel(self):
+        if not plexnet.plexapp.SERVERMANAGER.selectedServer:
+            return ''
+
+        return plexnet.plexapp.SERVERMANAGER.selectedServer.rawVersion or ''
+
+
 class IPSetting(BasicSetting):
     type = 'IP'
 
@@ -169,8 +184,12 @@ class Settings(object):
     SETTINGS = {
         'main': (
             'Main', (
-                BoolSetting('auto_signin', 'Automatically Sign In', False),
-                BoolSetting('post_play_auto', 'Post Play Auto Play', True),
+                BoolSetting('auto_signin', 'Automatically Sign In', False).description('Skip user selection and pin entry on startup.'),
+                BoolSetting(
+                    'post_play_auto', 'Post Play Auto Play', True
+                ).description(
+                    "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+                ),
             )
         ),
         'audio': (
@@ -200,6 +219,11 @@ class Settings(object):
             'Advanced', (
                 OptionsSetting(
                     'allow_insecure', T(32032), 'never', (('never', T(32033)), ('same_network', T(32034)), ('always', T(32035)))
+                ).description(
+                    'When to connect to servers with no secure connections.[CR][CR]' +
+                    u'\u2022 [B]Never[/B]: Never connect to a server insecurely[CR]' +
+                    u'\u2022 [B]On Same Network[/B]: Allow if on the same network[CR]' +
+                    u'\u2022 [B]Always[/B]: Allow same network and remote connections'
                 ),
                 BoolSetting('gdm_discovery', 'Server Discovery (GDM)', True),
                 BoolSetting('kiosk.mode', 'Start Plex On Kodi Startup', False),
@@ -222,7 +246,8 @@ class Settings(object):
                 InfoSetting('addon_version', 'Addon Version', util.ADDON.getAddonInfo('version')),
                 InfoSetting('kodi_version', 'Kodi Version', xbmc.getInfoLabel('System.BuildVersion')),
                 PlatformSetting(),
-                InfoSetting('screen_res', 'Screen Resolution', xbmc.getInfoLabel('System.ScreenResolution').split('-')[0].strip())
+                InfoSetting('screen_res', 'Screen Resolution', xbmc.getInfoLabel('System.ScreenResolution').split('-')[0].strip()),
+                ServerVersionSetting('server_version', 'Current Server Version', None)
             )
         ),
     }
@@ -321,6 +346,7 @@ class SettingsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         items = []
         for setting in settings:
             item = kodigui.ManagedListItem(setting.label, setting.type != 'BOOL' and setting.valueLabel() or '', data_source=setting)
+            item.setProperty('description', setting.desc)
             if setting.type == 'BOOL':
                 item.setProperty('checkbox', '1')
                 item.setProperty('checkbox.checked', setting.get() and '1' or '')

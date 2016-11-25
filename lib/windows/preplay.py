@@ -10,7 +10,8 @@ import playersettings
 import search
 import dropdown
 import windowutils
-from plexnet import plexplayer, media, playlist
+import optionsdialog
+from plexnet import plexplayer, media
 
 from lib import colors
 from lib import util
@@ -41,7 +42,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     SEARCH_BUTTON_ID = 202
 
     INFO_BUTTON_ID = 304
-    RESUME_BUTTON_ID = 301
     PLAY_BUTTON_ID = 302
     TRAILER_BUTTON_ID = 303
     SETTINGS_BUTTON_ID = 305
@@ -57,8 +57,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.exitCommand = None
         self.trailer = None
         self.lastFocusID = None
-
-        util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
 
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
@@ -79,12 +77,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setInfo()
         xbmc.sleep(100)
 
-        if self.video.viewOffset.asInt():
-            if oldFocusId == self.PLAY_BUTTON_ID:
-                self.setFocusId(self.RESUME_BUTTON_ID)
-        else:
-            if oldFocusId == self.RESUME_BUTTON_ID:
-                self.setFocusId(self.PLAY_BUTTON_ID)
+        if oldFocusId == self.PLAY_BUTTON_ID:
+            self.focusPlayButton()
 
     def onAction(self, action):
         try:
@@ -122,8 +116,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.openItem(self.relatedListControl)
         elif controlID == self.ROLES_LIST_ID:
             self.roleClicked()
-        elif controlID == self.RESUME_BUTTON_ID:
-            self.playVideo(resume=True)
         elif controlID == self.PLAY_BUTTON_ID:
             self.playVideo()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
@@ -360,14 +352,20 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         x = ((focus + 1) * 304) - 100
         return x, y
 
-    def playVideo(self, resume=False):
-        if self.video.type == 'episode':
-            show = self.video.show()
-            pl = playlist.LocalPlaylist(show.all(), show.getServer())
-            if len(pl):  # Don't use playlist if it's only this video
-                pl.setCurrent(self.video)
-                self.processCommand(videoplayer.play(play_queue=pl, resume=resume))
+    def playVideo(self):
+        resume = False
+        if self.video.viewOffset.asInt():
+            button = optionsdialog.show(
+                'In Progress',
+                'Resume playback?',
+                'Resume',
+                'Play From Beginning'
+            )
+
+            if button is None:
                 return
+
+            resume = (button == 0)
 
         self.processCommand(videoplayer.play(video=self.video, resume=resume))
 
@@ -380,12 +378,16 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.processCommand(opener.open(item))
 
+    def focusPlayButton(self):
+        try:
+            if not self.getFocusId() == self.PLAY_BUTTON_ID:
+                self.setFocusId(self.PLAY_BUTTON_ID)
+        except (SystemError, RuntimeError):
+            self.setFocusId(self.PLAY_BUTTON_ID)
+
     @busy.dialog()
     def setup(self):
-        if self.video.viewOffset.asInt():
-            self.setFocusId(self.RESUME_BUTTON_ID)
-        else:
-            self.setFocusId(self.PLAY_BUTTON_ID)
+        self.focusPlayButton()
 
         util.DEBUG_LOG('PrePlay: Showing video info: {0}'.format(self.video))
         if self.video.type == 'episode':

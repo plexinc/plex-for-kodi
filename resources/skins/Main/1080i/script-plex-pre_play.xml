@@ -65,7 +65,7 @@
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/info.png</texturenofocus>
                     <label> </label>
                 </control>
-                <control type="button" id="301">
+                <!-- <control type="button" id="301">
                     <visible>IsEmpty(Window(10000).Property(script.plex.hide.resume))</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
@@ -77,7 +77,7 @@
                     <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/resume-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/resume.png</texturenofocus>
                     <label> </label>
-                </control>
+                </control> -->
                 <control type="button" id="302">
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>

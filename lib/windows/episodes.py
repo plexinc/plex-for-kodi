@@ -17,6 +17,7 @@ import opener
 import search
 import playersettings
 import info
+import optionsdialog
 
 
 class EpisodeReloadTask(backgroundthread.Task):
@@ -421,27 +422,25 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         resume = False
         if episode.viewOffset.asInt():
-            choice = dropdown.showDropdown(
-                options=[
-                    {'key': 'resume', 'display': 'Resume'},
-                    {'key': 'play', 'display': 'Play From Beginning'}
-                ],
-                pos=(660, 441),
-                close_direction='none',
-                set_dropdown_prop=False,
-                header=u'Resume?'
+            button = optionsdialog.show(
+                'In Progress',
+                'Resume playback?',
+                'Resume',
+                'Play From Beginning'
             )
 
-            if not choice:
-                return None
+            if button is None:
+                return
 
-            resume = choice['key'] == 'resume'
+            resume = (button == 0)
 
         pl = playlist.LocalPlaylist(self.show_.all(), self.show_.getServer())
         if len(pl):  # Don't use playlist if it's only this video
             pl.setCurrent(episode)
             self.processCommand(videoplayer.play(play_queue=pl, resume=resume))
             return
+
+        self.processCommand(videoplayer.play(video=episode, resume=resume))
 
     def optionsButtonClicked(self, from_item=False):
         options = []

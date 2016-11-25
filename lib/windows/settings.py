@@ -203,8 +203,12 @@ class Settings(object):
                 QualitySetting('online_quality', 'Online Quality', 13),
                 BoolSetting('playback_directplay', 'Allow Direct Play', True),
                 BoolSetting('playback_remux', 'Allow Direct Stream', True),
-                BoolSetting('allow_4k', 'Allow 4K', True),
-                BoolSetting('allow_hevc', 'Allow HEVC (h265)', False)
+                BoolSetting('allow_4k', 'Allow 4K', True).description(
+                    'Enable this if your hardware can handle 4K playback. Disable it to force transcoding.'
+                ),
+                BoolSetting('allow_hevc', 'Allow HEVC (h265)', False).description(
+                    'Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding.'
+                )
             )
         ),
         'subtitles': (

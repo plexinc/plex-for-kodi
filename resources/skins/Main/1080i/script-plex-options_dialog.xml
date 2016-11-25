@@ -83,15 +83,15 @@
                 <usecontrolcoords>true</usecontrolcoords>
                 <control type="button" id="1001">
                     <visible>!IsEmpty(Window.Property(button.0))</visible>
-                    <animation effect="zoom" start="100" end="120" time="100" center="auto" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width min="120">auto</width>
                     <height>143</height>
                     <font>font10</font>
-                    <texturefocus colordiffuse="FFE5A00D" border="42">script.plex/buttons/blank-focus.png</texturefocus>
-                    <texturenofocus colordiffuse="99FFFFFF" border="42">script.plex/buttons/blank.png</texturenofocus>
+                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
+                    <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
                     <textoffsetx>70</textoffsetx>
                     <textcolor>FF000000</textcolor>
                     <focusedcolor>FF000000</focusedcolor>
@@ -99,15 +99,15 @@
                 </control>
                 <control type="button" id="1002">
                     <visible>!IsEmpty(Window.Property(button.1))</visible>
-                    <animation effect="zoom" start="100" end="120" time="100" center="auto" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width min="120">auto</width>
                     <height>143</height>
                     <font>font10</font>
-                    <texturefocus colordiffuse="FFE5A00D" border="42">script.plex/buttons/blank-focus.png</texturefocus>
-                    <texturenofocus colordiffuse="99FFFFFF" border="42">script.plex/buttons/blank.png</texturenofocus>
+                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
+                    <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
                     <textoffsetx>70</textoffsetx>
                     <textcolor>FF000000</textcolor>
                     <focusedcolor>FF000000</focusedcolor>
@@ -115,15 +115,15 @@
                 </control>
                 <control type="button" id="1003">
                     <visible>!IsEmpty(Window.Property(button.2))</visible>
-                    <animation effect="zoom" start="100" end="120" time="100" center="auto" reversible="false">Focus</animation>
-                    <animation effect="zoom" start="120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
+                    <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
+                    <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width min="120">auto</width>
                     <height>143</height>
                     <font>font10</font>
-                    <texturefocus colordiffuse="FFE5A00D" border="42">script.plex/buttons/blank-focus.png</texturefocus>
-                    <texturenofocus colordiffuse="99FFFFFF" border="42">script.plex/buttons/blank.png</texturenofocus>
+                    <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
+                    <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
                     <textoffsetx>70</textoffsetx>
                     <textcolor>FF000000</textcolor>
                     <focusedcolor>FF000000</focusedcolor>

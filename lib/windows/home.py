@@ -18,7 +18,6 @@ import playlists
 import busy
 import opener
 import search
-import dropdown
 import optionsdialog
 
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
@@ -120,6 +119,9 @@ class ServerListItem(kodigui.ManagedListItem):
         return self
 
     def onUpdate(self, **kwargs):
+        if not self.listItem:  # ex. can happen on Kodi shutdown
+            return
+
         if not self.dataSource.isSupported or not self.dataSource.isReachable():
             if self.dataSource.pendingReachabilityRequests > 0:
                 self.setProperty('status', 'refreshing.gif')

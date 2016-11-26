@@ -92,6 +92,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def doClose(self):
         kodigui.ControlledWindow.doClose(self)
+        if not self.tasks:
+            return
         self.tasks.cancel()
         self.tasks = None
 

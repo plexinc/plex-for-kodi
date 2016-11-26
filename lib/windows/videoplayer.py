@@ -403,10 +403,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         for ondeck in onDeckHub.items:
             title = ondeck.grandparentTitle or ondeck.title
-            if ondeck.type == 'episode':
-                thumb = ondeck.defaultThumb.asTranscodedImageURL(*self.ONDECK_DIM)
-            else:
-                thumb = ondeck.defaultArt.asTranscodedImageURL(*self.ONDECK_DIM)
+            thumb = ondeck.defaultArt.asTranscodedImageURL(*self.ONDECK_DIM)
 
             mli = kodigui.ManagedListItem(title or '', thumbnailImage=thumb, data_source=ondeck)
             if mli:

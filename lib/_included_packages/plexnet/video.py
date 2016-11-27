@@ -168,6 +168,9 @@ class Video(media.MediaItem):
         else:
             return ""
 
+    def available(self):
+        return self.media()[0].isAccessible()
+
 
 class PlayableVideo(Video):
     TYPE = None

@@ -422,6 +422,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         episode = mli.dataSource
 
+        if not episode.available():
+            util.messageDialog('Unavailable', 'This item is currently unavailable.')
+            return
+
         resume = False
         if episode.viewOffset.asInt():
             button = optionsdialog.show(
@@ -465,6 +469,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             options.append({'key': 'mark_season_unwatched', 'display': 'Mark Season Unwatched'})
         else:
             options.append({'key': 'mark_season_watched', 'display': 'Mark Season Watched'})
+
+        if mli.dataSource.server.allowsMediaDeletion:
+            options.append({'key': 'delete', 'display': 'Delete'})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
@@ -513,6 +520,40 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.processCommand(opener.open(self.season.parentRatingKey))
         elif choice['key'] == 'to_section':
             self.goHome(self.season.getLibrarySectionId())
+        elif choice['key'] == 'delete':
+            self.delete()
+
+    def delete(self):
+        button = optionsdialog.show(
+            'Really delete?',
+            'Are you sure you really want to delete this media?',
+            'Yes',
+            'No'
+        )
+
+        if button != 0:
+            return
+
+        if not self._delete():
+            util.messageDialog('Message', 'There was a problem while attempting to delete the media.')
+
+    @busy.dialog()
+    def _delete(self):
+        mli = self.episodeListControl.getSelectedItem()
+        if not mli:
+            return
+
+        video = mli.dataSource
+        success = video.delete()
+        util.LOG('Media DELETE: {0} - {1}'.format(video, success and 'SUCCESS' or 'FAILED'))
+        if success:
+            self.episodeListControl.removeItem(mli.pos())
+            if not self.episodeListControl.size():
+                self.doClose()
+            else:
+                if self.season:
+                    self.season.reload()
+        return success
 
     def checkForHeaderFocus(self, action):
         mli = self.episodeListControl.getSelectedItem()
@@ -601,7 +642,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli.setProperty('video.res', video.resolutionString())
         mli.setProperty('audio.codec', video.audioCodecString())
         mli.setProperty('audio.channels', video.audioChannelsString())
-        mli.setBoolProperty('unavailable', not video.media()[0].isAccessible())
+        mli.setBoolProperty('unavailable', not video.available())
 
     def setItemAudioAndSubtitleInfo(self, video, mli):
         sas = video.selectedAudioStream()

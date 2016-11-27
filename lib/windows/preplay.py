@@ -219,12 +219,20 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.delete()
 
     def delete(self):
-        yes = xbmcgui.Dialog().yesno('Really delete?', 'Are you sure you really want to delete this media?')
-        if yes:
-            if self._delete():
-                self.doClose()
-            else:
-                util.messageDialog('Message', 'There was a problem while attempting to delete the media.')
+        button = optionsdialog.show(
+            'Really delete?',
+            'Are you sure you really want to delete this media?',
+            'Yes',
+            'No'
+        )
+
+        if button != 0:
+            return
+
+        if self._delete():
+            self.doClose()
+        else:
+            util.messageDialog('Message', 'There was a problem while attempting to delete the media.')
 
     @busy.dialog()
     def _delete(self):
@@ -353,6 +361,10 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return x, y
 
     def playVideo(self):
+        if not self.video.available():
+            util.messageDialog('Unavailable', 'This item is currently unavailable.')
+            return
+
         resume = False
         if self.video.viewOffset.asInt():
             button = optionsdialog.show(

@@ -59,9 +59,11 @@ class MediaItem(plexobjects.PlexObject):
         if self.deleted:
             return False
 
-        req = plexrequest.PlexRequest(self.server, '/library/metadata/{0}'.format(self.ratingKey), method='HEAD')
-        req.getToStringWithTimeout(10)
-        return not req.wasNotFound()
+        data = self.server.query('/library/metadata/{0}'.format(self.ratingKey))
+        return data.attrib.get('size') != '0'
+        # req = plexrequest.PlexRequest(self.server, '/library/metadata/{0}'.format(self.ratingKey), method='HEAD')
+        # req.getToStringWithTimeout(10)
+        # return not req.wasNotFound()
 
     def fixedDuration(self):
         duration = self.duration.asInt()

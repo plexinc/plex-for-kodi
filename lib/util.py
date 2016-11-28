@@ -27,6 +27,8 @@ PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
 T = ADDON.getLocalizedString
 
+SETTINGS_LOCK = threading.Lock()
+
 
 class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
     def watchStatusChanged(self):
@@ -76,8 +78,9 @@ def TEST(msg):
 
 
 def getSetting(key, default=None):
-    setting = ADDON.getSetting(key)
-    return _processSetting(setting, default)
+    with SETTINGS_LOCK:
+        setting = ADDON.getSetting(key)
+        return _processSetting(setting, default)
 
 
 def _processSetting(setting, default):
@@ -99,8 +102,9 @@ def _processSetting(setting, default):
 
 
 def setSetting(key, value):
-    value = _processSettingForWrite(value)
-    ADDON.setSetting(key, value)
+    with SETTINGS_LOCK:
+        value = _processSettingForWrite(value)
+        ADDON.setSetting(key, value)
 
 
 def _processSettingForWrite(value):

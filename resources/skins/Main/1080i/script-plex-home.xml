@@ -5091,7 +5091,7 @@
                     <posy>29</posy>
                     <width>1920</width>
                     <height>515</height>
-                    <onup>412</onup>
+                    <onup>422</onup>
                     <ondown>414</ondown>
                     <scrolltime>200</scrolltime>
                     <orientation>horizontal</orientation>

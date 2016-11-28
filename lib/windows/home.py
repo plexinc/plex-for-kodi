@@ -226,7 +226,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         'music.recent.label': {'index': 21, 'text2lines': True},
         'music.touring': {'index': 22},
         'music.videos.popular.new': {'index': 18},
-        'music.videos.recent.artists': {'index': 19},
+        'music.videos.new': {'index': 19},
+        'music.videos.recent.artists': {'index': 23},
         # PHOTO
         'photo.recent': {'index': 5, 'text2lines': True},
         'photo.random.year': {'index': 9, 'text2lines': True},
@@ -686,6 +687,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         try:
             skip = {}
             for hub in hubs:
+                if hub.hubIdentifier not in self.HUBMAP:
+                    util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
+                    continue
+
                 skip[self.HUBMAP[hub.hubIdentifier]['index']] = 1
 
                 if self.showHub(hub):

@@ -20,6 +20,9 @@ import opener
 import search
 import optionsdialog
 
+from lib.util import T
+
+
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
 HUB_PAGE_SIZE = 10
 
@@ -103,13 +106,13 @@ class ExtendHubTask(backgroundthread.Task):
 class HomeSection(object):
     key = None
     type = 'home'
-    title = 'Home'
+    title = T(32332, 'Home')
 
 
 class PlaylistsSection(object):
     key = False
     type = 'playlists'
-    title = 'Playlists'
+    title = T(32333, 'Playlists')
 
 
 class ServerListItem(kodigui.ManagedListItem):
@@ -436,10 +439,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
     def confirmExit(self):
         button = optionsdialog.show(
-            'Confirm Exit',
-            'Are you ready to exit Plex?',
-            'Exit',
-            'Cancel'
+            T(32334, 'Confirm Exit'),
+            T(32335, 'Are you ready to exit Plex?'),
+            T(32336, 'Exit'),
+            T(32337, 'Cancel')
         )
 
         return button == 0
@@ -550,7 +553,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.setProperty('server.icon', 'script.plex/home/device/plex.png')  # TODO: Set dynamically to whatever it should be if that's how it even works :)
             self.setProperty('server.iconmod', plexapp.SERVERMANAGER.selectedServer.isSecure and 'script.plex/home/device/lock.png' or '')
         else:
-            self.setProperty('server.name', 'No Servers Found')
+            self.setProperty('server.name', T(32338, 'No Servers Found'))
             self.setProperty('server.icon', 'script.plex/home/device/error.png')
             self.setProperty('server.iconmod', '')
 
@@ -606,7 +609,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.sectionHubs = {}
         items = []
 
-        homemli = kodigui.ManagedListItem('Home', data_source=HomeSection)
+        homemli = kodigui.ManagedListItem(T(32332, 'Home'), data_source=HomeSection)
         homemli.setProperty('is.home', '1')
         homemli.setProperty('item', '1')
         items.append(homemli)
@@ -746,9 +749,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if obj.type == 'episode':
             mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
             if wide:
-                mli.setLabel2(u'{0} - S{1} \u2022 E{2}'.format(util.shortenText(obj.title, 35), obj.parentIndex, obj.index))
+                mli.setLabel2(u'{0} - {1}{2} \u2022 {3}{4}'.format(util.shortenText(obj.title, 35), T(32310, 'S'), obj.parentIndex, T(32310, 'E'), obj.index))
             else:
-                mli.setLabel2(u'S{0} \u2022 E{1}'.format(obj.parentIndex, obj.index))
+                mli.setLabel2(u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index))
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
             if not obj.isWatched:
                 mli.setProperty('unwatched', '1')
@@ -942,9 +945,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         if not server.isReachable():
             if server.pendingReachabilityRequests > 0:
-                util.messageDialog('Server is not accessible', 'Connection tests are in progress. Please wait.')
+                util.messageDialog(T(32339, 'Server is not accessible'), T(32340, 'Connection tests are in progress. Please wait.'))
             else:
-                util.messageDialog('Server is not accessible', 'Server is not accessible. Please sign into your server and check your connection.')
+                util.messageDialog(
+                    T(32339, 'Server is not accessible'), T(32341, 'Server is not accessible. Please sign into your server and check your connection.')
+                )
             return
 
         plexapp.SERVERMANAGER.setSelectedServer(server, force=True)
@@ -952,9 +957,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def showUserMenu(self, mouse=False):
         items = []
         if len(plexapp.ACCOUNT.homeUsers) > 1:
-            items.append(kodigui.ManagedListItem('Switch User', data_source='switch'))
-        items.append(kodigui.ManagedListItem('Settings', data_source='settings'))
-        items.append(kodigui.ManagedListItem('Sign Out', data_source='signout'))
+            items.append(kodigui.ManagedListItem(T(32342, 'Switch User'), data_source='switch'))
+        items.append(kodigui.ManagedListItem(T(32343, 'Settings'), data_source='settings'))
+        items.append(kodigui.ManagedListItem(T(32344, 'Sign Out'), data_source='signout'))
 
         if len(items) > 1:
             items[0].setProperty('first', '1')

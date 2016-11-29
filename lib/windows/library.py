@@ -21,6 +21,9 @@ import windowutils
 
 from plexnet import playqueue
 
+from lib.util import T
+
+
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 MOVE_SET = frozenset(
@@ -86,10 +89,10 @@ TYPE_KEYS = {
 }
 
 TYPE_PLURAL = {
-    'artist': 'artists',
-    'movie': 'movies',
-    'photo': 'photos',
-    'show': 'shows'
+    'artist': T(32347, 'artists'),
+    'movie': T(32348, 'movies'),
+    'photo': T(32349, 'photos'),
+    'show': T(32350, 'shows')
 }
 
 
@@ -175,8 +178,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
             self.setProperty('sort', self.sort)
-            self.setProperty('filter1.display', 'All')
-            self.setProperty('sort.display', 'By Name')
+            self.setProperty('filter1.display', T(32345, 'All'))
+            self.setProperty('sort.display', T(32357, 'By Name'))
             self.setProperty('media.type', TYPE_PLURAL.get(self.section.TYPE, self.section.TYPE))
             self.setProperty('media', self.section.TYPE)
             self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
@@ -310,7 +313,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
     def optionsButtonClicked(self):
         options = []
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-            options.append({'key': 'play_next', 'display': 'Play Next'})
+            options.append({'key': 'play_next', 'display': T(32325, 'Play Next')})
 
         # if self.section.TYPE not in ('artist', 'photo', 'photodirectory'):
         #     options.append({'key': 'mark_watched', 'display': 'Mark All Watched'})
@@ -325,7 +328,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.section.TYPE == 'photodirectory':
             if options:
                 options.append(dropdown.SEPARATOR)
-            options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.section.getLibrarySectionTitle())})
+            options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.section.getLibrarySectionTitle())})
 
         choice = dropdown.showDropdown(options, (255, 205))
         if not choice:
@@ -343,45 +346,70 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         if self.section.TYPE == 'movie':
             options = [
-                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind or ''},
+                {'type': 'addedAt', 'title': T(32351, 'By Date Added'), 'display': T(32352, 'Date Added'), 'indicator': self.sort == 'addedAt' and ind or ''},
                 {
-                    'type': 'originallyAvailableAt', 'title': 'By Release Date',
-                    'display': 'Release Date', 'indicator': self.sort == 'originallyAvailableAt' and ind or ''
+                    'type': 'originallyAvailableAt', 'title': T(32353, 'By Release Date'),
+                    'display': T(32354, 'Release Date'), 'indicator': self.sort == 'originallyAvailableAt' and ind or ''
                 },
-                {'type': 'lastViewedAt', 'title': 'By Date Viewed', 'display': 'Date Viewed', 'indicator': self.sort == 'lastViewedAt' and ind or ''},
-                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind or ''},
-                {'type': 'rating', 'title': 'By Rating', 'display': 'Rating', 'indicator': self.sort == 'rating' and ind or ''},
-                {'type': 'resolution', 'title': 'By Resolution', 'display': 'Resolution', 'indicator': self.sort == 'resolution' and ind or ''},
-                {'type': 'duration', 'title': 'By Duration', 'display': 'Duration', 'indicator': self.sort == 'duration' and ind or ''}
+                {
+                    'type': 'lastViewedAt',
+                    'title': T(32355, 'By Date Viewed'),
+                    'display': T(32356, 'Date Viewed'),
+                    'indicator': self.sort == 'lastViewedAt' and ind or ''
+                },
+                {'type': 'titleSort', 'title': T(32357, 'By Name'), 'display': T(32358, 'Name'), 'indicator': self.sort == 'titleSort' and ind or ''},
+                {'type': 'rating', 'title': T(32359, 'By Rating'), 'display': T(32360, 'Rating'), 'indicator': self.sort == 'rating' and ind or ''},
+                {
+                    'type': 'resolution',
+                    'title': T(32361, 'By Resolution'),
+                    'display': T(32362, 'Resolution'),
+                    'indicator': self.sort == 'resolution' and ind or ''
+                },
+                {'type': 'duration', 'title': T(32363, 'By Duration'), 'display': T(32364, 'Duration'), 'indicator': self.sort == 'duration' and ind or ''}
             ]
         elif self.section.TYPE == 'show':
             options = [
-                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind or ''},
-                {'type': 'lastViewedAt', 'title': 'By Date Viewed', 'display': 'Date Viewed', 'indicator': self.sort == 'lastViewedAt' and ind or ''},
+                {'type': 'addedAt', 'title': T(32351, 'By Date Added'), 'display': T(32352, 'Date Added'), 'indicator': self.sort == 'addedAt' and ind or ''},
                 {
-                    'type': 'originallyAvailableAt', 'title': 'By First Aired',
-                    'display': 'First Aired', 'indicator': self.sort == 'originallyAvailableAt' and ind or ''
+                    'type': 'lastViewedAt',
+                    'title': T(32355, 'By Date Viewed'),
+                    'display': T(32356, 'Date Viewed'),
+                    'indicator': self.sort == 'lastViewedAt' and ind or ''
                 },
-                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind or ''},
-                {'type': 'rating', 'title': 'By Rating', 'display': 'Rating', 'indicator': self.sort == 'rating' and ind or ''},
-                {'type': 'unwatched', 'title': 'By Unwatched', 'display': 'Unwatched', 'indicator': self.sort == 'unwatched' and ind or ''}
+                {
+                    'type': 'originallyAvailableAt', 'title': T(32365, 'By First Aired'),
+                    'display': T(32366, 'First Aired'), 'indicator': self.sort == 'originallyAvailableAt' and ind or ''
+                },
+                {'type': 'titleSort', 'title': T(32357, 'By Name'), 'display': T(32358, 'Name'), 'indicator': self.sort == 'titleSort' and ind or ''},
+                {'type': 'rating', 'title': T(32359, 'By Rating'), 'display': T(32360, 'Rating'), 'indicator': self.sort == 'rating' and ind or ''},
+                {'type': 'unwatched', 'title': T(32367, 'By Unwatched'), 'display': T(32368, 'Unwatched'), 'indicator': self.sort == 'unwatched' and ind or ''}
             ]
         elif self.section.TYPE == 'artist':
             options = [
-                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind or ''},
-                {'type': 'lastViewedAt', 'title': 'By Date Played', 'display': 'Date Played', 'indicator': self.sort == 'lastViewedAt' and ind or ''},
-                {'type': 'viewCount', 'title': 'By Play Count', 'display': 'Play Count', 'indicator': self.sort == 'viewCount' and ind or ''},
-                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind or ''}
+                {'type': 'addedAt', 'title': T(32351, 'By Date Added'), 'display': T(32352, 'Date Added'), 'indicator': self.sort == 'addedAt' and ind or ''},
+                {
+                    'type': 'lastViewedAt',
+                    'title': T(32369, 'By Date Played'),
+                    'display': T(32370, 'Date Played'),
+                    'indicator': self.sort == 'lastViewedAt' and ind or ''
+                },
+                {
+                    'type': 'viewCount',
+                    'title': T(32371, 'By Play Count'),
+                    'display': T(32372, 'Play Count'),
+                    'indicator': self.sort == 'viewCount' and ind or ''
+                },
+                {'type': 'titleSort', 'title': T(32357, 'By Name'), 'display': T(32358, 'Name'), 'indicator': self.sort == 'titleSort' and ind or ''}
             ]
         elif self.section.TYPE == 'photo':
             options = [
-                {'type': 'addedAt', 'title': 'By Date Added', 'display': 'Date Added', 'indicator': self.sort == 'addedAt' and ind or ''},
+                {'type': 'addedAt', 'title': T(32351, 'By Date Added'), 'display': T(32352, 'Date Added'), 'indicator': self.sort == 'addedAt' and ind or ''},
                 {
-                    'type': 'originallyAvailableAt', 'title': 'By Date Taken',
-                    'display': 'Date Taken', 'indicator': self.sort == 'originallyAvailableAt' and ind or ''
+                    'type': 'originallyAvailableAt', 'title': T(32373, 'By Date Taken'),
+                    'display': T(32374, 'Date Taken'), 'indicator': self.sort == 'originallyAvailableAt' and ind or ''
                 },
-                {'type': 'titleSort', 'title': 'By Name', 'display': 'Name', 'indicator': self.sort == 'titleSort' and ind or ''},
-                {'type': 'rating', 'title': 'By Rating', 'display': 'Rating', 'indicator': self.sort == 'rating' and ind or ''}
+                {'type': 'titleSort', 'title': T(32357, 'By Name'), 'display': T(32358, 'Name'), 'indicator': self.sort == 'titleSort' and ind or ''},
+                {'type': 'rating', 'title': T(32359, 'By Rating'), 'display': T(32360, 'Rating'), 'indicator': self.sort == 'rating' and ind or ''}
             ]
         else:
             return
@@ -450,7 +478,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         ):
             options = [{'val': o.key, 'display': o.title, 'indicator': o.key == subKey and check or ''} for o in self.section.listChoices(option['type'])]
             if not options:
-                options = [{'val': None, 'display': 'No filters available', 'ignore': True}]
+                options = [{'val': None, 'display': T(32375, 'No filters available'), 'ignore': True}]
 
         return options
 
@@ -466,34 +494,34 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         options = []
 
         if self.section.TYPE in ('movie', 'show'):
-            options.append({'type': 'unwatched', 'display': 'UNWATCHED', 'indicator': self.filterUnwatched and check or ''})
+            options.append({'type': 'unwatched', 'display': T(32368, 'UNWATCHED').upper(), 'indicator': self.filterUnwatched and check or ''})
 
         if self.filter:
-            options.append({'type': 'clear_filter', 'display': 'CLEAR FILTER', 'indicator': 'script.plex/indicators/remove.png'})
+            options.append({'type': 'clear_filter', 'display': T(32376, 'CLEAR FILTER').upper(), 'indicator': 'script.plex/indicators/remove.png'})
 
         if options:
             options.append(None)  # Separator
 
         optionsMap = {
-            'year': {'type': 'year', 'display': 'Year', 'indicator': self.hasFilter('year') and check or ''},
-            'decade': {'type': 'decade', 'display': 'Decade', 'indicator': self.hasFilter('decade') and check or ''},
-            'genre': {'type': 'genre', 'display': 'Genre', 'indicator': self.hasFilter('genre') and check or ''},
-            'contentRating': {'type': 'contentRating', 'display': 'Content Rating', 'indicator': self.hasFilter('contentRating') and check or ''},
-            'network': {'type': 'studio', 'display': 'Network', 'indicator': self.hasFilter('studio') and check or ''},
-            'collection': {'type': 'collection', 'display': 'Collection', 'indicator': self.hasFilter('collection') and check or ''},
-            'director': {'type': 'director', 'display': 'Director', 'indicator': self.hasFilter('director') and check or ''},
-            'actor': {'type': 'actor', 'display': 'Actor', 'indicator': self.hasFilter('actor') and check or ''},
-            'country': {'type': 'country', 'display': 'Country', 'indicator': self.hasFilter('country') and check or ''},
-            'studio': {'type': 'studio', 'display': 'Studio', 'indicator': self.hasFilter('studio') and check or ''},
-            'resolution': {'type': 'resolution', 'display': 'Resolution', 'indicator': self.hasFilter('resolution') and check or ''},
-            'labels': {'type': 'labels', 'display': 'Labels', 'indicator': self.hasFilter('labels') and check or ''},
+            'year': {'type': 'year', 'display': T(32377, 'Year'), 'indicator': self.hasFilter('year') and check or ''},
+            'decade': {'type': 'decade', 'display': T(32378, 'Decade'), 'indicator': self.hasFilter('decade') and check or ''},
+            'genre': {'type': 'genre', 'display': T(32379, 'Genre'), 'indicator': self.hasFilter('genre') and check or ''},
+            'contentRating': {'type': 'contentRating', 'display': T(32380, 'Content Rating'), 'indicator': self.hasFilter('contentRating') and check or ''},
+            'network': {'type': 'studio', 'display': T(32381, 'Network'), 'indicator': self.hasFilter('studio') and check or ''},
+            'collection': {'type': 'collection', 'display': T(32382, 'Collection'), 'indicator': self.hasFilter('collection') and check or ''},
+            'director': {'type': 'director', 'display': T(32383, 'Director'), 'indicator': self.hasFilter('director') and check or ''},
+            'actor': {'type': 'actor', 'display': T(32384, 'Actor'), 'indicator': self.hasFilter('actor') and check or ''},
+            'country': {'type': 'country', 'display': T(32385, 'Country'), 'indicator': self.hasFilter('country') and check or ''},
+            'studio': {'type': 'studio', 'display': T(32386, 'Studio'), 'indicator': self.hasFilter('studio') and check or ''},
+            'resolution': {'type': 'resolution', 'display': T(32362, 'Resolution'), 'indicator': self.hasFilter('resolution') and check or ''},
+            'labels': {'type': 'labels', 'display': T(32387, 'Labels'), 'indicator': self.hasFilter('labels') and check or ''},
 
-            'make': {'type': 'make', 'display': 'Camera Make', 'indicator': self.hasFilter('make') and check or ''},
-            'model': {'type': 'model', 'display': 'Camera Model', 'indicator': self.hasFilter('model') and check or ''},
-            'aperture': {'type': 'aperture', 'display': 'Aperture', 'indicator': self.hasFilter('aperture') and check or ''},
-            'exposure': {'type': 'exposure', 'display': 'Shutter Speed', 'indicator': self.hasFilter('exposure') and check or ''},
+            'make': {'type': 'make', 'display': T(32388, 'Camera Make'), 'indicator': self.hasFilter('make') and check or ''},
+            'model': {'type': 'model', 'display': T(32389, 'Camera Model'), 'indicator': self.hasFilter('model') and check or ''},
+            'aperture': {'type': 'aperture', 'display': T(32390, 'Aperture'), 'indicator': self.hasFilter('aperture') and check or ''},
+            'exposure': {'type': 'exposure', 'display': T(32391, 'Shutter Speed'), 'indicator': self.hasFilter('exposure') and check or ''},
             'iso': {'type': 'iso', 'display': 'ISO', 'indicator': self.hasFilter('iso') and check or ''},
-            'lens': {'type': 'lens', 'display': 'Lens', 'indicator': self.hasFilter('lens') and check or ''}
+            'lens': {'type': 'lens', 'display': T(32392, 'Lens'), 'indicator': self.hasFilter('lens') and check or ''}
         }
 
         if self.section.TYPE == 'movie':
@@ -581,11 +609,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
     def setTitle(self):
         if self.section.TYPE == 'artist':
-            self.setProperty('screen.title', 'MUSIC')
+            self.setProperty('screen.title', T(32394, 'MUSIC').upper())
         elif self.section.TYPE in ('photo', 'photodirectory'):
-            self.setProperty('screen.title', 'PHOTOS')
+            self.setProperty('screen.title', T(32349, 'photos').upper())
         else:
-            self.setProperty('screen.title', self.section.TYPE == 'show' and 'TV SHOWS' or 'MOVIES')
+            self.setProperty('screen.title', self.section.TYPE == 'show' and T(32393, 'TV SHOWS').upper() or T(32348, 'movies').upper())
 
         if self.filter:
             self.updateFilterDisplay()

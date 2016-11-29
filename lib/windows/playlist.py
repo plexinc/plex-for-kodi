@@ -12,6 +12,8 @@ from lib import colors
 from lib import util
 from lib import player
 
+from lib.util import T
+
 
 class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-playlist.xml'
@@ -100,7 +102,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def optionsButtonClicked(self):
         options = []
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-            options.append({'key': 'play_next', 'display': 'Play Next'})
+            options.append({'key': 'play_next', 'display': T(32325, 'Play Next')})
 
         if not options:
             return
@@ -136,7 +138,9 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return mli
 
     def createEpisodeListItem(self, episode):
-        label2 = u'{0} \u2022 {1}'.format(episode.grandparentTitle, u'S{0} \u2022 E{1}'.format(episode.parentIndex, episode.index))
+        label2 = u'{0} \u2022 {1}'.format(
+            episode.grandparentTitle, u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), episode.parentIndex, T(32311, 'E'), episode.index)
+        )
         mli = kodigui.ManagedListItem(episode.title, label2, thumbnailImage=episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=episode)
         mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
         mli.setProperty('video', '1')

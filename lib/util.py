@@ -25,8 +25,6 @@ ADDON = xbmcaddon.Addon()
 
 PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
-T = ADDON.getLocalizedString
-
 SETTINGS_LOCK = threading.Lock()
 
 
@@ -36,6 +34,10 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
 
 
 MONITOR = UtilityMonitor()
+
+
+def T(ID, eng=''):
+    return ADDON.getLocalizedString(ID)
 
 
 def LOG(msg, level=xbmc.LOGNOTICE):

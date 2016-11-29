@@ -27,7 +27,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
 
     def onFirstInit(self):
         self.settingsList = kodigui.ManagedControlList(self, self.SETTINGS_LIST_ID, 6)
-        self.setProperty('heading', 'Settings')
+        self.setProperty('heading', T(32343, 'Settings'))
         if self.viaOSD:
             self.setProperty('via.OSD', '1')
         self.showSettings(True)
@@ -73,15 +73,15 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         audio, subtitle = self.getAudioAndSubtitleInfo()
 
         options = [
-            ('audio', 'Audio', audio),
-            ('subs', 'Subtitles', subtitle),
-            ('quality', 'Quality', u'{0}'.format(current))
+            ('audio', T(32395, 'Audio'), audio),
+            ('subs', T(32396, 'Subtitles'), subtitle),
+            ('quality', T(32397, 'Quality'), u'{0}'.format(current))
         ]
 
         if not self.nonPlayback:
             options += [
-                ('kodi_video', 'Kodi Video Settings', ''),
-                ('kodi_audio', 'Kodi Audio Settings', '')
+                ('kodi_video', T(32398, 'Kodi Video Settings'), ''),
+                ('kodi_audio', T(32399, 'Kodi Audio Settings'), '')
             ]
 
         items = []
@@ -103,14 +103,14 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         sss = self.video.selectedSubtitleStream()
         if sss:
             if len(self.video.subtitleStreams) > 1:
-                subtitle = u'{0} \u2022 {1} More'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1)
+                subtitle = u'{0} \u2022 {1} {2}'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1, T(32307, 'More'))
             else:
                 subtitle = sss.getTitle()
         else:
             if self.video.subtitleStreams:
-                subtitle = u'None \u2022 {0} Available'.format(len(self.video.subtitleStreams))
+                subtitle = u'{0} \u2022 {1} {2}'.format(T(32309, 'None'), len(self.video.subtitleStreams), T(32308, 'Available'))
             else:
-                subtitle = u'None'
+                subtitle = T(32309, 'None')
 
         return audio, subtitle
 
@@ -212,7 +212,7 @@ def showOptionsDialog(heading, options, non_playback=False):
 
 def showAudioDialog(video, non_playback=False):
     options = [(s, s.getTitle()) for s in video.audioStreams]
-    choice = showOptionsDialog('Audio', options, non_playback=non_playback)
+    choice = showOptionsDialog(T(32395, 'Audio'), options, non_playback=non_playback)
     if choice is None:
         return
 
@@ -222,7 +222,7 @@ def showAudioDialog(video, non_playback=False):
 def showSubtitlesDialog(video, non_playback=False):
     options = [(s, s.getTitle()) for s in video.subtitleStreams]
     options.insert(0, (plexnet.plexstream.NoneStream(), 'None'))
-    choice = showOptionsDialog('Subtitle', options, non_playback=non_playback)
+    choice = showOptionsDialog(T(32396, 'Subtitle'), options, non_playback=non_playback)
     if choice is None:
         return
 

@@ -19,6 +19,8 @@ import playersettings
 import info
 import optionsdialog
 
+from lib.util import T
+
 
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
@@ -407,7 +409,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         opener.handleOpen(
             info.InfoWindow,
             title=episode.title,
-            sub_title='Season {0} Episode {1}'.format(episode.parentIndex, episode.index),
+            sub_title='{0} {1} {2} {3}'.format(T(32303, 'Season'), episode.parentIndex, T(32304, 'Episode'), episode.index),
             thumb=episode.thumb,
             thumb_fallback='script.plex/thumb_fallbacks/show.png',
             info=episode.summary,
@@ -423,16 +425,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         episode = mli.dataSource
 
         if not episode.available():
-            util.messageDialog('Unavailable', 'This item is currently unavailable.')
+            util.messageDialog(T(32312, 'unavailable'), T(32332, 'This item is currently unavailable.'))
             return
 
         resume = False
         if episode.viewOffset.asInt():
             button = optionsdialog.show(
-                'In Progress',
-                'Resume playback?',
-                'Resume',
-                'Play From Beginning'
+                T(32314, 'In Progress'),
+                T(32315, 'Resume playback?'),
+                T(32316, 'Resume'),
+                T(32317, 'Play From Beginning')
             )
 
             if button is None:
@@ -455,23 +457,23 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if mli:
             if mli.dataSource.isWatched:
-                options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
+                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
             else:
-                options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
+                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
 
             # if True:
             #     options.append({'key': 'add_to_playlist', 'display': '[COLOR FF808080]Add To Playlist[/COLOR]'})
 
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-            options.append({'key': 'play_next', 'display': 'Play Next'})
+            options.append({'key': 'play_next', 'display': T(32325, 'Play Next')})
 
         if self.season.isWatched:
-            options.append({'key': 'mark_season_unwatched', 'display': 'Mark Season Unwatched'})
+            options.append({'key': 'mark_season_unwatched', 'display': T(32320, 'Mark Season Unwatched')})
         else:
-            options.append({'key': 'mark_season_watched', 'display': 'Mark Season Watched'})
+            options.append({'key': 'mark_season_watched', 'display': T(32321, 'Mark Season Watched')})
 
         if mli.dataSource.server.allowsMediaDeletion:
-            options.append({'key': 'delete', 'display': 'Delete'})
+            options.append({'key': 'delete', 'display': T(32322, 'Delete')})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
@@ -479,8 +481,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if options:
             options.append(dropdown.SEPARATOR)
 
-        options.append({'key': 'to_show', 'display': 'Go To Show'})
-        options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.season.getLibrarySectionTitle())})
+        options.append({'key': 'to_show', 'display': T(32323, 'Go To Show')})
+        options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.season.getLibrarySectionTitle())})
 
         pos = (460, 685)
         bottom = False
@@ -525,17 +527,17 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def delete(self):
         button = optionsdialog.show(
-            'Really delete?',
-            'Are you sure you really want to delete this media?',
-            'Yes',
-            'No'
+            T(32326, 'Really delete?'),
+            T(32326, 'Are you sure you really want to delete this media?'),
+            T(32326, 'Yes'),
+            T(32326, 'No')
         )
 
         if button != 0:
             return
 
         if not self._delete():
-            util.messageDialog('Message', 'There was a problem while attempting to delete the media.')
+            util.messageDialog(T(32330, 'Message'), T(32331, 'There was a problem while attempting to delete the media.'))
 
     @busy.dialog()
     def _delete(self):
@@ -579,9 +581,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', self.show_ and self.show_.title or '')
         self.setProperty('season.title', self.season.title)
-        self.setProperty('episodes.header', u'{0} \u2022 Season {1}'.format(self.getProperty('show.title'), self.season.index))
-        self.setProperty('extras.header', u'Extras \u2022 Season {0}'.format(self.season.index))
-        self.setProperty('related.header', 'Related Shows')
+        self.setProperty('episodes.header', u'{0} \u2022 {1} {2}'.format(self.getProperty('show.title'), T(32303, 'Season'), self.season.index))
+        self.setProperty('extras.header', u'{0} \u2022 {1} {2}'.format(T(32305, 'Extras'), T(32303, 'Season'), self.season.index))
+        self.setProperty('related.header', T(32306, 'Related Shows'))
         self.genre = self.show_.genres() and self.show_.genres()[0].tag or ''
 
     @busy.dialog()
@@ -604,8 +606,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli.setProperty('duration', util.durationToText(video.duration.asInt()))
         mli.setProperty('summary', video.summary.strip().replace('\t', ' '))
 
-        mli.setProperty('season', 'Season {0}'.format(video.parentIndex))
-        mli.setProperty('episode', 'Episode {0}'.format(video.index))
+        mli.setProperty('season', '{0} {1}'.format(T(32303, 'Season'), video.parentIndex))
+        mli.setProperty('episode', '{0} {1}'.format(T(32304, 'Episode'), video.index))
         mli.setProperty('date', util.cleanLeadingZeros(video.originallyAvailableAt.asDatetime('%B %d, %Y')))
 
         # mli.setProperty('related.header', 'Related Shows')
@@ -646,19 +648,19 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setItemAudioAndSubtitleInfo(self, video, mli):
         sas = video.selectedAudioStream()
-        mli.setProperty('audio', sas and sas.getTitle() or 'None')
+        mli.setProperty('audio', sas and sas.getTitle() or T(32309, 'None'))
 
         sss = video.selectedSubtitleStream()
         if sss:
             if len(video.subtitleStreams) > 1:
-                mli.setProperty('subtitles', u'{0} \u2022 {1} More'.format(sss.getTitle(), len(video.subtitleStreams) - 1))
+                mli.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(), len(video.subtitleStreams) - 1), T(32307, 'More'))
             else:
                 mli.setProperty('subtitles', sss.getTitle())
         else:
             if video.subtitleStreams:
-                mli.setProperty('subtitles', u'None \u2022 {0} Available'.format(len(video.subtitleStreams)))
+                mli.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(T(32309, 'None'), len(video.subtitleStreams), T(32308, 'Available')))
             else:
-                mli.setProperty('subtitles', u'None')
+                mli.setProperty('subtitles', T(32309, 'None'))
 
     def setProgress(self, mli):
         video = mli.dataSource
@@ -672,7 +674,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def createListItem(self, episode):
         mli = kodigui.ManagedListItem(
             episode.title,
-            u'S{0} \u2022 E{1}'.format(episode.parentIndex, episode.index),
+            u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), episode.parentIndex, T(32311, 'E'), episode.index),
             thumbnailImage=episode.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM),
             data_source=episode
         )

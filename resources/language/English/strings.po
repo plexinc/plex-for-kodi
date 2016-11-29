@@ -184,3 +184,487 @@ msgstr ""
 msgctxt "#32212"
 msgid "Other"
 msgstr ""
+
+msgctxt "#32300"
+msgid "Go to Album"
+msgstr ""
+
+msgctxt "#32301"
+msgid "Go to Artist"
+msgstr ""
+
+msgctxt "#32302"
+msgid "Go to {0}"
+msgstr ""
+
+msgctxt "#32303"
+msgid "Season"
+msgstr ""
+
+msgctxt "#32304"
+msgid "Episode"
+msgstr ""
+
+msgctxt "#32305"
+msgid "Extras"
+msgstr ""
+
+msgctxt "#32306"
+msgid "Related Shows"
+msgstr ""
+
+msgctxt "#32307"
+msgid "More"
+msgstr ""
+
+msgctxt "#32308"
+msgid "Available"
+msgstr ""
+
+msgctxt "#32309"
+msgid "None"
+msgstr ""
+
+msgctxt "#32310"
+msgid "S"
+msgstr ""
+
+msgctxt "#32311"
+msgid "E"
+msgstr ""
+
+msgctxt "#32312"
+msgid "Unavailable"
+msgstr ""
+
+msgctxt "#32313"
+msgid "This item is currently unavailable."
+msgstr ""
+
+msgctxt "#32314"
+msgid "In Progress"
+msgstr ""
+
+msgctxt "#32315"
+msgid "Resume playback?"
+msgstr ""
+
+msgctxt "#32316"
+msgid "Resume"
+msgstr ""
+
+msgctxt "#32317"
+msgid "Play from beginning"
+msgstr ""
+
+msgctxt "#32318"
+msgid "Mark Unwatched"
+msgstr ""
+
+msgctxt "#32319"
+msgid "Mark Watched"
+msgstr ""
+
+msgctxt "#32320"
+msgid "Mark Season Unwatched"
+msgstr ""
+
+msgctxt "#32321"
+msgid "Mark Season Watched"
+msgstr ""
+
+msgctxt "#32322"
+msgid "Delete"
+msgstr ""
+
+msgctxt "#32323"
+msgid "Go To Show"
+msgstr ""
+
+msgctxt "#32324"
+msgid "Go To {0}"
+msgstr ""
+
+msgctxt "#32325"
+msgid "Play Next"
+msgstr ""
+
+msgctxt "#32326"
+msgid "Really Delete?"
+msgstr ""
+
+msgctxt "#32327"
+msgid "Are you sure you really want to delete this media?"
+msgstr ""
+
+msgctxt "#32328"
+msgid "Yes"
+msgstr ""
+
+msgctxt "#32329"
+msgid "No"
+msgstr ""
+
+msgctxt "#32330"
+msgid "Message"
+msgstr ""
+
+msgctxt "#32331"
+msgid "There was a problem while attempting to delete the media."
+msgstr ""
+
+msgctxt "#32332"
+msgid "Home"
+msgstr ""
+
+msgctxt "#32333"
+msgid "Playlists"
+msgstr ""
+
+msgctxt "#32334"
+msgid "Confirm Exit"
+msgstr ""
+
+msgctxt "#32335"
+msgid "Are you ready to exit Plex?"
+msgstr ""
+
+msgctxt "#32336"
+msgid "Exit"
+msgstr ""
+
+msgctxt "#32337"
+msgid "Cancel"
+msgstr ""
+
+msgctxt "#32338"
+msgid "No Servers Found"
+msgstr ""
+
+msgctxt "#32339"
+msgid "Server is not accessible"
+msgstr ""
+
+msgctxt "#32340"
+msgid "Connection tests are in progress. Please wait."
+msgstr ""
+
+msgctxt "#32341"
+msgid "Server is not accessible. Please sign into your server and check your connection."
+msgstr ""
+
+msgctxt "#32342"
+msgid "Switch User"
+msgstr ""
+
+msgctxt "#32343"
+msgid "Settings"
+msgstr ""
+
+msgctxt "#32344"
+msgid "Sign Out"
+msgstr ""
+
+msgctxt "#32345"
+msgid "All"
+msgstr ""
+
+msgctxt "#32346"
+msgid "By Name"
+msgstr ""
+
+msgctxt "#32347"
+msgid "artists"
+msgstr ""
+
+msgctxt "#32348"
+msgid "movies"
+msgstr ""
+
+msgctxt "#32349"
+msgid "photos"
+msgstr ""
+
+msgctxt "#32350"
+msgid "shows"
+msgstr ""
+
+msgctxt "#32351"
+msgid "By Date Added"
+msgstr ""
+
+msgctxt "#32352"
+msgid "Date Added"
+msgstr ""
+
+msgctxt "#32353"
+msgid "By Release Date"
+msgstr ""
+
+msgctxt "#32354"
+msgid "Release Date"
+msgstr ""
+
+msgctxt "#32355"
+msgid "By Date Viewed"
+msgstr ""
+
+msgctxt "#32356"
+msgid "Date Viewed"
+msgstr ""
+
+msgctxt "#32357"
+msgid "By Name"
+msgstr ""
+
+msgctxt "#32358"
+msgid "Name"
+msgstr ""
+
+msgctxt "#32359"
+msgid "By Rating"
+msgstr ""
+
+msgctxt "#32360"
+msgid "Rating"
+msgstr ""
+
+msgctxt "#32361"
+msgid "By Resolution"
+msgstr ""
+
+msgctxt "#32362"
+msgid "Resolution"
+msgstr ""
+
+msgctxt "#32363"
+msgid "By Duration"
+msgstr ""
+
+msgctxt "#32364"
+msgid "Duration"
+msgstr ""
+
+msgctxt "#32365"
+msgid "By First Aired"
+msgstr ""
+
+msgctxt "#32366"
+msgid "First Aired"
+msgstr ""
+
+msgctxt "#32367"
+msgid "By Unwatched"
+msgstr ""
+
+msgctxt "#32368"
+msgid "Unwatched"
+msgstr ""
+
+msgctxt "#32369"
+msgid "By Date Played"
+msgstr ""
+
+msgctxt "#32370"
+msgid "Date Played"
+msgstr ""
+
+msgctxt "#32371"
+msgid "By Play Count"
+msgstr ""
+
+msgctxt "#32372"
+msgid "Play Count"
+msgstr ""
+
+msgctxt "#32373"
+msgid "By Date Taken"
+msgstr ""
+
+msgctxt "#32374"
+msgid "Date Taken"
+msgstr ""
+
+msgctxt "#32375"
+msgid "No filters available"
+msgstr ""
+
+msgctxt "#32376"
+msgid "Clear Filter"
+msgstr ""
+
+msgctxt "#32377"
+msgid "Year"
+msgstr ""
+
+msgctxt "#32378"
+msgid "Decade"
+msgstr ""
+
+msgctxt "#32379"
+msgid "Genre"
+msgstr ""
+
+msgctxt "#32380"
+msgid "Content Rating"
+msgstr ""
+
+msgctxt "#32381"
+msgid "Network"
+msgstr ""
+
+msgctxt "#32382"
+msgid "Collection"
+msgstr ""
+
+msgctxt "#32383"
+msgid "Director"
+msgstr ""
+
+msgctxt "#32384"
+msgid "Actor"
+msgstr ""
+
+msgctxt "#32385"
+msgid "Country"
+msgstr ""
+
+msgctxt "#32386"
+msgid "Studio"
+msgstr ""
+
+msgctxt "#32387"
+msgid "Labels"
+msgstr ""
+
+msgctxt "#32388"
+msgid "Camera Make"
+msgstr ""
+
+msgctxt "#32389"
+msgid "Camera Model"
+msgstr ""
+
+msgctxt "#32390"
+msgid "Aperture"
+msgstr ""
+
+msgctxt "#32391"
+msgid "Shutter Speed"
+msgstr ""
+
+msgctxt "#32392"
+msgid "Lens"
+msgstr ""
+
+msgctxt "#32393"
+msgid "TV Shows"
+msgstr ""
+
+msgctxt "#32394"
+msgid "Music"
+msgstr ""
+
+msgctxt "#32395"
+msgid "Audio"
+msgstr ""
+
+msgctxt "#32396"
+msgid "Subtitles"
+msgstr ""
+
+msgctxt "#32397"
+msgid "Quality"
+msgstr ""
+
+msgctxt "#32398"
+msgid "Kodi Video Settings"
+msgstr ""
+
+msgctxt "#32399"
+msgid "Kodi Audio Settings"
+msgstr ""
+
+msgctxt "#32400"
+msgid ""
+msgstr ""
+
+msgctxt "#32401"
+msgid ""
+msgstr ""
+
+msgctxt "#32402"
+msgid ""
+msgstr ""
+
+msgctxt "#32403"
+msgid ""
+msgstr ""
+
+msgctxt "#32404"
+msgid ""
+msgstr ""
+
+msgctxt "#32405"
+msgid ""
+msgstr ""
+
+msgctxt "#32406"
+msgid ""
+msgstr ""
+
+msgctxt "#32407"
+msgid ""
+msgstr ""
+
+msgctxt "#32408"
+msgid ""
+msgstr ""
+
+msgctxt "#32409"
+msgid ""
+msgstr ""
+
+msgctxt "#32410"
+msgid ""
+msgstr ""
+
+msgctxt "#32411"
+msgid ""
+msgstr ""
+
+msgctxt "#32412"
+msgid ""
+msgstr ""
+
+msgctxt "#32413"
+msgid ""
+msgstr ""
+
+msgctxt "#32414"
+msgid ""
+msgstr ""
+
+msgctxt "#32415"
+msgid ""
+msgstr ""
+
+msgctxt "#32416"
+msgid ""
+msgstr ""
+
+msgctxt "#32417"
+msgid ""
+msgstr ""
+
+msgctxt "#32418"
+msgid ""
+msgstr ""
+
+msgctxt "#32419"
+msgid ""
+msgstr ""
+
+msgctxt "#32420"
+msgid ""
+msgstr ""

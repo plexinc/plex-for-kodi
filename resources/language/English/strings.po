@@ -586,23 +586,23 @@ msgid "Kodi Audio Settings"
 msgstr ""
 
 msgctxt "#32400"
-msgid ""
+msgid "Go To Season"
 msgstr ""
 
 msgctxt "#32401"
-msgid ""
+msgid "Directors"
 msgstr ""
 
 msgctxt "#32402"
-msgid ""
+msgid "Writer"
 msgstr ""
 
 msgctxt "#32403"
-msgid ""
+msgid "Writers"
 msgstr ""
 
 msgctxt "#32404"
-msgid ""
+msgid "Related Movies"
 msgstr ""
 
 msgctxt "#32405"

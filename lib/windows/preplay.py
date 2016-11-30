@@ -16,6 +16,8 @@ from plexnet import plexplayer, media
 from lib import colors
 from lib import util
 
+from lib.util import T
+
 
 class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'
@@ -170,21 +172,21 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         #     options.append({'key': 'play_next', 'display': 'Play Next'})
 
         if self.video.isWatched:
-            options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
+            options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
         else:
-            options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
+            options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
 
         options.append(dropdown.SEPARATOR)
 
         if self.video.type == 'episode':
-            options.append({'key': 'to_season', 'display': 'Go to Season'})
-            options.append({'key': 'to_show', 'display': 'Go to Show'})
+            options.append({'key': 'to_season', 'display': T(32400, 'Go to Season')})
+            options.append({'key': 'to_show', 'display': T(32323, 'Go to Show')})
 
         if self.video.type in ('episode', 'movie'):
-            options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.video.getLibrarySectionTitle())})
+            options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.video.getLibrarySectionTitle())})
 
         if self.video.server.allowsMediaDeletion:
-            options.append({'key': 'delete', 'display': 'Delete'})
+            options.append({'key': 'delete', 'display': T(32322, 'Delete')})
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
 
@@ -220,10 +222,10 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def delete(self):
         button = optionsdialog.show(
-            'Really delete?',
-            'Are you sure you really want to delete this media?',
-            'Yes',
-            'No'
+            T(32326, 'Really delete?'),
+            T(32327, 'Are you sure you really want to delete this media?'),
+            T(32328, 'Yes'),
+            T(32329, 'No')
         )
 
         if button != 0:
@@ -232,7 +234,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self._delete():
             self.doClose()
         else:
-            util.messageDialog('Message', 'There was a problem while attempting to delete the media.')
+            util.messageDialog(T(32330, 'Message'), T(32331, 'There was a problem while attempting to delete the media.'))
 
     @busy.dialog()
     def _delete(self):
@@ -362,16 +364,16 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def playVideo(self):
         if not self.video.available():
-            util.messageDialog('Unavailable', 'This item is currently unavailable.')
+            util.messageDialog(T(32312, 'Unavailable'), T(32313, 'This item is currently unavailable.'))
             return
 
         resume = False
         if self.video.viewOffset.asInt():
             button = optionsdialog.show(
-                'In Progress',
-                'Resume playback?',
-                'Resume',
-                'Play From Beginning'
+                T(32314, 'In Progress'),
+                T(32315, 'Resume playback?'),
+                T(32316, 'Resume'),
+                T(32317, 'Play From Beginning')
             )
 
             if button is None:
@@ -420,20 +422,20 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))
 
         directors = u' / '.join([d.tag for d in self.video.directors()][:5])
-        directorsLabel = len(self.video.directors) > 1 and u'DIRECTORS' or u'DIRECTOR'
+        directorsLabel = len(self.video.directors) > 1 and T(32401, u'DIRECTORS').upper() or T(32383, u'DIRECTOR').upper()
         self.setProperty('directors', directors and u'{0}    {1}'.format(directorsLabel, directors) or '')
 
         if self.video.type == 'episode':
             self.setProperty('content.rating', '')
             self.setProperty('thumb', self.video.defaultThumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
             self.setProperty('preview', self.video.thumb.asTranscodedImageURL(*self.PREVIEW_DIM))
-            self.setProperty('info', 'Season {0} Episode {1}'.format(self.video.parentIndex, self.video.index))
+            self.setProperty('info', '{0} {1} {2} {3}'.format(T(32303, 'Season'), self.video.parentIndex, T(32304, 'Episode'), self.video.index))
             self.setProperty('date', util.cleanLeadingZeros(self.video.originallyAvailableAt.asDatetime('%B %d, %Y')))
 
             writers = u' / '.join([w.tag for w in self.video.writers()][:5])
-            writersLabel = len(self.video.writers) > 1 and u'WRITERS' or u'WRITER'
+            writersLabel = len(self.video.writers) > 1 and T(32403, u'WRITERS').upper() or T(32402, u'WRITER').upper()
             self.setProperty('writers', writers and u'{0}    {1}'.format(writersLabel, writers) or '')
-            self.setProperty('related.header', 'Related Shows')
+            self.setProperty('related.header', T(32306, 'Related Shows'))
         elif self.video.type == 'movie':
             self.setProperty('preview', '')
             self.setProperty('thumb', self.video.thumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM))
@@ -445,7 +447,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             cast = u' / '.join([r.tag for r in self.video.roles()][:5])
             castLabel = 'CAST'
             self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
-            self.setProperty('related.header', 'Related Movies')
+            self.setProperty('related.header', T(32404, 'Related Movies'))
 
         self.setProperty('video.res', self.video.resolutionString())
         self.setProperty('audio.codec', self.video.audioCodecString())
@@ -487,19 +489,19 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setAudioAndSubtitleInfo(self):
         sas = self.video.selectedAudioStream()
-        self.setProperty('audio', sas and sas.getTitle() or 'None')
+        self.setProperty('audio', sas and sas.getTitle() or T(32309, 'None'))
 
         sss = self.video.selectedSubtitleStream()
         if sss:
             if len(self.video.subtitleStreams) > 1:
-                self.setProperty('subtitles', u'{0} \u2022 {1} More'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1))
+                self.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1), T(32307, 'More'))
             else:
                 self.setProperty('subtitles', sss.getTitle())
         else:
             if self.video.subtitleStreams:
-                self.setProperty('subtitles', u'None \u2022 {0} Available'.format(len(self.video.subtitleStreams)))
+                self.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(T(32309, 'None'), len(self.video.subtitleStreams), T(32308, 'Available')))
             else:
-                self.setProperty('subtitles', u'None')
+                self.setProperty('subtitles', T(32309, u'None'))
 
     def createListItem(self, obj):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.thumb.asTranscodedImageURL(*self.EXTRA_DIM), data_source=obj)

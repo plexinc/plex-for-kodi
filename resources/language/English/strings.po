@@ -772,11 +772,11 @@ msgid "Enter Port Number"
 msgstr ""
 
 msgctxt "#32418"
-msgid ""
+msgid "Creator"
 msgstr ""
 
 msgctxt "#32419"
-msgid ""
+msgid "Cast"
 msgstr ""
 
 msgctxt "#32420"

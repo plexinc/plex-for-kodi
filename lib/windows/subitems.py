@@ -21,6 +21,8 @@ import dropdown
 import windowutils
 import search
 
+from lib.util import T
+
 
 class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-seasons.xml'
@@ -108,16 +110,16 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('info', '')
         self.setProperty('date', self.mediaItem.year)
 
-        self.setProperty('extras.header', 'Extras')
-        self.setProperty('related.header', 'Related Shows')
+        self.setProperty('extras.header', T(32305, 'Extras'))
+        self.setProperty('related.header', T(32306, 'Related Shows'))
 
         if self.mediaItem.creator:
-            self.setProperty('directors', u'CREATOR    {0}'.format(self.mediaItem.creator))
+            self.setProperty('directors', u'{0}    {1}'.format(T(32418, 'Creator').upper(), self.mediaItem.creator))
         elif self.mediaItem.studio:
-            self.setProperty('directors', u'STUDIO    {0}'.format(self.mediaItem.studio))
+            self.setProperty('directors', u'{0}    {1}'.format(T(32386, 'Studio').upper(), self.mediaItem.studio))
 
         cast = u' / '.join([r.tag for r in self.mediaItem.roles()][:5])
-        castLabel = 'CAST'
+        castLabel = T(32419, 'Cast').upper()
         self.setProperty('writers', cast and u'{0}    {1}'.format(castLabel, cast) or '')
 
         genres = self.mediaItem.genres()

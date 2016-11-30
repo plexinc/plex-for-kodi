@@ -12,6 +12,9 @@ import dropdown
 from lib import util
 from lib.kodijsonrpc import builtin
 
+from lib.util import T
+
+
 KEY_MOVE_SET = frozenset(
     (
         xbmcgui.ACTION_MOVE_LEFT,
@@ -354,15 +357,18 @@ class SeekDialog(kodigui.BaseDialog):
     def subtitleButtonClicked(self):
         options = []
 
-        options.append({'key': 'download', 'display': 'Download Subtitles'})
+        options.append({'key': 'download', 'display': T(32405, 'Download Subtitles')})
         if xbmc.getCondVisibility('VideoPlayer.HasSubtitles'):
             if xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled'):
-                options.append({'key': 'delay', 'display': 'Subtitle Delay'})
-                options.append({'key': 'cycle', 'display': 'Next Subtitle'})
+                options.append({'key': 'delay', 'display': T(32406, 'Subtitle Delay')})
+                options.append({'key': 'cycle', 'display': T(32407, 'Next Subtitle')})
             options.append(
                 {
                     'key': 'enable',
-                    'display': xbmc.getCondVisibility('VideoPlayer.SubtitlesEnabled + VideoPlayer.HasSubtitles') and 'Disable Subtitles' or 'Enable Subtitles'}
+                    'display': xbmc.getCondVisibility(
+                        'VideoPlayer.SubtitlesEnabled + VideoPlayer.HasSubtitles'
+                    ) and T(32408, 'Disable Subtitles') or T(32409, 'Enable Subtitles')
+                }
             )
 
         choice = dropdown.showDropdown(options, (1360, 1060), close_direction='down', pos_is_bottom=True, close_on_playback_ended=True)
@@ -629,7 +635,10 @@ class PlaylistDialog(kodigui.BaseDialog):
             return self.createMovieListItem(pi)
 
     def createEpisodeListItem(self, episode):
-        label2 = u'{0} \u2022 {1}'.format(episode.grandparentTitle, u'S{0} \u2022 E{1}'.format(episode.parentIndex, episode.index))
+        label2 = u'{0} \u2022 {1}'.format(
+            episode.grandparentTitle,
+            u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), episode.parentIndex, T(32311, 'E'), episode.index)
+        )
         mli = kodigui.ManagedListItem(episode.title, label2, thumbnailImage=episode.thumb.asTranscodedImageURL(*self.LI_AR16X9_THUMB_DIM), data_source=episode)
         mli.setProperty('track.duration', util.durationToShortText(episode.duration.asInt()))
         mli.setProperty('video', '1')

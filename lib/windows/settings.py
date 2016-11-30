@@ -3,8 +3,8 @@ import xbmcgui
 import kodigui
 import windowutils
 
-from lib.util import T
 from lib import util
+from lib.util import T
 
 import plexnet
 
@@ -131,7 +131,7 @@ class PlatformSetting(InfoSetting):
     def __init__(self):
         InfoSetting.__init__(self, None, None, None)
         self.ID = 'platfom_version'
-        self.label = 'Platform Version'
+        self.label = T(32410, 'Platform Version')
 
     def valueLabel(self):
         try:
@@ -161,7 +161,7 @@ class PlatformSetting(InfoSetting):
             elif xbmc.getCondVisibility('System.Platform.Windows'):
                 plat = 'Windows'
 
-        return plat or 'Unknown'
+        return plat or T(32411, 'Unknown')
 
 
 class ServerVersionSetting(InfoSetting):
@@ -183,75 +183,82 @@ class IntegerSetting(BasicSetting):
 class Settings(object):
     SETTINGS = {
         'main': (
-            'Main', (
-                BoolSetting('auto_signin', 'Automatically Sign In', False).description('Skip user selection and pin entry on startup.'),
+            T(32000, 'Main'), (
                 BoolSetting(
-                    'post_play_auto', 'Post Play Auto Play', True
+                    'auto_signin', T(32038, 'Automatically Sign In'), False
                 ).description(
-                    "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+                    T(32100, 'Skip user selection and pin entry on startup.')
+                ),
+                BoolSetting(
+                    'post_play_auto', T(32039, 'Post Play Auto Play'), True
+                ).description(
+                    T(
+                        32101,
+                        "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+                    )
                 ),
             )
         ),
         'audio': (
-            'Audio',
+            T(32048, 'Audio'),
             ()
         ),
         'video': (
-            'Video', (
-                QualitySetting('local_quality', 'Local Quality', 13),
-                QualitySetting('remote_quality', 'Remote Quality', 8),
-                QualitySetting('online_quality', 'Online Quality', 13),
-                BoolSetting('playback_directplay', 'Allow Direct Play', True),
-                BoolSetting('playback_remux', 'Allow Direct Stream', True),
-                BoolSetting('allow_4k', 'Allow 4K', True).description(
-                    'Enable this if your hardware can handle 4K playback. Disable it to force transcoding.'
+            T(32053, 'Video'), (
+                QualitySetting('local_quality', T(32020, 'Local Quality'), 13),
+                QualitySetting('remote_quality', T(32021, 'Remote Quality'), 8),
+                QualitySetting('online_quality', T(32022, 'Online Quality'), 13),
+                BoolSetting('playback_directplay', T(32025, 'Allow Direct Play'), True),
+                BoolSetting('playback_remux', T(32026, 'Allow Direct Stream'), True),
+                BoolSetting('allow_4k', T(32036, 'Allow 4K'), True).description(
+                    T(32102, 'Enable this if your hardware can handle 4K playback. Disable it to force transcoding.')
                 ),
-                BoolSetting('allow_hevc', 'Allow HEVC (h265)', False).description(
-                    'Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding.'
+                BoolSetting('allow_hevc', T(32037, 'Allow HEVC (h265)'), False).description(
+                    T(32103, 'Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding.')
                 )
             )
         ),
         'subtitles': (
-            'Subtitles', (
+            T(32396, 'Subtitles'), (
                 OptionsSetting(
-                    'burn_subtitles', 'Burn Subtitles (Direct Play Only)', 'auto', (('auto', 'Auto'), ('image', 'Only Image Formats'), ('always', 'Always'))
+                    'burn_subtitles',
+                    T(32031, 'Burn Subtitles (Direct Play Only)'),
+                    'auto',
+                    (('auto', T(32030, 'Auto')), ('image', T(32029, 'Only Image Formats')), ('always', T(32028, 'Always')))
                 ),
-                BoolSetting('subtitle_downloads', 'Enable Subtitle Downloading', False)
+                BoolSetting('subtitle_downloads', T(32040, 'Enable Subtitle Downloading'), False)
             )
         ),
         'advanced': (
-            'Advanced', (
+            T(32049, 'Advanced'), (
                 OptionsSetting(
                     'allow_insecure', T(32032), 'never', (('never', T(32033)), ('same_network', T(32034)), ('always', T(32035)))
                 ).description(
-                    'When to connect to servers with no secure connections.[CR][CR]' +
-                    u'\u2022 [B]Never[/B]: Never connect to a server insecurely[CR]' +
-                    u'\u2022 [B]On Same Network[/B]: Allow if on the same network[CR]' +
-                    u'\u2022 [B]Always[/B]: Allow same network and remote connections'
+                    T(32104, 'When to connect to servers with no secure connections...')
                 ),
-                BoolSetting('gdm_discovery', 'Server Discovery (GDM)', True),
-                BoolSetting('kiosk.mode', 'Start Plex On Kodi Startup', False),
+                BoolSetting('gdm_discovery', T(32042, 'Server Discovery (GDM)'), True),
+                BoolSetting('kiosk.mode', T(32043, 'Start Plex On Kodi Startup'), False),
             )
         ),
         'manual': (
-            'Manual Servers', (
-                IPSetting('manual_ip_0', 'Connection 1 IP', ''),
-                IntegerSetting('manual_port_0', 'Connection 1 Port', 32400),
-                IPSetting('manual_ip_1', 'Connection 2 IP', ''),
-                IntegerSetting('manual_port_1', 'Connection 2 Port', 32400)
+            T(32050, 'Manual Servers'), (
+                IPSetting('manual_ip_0', T(32044, 'Connection 1 IP'), ''),
+                IntegerSetting('manual_port_0', T(32045, 'Connection 1 Port'), 32400),
+                IPSetting('manual_ip_1', T(32046, 'Connection 2 IP'), ''),
+                IntegerSetting('manual_port_1', T(32047, 'Connection 2 Port'), 32400)
             )
         ),
         'privacy': (
-            'Privacy',
+            T(32051, 'Privacy'),
             ()
         ),
         'about': (
-            'About', (
-                InfoSetting('addon_version', 'Addon Version', util.ADDON.getAddonInfo('version')),
-                InfoSetting('kodi_version', 'Kodi Version', xbmc.getInfoLabel('System.BuildVersion')),
+            T(32052, 'About'), (
+                InfoSetting('addon_version', T(32054, 'Addon Version'), util.ADDON.getAddonInfo('version')),
+                InfoSetting('kodi_version', T(32055, 'Kodi Version'), xbmc.getInfoLabel('System.BuildVersion')),
                 PlatformSetting(),
-                InfoSetting('screen_res', 'Screen Resolution', xbmc.getInfoLabel('System.ScreenResolution').split('-')[0].strip()),
-                ServerVersionSetting('server_version', 'Current Server Version', None)
+                InfoSetting('screen_res', T(32056, 'Screen Resolution'), xbmc.getInfoLabel('System.ScreenResolution').split('-')[0].strip()),
+                ServerVersionSetting('server_version', T(32057, 'Current Server Version'), None)
             )
         ),
     }
@@ -284,7 +291,7 @@ class SettingsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         self.settingsList = kodigui.ManagedControlList(self, self.SETTINGS_LIST_ID, 6)
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 6)
 
-        self.setProperty('heading', 'Settings')
+        self.setProperty('heading', T(32343, 'Settings'))
         self.showSections()
         self.setFocusId(75)
         self.lastSection = None
@@ -418,10 +425,15 @@ class SettingsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         current = setting.get()
         edit = True
         if current:
-            edit = xbmcgui.Dialog().yesno('Edit Or Clear', 'Edit IP address or clear the current setting?', nolabel='Clear', yeslabel='Edit')
+            edit = xbmcgui.Dialog().yesno(
+                T(32412, 'Edit Or Clear'),
+                T(32413, 'Edit IP address or clear the current setting?'),
+                nolabel=T(32414, 'Clear'),
+                yeslabel=T(32415, 'Edit')
+            )
 
         if edit:
-            result = xbmcgui.Dialog().input('Enter IP Address', current, xbmcgui.INPUT_IPADDRESS)
+            result = xbmcgui.Dialog().input(T(32416, 'Enter IP Address'), current, xbmcgui.INPUT_IPADDRESS)
             if not result:
                 return
         else:
@@ -431,7 +443,7 @@ class SettingsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
         mli.setLabel2(result)
 
     def editInteger(self, mli, setting):
-        result = xbmcgui.Dialog().input('Enter Port Number', str(setting.get()), xbmcgui.INPUT_NUMERIC)
+        result = xbmcgui.Dialog().input(T(32417, 'Enter Port Number'), str(setting.get()), xbmcgui.INPUT_NUMERIC)
         if not result:
             return
         setting.set(int(result))
@@ -511,7 +523,7 @@ def showOptionsDialog(heading, options):
 
 def showAudioDialog(video):
     options = [(s, s.getTitle()) for s in video.audioStreams]
-    choice = showOptionsDialog('Audio', options)
+    choice = showOptionsDialog(T(32048, 'Audio'), options)
     if choice is None:
         return
 
@@ -521,7 +533,7 @@ def showAudioDialog(video):
 def showSubtitlesDialog(video):
     options = [(s, s.getTitle()) for s in video.subtitleStreams]
     options.insert(0, (plexnet.plexstream.NoneStream(), 'None'))
-    choice = showOptionsDialog('Subtitle', options)
+    choice = showOptionsDialog(T(32396, 'Subtitles'), options)
     if choice is None:
         return
 
@@ -531,7 +543,7 @@ def showSubtitlesDialog(video):
 def showQualityDialog(video):
     options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014))]
 
-    choice = showOptionsDialog('Quality', options)
+    choice = showOptionsDialog(T(32397, 'Quality'), options)
     if choice is None:
         return
 

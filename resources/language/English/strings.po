@@ -94,11 +94,11 @@ msgid "Debug Logging"
 msgstr ""
 
 msgctxt "#32025"
-msgid "Direct Play"
+msgid "Allow Direct Play"
 msgstr ""
 
 msgctxt "#32026"
-msgid "Direct Stream"
+msgid "Allow Direct Stream"
 msgstr ""
 
 msgctxt "#32027"
@@ -110,7 +110,7 @@ msgid "Always"
 msgstr ""
 
 msgctxt "#32029"
-msgid "Only image formats"
+msgid "Only Image Formats"
 msgstr ""
 
 msgctxt "#32030"
@@ -118,7 +118,7 @@ msgid "Auto"
 msgstr ""
 
 msgctxt "#32031"
-msgid "Burn Subtitles"
+msgid "Burn Subtitles (Direct Play Only)"
 msgstr ""
 
 msgctxt "#32032"
@@ -136,6 +136,120 @@ msgstr ""
 msgctxt "#32035"
 msgid "Always"
 msgstr ""
+
+msgctxt "#32036"
+msgid "Allow 4K"
+msgstr ""
+
+msgctxt "#32037"
+msgid "Allow HEVC (h265)"
+msgstr ""
+
+msgctxt "#32038"
+msgid "Automatically Sign In"
+msgstr ""
+
+msgctxt "#32039"
+msgid "Post Play Auto Play"
+msgstr ""
+
+msgctxt "#32040"
+msgid "Enable Subtitle Downloading"
+msgstr ""
+
+msgctxt "#32041"
+msgid "Enable Subtitle Downloading"
+msgstr ""
+
+msgctxt "#32042"
+msgid "Server Discovery (GDM)"
+msgstr ""
+
+msgctxt "#32043"
+msgid "Start Plex On Kodi Startup"
+msgstr ""
+
+msgctxt "#32044"
+msgid "Connection 1 IP"
+msgstr ""
+
+msgctxt "#32045"
+msgid "Connection 1 Port"
+msgstr ""
+
+msgctxt "#32046"
+msgid "Connection 2 IP"
+msgstr ""
+
+msgctxt "#32047"
+msgid "Connection 2 Port"
+msgstr ""
+
+msgctxt "#32048"
+msgid "Audio"
+msgstr ""
+
+msgctxt "#32049"
+msgid "Advanced"
+msgstr ""
+
+msgctxt "#32050"
+msgid "Manual Servers"
+msgstr ""
+
+msgctxt "#32051"
+msgid "Privacy"
+msgstr ""
+
+msgctxt "#32052"
+msgid "About"
+msgstr ""
+
+msgctxt "#32053"
+msgid "Video"
+msgstr ""
+
+msgctxt "#32054"
+msgid "Addon Version"
+msgstr ""
+
+msgctxt "#32055"
+msgid "Kodi Version"
+msgstr ""
+
+msgctxt "#32056"
+msgid "Screen Resolution"
+msgstr ""
+
+msgctxt "#32057"
+msgid "Current Server Version"
+msgstr ""
+
+msgctxt "#32058"
+msgid ""
+msgstr ""
+
+
+msgctxt "#32100"
+msgid "Skip user selection and pin entry on startup."
+msgstr ""
+
+msgctxt "#32101"
+msgid "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+msgstr ""
+
+msgctxt "#32102"
+msgid "Enable this if your hardware can handle 4K playback. Disable it to force transcoding."
+msgstr ""
+
+msgctxt "#32103"
+msgid "Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding."
+msgstr ""
+
+msgctxt "#32104"
+msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
+msgstr ""
+
 
 msgctxt "#32201"
 msgid "Trailer"
@@ -606,55 +720,55 @@ msgid "Related Movies"
 msgstr ""
 
 msgctxt "#32405"
-msgid ""
+msgid "Download Subtitles"
 msgstr ""
 
 msgctxt "#32406"
-msgid ""
+msgid "Subtitle Delay"
 msgstr ""
 
 msgctxt "#32407"
-msgid ""
+msgid "Next Subtitle"
 msgstr ""
 
 msgctxt "#32408"
-msgid ""
+msgid "Disable Subtitles"
 msgstr ""
 
 msgctxt "#32409"
-msgid ""
+msgid "Enable Subtitles"
 msgstr ""
 
 msgctxt "#32410"
-msgid ""
+msgid "Platform Version"
 msgstr ""
 
 msgctxt "#32411"
-msgid ""
+msgid "Unknown"
 msgstr ""
 
 msgctxt "#32412"
-msgid ""
+msgid "Edit Or Clear"
 msgstr ""
 
 msgctxt "#32413"
-msgid ""
+msgid "Edit IP address or clear the current setting?"
 msgstr ""
 
 msgctxt "#32414"
-msgid ""
+msgid "Clear"
 msgstr ""
 
 msgctxt "#32415"
-msgid ""
+msgid "Edit"
 msgstr ""
 
 msgctxt "#32416"
-msgid ""
+msgid "Enter IP Address"
 msgstr ""
 
 msgctxt "#32417"
-msgid ""
+msgid "Enter Port Number"
 msgstr ""
 
 msgctxt "#32418"

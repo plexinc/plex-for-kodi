@@ -661,6 +661,14 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.stopAndWait()  # Stop before setting up the handler to prevent player events from causing havoc
 
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
+
+        if meta.isTranscoded:
+            self.handler.mode = self.handler.MODE_RELATIVE
+        else:
+            if offset:
+                self.handler.seekOnStart = meta.playStart * 1000
+            self.handler.mode = self.handler.MODE_ABSOLUTE
+
         url = util.addURLParams(url, {
             'X-Plex-Platform': 'Chrome',
             'X-Plex-Client-Identifier': plexapp.INTERFACE.getGlobal('clientIdentifier')
@@ -683,12 +691,6 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         })
 
         self.play(url, li)
-
-        if offset and not meta.isTranscoded:
-            self.handler.seekOnStart = meta.playStart * 1000
-            self.handler.mode = self.handler.MODE_ABSOLUTE
-        else:
-            self.handler.mode = self.handler.MODE_RELATIVE
 
     def playVideoPlaylist(self, playlist, resume=True, handler=None, session_id=None):
         if handler:

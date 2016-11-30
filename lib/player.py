@@ -648,6 +648,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         url = meta.streamUrls[0]
         bifURL = self.playerObject.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
+
+        self.stopAndWait()  # Stop before setting up the handler to prevent player events from causing havoc
+
         self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
         url = util.addURLParams(url, {
             'X-Plex-Platform': 'Chrome',
@@ -669,7 +672,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'poster': self.video.defaultThumb.asTranscodedImageURL(347, 518),
             'fanart': self.video.defaultArt.asTranscodedImageURL(1920, 1080),
         })
-        self.stopAndWait()
+
         self.play(url, li)
 
         if offset and not meta.isTranscoded:

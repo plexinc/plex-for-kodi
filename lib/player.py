@@ -277,6 +277,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.seekAbsolute()
 
         self.setSubtitles()
+        self.setAudioTrack()
 
         self.seeking = self.NO_SEEK
 
@@ -342,6 +343,14 @@ class SeekPlayerHandler(BasePlayerHandler):
                     self.player.showSubtitles(True)
         else:
             self.player.showSubtitles(False)
+
+    def setAudioTrack(self):
+        if self.mode == self.MODE_ABSOLUTE:
+            track = self.player.video.selectedAudioStream()
+            if track:
+                xbmc.sleep(100)
+                util.DEBUG_LOG('Switching audio track - index: {0}'.format(track.typeIndex))
+                self.player.setAudioStream(track.typeIndex)
 
     def updateOffset(self):
         self.offset = int(self.player.getTime() * 1000)

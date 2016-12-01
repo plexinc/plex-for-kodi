@@ -1,3 +1,8 @@
+[- 0.0.89 -]
+
+Fix: Selecting non plex pass not managed users caused sign out on addon restart
+Fix: Playlists view showed empty space when no audio playlists were present and prevented focus
+
 [- 0.0.88 -]
 
 Fix: Starting a video while audio was playing triggered an error causing issues with OSD/control

@@ -42,6 +42,8 @@ class MyPlexAccount(object):
         self.isAdmin = False
         self.switchUser = False
 
+        self.adminHasPlexPass = False
+
         self.lastHomeUserUpdate = None
         self.homeUsers = []
 
@@ -60,6 +62,7 @@ class MyPlexAccount(object):
             'isManaged': self.isManaged,
             'isAdmin': self.isAdmin,
             'isSecure': self.isSecure,
+            'adminHasPlexPass': self.adminHasPlexPass
         }
 
         plexapp.INTERFACE.setRegistry("MyPlexAccount", json.dumps(obj), "myplex")
@@ -91,6 +94,7 @@ class MyPlexAccount(object):
                 self.isAdmin = obj.get('isAdmin') or self.isAdmin
                 self.isSecure = obj.get('isSecure') or self.isSecure
                 self.isProtected = bool(obj.get('pin'))
+                self.adminHasPlexPass = obj.get('adminHasPlexPass') or self.adminHasPlexPass
 
         if self.authToken:
             request = myplexrequest.MyPlexRequest("/users/account")
@@ -134,9 +138,12 @@ class MyPlexAccount(object):
             self.isAdmin = False
             if self.homeUsers:
                 for user in self.homeUsers:
-                    if self.ID == user.ID:
+                    if self.ID == user.id:
                         self.isAdmin = str(user.admin) == "1"
                         break
+
+            if self.isAdmin and self.isPlexPass:
+                self.adminHasPlexPass = True
 
             # consider a single, unprotected user authenticated
             if not self.isAuthenticated and not self.isProtected and len(self.homeUsers) <= 1:
@@ -150,6 +157,7 @@ class MyPlexAccount(object):
             util.LOG("Managed: {0}".format(self.isManaged))
             util.LOG("Protected: {0}".format(self.isProtected))
             util.LOG("Admin: {0}".format(self.isAdmin))
+            util.LOG("AdminPlexPass: {0}".format(self.adminHasPlexPass))
 
             self.saveState()
             plexapp.MANAGER.publish()
@@ -205,6 +213,12 @@ class MyPlexAccount(object):
 
         self.saveState()
 
+    def hasPlexPass(self):
+        if self.hasPlexPass or self.isManaged:
+            return True
+
+        return self.adminHasPlexPass
+
     def validateToken(self, token, switchUser=False):
         self.authToken = token
         self.switchUser = switchUser
@@ -246,7 +260,7 @@ class MyPlexAccount(object):
 
             self.lastHomeUserUpdate = epoch
 
-        util.LOG("home users: {0}".format(len(self.homeUsers)))
+        util.LOG("home users: {0}".format(self.homeUsers))
 
     def switchHomeUser(self, userId, pin=''):
         if userId == self.ID and self.isAuthenticated:

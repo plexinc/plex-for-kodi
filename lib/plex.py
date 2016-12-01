@@ -262,7 +262,7 @@ def init():
 
 
 def requirePlexPass():
-    if not plexapp.ACCOUNT.isPlexPass and not plexapp.ACCOUNT.isManaged:
+    if not plexapp.ACCOUNT.hasPlexPass():
         from windows import signin, background
         background.setSplash(False)
         w = signin.SignInPlexPass.open()

@@ -73,6 +73,7 @@
                                     <width>238</width>
                                     <height>238</height>
                                     <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                    <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -112,104 +113,65 @@
                             <posx>40</posx>
                             <posy>40</posy>
                             <control type="group">
-                                <animation effect="zoom" start="88" end="100" time="100" center="140,140" reversible="false">Focus</animation>
-                                <animation effect="zoom" start="100" end="88" time="100" center="140,140" reversible="false">UnFocus</animation>
-                                <visible>Control.HasFocus(101)</visible>
+                                <animation effect="zoom" start="100" end="116" time="100" center="140,140" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="116" end="100" time="100" center="140,140" reversible="false">UnFocus</animation>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
-                                    <posx>-40</posx>
-                                    <posy>-40</posy>
-                                    <width>350</width>
-                                    <height>350</height>
+                                    <visible>Control.HasFocus(101)</visible>
+                                    <posx>-19</posx>
+                                    <posy>-19</posy>
+                                    <width>318</width>
+                                    <height>318</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-                                    <posx>5</posx>
-                                    <posy>5</posy>
+                                    <posx>21</posx>
+                                    <posy>21</posy>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>270</width>
-                                        <height>270</height>
+                                        <width>238</width>
+                                        <height>238</height>
                                         <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>270</width>
-                                        <height>270</height>
+                                        <width>238</width>
+                                        <height>238</height>
                                         <texture background="true">$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="label">
                                         <posx>-30</posx>
-                                        <posy>285</posy>
-                                        <width>330</width>
+                                        <posy>248</posy>
+                                        <width>298</width>
                                         <height>40</height>
-                                        <font>font12</font>
+                                        <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
                                         <posx>-30</posx>
-                                        <posy>320</posy>
-                                        <width>330</width>
+                                        <posy>278</posy>
+                                        <width>298</width>
                                         <height>40</height>
-                                        <font>font12</font>
+                                        <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label2]</label>
                                     </control>
                                 </control>
                                 <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>280</width>
-                                    <height>280</height>
+                                    <visible>Control.HasFocus(101)</visible>
+                                    <posx>16</posx>
+                                    <posy>16</posy>
+                                    <width>248</width>
+                                    <height>248</height>
                                     <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
-                            </control>
-
-                            <control type="group">
-                                <visible>!Control.HasFocus(101)</visible>
-                                <posx>21</posx>
-                                <posy>21</posy>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>238</width>
-                                    <height>238</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
-                                </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>238</width>
-                                    <height>238</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
-                                    <aspectratio>scale</aspectratio>
-                                </control>
-                                <control type="label">
-                                    <posx>-30</posx>
-                                    <posy>248</posy>
-                                    <width>298</width>
-                                    <height>40</height>
-                                    <font>font10</font>
-                                    <align>center</align>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>$INFO[ListItem.Label]</label>
-                                </control>
-                                <control type="label">
-                                    <posx>-30</posx>
-                                    <posy>278</posy>
-                                    <width>298</width>
-                                    <height>40</height>
-                                    <font>font10</font>
-                                    <align>center</align>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>$INFO[ListItem.Label2]</label>
                                 </control>
                             </control>
                         </control>
@@ -219,12 +181,14 @@
 
             <control type="group" id="300">
                 <visible>IntegerGreaterThan(Container(301).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <animation effect="slide" end="0,-420" condition="!Control.IsVisible(100)">Conditional</animation>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>0</posx>
                 <posy>445</posy>
                 <width>1920</width>
                 <height>360</height>
                 <control type="image">
+                    <visible>Control.IsVisible(100)</visible>
                     <posx>60</posx>
                     <posy>0</posy>
                     <width>1800</width>
@@ -266,6 +230,7 @@
                                     <width>537</width>
                                     <height>303</height>
                                     <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                    <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="image">
                                     <posx>0</posx>
@@ -305,104 +270,65 @@
                             <posx>40</posx>
                             <posy>40</posy>
                             <control type="group">
-                                <animation effect="zoom" start="88" end="100" time="100" center="310,177" reversible="false">Focus</animation>
-                                <animation effect="zoom" start="100" end="88" time="100" center="310,177" reversible="false">UnFocus</animation>
-                                <visible>Control.HasFocus(301)</visible>
+                                <animation effect="zoom" start="100" end="110" time="100" center="310,177" reversible="false">Focus</animation>
+                                <animation effect="zoom" start="110" end="100" time="100" center="310,177" reversible="false">UnFocus</animation>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <control type="image">
-                                    <posx>-40</posx>
-                                    <posy>-40</posy>
-                                    <width>690</width>
-                                    <height>424</height>
+                                    <visible>Control.HasFocus(301)</visible>
+                                    <posx>1.5</posx>
+                                    <posy>-15.5</posy>
+                                    <width>617</width>
+                                    <height>383</height>
                                     <texture border="42">script.plex/drop-shadow.png</texture>
                                 </control>
                                 <control type="group">
-                                    <posx>5</posx>
-                                    <posy>5</posy>
+                                    <posx>41.5</posx>
+                                    <posy>25.5</posy>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>610</width>
-                                        <height>344</height>
+                                        <width>537</width>
+                                        <height>303</height>
                                         <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
+                                        <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
-                                        <width>610</width>
-                                        <height>344</height>
+                                        <width>537</width>
+                                        <height>303</height>
                                         <texture background="true">$INFO[ListItem.Thumb]</texture>
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="label">
                                         <posx>-30</posx>
-                                        <posy>359</posy>
-                                        <width>670</width>
+                                        <posy>313</posy>
+                                        <width>597</width>
                                         <height>40</height>
-                                        <font>font12</font>
+                                        <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
                                         <posx>-30</posx>
-                                        <posy>394</posy>
-                                        <width>670</width>
+                                        <posy>343</posy>
+                                        <width>597</width>
                                         <height>40</height>
-                                        <font>font12</font>
+                                        <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label2]</label>
                                     </control>
                                 </control>
                                 <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>620</width>
-                                    <height>354</height>
+                                    <visible>Control.HasFocus(301)</visible>
+                                    <posx>36.5</posx>
+                                    <posy>20.5</posy>
+                                    <width>547</width>
+                                    <height>313</height>
                                     <texture border="10">script.plex/home/selected.png</texture>
-                                </control>
-                            </control>
-
-                            <control type="group">
-                                <visible>!Control.HasFocus(301)</visible>
-                                <posx>41.5</posx>
-                                <posy>25.5</posy>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>537</width>
-                                    <height>303</height>
-                                    <texture>$INFO[ListItem.Property(thumb.fallback)]</texture>
-                                </control>
-                                <control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
-                                    <width>537</width>
-                                    <height>303</height>
-                                    <texture background="true">$INFO[ListItem.Thumb]</texture>
-                                    <aspectratio>scale</aspectratio>
-                                </control>
-                                <control type="label">
-                                    <posx>-30</posx>
-                                    <posy>313</posy>
-                                    <width>597</width>
-                                    <height>40</height>
-                                    <font>font10</font>
-                                    <align>center</align>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>$INFO[ListItem.Label]</label>
-                                </control>
-                                <control type="label">
-                                    <posx>-30</posx>
-                                    <posy>343</posy>
-                                    <width>597</width>
-                                    <height>40</height>
-                                    <font>font10</font>
-                                    <align>center</align>
-                                    <textcolor>FFFFFFFF</textcolor>
-                                    <label>$INFO[ListItem.Label2]</label>
                                 </control>
                             </control>
                         </control>

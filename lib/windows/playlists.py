@@ -48,7 +48,10 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.videoPLListControl = kodigui.ManagedControlList(self, self.VIDEO_PL_LIST_ID, 5)
 
         self.fill()
-        self.setFocusId(self.AUDIO_PL_LIST_ID)
+        if self.audioPLListControl.size():
+            self.setFocusId(self.AUDIO_PL_LIST_ID)
+        else:
+            self.setFocusId(self.VIDEO_PL_LIST_ID)
 
     def onAction(self, action):
         try:
@@ -95,6 +98,8 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             thumbnailImage=obj.composite.asTranscodedImageURL(*self.THUMB_DIMS[obj.playlistType]['item.thumb']),
             data_source=obj
         )
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(obj.playlistType == 'audio' and 'music' or 'movie'))
+
         return mli
 
     @busy.dialog()

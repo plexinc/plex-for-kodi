@@ -14,6 +14,8 @@ import windowutils
 import opener
 import search
 
+from lib.util import T
+
 
 class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-album.xml'
@@ -214,15 +216,15 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if item:
             if item.dataSource.isWatched:
-                options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
+                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
             else:
-                options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
+                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
 
-            if True:
-                options.append({'key': 'add_to_playlist', 'display': '[COLOR FF808080]Add To Playlist[/COLOR]'})
+            # if False:
+            #     options.append({'key': 'add_to_playlist', 'display': '[COLOR FF808080]Add To Playlist[/COLOR]'})
         else:
             if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
-                options.append({'key': 'play_next', 'display': 'Play Next'})
+                options.append({'key': 'play_next', 'display': T(32325, 'Play Next')})
 
             # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
             #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
@@ -230,8 +232,8 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if options:
                 options.append(dropdown.SEPARATOR)
 
-            options.append({'key': 'to_artist', 'display': 'Go to Artist'})
-            options.append({'key': 'to_section', 'display': u'Go to {0}'.format(self.album.getLibrarySectionTitle())})
+            options.append({'key': 'to_artist', 'display': T(32301, 'Go to Artist')})
+            options.append({'key': 'to_section', 'display': T(32302, u'Go to {0}').format(self.album.getLibrarySectionTitle())})
 
         pos = (460, 1106)
         bottom = True
@@ -318,12 +320,12 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             disc = track.parentIndex.asInt()
             if disc > 1:
                 if not multiDisc:
-                    items.insert(0, kodigui.ManagedListItem('DISC 1', properties={'is.header': '1'}))
+                    items.insert(0, kodigui.ManagedListItem(u'{0} 1'.format(T(32420, 'Disc').upper()), properties={'is.header': '1'}))
 
                 if disc != multiDisc:
                     items[-1].setProperty('is.footer', '1')
                     multiDisc = disc
-                    items.append(kodigui.ManagedListItem('DISC {0}'.format(disc), properties={'is.header': '1'}))
+                    items.append(kodigui.ManagedListItem('{0} {1}'.format(T(32420, 'Disc').upper(), disc), properties={'is.header': '1'}))
 
             mli = self.createListItem(track)
             if mli:

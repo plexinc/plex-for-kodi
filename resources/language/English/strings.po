@@ -780,5 +780,45 @@ msgid "Cast"
 msgstr ""
 
 msgctxt "#32420"
+msgid "Disc"
+msgstr ""
+
+msgctxt "#32421"
+msgid ""
+msgstr ""
+
+msgctxt "#32422"
+msgid ""
+msgstr ""
+
+msgctxt "#32423"
+msgid ""
+msgstr ""
+
+msgctxt "#32424"
+msgid ""
+msgstr ""
+
+msgctxt "#32425"
+msgid ""
+msgstr ""
+
+msgctxt "#32426"
+msgid ""
+msgstr ""
+
+msgctxt "#32427"
+msgid ""
+msgstr ""
+
+msgctxt "#32428"
+msgid ""
+msgstr ""
+
+msgctxt "#32429"
+msgid ""
+msgstr ""
+
+msgctxt "#32430"
 msgid ""
 msgstr ""

@@ -1,3 +1,11 @@
+[- 0.0.90 -]
+
+Fix: Errors caused by encoding issues in episodes pre-play and track playback
+Fix: Player settings dialog would sometimes not close without some user input
+Fix: Increased music playback thumbnail resolution - affects add-on player screen and skin views outside the addon
+Change: Player settings dialog now puts focus on the selected setting when displaying setting lists
+Change: Now back button only jumps to top bar when top bar is off screen
+
 [- 0.0.89 -]
 
 Fix: Selecting non plex pass not managed users caused sign out on addon restart

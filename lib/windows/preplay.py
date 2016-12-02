@@ -15,6 +15,7 @@ from plexnet import plexplayer, media
 
 from lib import colors
 from lib import util
+from lib import metadata
 
 from lib.util import T
 
@@ -452,7 +453,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setProperty('video.res', self.video.resolutionString())
         self.setProperty('audio.codec', self.video.audioCodecString())
-        self.setProperty('audio.channels', self.video.audioChannelsString())
+        self.setProperty('audio.channels', self.video.audioChannelsString(metadata.apiTranslate))
 
         self.setProperties(('rating.stars', 'rating', 'rating.image', 'rating2', 'rating2.image'), '')
         if self.video.userRating:
@@ -490,14 +491,16 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setAudioAndSubtitleInfo(self):
         sas = self.video.selectedAudioStream()
-        self.setProperty('audio', sas and sas.getTitle() or T(32309, 'None'))
+        self.setProperty('audio', sas and sas.getTitle(metadata.apiTranslate) or T(32309, 'None'))
 
         sss = self.video.selectedSubtitleStream()
         if sss:
             if len(self.video.subtitleStreams) > 1:
-                self.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1), T(32307, 'More'))
+                self.setProperty(
+                    'subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(self.video.subtitleStreams) - 1), T(32307, 'More')
+                )
             else:
-                self.setProperty('subtitles', sss.getTitle())
+                self.setProperty('subtitles', sss.getTitle(metadata.apiTranslate))
         else:
             if self.video.subtitleStreams:
                 self.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(T(32309, 'None'), len(self.video.subtitleStreams), T(32308, 'Available')))

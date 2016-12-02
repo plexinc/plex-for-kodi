@@ -5,6 +5,7 @@ import plexstream
 import exceptions
 import compat
 import plexlibrary
+import util
 
 
 class PlexVideoItemList(plexobjects.PlexItemList):
@@ -156,13 +157,13 @@ class Video(media.MediaItem):
 
         return codec
 
-    def audioChannelsString(self):
+    def audioChannelsString(self, translate_func=util.dummyTranslate):
         channels = self.media[0].audioChannels.asInt()
 
         if channels == 1:
-            return "Mono"
+            return translate_func("Mono")
         elif channels == 2:
-            return "Stereo"
+            return translate_func("Stereo")
         elif channels > 0:
             return "{0}.1".format(channels - 1)
         else:

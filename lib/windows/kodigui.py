@@ -243,7 +243,12 @@ class ManagedListItem(object):
         if not self._listItem:
             if not self._manager:
                 return None
-            self._listItem = self._manager.getListItemFromManagedItem(self)
+
+            try:
+                self._listItem = self._manager.getListItemFromManagedItem(self)
+            except RuntimeError:
+                return None
+
         return self._listItem
 
     def _takeListItem(self, manager, lid):

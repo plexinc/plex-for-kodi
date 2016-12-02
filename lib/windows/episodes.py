@@ -644,19 +644,21 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli.setProperty('unwatched', not video.isWatched and '1' or '')
         mli.setProperty('video.res', video.resolutionString())
         mli.setProperty('audio.codec', video.audioCodecString())
-        mli.setProperty('audio.channels', video.audioChannelsString())
+        mli.setProperty('audio.channels', video.audioChannelsString(metadata.apiTranslate))
         mli.setBoolProperty('unavailable', not video.available())
 
     def setItemAudioAndSubtitleInfo(self, video, mli):
         sas = video.selectedAudioStream()
-        mli.setProperty('audio', sas and sas.getTitle() or T(32309, 'None'))
+        mli.setProperty('audio', sas and sas.getTitle(metadata.apiTranslate) or T(32309, 'None'))
 
         sss = video.selectedSubtitleStream()
         if sss:
             if len(video.subtitleStreams) > 1:
-                mli.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(), len(video.subtitleStreams) - 1), T(32307, 'More'))
+                mli.setProperty(
+                    'subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(video.subtitleStreams) - 1), T(32307, 'More')
+                )
             else:
-                mli.setProperty('subtitles', sss.getTitle())
+                mli.setProperty('subtitles', sss.getTitle(metadata.apiTranslate))
         else:
             if video.subtitleStreams:
                 mli.setProperty('subtitles', u'{0} \u2022 {1} {2}'.format(T(32309, 'None'), len(video.subtitleStreams), T(32308, 'Available')))

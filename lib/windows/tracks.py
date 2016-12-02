@@ -26,7 +26,7 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     height = 1080
 
     THUMB_AR16X9_DIM = (178, 100)
-    POSTER_DIM = (420, 630)
+    THUMB_SQUARE_DIM = (630, 630)
 
     TRACKS_LIST_ID = 101
     LIST_OPTIONS_BUTTON_ID = 111
@@ -300,7 +300,7 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             'background',
             self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
-        self.setProperty('album.thumb', self.album.thumb.asTranscodedImageURL(*self.POSTER_DIM))
+        self.setProperty('album.thumb', self.album.thumb.asTranscodedImageURL(*self.THUMB_SQUARE_DIM))
         self.setProperty('artist.title', self.album.parentTitle or '')
         self.setProperty('album.title', self.album.title)
 

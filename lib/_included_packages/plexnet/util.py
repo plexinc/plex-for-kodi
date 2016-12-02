@@ -87,6 +87,10 @@ def TEST(msg):
     plexapp.INTERFACE.LOG(' ---TEST: {0}'.format(msg))
 
 
+def dummyTranslate(string):
+    return string
+
+
 def hideToken(token):
     # return 'X' * len(token)
     if not token:

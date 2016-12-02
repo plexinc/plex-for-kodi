@@ -27,7 +27,7 @@ class MediaDecisionEngine(object):
         # See if we're missing media/stream details for this item.
         if item.isLibraryItem() and item.isVideoItem() and len(item.media()) > 0 and not item.media()[0].hasStreams():
             # TODO(schuyler): Fetch the details
-            util.WARN("Can't make media choice, missing details")
+            util.WARN_LOG("Can't make media choice, missing details")
 
         # Take a first pass through the media items to create an array of candidates
         # that we'll evaluate more completely. If we find a forced item, we use it.

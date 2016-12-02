@@ -702,6 +702,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         if playlist.isRemote:
             self.handler.playQueue = playlist
         self.video = playlist.current()
+        self.video.reload()
         self.open()
         self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0, force_update=True)
 
@@ -773,7 +774,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         # url += '&X-Plex-Platform=Chrome'
         data = base64.urlsafe_b64encode(track.serialize())
         url = 'plugin://script.plex/play?{0}'.format(data)
-        li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(256, 256))
+        li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(800, 800))
         li.setInfo('music', {
             'artist': str(track.grandparentTitle),
             'title': str(track.title),

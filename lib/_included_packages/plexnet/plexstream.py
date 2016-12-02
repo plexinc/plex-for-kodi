@@ -1,4 +1,5 @@
 import plexobjects
+import util
 
 
 class PlexStream(plexobjects.PlexObject):
@@ -35,15 +36,15 @@ class PlexStream(plexobjects.PlexObject):
     def reload(self):
         pass
 
-    def getTitle(self):
-        title = self.getLanguageName()
+    def getTitle(self, translate_func=util.dummyTranslate):
+        title = self.getLanguageName(translate_func)
         streamType = self.streamType.asInt()
 
         if streamType == self.TYPE_VIDEO:
-            title = self.getCodec() or "Unknown"
+            title = self.getCodec() or translate_func("Unknown")
         elif streamType == self.TYPE_AUDIO:
             codec = self.getCodec()
-            channels = self.getChannels()
+            channels = self.getChannels(translate_func)
 
             if codec != "" and channels != "":
                 title += " ({0} {1})".format(codec, channels)
@@ -57,15 +58,15 @@ class PlexStream(plexobjects.PlexObject):
                 extras.append(codec)
 
             if not self.key:
-                extras.append("Embedded")
+                extras.append(translate_func("Embedded"))
 
             if self.forced.asBool():
-                extras.append("Forced")
+                extras.append(translate_func("Forced"))
 
             if len(extras) > 0:
                 title += " ({0})".format('/'.join(extras))
         elif streamType == self.TYPE_LYRICS:
-            title = "Lyrics"
+            title = translate_func("Lyrics")
             if self.format:
                 title += " ({0})".format(self.format)
 
@@ -81,23 +82,23 @@ class PlexStream(plexobjects.PlexObject):
 
         return codec
 
-    def getChannels(self):
+    def getChannels(self, translate_func=util.dummyTranslate):
         channels = self.channels.asInt()
 
         if channels == 1:
-            return "Mono"
+            return translate_func("Mono")
         elif channels == 2:
-            return "Stereo"
+            return translate_func("Stereo")
         elif channels > 0:
             return "{0}.1".format(channels - 1)
         else:
             return ""
 
-    def getLanguageName(self):
+    def getLanguageName(self, translate_func=util.dummyTranslate):
         code = self.languageCode
 
         if not code:
-            return "Unknown"
+            return translate_func("Unknown")
 
         return self.SAFE_LANGUAGE_NAMES.get(code) or self.language or "Unknown"
 
@@ -144,5 +145,5 @@ class NoneStream(PlexStream):
         self.id = plexobjects.PlexValue("0")
         self.streamType = plexobjects.PlexValue(str(self.TYPE_SUBTITLE))
 
-    def getTitle(self):
-        return "None"
+    def getTitle(self, translate_func=util.dummyTranslate):
+        return translate_func("None")

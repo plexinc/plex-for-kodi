@@ -858,3 +858,43 @@ msgstr ""
 msgctxt "#32440"
 msgid "On Deck"
 msgstr ""
+
+msgctxt "#32441"
+msgid "Unknown"
+msgstr ""
+
+msgctxt "#32442"
+msgid "Embedded"
+msgstr ""
+
+msgctxt "#32443"
+msgid "Forced"
+msgstr ""
+
+msgctxt "#32444"
+msgid "Lyrics"
+msgstr ""
+
+msgctxt "#32445"
+msgid "Mono"
+msgstr ""
+
+msgctxt "#32446"
+msgid "Stereo"
+msgstr ""
+
+msgctxt "#32447"
+msgid "None"
+msgstr ""
+
+msgctxt "#32448"
+msgid ""
+msgstr ""
+
+msgctxt "#32449"
+msgid ""
+msgstr ""
+
+msgctxt "#32450"
+msgid ""
+msgstr ""

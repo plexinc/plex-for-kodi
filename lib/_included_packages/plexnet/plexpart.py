@@ -60,30 +60,30 @@ class PlexPart(plexobjects.PlexObject):
 
         return streams
 
-    def getSelectedStreamStringOfType(self, streamType):
-        default = None
-        availableStreams = 0
-        for stream in self.streams:
-            if stream.streamType.asInt() == streamType:
-                availableStreams = availableStreams + 1
-                if stream.isSelected() or (default is None and streamType != stream.TYPE_SUBTITLE):
-                    default = stream
+    # def getSelectedStreamStringOfType(self, streamType):
+    #     default = None
+    #     availableStreams = 0
+    #     for stream in self.streams:
+    #         if stream.streamType.asInt() == streamType:
+    #             availableStreams = availableStreams + 1
+    #             if stream.isSelected() or (default is None and streamType != stream.TYPE_SUBTITLE):
+    #                 default = stream
 
-        if default is not None:
-            availableStreams = availableStreams - 1
-            title = default.getTitle()
-            suffix = "More"
-        else:
-            title = "None"
-            suffix = "Available"
+    #     if default is not None:
+    #         availableStreams = availableStreams - 1
+    #         title = default.getTitle()
+    #         suffix = "More"
+    #     else:
+    #         title = "None"
+    #         suffix = "Available"
 
-        if availableStreams > 0 and streamType != stream.TYPE_VIDEO:
-            # Indicate available streams to choose from, excluding video
-            # streams until the server supports multiple videos streams.
+    #     if availableStreams > 0 and streamType != stream.TYPE_VIDEO:
+    #         # Indicate available streams to choose from, excluding video
+    #         # streams until the server supports multiple videos streams.
 
-            return u"{0} : {1} {2}".format(title, availableStreams, suffix)
-        else:
-            return title
+    #         return u"{0} : {1} {2}".format(title, availableStreams, suffix)
+    #     else:
+    #         return title
 
     def getSelectedStreamOfType(self, streamType):
         # Video streams, in particular, may not be selected. Pretend like the

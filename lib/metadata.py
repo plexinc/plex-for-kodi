@@ -16,3 +16,18 @@ EXTRA_MAP = {
     media.METADATA_RELATED_SHORT: T(32211, 'Short'),
     media.METADATA_RELATED_OTHER: T(32212, 'Other')
 }
+
+
+API_TRANSLATION_MAP = {
+    'Unknown': T(32441),
+    'Embedded': T(32442),
+    'Forced': T(32443),
+    'Lyrics': T(32444),
+    'Mono': T(32445),
+    'Stereo': T(32446),
+    'None': T(32447)
+}
+
+
+def apiTranslate(string):
+    return API_TRANSLATION_MAP.get(string) or string

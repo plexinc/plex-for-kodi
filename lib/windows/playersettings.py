@@ -1,7 +1,10 @@
 import xbmc
 import kodigui
-from lib.util import T
+
 from lib import util
+from lib import metadata
+from lib.util import T
+
 import plexnet
 
 
@@ -98,14 +101,14 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
 
     def getAudioAndSubtitleInfo(self):
         sas = self.video.selectedAudioStream()
-        audio = sas and sas.getTitle() or 'None'
+        audio = sas and sas.getTitle(metadata.apiTranslate) or T(32309, 'None')
 
         sss = self.video.selectedSubtitleStream()
         if sss:
             if len(self.video.subtitleStreams) > 1:
-                subtitle = u'{0} \u2022 {1} {2}'.format(sss.getTitle(), len(self.video.subtitleStreams) - 1, T(32307, 'More'))
+                subtitle = u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(self.video.subtitleStreams) - 1, T(32307, 'More'))
             else:
-                subtitle = sss.getTitle()
+                subtitle = sss.getTitle(metadata.apiTranslate)
         else:
             if self.video.subtitleStreams:
                 subtitle = u'{0} \u2022 {1} {2}'.format(T(32309, 'None'), len(self.video.subtitleStreams), T(32308, 'Available'))
@@ -126,7 +129,11 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         elif result == 'subs':
             showSubtitlesDialog(self.video, non_playback=self.nonPlayback)
         elif result == 'quality':
-            showQualityDialog(self.video, non_playback=self.nonPlayback)
+            idx = None
+            override = self.video.settings.getPrefOverride('local_quality')
+            if override is not None and override < 13:
+                idx = 13 - override
+            showQualityDialog(self.video, non_playback=self.nonPlayback, selected_idx=idx)
         elif result == 'kodi_video':
             xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
         elif result == 'kodi_audio':
@@ -149,6 +156,7 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.heading = kwargs.get('heading')
         self.options = kwargs.get('options')
+        self.selectedIdx = kwargs.get('selected_idx')
         self.choice = None
         self.nonPlayback = kwargs.get('non_playback')
 
@@ -200,19 +208,28 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.optionsList.reset()
         self.optionsList.addItems(items)
 
+        if self.selectedIdx is not None:
+            self.optionsList.selectItem(self.selectedIdx)
+
         self.setFocusId(self.OPTIONS_LIST_ID)
 
 
-def showOptionsDialog(heading, options, non_playback=False):
-    w = SelectDialog.open(heading=heading, options=options, non_playback=non_playback)
+def showOptionsDialog(heading, options, non_playback=False, selected_idx=None):
+    w = SelectDialog.open(heading=heading, options=options, non_playback=non_playback, selected_idx=selected_idx)
     choice = w.choice
     del w
+    util.garbageCollect()
     return choice
 
 
 def showAudioDialog(video, non_playback=False):
-    options = [(s, s.getTitle()) for s in video.audioStreams]
-    choice = showOptionsDialog(T(32395, 'Audio'), options, non_playback=non_playback)
+    options = []
+    idx = None
+    for i, s in enumerate(video.audioStreams):
+        if s.isSelected():
+            idx = i
+        options.append((s, s.getTitle(metadata.apiTranslate)))
+    choice = showOptionsDialog(T(32395, 'Audio'), options, non_playback=non_playback, selected_idx=idx)
     if choice is None:
         return
 
@@ -220,19 +237,24 @@ def showAudioDialog(video, non_playback=False):
 
 
 def showSubtitlesDialog(video, non_playback=False):
-    options = [(s, s.getTitle()) for s in video.subtitleStreams]
-    options.insert(0, (plexnet.plexstream.NoneStream(), 'None'))
-    choice = showOptionsDialog(T(32396, 'Subtitle'), options, non_playback=non_playback)
+    options = [(plexnet.plexstream.NoneStream(), 'None')]
+    idx = None
+    for i, s in enumerate(video.subtitleStreams):
+        if s.isSelected():
+            idx = i + 1
+        options.append((s, s.getTitle(metadata.apiTranslate)))
+
+    choice = showOptionsDialog(T(32396, 'Subtitle'), options, non_playback=non_playback, selected_idx=idx)
     if choice is None:
         return
 
     video.selectStream(choice)
 
 
-def showQualityDialog(video, non_playback=False):
+def showQualityDialog(video, non_playback=False, selected_idx=None):
     options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014))]
 
-    choice = showOptionsDialog('Quality', options, non_playback=non_playback)
+    choice = showOptionsDialog('Quality', options, non_playback=non_playback, selected_idx=selected_idx)
     if choice is None:
         return
 
@@ -244,3 +266,4 @@ def showQualityDialog(video, non_playback=False):
 def showDialog(video, non_playback=False, via_osd=False):
     w = VideoSettingsDialog.open(video=video, non_playback=non_playback, via_osd=via_osd)
     del w
+    util.garbageCollect()

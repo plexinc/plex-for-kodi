@@ -7810,7 +7810,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]Discovery[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32430][/UPPERCASE]</label>
                 </control>
             </control>
             <control type="group">

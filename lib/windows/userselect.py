@@ -7,6 +7,8 @@ import dropdown
 from lib import util, image, backgroundthread
 from plexnet import plexapp
 
+from lib.util import T
+
 
 class UserThumbTask(backgroundthread.Task):
     def setup(self, users, callback):
@@ -123,17 +125,17 @@ class UserSelectWindow(kodigui.BaseWindow):
 
     def shutdownClicked(self):
         options = []
-        options.append({'key': 'sign_out', 'display': 'Sign Out'})
-        options.append({'key': 'exit', 'display': 'Exit'})
+        options.append({'key': 'sign_out', 'display': T(32421, 'Sign Out')})
+        options.append({'key': 'exit', 'display': T(32422, 'Exit')})
         if util.getSetting('kiosk.mode', False):
             if xbmc.getCondVisibility('System.CanPowerDown'):
-                options.append({'key': 'shutdown', 'display': 'Shutdown'})
+                options.append({'key': 'shutdown', 'display': T(32423, 'Shutdown')})
             if xbmc.getCondVisibility('System.CanSuspend'):
-                options.append({'key': 'suspend', 'display': 'Suspend'})
+                options.append({'key': 'suspend', 'display': T(32424, 'Suspend')})
             if xbmc.getCondVisibility('System.CanHibernate'):
-                options.append({'key': 'hibernate', 'display': 'Hibernate'})
+                options.append({'key': 'hibernate', 'display': T(32425, 'Hibernate')})
             if xbmc.getCondVisibility('System.CanReboot'):
-                options.append({'key': 'reboot', 'display': 'Reboot'})
+                options.append({'key': 'reboot', 'display': T(32426, 'Reboot')})
 
         with self.propertyContext('dropdown'):
             choice = dropdown.showDropdown(options, (60, 101))
@@ -193,7 +195,7 @@ class UserSelectWindow(kodigui.BaseWindow):
                 e.close()
                 item.setProperty('pin', item.dataSource.title)
                 item.setProperty('editing.pin', '')
-                util.messageDialog('Failed', 'Login failed!')
+                util.messageDialog(T(32427, 'Failed'), T(32428, 'Login failed!'))
                 return
 
         self.selected = True

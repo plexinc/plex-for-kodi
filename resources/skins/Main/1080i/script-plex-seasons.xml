@@ -880,7 +880,7 @@
                         <align>left</align>
                         <aligny>center</aligny>
                         <textcolor>FFFFFFFF</textcolor>
-                        <label>[UPPERCASE]CAST[/UPPERCASE]</label>
+                        <label>[UPPERCASE]$ADDON[script.plex 32419][/UPPERCASE]</label>
                     </control>
                     <control type="list" id="403">
                         <posx>0</posx>

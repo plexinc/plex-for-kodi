@@ -47,7 +47,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]AUDIO[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32048][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="101">
                     <posx>0</posx>
@@ -205,7 +205,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]VIDEO[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32053][/UPPERCASE]</label>
                 </control>
                 <control type="list" id="301">
                     <posx>-21.5</posx>
@@ -387,7 +387,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]Playlists[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32333][/UPPERCASE]</label>
                 </control>
                 <control type="group">
                     <width>40</width>

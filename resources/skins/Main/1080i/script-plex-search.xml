@@ -57,7 +57,7 @@
             <align>left</align>
             <aligny>center</aligny>
             <textcolor>FFFFFFFF</textcolor>
-            <label>[UPPERCASE]Search[/UPPERCASE]</label>
+            <label>[UPPERCASE]$ADDON[script.plex 32431][/UPPERCASE]</label>
         </control>
 
         <control type="group" id="899">
@@ -111,7 +111,7 @@
                         <align>center</align>
                         <aligny>center</aligny>
                         <textcolor>FFFFFFFF</textcolor>
-                        <label>All</label>
+                        <label>$ADDON[script.plex 32345]</label>
                     </control>
                 </control>
                 <control type="group">
@@ -214,7 +214,7 @@
                             <textcolor>00000000</textcolor>
                             <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
                             <texturenofocus>-</texturenofocus>
-                            <label>All</label>
+                            <label>$ADDON[script.plex 32345]</label>
                         </control>
                     </control>
                     <control type="group">
@@ -1671,7 +1671,7 @@
                         <focusedcolor>FF000000</focusedcolor>
                         <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
                         <texturenofocus>-</texturenofocus>
-                        <label>Delete</label>
+                        <label>$ADDON[script.plex 32322]</label>
                     </control>
                 </control>
                 <control type="group">
@@ -1694,7 +1694,7 @@
                         <focusedcolor>FF000000</focusedcolor>
                         <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
                         <texturenofocus>-</texturenofocus>
-                        <label>Space</label>
+                        <label>$ADDON[script.plex 32432]</label>
                     </control>
                 </control>
                 <control type="group">
@@ -1717,7 +1717,7 @@
                         <focusedcolor>FF000000</focusedcolor>
                         <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/white-square-rounded-with-shadow.png</texturefocus>
                         <texturenofocus>-</texturenofocus>
-                        <label>Clear</label>
+                        <label>$ADDON[script.plex 32433]</label>
                     </control>
                 </control>
             </control>
@@ -1737,7 +1737,7 @@
                     <align>right</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]Searching...[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32434][/UPPERCASE]</label>
                 </control>
                 <control type="group">
                     <posx>480</posx>
@@ -1767,7 +1767,7 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]NO RESULTS[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32435][/UPPERCASE]</label>
                 </control>
             </control>
         </control>

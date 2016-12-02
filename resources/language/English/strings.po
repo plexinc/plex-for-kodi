@@ -225,10 +225,6 @@ msgctxt "#32057"
 msgid "Current Server Version"
 msgstr ""
 
-msgctxt "#32058"
-msgid ""
-msgstr ""
-
 
 msgctxt "#32100"
 msgid "Skip user selection and pin entry on startup."
@@ -784,41 +780,81 @@ msgid "Disc"
 msgstr ""
 
 msgctxt "#32421"
-msgid ""
+msgid "Sign Out"
 msgstr ""
 
 msgctxt "#32422"
-msgid ""
+msgid "Exit"
 msgstr ""
 
 msgctxt "#32423"
-msgid ""
+msgid "Shutdown"
 msgstr ""
 
 msgctxt "#32424"
-msgid ""
+msgid "Suspend"
 msgstr ""
 
 msgctxt "#32425"
-msgid ""
+msgid "Hibernate"
 msgstr ""
 
 msgctxt "#32426"
-msgid ""
+msgid "Reboot"
 msgstr ""
 
 msgctxt "#32427"
-msgid ""
+msgid "Failed"
 msgstr ""
 
 msgctxt "#32428"
-msgid ""
+msgid "Login failed!"
 msgstr ""
 
 msgctxt "#32429"
-msgid ""
+msgid "Resume from {0}"
 msgstr ""
 
 msgctxt "#32430"
-msgid ""
+msgid "Discovery"
+msgstr ""
+
+msgctxt "#32431"
+msgid "Search"
+msgstr ""
+
+msgctxt "#32432"
+msgid "Space"
+msgstr ""
+
+msgctxt "#32433"
+msgid "Clear"
+msgstr ""
+
+msgctxt "#32434"
+msgid "Searching..."
+msgstr ""
+
+msgctxt "#32435"
+msgid "No Results"
+msgstr ""
+
+msgctxt "#32436"
+msgid "Paused"
+msgstr ""
+
+msgctxt "#32437"
+msgid "Welcome"
+msgstr ""
+
+msgctxt "#32438"
+msgid "Previous"
+msgstr ""
+
+msgctxt "#32439"
+msgid "Playing Next"
+msgstr ""
+
+msgctxt "#32440"
+msgid "On Deck"
 msgstr ""

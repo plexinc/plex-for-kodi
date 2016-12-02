@@ -209,7 +209,7 @@
                         <textoffsetx>15</textoffsetx>
                         <texturefocus colordiffuse="FFAC3223" border="12">script.plex/white-square-rounded.png</texturefocus>
                         <texturenofocus colordiffuse="FFAC3223" border="12">script.plex/white-square-rounded.png</texturenofocus>
-                        <label>Unavailable</label>
+                        <label>$ADDON[script.plex 32312]</label>
                     </control>
                 </control>
 
@@ -328,7 +328,7 @@
                         <textoffsetx>15</textoffsetx>
                         <texturefocus colordiffuse="40000000" border="12">script.plex/white-square-rounded.png</texturefocus>
                         <texturenofocus colordiffuse="40000000" border="12">script.plex/white-square-rounded.png</texturenofocus>
-                        <label>AUDIO</label>
+                        <label>[UPPERCASE]$ADDON[script.plex 32395][/UPPERCASE]</label>
                     </control>
                     <control type="label">
                         <width>auto</width>
@@ -352,7 +352,7 @@
                         <textoffsetx>15</textoffsetx>
                         <texturefocus colordiffuse="40000000" border="12">script.plex/white-square-rounded.png</texturefocus>
                         <texturenofocus colordiffuse="40000000" border="12">script.plex/white-square-rounded.png</texturenofocus>
-                        <label>SUBTITLES</label>
+                        <label>[UPPERCASE]$ADDON[script.plex 32396][/UPPERCASE]</label>
                     </control>
                     <control type="label">
                         <visible>!IsEmpty(Container(400).ListItem.Property(subtitles))</visible>
@@ -999,7 +999,7 @@
                         <align>left</align>
                         <aligny>center</aligny>
                         <textcolor>FFFFFFFF</textcolor>
-                        <label>[UPPERCASE]CAST[/UPPERCASE]</label>
+                        <label>[UPPERCASE]$ADDON[script.plex 32419][/UPPERCASE]</label>
                     </control>
                     <control type="list" id="403">
                         <posx>0</posx>

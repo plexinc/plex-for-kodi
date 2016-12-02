@@ -145,7 +145,7 @@
                     <align>center</align>
                     <aligny>center</aligny>
                     <textcolor>FFCC7B19</textcolor>
-                    <label>[UPPERCASE]Paused[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32436][/UPPERCASE]</label>
                 </control>
             </control>
 

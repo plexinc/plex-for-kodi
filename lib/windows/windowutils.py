@@ -2,6 +2,9 @@ from lib import util
 import opener
 import dropdown
 
+from lib.util import T
+
+
 HOME = None
 
 
@@ -40,13 +43,13 @@ class UtilMixin():
                 if i.get('viewOffset'):
                     choice = dropdown.showDropdown(
                         options=[
-                            {'key': 'resume', 'display': 'Resume from {0}'.format(util.timeDisplay(i.viewOffset.asInt()).lstrip('0').lstrip(':'))},
-                            {'key': 'play', 'display': 'Play from beginning'}
+                            {'key': 'resume', 'display': T(32429, 'Resume from {0}').format(util.timeDisplay(i.viewOffset.asInt()).lstrip('0').lstrip(':'))},
+                            {'key': 'play', 'display': T(32317, 'Play from beginning')}
                         ],
                         pos=(660, 441),
                         close_direction='none',
                         set_dropdown_prop=False,
-                        header=u'{0} - S{1} \u2022 E{2}'.format(title, i.parentIndex, i.index)
+                        header=u'{0} - {1}{2} \u2022 {3}{4}'.format(title, T(32310, 'S'), i.parentIndex, T(32311, 'E'), i.index)
                     )
 
                     if not choice:

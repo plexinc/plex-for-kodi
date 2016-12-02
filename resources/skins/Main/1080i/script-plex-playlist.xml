@@ -630,7 +630,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]Playlists[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32333][/UPPERCASE]</label>
                 </control>
                 <control type="group">
                     <width>40</width>

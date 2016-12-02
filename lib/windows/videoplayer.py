@@ -15,6 +15,9 @@ from lib import util
 from lib import player
 from lib import colors
 
+from lib.util import T
+
+
 PASSOUT_PROTECTION_DURATION_SECONDS = 7200
 PASSOUT_LAST_VIDEO_DURATION_MILLIS = 1200000
 
@@ -368,20 +371,24 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self.prev.type == 'episode':
             if self.next:
                 self.setProperty('next.thumb', self.next.thumb.asTranscodedImageURL(*self.NEXT_DIM))
-                self.setProperty('related.header', 'Related Shows')
+                self.setProperty('related.header', T(32306, 'Related Shows'))
                 self.setProperty('info.date', util.cleanLeadingZeros(self.next.originallyAvailableAt.asDatetime('%B %d, %Y')))
 
                 self.setProperty('next.title', self.next.grandparentTitle)
-                self.setProperty('next.subtitle', u'Season {0} \u2022 Episode {1}'.format(self.next.parentIndex, self.next.index))
+                self.setProperty(
+                    'next.subtitle', u'{0} {1} \u2022 {2} {3}'.format(T(32303, 'Season'), self.next.parentIndex, T(32304, 'Episode'), self.next.index)
+                )
             if self.prev:
                 self.setProperty('prev.thumb', self.prev.thumb.asTranscodedImageURL(*self.PREV_DIM))
                 self.setProperty('prev.title', self.prev.grandparentTitle)
-                self.setProperty('prev.subtitle', u'Season {0} \u2022 Episode {1}'.format(self.prev.parentIndex, self.prev.index))
+                self.setProperty(
+                    'prev.subtitle', u'{0} {1} \u2022 {2} {3}'.format(T(32303, 'Season'), self.prev.parentIndex, T(32304, 'Episode'), self.prev.index)
+                )
                 self.setProperty('prev.info.date', util.cleanLeadingZeros(self.prev.originallyAvailableAt.asDatetime('%B %d, %Y')))
         elif self.prev.type == 'movie':
             if self.next:
                 self.setProperty('next.thumb', self.next.defaultArt.asTranscodedImageURL(*self.NEXT_DIM))
-                self.setProperty('related.header', 'Related Movies')
+                self.setProperty('related.header', T(32404, 'Related Movies'))
                 self.setProperty('info.date', self.next.year)
 
                 self.setProperty('next.title', self.next.title)
@@ -415,7 +422,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                     'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(ondeck.type in ('show', 'season', 'episode') and 'show' or 'movie')
                 )
                 if ondeck.type in 'episode':
-                    mli.setLabel2(u'S{0} \u2022 E{1}'.format(ondeck.parentIndex, ondeck.index))
+                    mli.setLabel2(u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), ondeck.parentIndex, T(32311, 'E'), ondeck.index))
                 else:
                     mli.setLabel2(ondeck.year)
 

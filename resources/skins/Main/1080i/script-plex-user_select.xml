@@ -862,7 +862,7 @@
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
-                    <label>[UPPERCASE]WELCOME[/UPPERCASE]</label>
+                    <label>[UPPERCASE]$ADDON[script.plex 32437][/UPPERCASE]</label>
                 </control>
             </control>
 

@@ -575,14 +575,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 xbmc.executebuiltin('Action(down)')
 
     def updateProperties(self):
+        showTitle = self.show_ and self.show_.title or ''
+
         self.setProperty(
             'background',
             (self.show_ or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
-        self.setProperty('show.title', self.show_ and self.show_.title or '')
+        self.setProperty('show.title', showTitle)
         self.setProperty('season.title', self.season.title)
-        self.setProperty('episodes.header', u'{0} \u2022 {1} {2}'.format(self.getProperty('show.title'), T(32303, 'Season'), self.season.index))
+        self.setProperty('episodes.header', u'{0} \u2022 {1} {2}'.format(showTitle, T(32303, 'Season'), self.season.index))
         self.setProperty('extras.header', u'{0} \u2022 {1} {2}'.format(T(32305, 'Extras'), T(32303, 'Season'), self.season.index))
         self.setProperty('related.header', T(32306, 'Related Shows'))
         self.genre = self.show_.genres() and self.show_.genres()[0].tag or ''

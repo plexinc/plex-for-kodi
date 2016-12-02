@@ -169,8 +169,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                     return
             elif action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) or not controlID:
-                    self.setFocusId(self.OPTIONS_GROUP_ID)
-                    return
+                    if self.getProperty('on.extras'):
+                        self.setFocusId(self.OPTIONS_GROUP_ID)
+                        return
 
             if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                 self.doClose()

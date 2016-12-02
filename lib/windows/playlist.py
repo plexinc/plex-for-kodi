@@ -51,16 +51,16 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.fillPlaylist()
         self.setFocusId(self.PLAYLIST_LIST_ID)
 
-    def onAction(self, action):
-        try:
-            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
-                    self.setFocusId(self.OPTIONS_GROUP_ID)
-                    return
-        except:
-            util.ERROR()
+    # def onAction(self, action):
+    #     try:
+    #         if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+    #             if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+    #                 self.setFocusId(self.OPTIONS_GROUP_ID)
+    #                 return
+    #     except:
+    #         util.ERROR()
 
-        kodigui.ControlledWindow.onAction(self, action)
+    #     kodigui.ControlledWindow.onAction(self, action)
 
     def onClick(self, controlID):
         if controlID == self.HOME_BUTTON_ID:

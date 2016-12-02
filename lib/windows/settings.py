@@ -305,9 +305,9 @@ class SettingsWindow(kodigui.BaseWindow, windowutils.UtilMixin):
                 if self.getFocusId() == self.OPTIONS_LIST_ID:
                     self.setFocusId(self.SETTINGS_LIST_ID)
                     return
-                elif not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.TOP_GROUP_ID)):
-                    self.setFocusId(self.TOP_GROUP_ID)
-                    return
+                # elif not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.TOP_GROUP_ID)):
+                #     self.setFocusId(self.TOP_GROUP_ID)
+                #     return
             elif action == xbmcgui.ACTION_MOVE_RIGHT and controlID == 150:
                 self.editSetting(from_right=True)
         except:

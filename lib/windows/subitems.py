@@ -171,8 +171,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                     return
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
-                    self.setFocusId(self.OPTIONS_GROUP_ID)
-                    return
+                    if self.getProperty('on.extras'):
+                        self.setFocusId(self.OPTIONS_GROUP_ID)
+                        return
 
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()

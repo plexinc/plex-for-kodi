@@ -2,6 +2,12 @@ import mediachoice
 import util
 
 
+class DecisionFailure(Exception):
+    def __init__(self, code, reason):
+        self.code = code
+        self.reason = reason
+
+
 class ServerDecision(object):
     DECISION_DIRECT_PLAY = "directplay"
     DECISION_COPY = "copy"
@@ -52,7 +58,8 @@ class ServerDecision(object):
                 # Terminate the player by default if there was no decision returned.
                 code = self.decisionsCodes["generalDecision"]
                 reason = ' '.join([self.decisionsTexts["transcodeDecision"], self.decisionsTexts["generalDecision"]])
-                self.player.terminate(str(code), reason)
+                raise DecisionFailure(code, reason)
+
             return None
 
         # Rebuild the original item with the new item.

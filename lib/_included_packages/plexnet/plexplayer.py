@@ -5,6 +5,8 @@ import plexrequest
 import mediadecisionengine
 import serverdecision
 
+DecisionFailure = serverdecision.DecisionFailure
+
 
 class PlexPlayer(object):
     DECISION_ENDPOINT = "/video/:/transcode/universal/decision"

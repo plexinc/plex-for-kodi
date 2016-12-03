@@ -654,7 +654,12 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         )
         self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
         self.playerObject.build()
-        self.playerObject = self.playerObject.getServerDecision()
+        try:
+            self.playerObject = self.playerObject.getServerDecision() or self.playerObject
+        except plexplayer.DecisionFailure, e:
+            util.showNotification(e.reason, header=util.T(32448, 'Playback Failed!'))
+            return
+
         meta = self.playerObject.metadata
 
         url = meta.streamUrls[0]
@@ -854,7 +859,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             return
 
         if self.handler.onPlayBackFailed():
-            util.showNotification('Playback Failed!')
+            util.showNotification(util.T(32448, 'Playback Failed!'))
             # xbmcgui.Dialog().ok('Failed', 'Playback failed')
 
     def onVideoWindowOpened(self):

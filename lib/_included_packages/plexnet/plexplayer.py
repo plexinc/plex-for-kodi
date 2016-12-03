@@ -31,6 +31,8 @@ class PlexPlayer(object):
         oldChoice = self.choice
         self.init(item, True)
         util.LOG("Replacing '{0}' with '{1}' and rebuilding.".format(oldChoice, self.choice))
+        if decision:
+            self.choice.isDirectPlayable == decision.directPlayOK()
         self.build()
         self.decision = decision
 

@@ -69,12 +69,11 @@ class ServerDecision(object):
 
     def isSuccess(self):
         code = self.decisionsCodes["mdeDecision"]
-        return not self.isSupported or code >= 1000 and code < 2000
+        return not self.isSupported or 1000 <= code < 2000
 
     def isDecision(self, requireItem=False):
         # Server has provided a valid decision if there was a valid decision code
         # or if the response returned zero items (could not play).
-
         return self.isSupported and (self.decisionsCodes["mdeDecision"] > -1 or requireItem and not self.item)
 
     def isTimelineDecision(self):
@@ -82,6 +81,9 @@ class ServerDecision(object):
 
     def isTermination(self):
         return self.isSupported and self.decisionsCodes["termination"] > -1
+
+    def directPlayOK(self):
+        return self.decisionsCodes["mdeDecision"] == 1000
 
     def getTermination(self):
         return {

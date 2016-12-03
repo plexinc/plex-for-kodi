@@ -1,6 +1,6 @@
 [- 0.0.90 -]
 
-Fix: Errors caused by encoding issues in episodes pre-play and track playback
+Fix: (Issue #13) Errors caused by encoding issues in episodes pre-play and track playback
 Fix: Player settings dialog would sometimes not close without some user input
 Fix: (Issue #25) Increased music playback thumbnail resolution - affects add-on player screen and skin views outside the addon
 Fix: (Issue #24) Items in movie playlists were not playable

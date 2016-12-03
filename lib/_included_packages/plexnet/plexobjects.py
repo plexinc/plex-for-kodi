@@ -496,7 +496,7 @@ def buildItem(server, elem, initpath, bytag=False, container=None, tag_fallback=
 
 def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None):
     items = []
-    data = data or server.query(path)
+    data = data if data is not None else server.query(path)
     container = container or PlexContainer(data, path, server, path)
     for elem in data:
         if libtype and elem.attrib.get('type') != libtype:

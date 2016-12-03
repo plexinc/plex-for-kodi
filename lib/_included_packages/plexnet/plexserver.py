@@ -257,11 +257,17 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if self.rawVersion:
             self.versionNorm = util.normalizedVersion(self.rawVersion)
 
-        if verlib.suggest_normalized_version('0.9.11.11') <= self.versionNorm:
-            self.features["mkv_transcode"] = True
+        features = {
+            'mkvTranscode': '0.9.11.11',
+            'themeTranscode': '0.9.14.0',
+            'allPartsStreamSelection': '0.9.12.5',
+            'claimServer': '0.9.14.2',
+            'streamingBrain': '1.2.0'
+        }
 
-        if verlib.suggest_normalized_version('0.9.12.5') <= self.versionNorm:
-            self.features["allPartsStreamSelection"] = True
+        for f, v in features.items():
+            if verlib.suggest_normalized_version(v) <= self.versionNorm:
+                self.features[f] = True
 
         appMinVer = plexapp.INTERFACE.getGlobal('minServerVersionArr', '0.0.0.0')
         self.isSupported = self.isSecondary() or verlib.suggest_normalized_version(appMinVer) <= self.versionNorm

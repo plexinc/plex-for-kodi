@@ -4,6 +4,7 @@ import socket
 import threadutils
 import urllib
 import mimetypes
+import plexobjects
 from xml.etree import ElementTree
 
 import callback
@@ -42,6 +43,8 @@ class HttpRequest(object):
     _cancel = False
 
     def __init__(self, url, method=None, forceCertificate=False):
+        self.server = None
+        self.path = None
         self.hasParams = '?' in url
         self.ignoreResponse = False
         self.session = requests.session()
@@ -80,7 +83,7 @@ class HttpRequest(object):
                 res = self.session.delete(self.url, timeout=10, stream=True)
             elif self.method == 'HEAD':
                 res = self.session.head(self.url, timeout=10, stream=True)
-            elif body is not None:
+            elif self.method == 'POST' or body is not None:
                 if not contentType:
                     self.session.headers["Content-Type"] = "application/x-www-form-urlencoded"
                 else:
@@ -104,13 +107,27 @@ class HttpRequest(object):
 
         self.removeAsPending()
 
+    def getWithTimeout(self, seconds=10):
+        return HttpObjectResponse(self.getPostWithTimeout(seconds), self.path, self.server)
+
+    def postWithTimeout(self, seconds=10, body=None):
+        self.method = 'POST'
+        return HttpObjectResponse(self.getPostWithTimeout(seconds, body), self.path, self.server)
+
     def getToStringWithTimeout(self, seconds=10):
-        return self.getPostToStringWithTimeout(seconds)
+        res = self.getPostWithTimeout(seconds)
+        if not res:
+            return ''
+        return res.text.encode('utf8')
 
     def postToStringWithTimeout(self, body=None, seconds=10):
-        return self.getPostToStringWithTimeout(seconds, body)
+        self.method = 'POST'
+        res = self.getPostWithTimeout(seconds, body)
+        if not res:
+            return ''
+        return res.text.encode('utf8')
 
-    def getPostToStringWithTimeout(self, seconds=10, body=None):
+    def getPostWithTimeout(self, seconds=10, body=None):
         if self._cancel:
             return
 
@@ -122,7 +139,7 @@ class HttpRequest(object):
                 res = self.session.delete(self.url, timeout=seconds, stream=True)
             elif self.method == 'HEAD':
                 res = self.session.head(self.url, timeout=seconds, stream=True)
-            elif body is not None:
+            elif self.method == 'POST' or body is not None:
                 res = self.session.post(self.url, data=body, timeout=seconds, stream=True)
             else:
                 res = self.session.get(self.url, timeout=seconds, stream=True)
@@ -130,15 +147,15 @@ class HttpRequest(object):
             self.currentResponse = res
 
             if self._cancel:
-                return
+                return None
 
             util.LOG("Got a {0} from {1}".format(res.status_code, util.cleanToken(self.url)))
             # self.event = msg
-            return res.text.encode('utf8')
+            return res
         except Exception, e:
             util.WARN_LOG("Request to {0} errored out after {1} ms: {0}".format(self.url, seconds, e.message))
 
-        return ''
+        return None
 
     def wasOK(self):
         return self.currentResponse and self.currentResponse.ok
@@ -151,6 +168,13 @@ class HttpRequest(object):
 
     def getUrl(self):
         return self.url
+
+    def getRelativeUrl(self):
+        url = self.getUrl()
+        m = re.match('^\w+:\/\/.+?(\/.+)', url)
+        if m:
+            return m.group(1)
+        return url
 
     def killSocket(self):
         if not self.currentResponse:
@@ -252,6 +276,21 @@ class HttpResponse(object):
         if not self.event:
             return None
         return self.event.headers.get(name)
+
+
+class HttpObjectResponse(HttpResponse, plexobjects.PlexContainer):
+    def __init__(self, response, path, server=None):
+        self.event = response
+        if self.event:
+            self.event.content  # force data to be read
+            self.event.close()
+
+        data = self.getBodyXml()
+
+        plexobjects.PlexContainer.__init__(self, data, initpath=path, server=server, address=path)
+        self.container = self
+
+        self.items = plexobjects.listItems(server, path, data=data, container=self)
 
 
 def addRequestHeaders(transferObj, headers=None):

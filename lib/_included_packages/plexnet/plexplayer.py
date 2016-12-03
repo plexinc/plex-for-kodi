@@ -1,16 +1,36 @@
 import util
 import captions
 import http
+import plexrequest
 import mediadecisionengine
+import serverdecision
 
 
 class PlexPlayer(object):
+    DECISION_ENDPOINT = "/video/:/transcode/universal/decision"
+
     def __init__(self, item, seekValue=0, forceUpdate=False):
-        self.item = item
+        self.decision = None
         self.seekValue = seekValue
+        self.init(item, forceUpdate)
+
+    def init(self, item, forceUpdate=False):
+        self.item = item
         self.choice = mediadecisionengine.MediaDecisionEngine().chooseMedia(item, forceUpdate=forceUpdate)
         if self.choice:
             self.media = self.choice.media
+
+    def terminate(self, code, reason):
+        util.LOG('TERMINATE PLAYER: ({0}, {1})'.format(code, reason))
+        # TODO: Handle this ----------------------------------------------------------------------------------------------------------- TODO
+
+    def rebuild(self, item, decision=None):
+        item.settings = self.item.settings
+        oldChoice = self.choice
+        self.init(item, True)
+        util.LOG("Replacing '{0}' with '{1}' and rebuilding.".format(oldChoice, self.choice))
+        self.build()
+        self.decision = decision
 
     def build(self, forceTranscode=False):
         if self.item.settings.getPreference("playback_directplay", False):
@@ -132,13 +152,116 @@ class PlexPlayer(object):
 
         return self.metadata
 
+    def isLiveHls(url=None, headers=None):
+        # Check to see if this is a live HLS playlist to fix two issues. One is a
+        # Roku workaround since it doesn't obey the absence of EXT-X-ENDLIST to
+        # start playback at the END of the playlist. The second is for us to know
+        # if it's live to modify the functionality and player UI.
+
+        # if IsString(url):
+        #     request = createHttpRequest(url, "GET", true)
+        #     AddRequestHeaders(request.request, headers)
+        #     response = request.GetToStringWithTimeout(10)
+
+        #     ' Inspect one of the media playlist streams if this is a master playlist.
+        #     if response.instr("EXT-X-STREAM-INF") > -1 then
+        #         Info("Identify live HLS: inspecting the master playlist")
+        #         mediaUrl = CreateObject("roRegex", "(^https?://.*$)", "m").Match(response)[1]
+        #         if mediaUrl <> invalid then
+        #             request = createHttpRequest(mediaUrl, "GET", true)
+        #             AddRequestHeaders(request.request, headers)
+        #             response = request.GetToStringWithTimeout(10)
+        #         end if
+        #     end if
+
+        #     isLiveHls = (response.Trim().Len() > 0 and response.instr("EXT-X-ENDLIST") = -1 and response.instr("EXT-X-STREAM-INF") = -1)
+        #     Info("Identify live HLS: live=" + isLiveHls.toStr())
+        #     return isLiveHls
+
+        return False
+
+    def getServerDecision(self):
+        directPlay = not (self.metadata and self.metadata.isTranscoded)
+        decisionPath = self.getDecisionPath(directPlay)
+        newDecision = None
+
+        if decisionPath:
+            server = self.metadata.transcodeServer or self.item.getServer()
+            request = plexrequest.PlexRequest(server, decisionPath)
+            response = request.getWithTimeout(10)
+
+            if response.isSuccess() and response.container:
+                decision = serverdecision.ServerDecision(self, response, self)
+
+                if decision.isSuccess():
+                    util.LOG("MDE: Server was happy with client's original decision. {0}".format(decision))
+                elif decision.isDecision(True):
+                    util.WARN_LOG("MDE: Server was unhappy with client's original decision. {0}".format(decision))
+                    return decision.getDecision()
+                else:
+                    util.LOG("MDE: Server was unbiased about the decision. {0}".format(decision))
+
+                # Check if the server has provided a new media item to use it. If
+                # there is no item, then we'll continue along as if there was no
+                # decision made.
+                newDecision = decision.getDecision(False)
+            else:
+                util.WARN_LOG("MDE: Server failed to provide a decision")
+        else:
+            util.WARN_LOG("MDE: Server or item does not support decisions")
+
+        return newDecision or self
+
+    def getDecisionPath(self, directPlay=False):
+        if not self.item or not self.metadata:
+            return None
+
+        decisionPath = self.metadata.decisionPath
+        if not decisionPath:
+            server = self.metadata.transcodeServer or self.item.getServer()
+            decisionPath = self.buildTranscode(server, util.AttributeDict(), self.metadata.partIndex, True, False).decisionPath
+
+        # Modify the decision params based on the transcode url
+        if decisionPath:
+            if directPlay:
+                decisionPath = decisionPath.replace("directPlay=0", "directPlay=1")
+
+                # # Clear all subtitle parameters and add the a valid subtitle type based
+                # # on the video player. This will let the server decide if it can supply
+                # # sidecar subs, burn or embed w/ an optional transcode.
+                # for key in ("subtitles", "advancedSubtitles"):
+                #     decisionPath = re.sub('([?&]{0}=)\w+'.format(key), '', decisionPath)
+                # subType = 'embedded'  # AppSettings().getBoolPreference("custom_video_player"), "embedded", "sidecar")
+                # decisionPath = util.addUrlParam(decisionPath, "subtitles=" + subType)
+
+            # Global variables for all decisions
+            decisionPath = http.addUrlParam(decisionPath, "mediaBufferSize=50000")
+            decisionPath = http.addUrlParam(decisionPath, "hasMDE=1")
+            decisionPath = http.addUrlParam(decisionPath, 'X-Plex-Platform=Chrome')
+
+        return decisionPath
+
+    def getTranscodeReason(self):
+        # Combine the server and local MDE decisions
+        obj = []
+        if self.decision:
+            obj.append(self.decision.getDecisionText())
+        if self.item:
+            obj.append(self.item.transcodeReason)
+        reason = ' '.join(obj)
+        if not reason:
+            return None
+
+        return reason
+
     def buildTranscodeHls(self, obj):
         util.DEBUG_LOG('buildTranscodeHls()')
         obj.streamFormat = "hls"
         obj.streamBitrates = [0]
         obj.switchingStrategy = "no-adaptation"
+        obj.transcodeEndpoint = "/video/:/transcode/universal/start.m3u8"
 
-        builder = http.HttpRequest(obj.transcodeServer.buildUrl("/video/:/transcode/universal/start.m3u8", True))
+        builder = http.HttpRequest(obj.transcodeServer.buildUrl(obj.transcodeEndpoint, True))
         builder.extras = []
         builder.addParam("protocol", "hls")
 
@@ -160,10 +283,11 @@ class PlexPlayer(object):
         util.DEBUG_LOG('buildTranscodeMkv()')
         obj.streamFormat = "mkv"
         obj.streamBitrates = [0]
+        obj.transcodeEndpoint = "/video/:/transcode/universal/start.mkv"
 
-        builder = http.HttpRequest(obj.transcodeServer.buildUrl("/video/:/transcode/universal/start.mkv", True))
+        builder = http.HttpRequest(obj.transcodeServer.buildUrl(obj.transcodeEndpoint, True))
         builder.extras = []
-        builder.addParam("protocol", "http")
+        # builder.addParam("protocol", "http")
         builder.addParam("copyts", "1")
 
         obj.subtitleUrl = None
@@ -196,7 +320,7 @@ class PlexPlayer(object):
 
             for codec in ("ac3", "eac3", "dca"):
                 if self.item.settings.supportsAudioStream(codec, numChannels):
-                    builder.extras.append("append-transcode-target-audio-codec(type=videoProfile&context=streaming&protocol=http&audioCodec=" + codec + ")")
+                    builder.extras.append("append-transcode-target-audio-codec(type=videoProfile&context=streaming&audioCodec=" + codec + ")")
                     builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=" + codec + ")")
                     if codec == "dca":
                         builder.extras.append(
@@ -209,10 +333,10 @@ class PlexPlayer(object):
 
         # HEVC and VP9 support!
         if self.item.settings.getGlobal("hevcSupport"):
-            builder.extras.append("append-transcode-target-codec(type=videoProfile&context=streaming&protocol=http&videoCodec=hevc)")
+            builder.extras.append("append-transcode-target-codec(type=videoProfile&context=streaming&videoCodec=hevc)")
 
         if self.item.settings.getGlobal("vp9Support"):
-            builder.extras.append("append-transcode-target-codec(type=videoProfile&context=streaming&protocol=http&videoCodec=vp9)")
+            builder.extras.append("append-transcode-target-codec(type=videoProfile&context=streaming&videoCodec=vp9)")
 
         return builder
 
@@ -275,7 +399,7 @@ class PlexPlayer(object):
         obj.transcodeServer = server
         obj.isTranscoded = True
 
-        if server.supportsFeature("mkv_transcode") and self.item.settings.getPreference("transcode_format", 'mkv') != "hls":
+        if server.supportsFeature("mkvTranscode") and self.item.settings.getPreference("transcode_format", 'mkv') != "hls":
             builder = self.buildTranscodeMkv(obj)
         else:
             builder = self.buildTranscodeHls(obj)
@@ -300,7 +424,7 @@ class PlexPlayer(object):
             if isCurrentPart or len(self.media.parts) <= 1 or (
                 seekOffset >= obj.startOffset and seekOffset <= obj.startOffset + int(part.duration.asInt() / 1000)
             ):
-                startOffset = seekOffset - obj.startOffset
+                startOffset = seekOffset - (obj.startOffset or 0)
 
                 # Avoid a perfect storm of PMS and Roku quirks. If we pass an offset to
                 # the transcoder,: it'll start transcoding from that point. But if
@@ -348,7 +472,16 @@ class PlexPlayer(object):
         if builder.extras:
             builder.addParam("X-Plex-Client-Profile-Extra", '+'.join(builder.extras))
 
+        if server.isLocalConnection():
+            builder.addParam("location", "lan")
+
         obj.streamUrls = [builder.getUrl()]
+
+        # Build the decision path now that we have build our stream url, and only if the server supports it.
+        if server.supportsFeature("streamingBrain"):
+            decisionPath = builder.getRelativeUrl().replace(obj.transcodeEndpoint, self.DECISION_ENDPOINT)
+            if decisionPath[:len(self.DECISION_ENDPOINT)] == self.DECISION_ENDPOINT:
+                obj.decisionPath = decisionPath
 
         return obj
 
@@ -391,9 +524,10 @@ class PlexAudioPlayer(object):
         obj.streamFormat = "mp3"
         obj.isTranscoded = True
         obj.transcodeServer = transcodeServer
+        obj.transcodeEndpoint = "/music/:/transcode/universal/start.m3u8"
 
-        builder = http.HttpRequest(transcodeServer.buildUrl("/music/:/transcode/universal/start.m3u8", True))
-        builder.addParam("protocol", "http")
+        builder = http.HttpRequest(transcodeServer.buildUrl(obj.transcodeEndpoint, True))
+        # builder.addParam("protocol", "http")
         builder.addParam("path", self.item.getAbsolutePath("key"))
         builder.addParam("session", self.item.getGlobal("clientIdentifier"))
         builder.addParam("directPlay", "0")

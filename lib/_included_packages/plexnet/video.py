@@ -48,6 +48,10 @@ class Video(media.MediaItem):
 
         return self._settings
 
+    @settings.setter
+    def settings(self, value):
+        self._settings = value
+
     def selectedAudioStream(self):
         if self.audioStreams:
             for stream in self.audioStreams:

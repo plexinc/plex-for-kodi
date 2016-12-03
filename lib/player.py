@@ -653,7 +653,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             url=self.video.defaultArt.asTranscodedImageURL(1920, 1080, opacity=60, background=colors.noAlpha.Background)
         )
         self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
-        meta = self.playerObject.build()
+        self.playerObject.build()
+        self.playerObject = self.playerObject.getServerDecision()
+        meta = self.playerObject.metadata
+
         url = meta.streamUrls[0]
         bifURL = self.playerObject.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))

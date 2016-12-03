@@ -1,5 +1,6 @@
 import mediachoice
 import plexstream
+import serverdecision
 import plexapp
 import util
 
@@ -229,6 +230,19 @@ class MediaDecisionEngine(object):
             util.LOG("MDE: assuming synthesized media can direct play")
             choice.isDirectPlayable = True
 
+        # Check for a server decision. This is authority as it's the only playback type
+        # the server will allow. This will also support forcing direct play, overriding
+        # only our local MDE checks based on the user pref, and only if the server
+        # agrees.
+        decision = part.get("decision")
+        if decision:
+            if decision != serverdecision.ServerDecision.DECISION_DIRECT_PLAY:
+                util.LOG("MDE: Server has decided this cannot direct play")
+                choice.isDirectPlayable = False
+            else:
+                util.LOG("MDE: Server has allowed direct play")
+                choice.isDirectPlayable = True
+
         # Setup sorts
         if choice.videoStream is not None:
             choice.sorts.bitrate = choice.videoStream.bitrate.asInt()
@@ -432,6 +446,13 @@ class MediaDecisionEngine(object):
         if not item.getServer().supportsAudioTranscoding:
             util.LOG("MDE: force direct play because the server does not support audio transcoding")
             choice.isDirectPlayable = True
+            return choice
+
+        # See if this part has a server decision to transcode and obey it
+        if choice.part and choice.part.get(
+                "decision", serverdecision.ServerDecision.DECISION_DIRECT_PLAY
+        ) != serverdecision.ServerDecision.DECISION_DIRECT_PLAY:
+            util.WARN_LOG("MDE: Server has decided this cannot direct play")
             return choice
 
         # Verify the codec and container are compatible

@@ -227,7 +227,12 @@ class PlexObject(object, Checks):
             return self
 
         self.initpath = self.key
-        self._setData(data[0])
+
+        try:
+            self._setData(data[0])
+        except IndexError:
+            util.DEBUG_LOG('No data on reload: {0}'.format(self))
+            return self
 
         return self
 

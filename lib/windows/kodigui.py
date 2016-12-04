@@ -116,7 +116,7 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
             xbmcgui.Window(self._winID).setProperty(key, value)
             xbmcgui.WindowXML.setProperty(self, key, value)
         except RuntimeError:
-            traceback.print_exc()
+            xbmc.log('kodigui.BaseWindow.setProperty: Missing window', xbmc.LOGDEBUG)
 
     def doClose(self):
         if not self.isOpen:
@@ -167,7 +167,7 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
             xbmcgui.Window(self._winID).setProperty(key, value)
             xbmcgui.WindowXMLDialog.setProperty(self, key, value)
         except RuntimeError:
-            traceback.print_exc()
+            xbmc.log('kodigui.BaseDialog.setProperty: Missing window', xbmc.LOGDEBUG)
 
     def doClose(self):
         self._closing = True

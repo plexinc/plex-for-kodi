@@ -27,11 +27,11 @@ class PlexPlayer(object):
         # TODO: Handle this ----------------------------------------------------------------------------------------------------------- TODO
 
     def rebuild(self, item, decision=None):
-        item.settings = self.item.settings
+        # item.settings = self.item.settings
         oldChoice = self.choice
         self.init(item, True)
         util.LOG("Replacing '{0}' with '{1}' and rebuilding.".format(oldChoice, self.choice))
-        self.build(forceTranscode=decision and not decision.directPlayOK())
+        self.build()
         self.decision = decision
 
     def build(self, forceTranscode=False):

@@ -26,8 +26,8 @@ class ServerDecision(object):
         self.isSupported = self.response.server.supportsFeature("streamingBrain")
         self.item = self.response.items[0]
 
-        if self.item and self.item.mediaItems:
-            self.original.transcodeDecision = mediachoice.MediaChoice(self.item.mediaItems[0])
+        if self.item and self.item.media:
+            self.original.transcodeDecision = mediachoice.MediaChoice(self.item.media[0])
 
         # Decision codes and text
         self.decisionsCodes = {}

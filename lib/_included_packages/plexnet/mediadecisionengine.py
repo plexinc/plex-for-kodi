@@ -26,7 +26,7 @@ class MediaDecisionEngine(object):
             return item.mediaChoice
 
         # See if we're missing media/stream details for this item.
-        if item.isLibraryItem() and item.isVideoItem() and len(item.media()) > 0 and not item.media()[0].hasStreams():
+        if item.isLibraryItem() and item.isVideoItem() and len(item.media) > 0 and not item.media[0].hasStreams():
             # TODO(schuyler): Fetch the details
             util.WARN_LOG("Can't make media choice, missing details")
 
@@ -36,8 +36,8 @@ class MediaDecisionEngine(object):
         indirect = False
         candidates = []
         maxResolution = item.settings.getMaxResolution(item.getQualityType())
-        for mediaIndex in range(len(item.media())):
-            media = item.media()[mediaIndex]
+        for mediaIndex in range(len(item.media)):
+            media = item.media[mediaIndex]
             media.mediaIndex = mediaIndex
             if media.isSelected():
                 candidates = []
@@ -61,7 +61,7 @@ class MediaDecisionEngine(object):
 
         # Make sure we have at least one valid item, regardless of availability
         if len(candidates) == 0:
-            candidates.append(item.media()[0])
+            candidates.append(item.media[0])
 
         # Now that we have an array of candidates, evaluate them completely.
         choices = []
@@ -149,7 +149,7 @@ class MediaDecisionEngine(object):
             audioLanguage = None
             audioStreamCompatible = True
 
-        if part.hasChapterVideoStream.asBool():
+        if part.get('hasChapterVideoStream').asBool():
             numVideoStreams = 1
 
         for stream in part.streams:

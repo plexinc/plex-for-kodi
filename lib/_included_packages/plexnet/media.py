@@ -19,7 +19,7 @@ METADATA_RELATED_OTHER = 12
 
 class MediaItem(plexobjects.PlexObject):
     def getIdentifier(self):
-        identifier = self.identifier
+        identifier = self.get('identifier') or None
 
         if identifier is None:
             identifier = self.container.identifier

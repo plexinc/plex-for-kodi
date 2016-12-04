@@ -109,10 +109,10 @@ class Checks:
         return not self.isLibraryItem() and not self.isMyPlexItem() and identifier != "com.plexapp.plugins.library"
 
     def isVevoItem(self):
-        return 'vevo://' in self.guid
+        return 'vevo://' in self.get('guid')
 
     def isIvaItem(self):
-        return 'iva://' in self.guid
+        return 'iva://' in self.get('guid')
 
     def isGracenoteCollection(self):
         return False
@@ -194,7 +194,7 @@ class PlexObject(object, Checks):
 
     @property
     def defaultTitle(self):
-        return self.title
+        return self.get('title')
 
     @property
     def defaultThumb(self):

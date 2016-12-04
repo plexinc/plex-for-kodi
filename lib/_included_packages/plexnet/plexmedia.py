@@ -24,7 +24,7 @@ class PlexMedia(plexobjects.PlexObject):
         return len(self.parts) > 0 and self.parts[0].hasStreams()
 
     def isIndirect(self):
-        return self.indirect.asBool()
+        return self.get('indirect') == '1'
 
     def isAccessible(self):
         for part in self.parts:

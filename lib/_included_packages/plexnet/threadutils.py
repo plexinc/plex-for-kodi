@@ -8,7 +8,13 @@ def _async_raise(tid, exctype):
     '''Raises an exception in the threads with id tid'''
     if not inspect.isclass(exctype):
         raise TypeError("Only types can be raised (not instances)")
-    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(exctype))
+
+    try:
+        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(tid), ctypes.py_object(exctype))
+    except AttributeError:
+        # To catch: undefined symbol: PyThreadState_SetAsyncExc
+        return
+
     if res == 0:
         raise ValueError("invalid thread id")
     elif res != 1:

@@ -652,12 +652,15 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             'change.background',
             url=self.video.defaultArt.asTranscodedImageURL(1920, 1080, opacity=60, background=colors.noAlpha.Background)
         )
-        self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
-        self.playerObject.build()
         try:
+            self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
+            self.playerObject.build()
             self.playerObject = self.playerObject.getServerDecision() or self.playerObject
         except plexplayer.DecisionFailure, e:
             util.showNotification(e.reason, header=util.T(32448, 'Playback Failed!'))
+            return
+        except:
+            util.ERROR(notify=True)
             return
 
         meta = self.playerObject.metadata

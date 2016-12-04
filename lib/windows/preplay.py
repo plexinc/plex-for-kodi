@@ -497,7 +497,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if sss:
             if len(self.video.subtitleStreams) > 1:
                 self.setProperty(
-                    'subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(self.video.subtitleStreams) - 1), T(32307, 'More')
+                    'subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(self.video.subtitleStreams) - 1, T(32307, 'More'))
                 )
             else:
                 self.setProperty('subtitles', sss.getTitle(metadata.apiTranslate))

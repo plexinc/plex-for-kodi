@@ -657,7 +657,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if sss:
             if len(video.subtitleStreams) > 1:
                 mli.setProperty(
-                    'subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(video.subtitleStreams) - 1), T(32307, 'More')
+                    'subtitles', u'{0} \u2022 {1} {2}'.format(sss.getTitle(metadata.apiTranslate), len(video.subtitleStreams) - 1, T(32307, 'More'))
                 )
             else:
                 mli.setProperty('subtitles', sss.getTitle(metadata.apiTranslate))

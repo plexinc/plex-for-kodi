@@ -1,3 +1,4 @@
+import re
 import util
 import captions
 import http
@@ -228,13 +229,13 @@ class PlexPlayer(object):
             if directPlay:
                 decisionPath = decisionPath.replace("directPlay=0", "directPlay=1")
 
-                # # Clear all subtitle parameters and add the a valid subtitle type based
-                # # on the video player. This will let the server decide if it can supply
-                # # sidecar subs, burn or embed w/ an optional transcode.
-                # for key in ("subtitles", "advancedSubtitles"):
-                #     decisionPath = re.sub('([?&]{0}=)\w+'.format(key), '', decisionPath)
-                # subType = 'embedded'  # AppSettings().getBoolPreference("custom_video_player"), "embedded", "sidecar")
-                # decisionPath = util.addUrlParam(decisionPath, "subtitles=" + subType)
+                # Clear all subtitle parameters and add the a valid subtitle type based
+                # on the video player. This will let the server decide if it can supply
+                # sidecar subs, burn or embed w/ an optional transcode.
+                for key in ("subtitles", "advancedSubtitles"):
+                    decisionPath = re.sub('([?&]{0}=)\w+'.format(key), '', decisionPath)
+                subType = 'sidecar'  # AppSettings().getBoolPreference("custom_video_player"), "embedded", "sidecar")
+                decisionPath = http.addUrlParam(decisionPath, "subtitles=" + subType)
 
             # Global variables for all decisions
             decisionPath = http.addUrlParam(decisionPath, "mediaBufferSize=50000")

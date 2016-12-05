@@ -1,3 +1,9 @@
+[- 0.0.91 -]
+
+Fix: Pressing a play on a show was not starting on the first unwatched or in progress episode
+Implement (Issue #30): Decision endpoint handling for proper interaaction with streaming brain - fixes related failed playback issues
+Various minor bug fixes causing fanart screen stalls, etc
+
 [- 0.0.90 -]
 
 Fix: (Issue #13) Errors caused by encoding issues in episodes pre-play and track playback

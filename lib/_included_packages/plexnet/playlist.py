@@ -113,6 +113,13 @@ class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
     def current(self):
         return self[self.pos]
 
+    def userCurrent(self):
+        for item in self._items:
+            if not item.isWatched or item.viewOffset.asInt():
+                return item
+        else:
+            return self.current()
+
     def prevItem(self):
         if self.pos < 1:
             return None

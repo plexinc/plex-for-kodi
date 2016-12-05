@@ -39,7 +39,7 @@ class UtilMixin():
         resume = False
         watched = False
         for i in items:
-            if (watched and not i.isWatched) or i.get('viewOffset'):
+            if (watched and not i.isWatched) or i.get('viewOffset').asInt():
                 if i.get('viewOffset'):
                     choice = dropdown.showDropdown(
                         options=[
@@ -58,7 +58,7 @@ class UtilMixin():
                     if choice['key'] == 'resume':
                         resume = True
 
-                    pl.setCurrent(i)
+                pl.setCurrent(i)
                 break
             elif i.isWatched:
                 watched = True

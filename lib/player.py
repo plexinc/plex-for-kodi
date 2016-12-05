@@ -348,6 +348,14 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.mode == self.MODE_ABSOLUTE:
             track = self.player.video.selectedAudioStream()
             if track:
+                try:
+                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=1, properties=['currentaudiostream'])['currentaudiostream']['index']
+                    if currIdx == track.typeIndex:
+                        util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
+                        return
+                except:
+                    util.ERROR()
+
                 xbmc.sleep(100)
                 util.DEBUG_LOG('Switching audio track - index: {0}'.format(track.typeIndex))
                 self.player.setAudioStream(track.typeIndex)

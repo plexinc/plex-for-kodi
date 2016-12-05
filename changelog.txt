@@ -1,3 +1,8 @@
+[- 0.0.92 -]
+
+Official Kodi repo submission
+Only change audio streams when necessary
+
 [- 0.0.91 -]
 
 Fix (Issue #23): Pressing a play on a show was not starting on the first unwatched or in progress episode

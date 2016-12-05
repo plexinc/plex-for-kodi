@@ -442,7 +442,7 @@ class Cron(threading.Thread):
 
 
 def getProgressImage(obj):
-    if not obj.viewOffset:
+    if not obj.get('viewOffset'):
         return ''
     pct = int((obj.viewOffset.asInt() / obj.duration.asFloat()) * 100)
     pct = pct - pct % 2  # Round to even number - we have even numbered progress only

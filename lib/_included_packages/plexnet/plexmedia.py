@@ -12,6 +12,7 @@ class PlexMedia(plexobjects.PlexObject):
         plexobjects.PlexObject.__init__(self, data, initpath, server)
         self.container_ = self.get('container')
         self.container = container
+        self.indirectHeaders = None
         self.parts = []
         # If we weren't given any data, this is a synthetic media
         if data is not None:

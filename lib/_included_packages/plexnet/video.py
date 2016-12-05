@@ -382,6 +382,9 @@ class Episode(PlayableVideo):
             self.directors = plexobjects.PlexItemList(data, media.Director, media.Director.TYPE, server=self.server)
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
+        else:
+            if data.find(media.Media.TYPE) is not None:
+                self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
         self._videoStreams = None
         self._audioStreams = None
@@ -458,6 +461,9 @@ class Clip(PlayableVideo):
         PlayableVideo._setData(self, data)
         if self.isFullObject():
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
+        else:
+            if data.find(media.Media.TYPE) is not None:
+                self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
 
     @property
     def isWatched(self):

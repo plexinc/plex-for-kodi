@@ -153,7 +153,7 @@ class HttpRequest(object):
             # self.event = msg
             return res
         except Exception, e:
-            util.WARN_LOG("Request to {0} errored out after {1} ms: {0}".format(self.url, seconds, e.message))
+            util.WARN_LOG("Request to {0} errored out after {1} ms: {2}".format(self.url, seconds, e.message))
 
         return None
 

@@ -79,4 +79,4 @@ class AudioObjectClass(object):
 
     def hasLyrics(self):
         return False
-        return self.lyrics.isAvailable()
+        # return self.lyrics.isAvailable()

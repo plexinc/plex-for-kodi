@@ -347,7 +347,7 @@ class MediaDecisionEngine(object):
         # else:
         #     util.LOG("MDE: Unsupported container: {0}".format(container))
 
-        return False
+        # return False
 
     def evaluateSubtitles(self, stream):
         if plexapp.INTERFACE.getPreference("burn_subtitles") == "always":

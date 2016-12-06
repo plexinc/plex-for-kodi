@@ -194,7 +194,7 @@
                         <font>font12</font>
                         <align>left</align>
                         <textcolor>FFFFFFFF</textcolor>
-                        <label>$INFO[Container(400).ListItem.Property(season)]$INFO[Container(400).ListItem.Property(episode), &#8226; ]$INFO[Container(400).ListItem.Property(date), / ]</label>
+                        <label>$INFO[Container(400).ListItem.Property(season)]$INFO[Container(400).ListItem.Property(episode), &#8226; , / ]$INFO[Container(400).ListItem.Property(date)]</label>
                     </control>
                     <control type="button">
                         <visible>!IsEmpty(Container(400).ListItem.Property(unavailable))</visible>

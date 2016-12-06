@@ -407,10 +407,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         episode = mli.dataSource
 
+        if episode.index:
+            subtitle = u'{0} {1} {2} {3}'.format(T(32303, 'Season'), episode.parentIndex, T(32304, 'Episode'), episode.index)
+        else:
+            subtitle = episode.originallyAvailableAt.asDatetime('%B %d, %Y')
+
         opener.handleOpen(
             info.InfoWindow,
             title=episode.title,
-            sub_title='{0} {1} {2} {3}'.format(T(32303, 'Season'), episode.parentIndex, T(32304, 'Episode'), episode.index),
+            sub_title=subtitle,
             thumb=episode.thumb,
             thumb_fallback='script.plex/thumb_fallbacks/show.png',
             info=episode.summary,
@@ -609,8 +614,13 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli.setProperty('duration', util.durationToText(video.duration.asInt()))
         mli.setProperty('summary', video.summary.strip().replace('\t', ' '))
 
-        mli.setProperty('season', '{0} {1}'.format(T(32303, 'Season'), video.parentIndex))
-        mli.setProperty('episode', '{0} {1}'.format(T(32304, 'Episode'), video.index))
+        if video.index:
+            mli.setProperty('season', '{0} {1}'.format(T(32303, 'Season'), video.parentIndex))
+            mli.setProperty('episode', '{0} {1}'.format(T(32304, 'Episode'), video.index))
+        else:
+            mli.setProperty('season', '')
+            mli.setProperty('episode', '')
+
         mli.setProperty('date', util.cleanLeadingZeros(video.originallyAvailableAt.asDatetime('%B %d, %Y')))
 
         # mli.setProperty('related.header', 'Related Shows')
@@ -677,9 +687,14 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.progressImageControl.setWidth(1)
 
     def createListItem(self, episode):
+        if episode.index:
+            subtitle = u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), episode.parentIndex, T(32311, 'E'), episode.index)
+        else:
+            subtitle = episode.originallyAvailableAt.asDatetime('%m/%d/%y')
+
         mli = kodigui.ManagedListItem(
             episode.title,
-            u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), episode.parentIndex, T(32311, 'E'), episode.index),
+            subtitle,
             thumbnailImage=episode.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM),
             data_source=episode
         )

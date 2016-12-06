@@ -748,10 +748,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def createListItem(self, obj, wide=False):
         if obj.type == 'episode':
             mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
-            if wide:
-                mli.setLabel2(u'{0} - {1}{2} \u2022 {3}{4}'.format(util.shortenText(obj.title, 35), T(32310, 'S'), obj.parentIndex, T(32310, 'E'), obj.index))
+            if obj.index:
+                subtitle = u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index)
             else:
-                mli.setLabel2(u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index))
+                subtitle = obj.originallyAvailableAt.asDatetime('%m/%d/%y')
+
+            if wide:
+                mli.setLabel2(u'{0} - {1}'.format(util.shortenText(obj.title, 35), subtitle))
+            else:
+                mli.setLabel2(subtitle)
+
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
             if not obj.isWatched:
                 mli.setProperty('unwatched', '1')

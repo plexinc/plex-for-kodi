@@ -1,3 +1,12 @@
+[- 0.0.93 -]
+
+Fix: (Issue #20) Filtering by unwatched still showed watched items
+Fix: (Issue #33) Photo directories were failing to open from the Home screen
+Fix: (Issue #33) Some photos failed to open from the Home screen
+Fix: Disabling the 'Allow HEVC' setting had no effect
+Added a busy indicator while photos are loading
+Fixes for DVR episodes without episode numbers
+
 [- 0.0.92 -]
 
 Official Kodi repo submission

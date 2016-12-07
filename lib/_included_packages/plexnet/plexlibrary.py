@@ -145,7 +145,7 @@ class LibrarySection(plexobjects.PlexObject):
             args['sort'] = '{0}:{1}'.format(*sort)
 
         if unwatched:
-            args['unwatched'] = 1
+            args['unwatchedLeaves'] = 1
 
         if args:
             path += util.joinArgs(args)
@@ -167,7 +167,7 @@ class LibrarySection(plexobjects.PlexObject):
             args['sort'] = '{0}:{1}'.format(*sort)
 
         if unwatched:
-            args['unwatched'] = 1
+            args['unwatchedLeaves'] = 1
 
         if args:
             path += util.joinArgs(args)
@@ -394,12 +394,7 @@ class Hub(plexobjects.PlexObject):
 
     def init(self, data):
         self.items = []
-        container = self.container  # = plexobjects.PlexContainer(data, self.key, self.server, self.key)
-        if not container:
-            container = plexobjects.PlexContainer(data, self.key, self.server, self.key)
-            # container.librarySectionID = self.container.librarySectionID
-            # container.librarySectionTitle = self.container.librarySectionTitle
-            # container.librarySectionUUID = self.container.librarySectionUUID
+        container = plexobjects.PlexContainer(data, self.key, self.server, self.key or '')
 
         if self.type == 'genre':
             self.items = [media.Genre(elem, initpath='/hubs', server=self.server, container=container) for elem in data]

@@ -112,8 +112,7 @@ def trackClicked(track):
 
 
 def photoDirectoryClicked(photodirectory):
-    import library
-    return handleOpen(library.SquaresWindow, section=photodirectory)
+    return sectionClicked(photodirectory)
 
 
 def playlistClicked(pl):

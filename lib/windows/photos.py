@@ -57,6 +57,7 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 14)
+        self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
         self.getPlayQueue()
         self.start()
         self.osdTimer = kodigui.PropertyTimer(self._winID, 4, 'OSD', '', init_value=False, callback=self.osdTimerCallback)
@@ -236,6 +237,7 @@ class PhotoWindow(kodigui.BaseWindow):
 
     @busy.dialog()
     def _reallyShowPhoto(self):
+        self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
         photo = self.playQueue.current()
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
         meta = self.playerObject.build()

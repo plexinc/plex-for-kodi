@@ -274,26 +274,30 @@ class MediaDecisionEngine(object):
         maxResolution = item.settings.getMaxResolution(item.getQualityType(), self.isSupported4k(choice.media, choice.videoStream))
         height = choice.media.getVideoResolution()
         if height > maxResolution:
-            util.LOG("MDE: Video height is greater than max allowed: {0} > {1}".format(height, maxResolution))
+            util.LOG("MDE: (DP) Video height is greater than max allowed: {0} > {1}".format(height, maxResolution))
             if height > 1088 and item.settings.getPreference("allow_4k", True):
-                util.LOG("MDE: Unsupported 4k media")
+                util.LOG("MDE: (DP) Unsupported 4k media")
             return False
 
         maxBitrate = item.settings.getMaxBitrate(item.getQualityType())
         bitrate = choice.media.bitrate.asInt()
         if bitrate > maxBitrate:
-            util.LOG("MDE: Video bitrate is greater than the allowed max: {0} > {1}".format(bitrate, maxBitrate))
+            util.LOG("MDE: (DP) Video bitrate is greater than the allowed max: {0} > {1}".format(bitrate, maxBitrate))
             return False
 
         if choice.videoStream is None:
-            util.ERROR_LOG("MDE: No video stream")
+            util.ERROR_LOG("MDE: (DP) No video stream")
             return True
 
         if not item.settings.getGlobal("supports1080p60"):
             videoFrameRate = choice.videoStream.asInt()
             if videoFrameRate > 30 and height >= 1080:
-                util.LOG("MDE: frame rate is not support for resolution: {0}@{1}".format(height, videoFrameRate))
+                util.LOG("MDE: (DP) Frame rate is not supported for resolution: {0}@{1}".format(height, videoFrameRate))
                 return False
+
+        if choice.videoStream.codec == "hevc" and not item.settings.getPreference("allow_hevc", False):
+            util.LOG("MDE: (DP) Codec is HEVC, which is disabled")
+            return False
 
         return True
 

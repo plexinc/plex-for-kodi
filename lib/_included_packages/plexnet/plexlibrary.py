@@ -145,7 +145,7 @@ class LibrarySection(plexobjects.PlexObject):
             args['sort'] = '{0}:{1}'.format(*sort)
 
         if unwatched:
-            args['unwatchedLeaves'] = 1
+            args[self.TYPE == 'movie' and 'unwatched' or 'unwatchedLeaves'] = 1
 
         if args:
             path += util.joinArgs(args)
@@ -167,7 +167,7 @@ class LibrarySection(plexobjects.PlexObject):
             args['sort'] = '{0}:{1}'.format(*sort)
 
         if unwatched:
-            args['unwatchedLeaves'] = 1
+            args[self.TYPE == 'movie' and 'unwatched' or 'unwatchedLeaves'] = 1
 
         if args:
             path += util.joinArgs(args)

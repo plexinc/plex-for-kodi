@@ -12,10 +12,12 @@ HANDLE = int(sys.argv[1])
 def LOG(msg):
     xbmc.log('script.plex (plugin): {0}'.format(msg))
 
+
 util.LOG = LOG
 
 
 def playTrack(track):
+    track.reload()
     apobj = plexplayer.PlexAudioPlayer(track)
     url = apobj.build()['url']
     url = util.addURLParams(url, {

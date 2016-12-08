@@ -234,6 +234,9 @@ class PlexObject(object, Checks):
 
         return self
 
+    def softReload(self, **kwargs):
+        return self.reload(_soft=True, **kwargs)
+
     def getLibrarySectionId(self):
         ID = self.get('librarySectionID')
 

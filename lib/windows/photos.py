@@ -239,6 +239,7 @@ class PhotoWindow(kodigui.BaseWindow):
     def _reallyShowPhoto(self):
         self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
         photo = self.playQueue.current()
+        photo.softReload()
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
         meta = self.playerObject.build()
         url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)

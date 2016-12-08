@@ -7,6 +7,7 @@ import playlist
 import media
 import exceptions
 import util
+import signalsmixin
 
 
 class Library(plexobjects.PlexObject):
@@ -360,7 +361,7 @@ class Generic(plexobjects.PlexObject):
 
 
 @plexobjects.registerLibType
-class Playlist(playlist.BasePlaylist):
+class Playlist(playlist.BasePlaylist, signalsmixin.SignalsMixin):
     TYPE = 'playlist'
 
     def __init__(self, *args, **kwargs):
@@ -378,6 +379,27 @@ class Playlist(playlist.BasePlaylist):
             self._itemsLoaded = True
 
         return playlist.BasePlaylist.items(self)
+
+    def extend(self, start=0, size=0):
+        if not self._items:
+            self._items = [None] * self.leafCount.asInt()
+
+        args = {}
+
+        if size is not None:
+            args['X-Plex-Container-Start'] = start
+            args['X-Plex-Container-Size'] = size
+
+        path = '/playlists/{0}/items'.format(self.ratingKey)
+        if args:
+            path += util.joinArgs(args) if '?' not in path else '&' + util.joinArgs(args).lstrip('?')
+
+        items = plexobjects.listItems(self.server, path)
+        self._items[start:start + len(items)] = items
+
+        self.trigger('items.added')
+
+        return items
 
     def unshuffledItems(self):
         if not self._itemsLoaded:

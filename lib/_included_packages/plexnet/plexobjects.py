@@ -160,11 +160,6 @@ class PlexObject(object, Checks):
             setattr(self, k, PlexValue(v, self))
 
     def __getattr__(self, attr):
-        if not self.isFullObject():
-            self.reload()
-            if attr in self.__dict__:
-                return self.__dict__[attr]
-
         a = PlexValue('', self)
         a.NA = True
 
@@ -182,6 +177,9 @@ class PlexObject(object, Checks):
     def get(self, attr, default=''):
         ret = self.__dict__.get(attr)
         return ret is not None and ret or PlexValue(default, self)
+
+    def set(self, attr, value):
+        setattr(self, attr, PlexValue(unicode(value), self))
 
     def init(self, data):
         pass

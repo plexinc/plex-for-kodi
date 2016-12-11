@@ -3,6 +3,7 @@ import uuid
 import json
 import threading
 import time
+import requests
 
 import xbmc
 
@@ -296,7 +297,12 @@ def authorize():
     try:
         while True:
             pinLoginWindow = signin.PinLoginWindow.create()
-            pl = myplex.PinLogin()
+            try:
+                pl = myplex.PinLogin()
+            except requests.ConnectionError:
+                util.messageDialog(util.T(32427, 'Failed'), util.T(32449, 'Sign-in failed. Cound not connect to my.plexapp.com'))
+                return
+
             pinLoginWindow.setPin(pl.pin)
 
             try:

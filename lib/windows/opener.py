@@ -6,9 +6,7 @@ from lib import util
 
 def open(obj):
     if isinstance(obj, playqueue.PlayQueue):
-        util.DEBUG_LOG('waiting for playQueue to initialize')
         if busy.widthDialog(obj.waitForInitialization, None):
-            util.DEBUG_LOG('playQueue initialized: {0}'.format(obj))
             if obj.type == 'audio':
                 import musicplayer
                 return handleOpen(musicplayer.MusicPlayerWindow, track=obj.current(), playlist=obj)
@@ -19,8 +17,6 @@ def open(obj):
                 import videoplayer
                 videoplayer.play(play_queue=obj)
                 return ''
-        else:
-            util.DEBUG_LOG('playQueue timed out wating for initialization')
     elif isinstance(obj, basestring):
         key = obj
         if not obj.startswith('/'):

@@ -199,6 +199,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         self.refreshTimer = None
 
         self.canceled = False
+        self.responded = False
         self.initialized = False
 
         self.composite = plexobjects.PlexValue('', parent=self)
@@ -218,10 +219,18 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
     def waitForInitialization(self):
         start = time.time()
+        timeout = util.TIMEOUT
+        util.DEBUG_LOG('Waiting for playQueue to initialize...')
         while not self.canceled and not self.initialized:
-            if time.time() - start > util.TIMEOUT:
+            if not self.responded and time.time() - start > timeout:
+                util.DEBUG_LOG('PlayQueue timed out wating for initialization')
                 return self.initialized
             time.sleep(0.1)
+
+        if self.initialized:
+            util.DEBUG_LOG('PlayQueue initialized in {0:.2f} secs: {1}'.format(time.time() - start, self))
+        else:
+            util.DEBUG_LOG('PlayQueue failed to initialize')
 
         return self.initialized
 
@@ -235,6 +244,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
             return
 
         if wait:
+            self.responded = False
             self.initialized = False
         # We refresh our play queue if the caller insists or if we only have a
         # portion of our play queue loaded. In particular, this means that we don't
@@ -353,6 +363,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         # Close any loading modal regardless of response status
         # Application().closeLoadingModal()
         util.DEBUG_LOG('playQueue: Received response')
+        self.responded = True
         if response.parseResponse():
             util.DEBUG_LOG('playQueue: {0} items'.format(len(response.items)))
             self.container = response.container
@@ -583,6 +594,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
 
 def createRemotePlayQueue(item, contentType, options, args):
+    util.DEBUG_LOG('Creating remote playQueue request...')
     obj = PlayQueue(item.getServer(), contentType, options)
 
     # The item's URI is made up of the library section UUID, a descriptor of
@@ -648,10 +660,10 @@ def createRemotePlayQueue(item, contentType, options, args):
     # elif item.type == "show":
     #     path = "/library/metadata/" + item.get("ratingKey", "")
 
-    if args:
-        path += util.joinArgs(args)
-
     if path:
+        if args:
+            path += util.joinArgs(args)
+
         util.DEBUG_LOG("playQueue path: " + str(path))
 
         if "/search" not in path:
@@ -690,6 +702,7 @@ def createRemotePlayQueue(item, contentType, options, args):
     # Add options we pass every time querying PQs
     obj.addRequestOptions(request)
 
+    util.DEBUG_LOG('Initial playQueue request started...')
     context = request.createRequestContext("create", callback.Callable(obj.onResponse))
     plexapp.APP.startRequest(request, context, body='')
 

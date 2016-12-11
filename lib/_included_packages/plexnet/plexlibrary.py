@@ -372,6 +372,12 @@ class Playlist(playlist.BasePlaylist, signalsmixin.SignalsMixin):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
+    def isMusicOrDirectoryItem(self):
+        return self.playlistType == 'audio'
+
+    def isVideoOrDirectoryItem(self):
+        return self.playlistType == 'video'
+
     def items(self):
         if not self._itemsLoaded:
             path = '/playlists/{0}/items'.format(self.ratingKey)

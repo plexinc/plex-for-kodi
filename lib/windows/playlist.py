@@ -1,3 +1,5 @@
+import threading
+
 import xbmc
 import xbmcgui
 import kodigui
@@ -8,6 +10,7 @@ import windowutils
 import dropdown
 import search
 import plexnet
+import opener
 
 from lib import colors
 from lib import util
@@ -17,6 +20,7 @@ from lib import backgroundthread
 from lib.util import T
 
 PLAYLIST_PAGE_SIZE = 500
+PLAYLIST_INITIAL_SIZE = 100
 
 
 class ChunkRequestTask(backgroundthread.Task):
@@ -48,6 +52,8 @@ class ChunkRequestTask(backgroundthread.Task):
                 return
 
             self.WINDOW.chunkCallback(items, self.start)
+        except AttributeError:
+            util.DEBUG_LOG('Playlist window closed, ignoring chunk at index {0}'.format(self.start))
         except plexnet.exceptions.BadRequest:
             util.DEBUG_LOG('404 on playlist: {0}'.format(repr(self.WINDOW.playlist.title)))
 
@@ -81,6 +87,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.playlist = kwargs.get('playlist')
         self.exitCommand = None
         self.tasks = backgroundthread.Tasks()
+        self.isPlaying = False
         ChunkRequestTask.WINDOW = self
 
     def onFirstInit(self):
@@ -128,8 +135,8 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def doClose(self):
         kodigui.ControlledWindow.doClose(self)
-        ChunkRequestTask.reset()
         self.tasks.cancel()
+        ChunkRequestTask.reset()
 
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self))
@@ -141,16 +148,64 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             mli = self.playlistListControl.getSelectedItem()
             if not mli:
                 return
-            player.PLAYER.stop()  # Necessary because if audio is already playing, it will close the window when that is stopped
 
-        if self.playlist.playlistType == 'audio':
-            self.playlist.setShuffle(shuffle)
-            self.playlist.setCurrent(mli and mli.pos() or 0)
-            self.showAudioPlayer(track=mli and mli.dataSource or self.playlist.current(), playlist=self.playlist)
-        elif self.playlist.playlistType == 'video':
-            self.playlist.setShuffle(shuffle)
-            self.playlist.setCurrent(mli and mli.pos() or 0)
-            videoplayer.play(play_queue=self.playlist)
+        try:
+            self.isPlaying = True
+            self.tasks.cancel()
+            player.PLAYER.stop()  # Necessary because if audio is already playing, it will close the window when that is stopped
+            if self.playlist.playlistType == 'audio':
+                if self.playlist.leafCount.asInt() <= PLAYLIST_INITIAL_SIZE:
+                    self.playlist.setShuffle(shuffle)
+                    self.playlist.setCurrent(mli and mli.pos() or 0)
+                    self.showAudioPlayer(track=mli and mli.dataSource or self.playlist.current(), playlist=self.playlist)
+                else:
+                    args = {'sourceType': '8', 'shuffle': shuffle}
+                    if mli:
+                        args['key'] = mli.dataSource.key
+                    pq = plexnet.playqueue.createPlayQueueForItem(self.playlist, options=args)
+                    opener.open(pq)
+            elif self.playlist.playlistType == 'video':
+                if self.playlist.leafCount.asInt() <= PLAYLIST_INITIAL_SIZE:
+                    self.playlist.setShuffle(shuffle)
+                    self.playlist.setCurrent(mli and mli.pos() or 0)
+                    videoplayer.play(play_queue=self.playlist)
+                else:
+                    args = {'shuffle': shuffle}
+                    if mli:
+                        args['key'] = mli.dataSource.key
+                    pq = plexnet.playqueue.createPlayQueueForItem(self.playlist, options=args)
+                    opener.open(pq)
+
+        finally:
+            self.isPlaying = False
+            self.restartFill()
+
+    def restartFill(self):
+        threading.Thread(target=self._restartFill).start()
+
+    def _restartFill(self):
+        util.DEBUG_LOG('Checking if playlist list is full...')
+        for idx, mli in enumerate(self.playlistListControl):
+            if self.isPlaying or not self.isOpen or util.MONITOR.abortRequested():
+                break
+
+            if not mli.dataSource:
+                if self.playlist[idx]:
+                    self.updateListItem(idx, self.playlist[idx])
+                else:
+                    break
+        else:
+            util.DEBUG_LOG('Playlist list is full - nothing to do')
+            return
+
+        util.DEBUG_LOG('Playlist list is not full - finishing')
+        total = self.playlist.leafCount.asInt()
+        for start in range(idx, total, PLAYLIST_PAGE_SIZE):
+            if util.MONITOR.abortRequested():
+                break
+            self.tasks.add(ChunkRequestTask().setup(start, PLAYLIST_PAGE_SIZE))
+
+        backgroundthread.BGThreader.addTasksToFront(self.tasks)
 
     def optionsButtonClicked(self):
         options = []
@@ -218,7 +273,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def fillPlaylist(self):
         total = self.playlist.leafCount.asInt()
 
-        endoffirst = min(100, PLAYLIST_PAGE_SIZE, total)
+        endoffirst = min(PLAYLIST_INITIAL_SIZE, PLAYLIST_PAGE_SIZE, total)
         items = [self.updateListItem(i, pi, kodigui.ManagedListItem()) for i, pi in enumerate(self.playlist.extend(0, endoffirst))]
 
         items += [kodigui.ManagedListItem() for i in range(total - endoffirst)]
@@ -230,13 +285,15 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             return
 
         for start in range(endoffirst, total, PLAYLIST_PAGE_SIZE):
+            if util.MONITOR.abortRequested():
+                break
             self.tasks.add(ChunkRequestTask().setup(start, PLAYLIST_PAGE_SIZE))
 
         backgroundthread.BGThreader.addTasksToFront(self.tasks)
 
     def chunkCallback(self, items, start):
         for i, pi in enumerate(items):
-            if not self.isOpen:
+            if self.isPlaying or not self.isOpen or util.MONITOR.abortRequested():
                 break
 
             idx = start + i

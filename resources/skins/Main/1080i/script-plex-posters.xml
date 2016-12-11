@@ -28,7 +28,7 @@
 
         <control type="group" id="50">
             <animation effect="slide" time="200" end="0,-135" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5)">Conditional</animation>
-            <animation effect="slide" time="200" end="0,-200" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IntegerGreaterThan(Container(101).Position,5)">Conditional</animation>
+            <animation effect="slide" time="200" end="0,-455" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IntegerGreaterThan(Container(101).Position,5)">Conditional</animation>
             <posx>0</posx>
             <posy>135</posy>
             <defaultcontrol>101</defaultcontrol>
@@ -106,7 +106,7 @@
                 <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>0</posx>
-                <posy>0</posy>
+                <posy>-15</posy>
                 <width>1920</width>
                 <height>1080</height>
                 <control type="panel" id="101">
@@ -114,7 +114,7 @@
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1800</width>
-                    <height>1280</height>
+                    <height>1650</height>
                     <onup>300</onup>
                     <onright>151</onright>
                     <scrolltime>200</scrolltime>
@@ -125,7 +125,7 @@
                     <itemlayout width="287" height="460">
                         <control type="group">
                             <posx>55</posx>
-                            <posy>97</posy>
+                            <posy>137</posy>
                             <control type="group">
                                 <posx>5</posx>
                                 <posy>5</posy>
@@ -224,7 +224,7 @@
                     <focusedlayout width="287" height="460">
                         <control type="group">
                             <posx>55</posx>
-                            <posy>97</posy>
+                            <posy>137</posy>
                             <control type="group">
                                 <animation effect="zoom" start="100" end="110" time="100" center="127,185" reversible="false">Focus</animation>
                                 <animation effect="zoom" start="110" end="100" time="100" center="127,185" reversible="false">UnFocus</animation>

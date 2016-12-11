@@ -1,7 +1,6 @@
 import xbmcgui
 import kodigui
 from lib import util
-from lib import image
 
 
 class Background(kodigui.BaseWindow):
@@ -91,11 +90,7 @@ class PinLoginWindow(kodigui.BaseWindow):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
 
     def setPin(self, pin):
-        pinImage = image.textToImage(' '.join(list(pin)))
-        if pinImage:
-            self.setProperty('pin.image', pinImage)
-        else:
-            self.setProperty('pin', pin)
+        self.setProperty('pin', pin)
 
     def setLinking(self):
         self.setProperty('linking', '1')

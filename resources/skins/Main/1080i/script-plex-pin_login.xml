@@ -9,7 +9,7 @@
     <controls>
 
         <control type="image">
-            <visible>!IsEmpty(Window.Property(pin)) | !IsEmpty(Window.Property(pin.image))</visible>
+            <visible>!IsEmpty(Window.Property(pin.image.0))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>
@@ -17,7 +17,7 @@
             <texture>script.plex/sign_in/pin-display.jpg</texture>
         </control>
         <control type="image">
-            <visible>IsEmpty(Window.Property(pin)) + IsEmpty(Window.Property(pin.image)) + IsEmpty(Window.Property(linking))</visible>
+            <visible>IsEmpty(Window.Property(pin.image.0)) + IsEmpty(Window.Property(linking))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>
@@ -45,12 +45,37 @@
             <label>$INFO[Window.Property(pin)]</label>
         </control>
 
-        <control type="image">
+        <control type="grouplist" id="400">
+            <defaultcontrol>406</defaultcontrol>
             <posx>265</posx>
             <posy>708</posy>
-            <width>800</width>
+            <width>1000</width>
+
             <height>200</height>
-            <texture>$INFO[Window.Property(pin.image)]</texture>
+            <align>left</align>
+            <itemgap>0</itemgap>
+            <orientation>horizontal</orientation>
+            <control type="image">
+                <width>200</width>
+                <height>200</height>
+                <texture>$INFO[Window.Property(pin.image.0)]</texture>
+            </control>
+            <control type="image">
+                <width>200</width>
+                <height>200</height>
+                <texture>$INFO[Window.Property(pin.image.1)]</texture>
+            </control>
+            <control type="image">
+                <width>200</width>
+                <height>200</height>
+                <texture>$INFO[Window.Property(pin.image.2)]</texture>
+            </control>
+            <control type="image">
+                <width>200</width>
+                <height>200</height>
+                <texture>$INFO[Window.Property(pin.image.3)]</texture>
+            </control>
+
         </control>
 
     </controls>

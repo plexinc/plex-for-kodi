@@ -1,6 +1,6 @@
 [- 0.0.94 -]
 
-Fix: Fitering for unwatched movies was causing nothing to be dislayed (regression)
+Fix: Filtering for unwatched movies was causing nothing to be displayed (regression)
 Playlists now load in progressively in the background (Issue #35)
 Added a dialog on failure to connect when getting sign-in pin (Issue #32)
 Change posters view so that two rows are always visible

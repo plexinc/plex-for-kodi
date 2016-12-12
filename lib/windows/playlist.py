@@ -146,7 +146,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             mli = None
         else:
             mli = self.playlistListControl.getSelectedItem()
-            if not mli:
+            if not mli or not mli.dataSource:
                 return
 
         try:

@@ -243,7 +243,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif pi.type == 'episode':
             self.createEpisodeListItem(mli, pi)
         elif pi.type in ('movie', 'clip'):
-            self.createMovieListItem(idx, pi)
+            self.createMovieListItem(mli, pi)
 
         return mli
 

@@ -534,9 +534,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def delete(self):
         button = optionsdialog.show(
             T(32326, 'Really delete?'),
-            T(32326, 'Are you sure you really want to delete this media?'),
-            T(32326, 'Yes'),
-            T(32326, 'No')
+            T(32327, 'Are you sure you really want to delete this media?'),
+            T(32328, 'Yes'),
+            T(32329, 'No')
         )
 
         if button != 0:

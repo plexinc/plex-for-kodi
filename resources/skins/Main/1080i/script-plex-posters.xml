@@ -27,8 +27,7 @@
         </control>
 
         <control type="group" id="50">
-            <animation effect="slide" time="200" end="0,-135" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5)">Conditional</animation>
-            <animation effect="slide" time="200" end="0,-455" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IntegerGreaterThan(Container(101).Position,5)">Conditional</animation>
+            <animation effect="slide" time="200" end="0,-115" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5)">Conditional</animation>
             <posx>0</posx>
             <posy>135</posy>
             <defaultcontrol>101</defaultcontrol>
@@ -106,7 +105,7 @@
                 <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>0</posx>
-                <posy>-15</posy>
+                <posy>-35</posy>
                 <width>1920</width>
                 <height>1080</height>
                 <control type="panel" id="101">
@@ -114,7 +113,7 @@
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1800</width>
-                    <height>1650</height>
+                    <height>1190</height>
                     <onup>300</onup>
                     <onright>151</onright>
                     <scrolltime>200</scrolltime>

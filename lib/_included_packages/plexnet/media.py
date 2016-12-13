@@ -44,7 +44,7 @@ class MediaItem(plexobjects.PlexObject):
         if not server:
             server = self.getServer()
 
-        return server.isLocalConnection() and util.QUALITY_LOCAL or util.QUALITY_REMOTE
+        return util.QUALITY_LOCAL if server.isLocalConnection() else util.QUALITY_REMOTE
 
     def delete(self):
         if not self.ratingKey:

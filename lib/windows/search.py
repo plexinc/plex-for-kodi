@@ -282,6 +282,10 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
             return
 
         hubItem = mli.dataSource
+        if hubItem.TYPE == 'playlist' and not hubItem.exists():  # Workaround for server bug
+            util.messageDialog('No Access', 'Playlist not accessible by this user.')
+            util.DEBUG_LOG('Search: Playlist does not exist - probably wrong user')
+            return
 
         self.doClose()
         try:

@@ -1,6 +1,7 @@
 import os
 import random
 import urllib
+import json
 
 import xbmc
 import xbmcgui
@@ -140,6 +141,46 @@ class PhotoPropertiesTask(backgroundthread.Task):
             util.DEBUG_LOG('404 on photo reload: {0}'.format(self.photo))
 
 
+class LibrarySettings(object):
+    def __init__(self, section_or_server_id):
+        if isinstance(section_or_server_id, basestring):
+            self.serverID = section_or_server_id
+            self.sectionID = None
+        else:
+            self.serverID = section_or_server_id.getServer().uuid
+            self.sectionID = section_or_server_id.key
+
+        self._loadSettings()
+
+    def _loadSettings(self):
+        jsonString = util.getSetting('library.settings.{0}'.format(self.serverID))
+        try:
+            self._settings = json.loads(jsonString)
+        except:
+            util.ERROR()
+            self._settings = {}
+
+    def _saveSettings(self):
+        jsonString = json.dumps(self._settings)
+        util.setSetting('library.settings.{0}'.format(self.serverID), jsonString)
+
+    def setSection(self, section_id):
+        self.sectionID = section_id
+
+    def getSetting(self, setting, default=None):
+        if not self._settings or self.sectionID not in self._settings:
+            return default
+
+        return self._settings[self.sectionID].get(setting, default)
+
+    def setSetting(self, setting, value):
+        if self.sectionID not in self._settings:
+            self._settings[self.sectionID] = {}
+        self._settings[self.sectionID][setting] = value
+
+        self._saveSettings()
+
+
 class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
     bgXML = 'script-plex-blank.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -157,10 +198,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.backgroundSet = False
         self.sort = 'titleSort'
         self.sortDesc = False
-        self.filterUnwatched = False
         self.showPanelControl = None
         self.keyListControl = None
         self.lastItem = None
+        self.librarySettings = LibrarySettings(self.section)
+        self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
 
     def doClose(self):
         for task in self.tasks:
@@ -548,6 +590,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.filter = None
         elif choice == 'unwatched':
             self.filterUnwatched = not self.filterUnwatched
+            self.librarySettings.setSetting('filter.unwatched', self.filterUnwatched)
         else:
             self.filter = result
 
@@ -616,8 +659,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         else:
             self.setProperty('screen.title', self.section.TYPE == 'show' and T(32393, 'TV SHOWS').upper() or T(32348, 'movies').upper())
 
-        if self.filter:
-            self.updateFilterDisplay()
+        self.updateFilterDisplay()
 
     def updateItem(self, mli=None):
         mli = mli or self.showPanelControl.getSelectedItem()

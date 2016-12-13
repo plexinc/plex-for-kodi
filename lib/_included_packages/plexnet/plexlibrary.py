@@ -372,6 +372,13 @@ class Playlist(playlist.BasePlaylist, signalsmixin.SignalsMixin):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
+    def exists(self):
+        try:
+            self.server.query('/playlists/{0}'.format(self.ratingKey))
+            return True
+        except exceptions.BadRequest:
+            return False
+
     def isMusicOrDirectoryItem(self):
         return self.playlistType == 'audio'
 

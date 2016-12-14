@@ -14,8 +14,8 @@ video, audio, photo  # Hides warning message
 
 
 class PinLogin(object):
-    INIT = 'https://my.plexapp.com/pins.xml'
-    POLL = 'https://my.plexapp.com/pins/{0}.xml'
+    INIT = 'https://plex.tv/pins.xml'
+    POLL = 'https://plex.tv/pins/{0}.xml'
     POLL_INTERVAL = 1
 
     def __init__(self, callback=None):

@@ -454,6 +454,11 @@ def setApp(app):
     APP = app
 
 
+def setUserAgent(agent):
+    util.USER_AGENT = agent
+    util.BASE_HEADERS = util.resetBaseHeaders()
+
+
 def refreshResources(force=False):
     import gdm
     gdm.DISCOVERY.discover()

@@ -21,7 +21,8 @@ def resetBaseHeaders():
         'X-Plex-Version': X_PLEX_VERSION,
         'X-Plex-Device': X_PLEX_DEVICE,
         'X-Plex-Client-Identifier': X_PLEX_IDENTIFIER,
-        'Accept-Encoding': 'gzip,deflate'
+        'Accept-Encoding': 'gzip,deflate',
+        'User-Agent': USER_AGENT
     }
 
 
@@ -37,6 +38,7 @@ X_PLEX_PLATFORM = platform.uname()[0]          # Platform name, eg iOS, MacOSX, 
 X_PLEX_PLATFORM_VERSION = platform.uname()[2]  # Operating system version, eg 4.3.1, 10.6.7, 3.2
 X_PLEX_PRODUCT = PROJECT                       # Plex application name, eg Laika, Plex Media Server, Media Link
 X_PLEX_VERSION = VERSION                       # Plex application version number
+USER_AGENT = '{0}/{1}'.format(PROJECT, VERSION)
 
 try:
     _platform = platform.platform()
@@ -85,6 +87,10 @@ def FATAL(msg=None):
 
 def TEST(msg):
     plexapp.INTERFACE.LOG(' ---TEST: {0}'.format(msg))
+
+
+def userAgent():
+    return plexapp.INTERFACE.getGlobal("userAgent")
 
 
 def dummyTranslate(string):

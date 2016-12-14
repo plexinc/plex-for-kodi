@@ -892,5 +892,5 @@ msgid "Playback Failed!"
 msgstr ""
 
 msgctxt "#32449"
-msgid "Sign-in failed. Could not connect to my.plexapp.com."
+msgid "Sign-in failed. Could not connect to plex.tv."
 msgstr ""

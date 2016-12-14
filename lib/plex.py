@@ -1,3 +1,4 @@
+import sys
 import platform
 import uuid
 import json
@@ -24,6 +25,38 @@ CLIENT_ID = util.getSetting('client.ID')
 if not CLIENT_ID:
     CLIENT_ID = str(uuid.uuid4())
     util.setSetting('client.ID', CLIENT_ID)
+
+
+def defaultUserAgent():
+    """Return a string representing the default user agent."""
+    _implementation = platform.python_implementation()
+
+    if _implementation == 'CPython':
+        _implementation_version = platform.python_version()
+    elif _implementation == 'PyPy':
+        _implementation_version = '%s.%s.%s' % (sys.pypy_version_info.major,
+                                                sys.pypy_version_info.minor,
+                                                sys.pypy_version_info.micro)
+        if sys.pypy_version_info.releaselevel != 'final':
+            _implementation_version = ''.join([_implementation_version, sys.pypy_version_info.releaselevel])
+    elif _implementation == 'Jython':
+        _implementation_version = platform.python_version()  # Complete Guess
+    elif _implementation == 'IronPython':
+        _implementation_version = platform.python_version()  # Complete Guess
+    else:
+        _implementation_version = 'Unknown'
+
+    try:
+        p_system = platform.system()
+        p_release = platform.release()
+    except IOError:
+        p_system = 'Unknown'
+        p_release = 'Unknown'
+
+    return " ".join(['%s/%s' % ('Plex-for-Kodi', util.ADDON.getAddonInfo('version')),
+                     '%s/%s' % ('Kodi', xbmc.getInfoLabel('System.BuildVersion').replace(' ', '-')),
+                     '%s/%s' % (_implementation, _implementation_version),
+                     '%s/%s' % (p_system, p_release)])
 
 
 class PlexInterface(plexapp.AppInterface):
@@ -182,6 +215,7 @@ class PlexInterface(plexapp.AppInterface):
 
 
 plexapp.setInterface(PlexInterface())
+plexapp.setUserAgent(defaultUserAgent())
 
 
 class CallbackEvent(plexapp.CompatEvent):
@@ -300,7 +334,8 @@ def authorize():
             try:
                 pl = myplex.PinLogin()
             except requests.ConnectionError:
-                util.messageDialog(util.T(32427, 'Failed'), util.T(32449, 'Sign-in failed. Cound not connect to my.plexapp.com'))
+                util.ERROR()
+                util.messageDialog(util.T(32427, 'Failed'), util.T(32449, 'Sign-in failed. Cound not connect to plex.tv'))
                 return
 
             pinLoginWindow.setPin(pl.pin)

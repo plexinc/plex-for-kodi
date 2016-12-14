@@ -1,3 +1,8 @@
+[- 0.0.96 -]
+
+Remove PIL usage
+Use plex.tv instead of my.plexapp.com when requesting pin
+
 [- 0.0.95 -]
 
 Now remembers unwatched filter state and sorting selection on library views (Issue #44)

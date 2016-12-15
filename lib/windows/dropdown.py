@@ -131,7 +131,7 @@ class DropdownHeaderDialog(DropdownDialog):
 
 
 def showDropdown(
-    options, pos=(0, 0),
+    options, pos=None,
     pos_is_bottom=False,
     close_direction='top',
     set_dropdown_prop=True,
@@ -140,7 +140,9 @@ def showDropdown(
     close_on_playback_ended=False,
     header=None
 ):
+
     if header:
+        pos = pos or (660, 400)
         w = DropdownHeaderDialog.open(
             options=options, pos=pos,
             pos_is_bottom=pos_is_bottom,
@@ -152,6 +154,7 @@ def showDropdown(
             header=header
         )
     else:
+        pos = pos or (810, 400)
         w = DropdownDialog.open(
             options=options, pos=pos,
             pos_is_bottom=pos_is_bottom,

@@ -722,7 +722,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         if playlist.isRemote:
             self.handler.playQueue = playlist
         self.video = playlist.current()
-        self.video.reload()
+        self.video.softReload()
         self.open()
         self._playVideo(resume and self.video.viewOffset.asInt() or 0, seeking=handler and handler.SEEK_PLAYLIST or 0, force_update=True)
 

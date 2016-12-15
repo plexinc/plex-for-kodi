@@ -434,6 +434,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             util.messageDialog(T(32312, 'unavailable'), T(32332, 'This item is currently unavailable.'))
             return
 
+        if len(episode.media) > 1:
+            options = []
+            for media in episode.media:
+                options.append({'key': media, 'display': media.versionString()})
+            choice = dropdown.showDropdown(options, header=T(32450, 'Choose Version'))
+            if not choice:
+                return
+            choice['key'].set('selected', 1)
+
         resume = False
         if episode.viewOffset.asInt():
             button = optionsdialog.show(

@@ -177,12 +177,14 @@ class LibrarySettings(object):
         self._loadSettings()
 
     def _loadSettings(self):
-        jsonString = util.getSetting('library.settings.{0}'.format(self.serverID))
+        jsonString = util.getSetting('library.settings.{0}'.format(self.serverID), '')
+        self._settings = {}
         try:
             self._settings = json.loads(jsonString)
+        except ValueError:
+            pass
         except:
             util.ERROR()
-            self._settings = {}
 
     def _saveSettings(self):
         jsonString = json.dumps(self._settings)

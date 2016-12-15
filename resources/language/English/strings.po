@@ -892,5 +892,9 @@ msgid "Playback Failed!"
 msgstr ""
 
 msgctxt "#32449"
-msgid "Sign-in failed. Could not connect to plex.tv."
+msgid "Can't connect to plex.tv[CR]Check your internet connection and try again."
+msgstr ""
+
+msgctxt "#32450"
+msgid "Choose Version"
 msgstr ""

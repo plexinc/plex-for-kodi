@@ -118,7 +118,7 @@ class PlexMedia(plexobjects.PlexObject):
             details.append(util.bitrateToString(self.bitrate.asInt() * 1000))
 
         detailString = ', '.join(details)
-        return u" : ".join([self.title, detailString])
+        return u" \u2022 ".join(filter(None, [self.title, detailString]))
 
     def __eq__(self, other):
         if not other:
@@ -154,6 +154,6 @@ class PlexMedia(plexobjects.PlexObject):
 
     def isSelected(self):
         import plexapp
-        return self.selected is True or self.id == plexapp.INTERFACE.getPreference("local_mediaId")
+        return self.selected.asBool() or self.id == plexapp.INTERFACE.getPreference("local_mediaId")
 
     # TODO(schuyler): getParts

@@ -11,6 +11,8 @@ import search
 import dropdown
 import windowutils
 import optionsdialog
+import preplayutils
+
 from plexnet import plexplayer, media
 
 from lib import colors
@@ -367,6 +369,9 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def playVideo(self):
         if not self.video.available():
             util.messageDialog(T(32312, 'Unavailable'), T(32313, 'This item is currently unavailable.'))
+            return
+
+        if not preplayutils.chooseVersion(self.video):
             return
 
         resume = False

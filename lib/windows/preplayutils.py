@@ -18,3 +18,13 @@ def chooseVersion(video):
         choice['key'].set('selected', 1)
 
     return True
+
+
+def resetVersion(video):
+    if len(video.media) < 2:
+        return
+
+    for media in video.media:
+        media.set('selected', '')
+
+    video.media[0].set('selected', 1)

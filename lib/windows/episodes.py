@@ -424,7 +424,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             is_16x9=True
         )
 
-    def episodeListClicked(self):
+    def episodeListClicked(self, play_version=False):
         mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
@@ -435,8 +435,11 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             util.messageDialog(T(32312, 'unavailable'), T(32332, 'This item is currently unavailable.'))
             return
 
-        if not preplayutils.chooseVersion(episode):
-            return
+        if play_version:
+            if not preplayutils.chooseVersion(episode):
+                return
+        else:
+            preplayutils.resetVersion(episode)
 
         resume = False
         if episode.viewOffset.asInt():
@@ -466,6 +469,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli = self.episodeListControl.getSelectedItem()
 
         if mli:
+            if len(mli.dataSource.media) > 1:
+                options.append({'key': 'play_version', 'display': T(32451, 'Play Version...')})
+
             if mli.dataSource.isWatched:
                 options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
             else:
@@ -494,7 +500,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         options.append({'key': 'to_show', 'display': T(32323, 'Go To Show')})
         options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.season.getLibrarySectionTitle())})
 
-        pos = (460, 685)
+        pos = (500, 620)
         bottom = False
         setDropdownProp = False
         if from_item:
@@ -510,7 +516,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if not choice:
             return
 
-        if choice['key'] == 'play_next':
+        if choice['key'] == 'play_version':
+            self.episodeListClicked(play_version=True)
+        elif choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice['key'] == 'mark_watched':
             mli.dataSource.markWatched()

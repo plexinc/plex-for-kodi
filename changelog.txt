@@ -1,7 +1,11 @@
+[- 0.0.97 -]
+
+Add 'Play Version...' to the pre-play options (Issue #34)
+
 [- 0.0.96 -]
 
 Remove PIL usage
-Use plex.tv instead of my.plexapp.com when requesting pin
+Use plex.tv instead of my.plexapp.com when requesting pin (Issue #50)
 
 [- 0.0.95 -]
 

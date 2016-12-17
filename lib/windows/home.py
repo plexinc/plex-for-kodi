@@ -761,86 +761,112 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
-    def createListItem(self, obj, wide=False):
-        if obj.type == 'episode':
-            mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
-            if obj.index:
-                subtitle = u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index)
-            else:
-                subtitle = obj.originallyAvailableAt.asDatetime('%m/%d/%y')
-
-            if wide:
-                mli.setLabel2(u'{0} - {1}'.format(util.shortenText(obj.title, 35), subtitle))
-            else:
-                mli.setLabel2(subtitle)
-
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-            if not obj.isWatched:
-                mli.setProperty('unwatched', '1')
-            return mli
-        elif obj.type == 'season':
-            mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
-            # mli.setLabel2('Season {0}'.format(obj.index))
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-            if not obj.isWatched:
-                mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
-            return mli
-        elif obj.type == 'movie':
-            mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
-            mli.setLabel2(obj.year)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
-            if not obj.isWatched:
-                mli.setProperty('unwatched', '1')
-            return mli
-        elif obj.type == 'show':
-            mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
-            if not obj.isWatched:
-                mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
-            return mli
-        elif obj.type == 'album':
-            mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setLabel2(obj.title)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-            return mli
-        elif obj.type == 'track':
-            mli = self.createGrandparentedListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setLabel2(obj.title)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-            return mli
-        elif obj.type in ('photo', 'photodirectory'):
-            mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
-            if obj.type == 'photo':
-                mli.setLabel2(obj.originallyAvailableAt.asDatetime('%d %B %Y'))
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
-            return mli
-        elif obj.type == 'clip':
-            mli = self.createGrandparentedListItem(obj, *self.THUMB_AR16X9_DIM, with_grandparent_title=True)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
-            return mli
-        elif obj.type == 'artist':
-            mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
-            return mli
-        elif obj.TYPE == 'playlist':
-            if obj.playlistType == 'audio':
-                w, h = self.THUMB_SQUARE_DIM
-                thumb = obj.buildComposite(width=w, height=h, media='thumb')
-            else:
-                w, h = self.THUMB_AR16X9_DIM
-                thumb = obj.buildComposite(width=w, height=h, media='art')
-
-            mli = kodigui.ManagedListItem(
-                obj.title or '',
-                util.durationToText(obj.duration.asInt()),
-                # thumbnailImage=obj.composite.asTranscodedImageURL(*self.THUMB_DIMS[obj.playlistType]['item.thumb']),
-                thumbnailImage=thumb,
-                data_source=obj
-            )
-            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(obj.playlistType == 'audio' and 'music' or 'movie'))
-            return mli
+    def createEpisodeListItem(self, obj, wide=False):
+        mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
+        if obj.index:
+            subtitle = u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index)
         else:
-            util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
+            subtitle = obj.originallyAvailableAt.asDatetime('%m/%d/%y')
+
+        if wide:
+            mli.setLabel2(u'{0} - {1}'.format(util.shortenText(obj.title, 35), subtitle))
+        else:
+            mli.setLabel2(subtitle)
+
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+        if not obj.isWatched:
+            mli.setProperty('unwatched', '1')
+        return mli
+
+    def createSeasonListItem(self, obj, wide=False):
+        mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
+        # mli.setLabel2('Season {0}'.format(obj.index))
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+        if not obj.isWatched:
+            mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+        return mli
+
+    def createMovieListItem(self, obj, wide=False):
+        mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+        mli.setLabel2(obj.year)
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
+        if not obj.isWatched:
+            mli.setProperty('unwatched', '1')
+        return mli
+
+    def createShowListItem(self, obj, wide=False):
+        mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+        if not obj.isWatched:
+            mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+        return mli
+
+    def createAlbumListItem(self, obj, wide=False):
+        mli = self.createParentedListItem(obj, *self.THUMB_SQUARE_DIM)
+        mli.setLabel2(obj.title)
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+        return mli
+
+    def createTrackListItem(self, obj, wide=False):
+        mli = self.createGrandparentedListItem(obj, *self.THUMB_SQUARE_DIM)
+        mli.setLabel2(obj.title)
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+        return mli
+
+    def createPhotoListItem(self, obj, wide=False):
+        mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
+        if obj.type == 'photo':
+            mli.setLabel2(obj.originallyAvailableAt.asDatetime('%d %B %Y'))
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/photo.png')
+        return mli
+
+    def createClipListItem(self, obj, wide=False):
+        mli = self.createGrandparentedListItem(obj, *self.THUMB_AR16X9_DIM, with_grandparent_title=True)
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
+        return mli
+
+    def createArtistListItem(self, obj, wide=False):
+        mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+        return mli
+
+    def createPlaylistListItem(self, obj, wide=False):
+        if obj.playlistType == 'audio':
+            w, h = self.THUMB_SQUARE_DIM
+            thumb = obj.buildComposite(width=w, height=h, media='thumb')
+        else:
+            w, h = self.THUMB_AR16X9_DIM
+            thumb = obj.buildComposite(width=w, height=h, media='art')
+
+        mli = kodigui.ManagedListItem(
+            obj.title or '',
+            util.durationToText(obj.duration.asInt()),
+            # thumbnailImage=obj.composite.asTranscodedImageURL(*self.THUMB_DIMS[obj.playlistType]['item.thumb']),
+            thumbnailImage=thumb,
+            data_source=obj
+        )
+        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(obj.playlistType == 'audio' and 'music' or 'movie'))
+        return mli
+
+    def unhandledHub(self, self2, obj, wide=False):
+        util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
+
+    CREATE_LI_MAP = {
+        'episode': createEpisodeListItem,
+        'season': createSeasonListItem,
+        'movie': createMovieListItem,
+        'show': createShowListItem,
+        'album': createAlbumListItem,
+        'track': createTrackListItem,
+        'photo': createPhotoListItem,
+        'photodirectory': createPhotoListItem,
+        'clip': createClipListItem,
+        'artist': createArtistListItem,
+        'playlist': createPlaylistListItem
+    }
+
+    def createListItem(self, obj, wide=False):
+        return self.CREATE_LI_MAP.get(obj.type, self.unhandledHub)(self, obj, wide)
 
     def clearHubs(self):
         for control in self.hubControls:

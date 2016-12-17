@@ -155,6 +155,9 @@ class PlexObject(object, Checks):
         self.init(data)
 
     def _setData(self, data):
+        if data is False:
+            return
+
         self.name = data.tag
         for k, v in data.attrib.items():
             setattr(self, k, PlexValue(v, self))

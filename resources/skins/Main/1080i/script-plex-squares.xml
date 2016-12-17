@@ -35,7 +35,7 @@
 
             <control type="grouplist" id="300">
                 <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
-                <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
+                <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IsEmpty(Window.Property(no.content)) + IsEmpty(Window.Property(no.content.filtered))</visible>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>30</posx>
                 <posy>-25</posy>
@@ -668,6 +668,62 @@
                 <width>93</width>
                 <height>30</height>
                 <texture>script.plex/home/plex.png</texture>
+            </control>
+        </control>
+
+        <control type="group">
+            <visible>!IsEmpty(Window.Property(no.content))</visible>
+            <posx>0</posx>
+            <posy>465</posy>
+            <control type="label">
+                <scroll>false</scroll>
+                <posx>60</posx>
+                <posy>0</posy>
+                <width>1800</width>
+                <height>35</height>
+                <font>font30</font>
+                <align>center</align>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>[B]$ADDON[script.plex 32452][/B]</label>
+            </control>
+            <control type="label">
+                <scroll>false</scroll>
+                <posx>60</posx>
+                <posy>60</posy>
+                <width>1800</width>
+                <height>35</height>
+                <font>font30</font>
+                <align>center</align>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$ADDON[script.plex 32453]</label>
+            </control>
+        </control>
+
+        <control type="group">
+            <visible>!IsEmpty(Window.Property(no.content.filtered))</visible>
+            <posx>0</posx>
+            <posy>465</posy>
+            <control type="label">
+                <scroll>false</scroll>
+                <posx>60</posx>
+                <posy>0</posy>
+                <width>1800</width>
+                <height>35</height>
+                <font>font30</font>
+                <align>center</align>
+                <textcolor>FFFFFFFF</textcolor>
+                <label>[B]$ADDON[script.plex 32454][/B]</label>
+            </control>
+            <control type="label">
+                <scroll>false</scroll>
+                <posx>60</posx>
+                <posy>60</posy>
+                <width>1800</width>
+                <height>35</height>
+                <font>font30</font>
+                <align>center</align>
+                <textcolor>FFCCCCCC</textcolor>
+                <label>$ADDON[script.plex 32455]</label>
             </control>
         </control>
 

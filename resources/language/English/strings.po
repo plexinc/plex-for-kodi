@@ -902,3 +902,19 @@ msgstr ""
 msgctxt "#32451"
 msgid "Play Version..."
 msgstr ""
+
+msgctxt "#32452"
+msgid "No Content available in this library"
+msgstr ""
+
+msgctxt "#32453"
+msgid "Please add content and/or check that 'Include in dashboard' is enabled."
+msgstr ""
+
+msgctxt "#32454"
+msgid "No Content available for this filter"
+msgstr ""
+
+msgctxt "#32455"
+msgid "Please change change or remove the current filter"
+msgstr ""

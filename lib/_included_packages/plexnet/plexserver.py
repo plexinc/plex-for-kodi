@@ -120,7 +120,16 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         else:
             q = '/hubs'
             if section:
-                q = '/hubs/sections/%s' % section
+                if section == 'playlists':
+                    audio = plexlibrary.AudioPlaylistHub(False, server=self.server)
+                    video = plexlibrary.VideoPlaylistHub(False, server=self.server)
+                    if audio.items:
+                        hubs.append(audio)
+                    if video.items:
+                        hubs.append(video)
+                    return hubs
+                else:
+                    q = '/hubs/sections/%s' % section
 
             if count is not None:
                 params['count'] = count
@@ -132,7 +141,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             hubs.append(plexlibrary.Hub(elem, server=self, container=container))
         return hubs
 
-    def playlists(self):
+    def playlists(self, start=0, size=10, hub=None):
         try:
             return plexobjects.listItems(self, '/playlists/all')
         except exceptions.BadRequest:

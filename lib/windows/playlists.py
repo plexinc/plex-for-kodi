@@ -92,10 +92,17 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.openWindow(playlist.PlaylistWindow, playlist=mli.dataSource)
 
     def createListItem(self, obj):
+        w, h = self.THUMB_DIMS[obj.playlistType]['item.thumb']
+        if obj.playlistType == 'audio':
+            thumb = obj.buildComposite(width=w, height=h, media='thumb')
+        else:
+            thumb = obj.buildComposite(width=w, height=h, media='art')
+
         mli = kodigui.ManagedListItem(
             obj.title or '',
             util.durationToText(obj.duration.asInt()),
-            thumbnailImage=obj.composite.asTranscodedImageURL(*self.THUMB_DIMS[obj.playlistType]['item.thumb']),
+            # thumbnailImage=obj.composite.asTranscodedImageURL(*self.THUMB_DIMS[obj.playlistType]['item.thumb']),
+            thumbnailImage=thumb,
             data_source=obj
         )
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(obj.playlistType == 'audio' and 'music' or 'movie'))

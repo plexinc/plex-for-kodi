@@ -54,6 +54,7 @@ class SectionHubsTask(backgroundthread.Task):
             self.callback(self.section, hubs)
         except plexnet.exceptions.BadRequest:
             util.DEBUG_LOG('404 on section: {0}'.format(repr(self.section.title)))
+            self.callback(self.section, False)
 
 
 class UpdateHubTask(backgroundthread.Task):
@@ -110,7 +111,7 @@ class HomeSection(object):
 
 
 class PlaylistsSection(object):
-    key = False
+    key = 'playlists'
     type = 'playlists'
     title = T(32333, 'Playlists')
 
@@ -243,6 +244,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         'video.inprogress': {'index': 18, 'with_progress': True, 'ar16x9': True, 'do_updates': True},
         'video.unwatched.random': {'index': 19, 'ar16x9': True},
         'video.recentlyviewed': {'index': 23, 'ar16x9': True},
+        # PLAYLISTS
+        'playlists.audio': {'index': 5, 'text2lines': True, 'title': T(32048, 'Audio')},
+        'playlists.video': {'index': 6, 'text2lines': True, 'ar16x9': True, 'title': T(32053, 'Video')},
     }
 
     THUMB_POSTER_DIM = (287, 425)
@@ -482,7 +486,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if not mli:
             return
 
-        if not mli.dataSource:
+        if mli.dataSource is None:
             return
 
         command = opener.open(mli.dataSource)
@@ -576,7 +580,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def _sectionReallyChanged(self):
         section = self.lastSection
         self.setProperty('hub.focus', '')
-        util.DEBUG_LOG('Section chaged ({0}): {1}'.format(section.key, repr(section.title)))
+        util.DEBUG_LOG('Section changed ({0}): {1}'.format(section.key, repr(section.title)))
         self.showHubs(section)
         self.lastSection = section
         self.checkSectionItem(force=True)
@@ -624,7 +628,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
 
         if plexapp.SERVERMANAGER.selectedServer.hasHubs():
-            self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection] + sections]
+            self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection, PlaylistsSection] + sections]
             backgroundthread.BGThreader.addTasks(self.tasks)
 
         for section in sections:
@@ -648,6 +652,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.setFocusId(self.SERVER_BUTTON_ID)
 
     def showHubs(self, section=None, update=False):
+        self.setBoolProperty('no.content', False)
         if not update:
             self.setProperty('drawing', '1')
         try:
@@ -669,6 +674,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.showBusy(True)
 
         hubs = self.sectionHubs.get(section.key)
+        if hubs is False:
+            self.showBusy(False)
+            self.setBoolProperty('no.content', True)
+            return
+
         if not hubs:
             for task in self.tasks:
                 if task.section == section:
@@ -688,6 +698,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         util.DEBUG_LOG('Showing hubs - Section: {0} - Update: {1}'.format(section.key, update))
         try:
+            hasContent = False
             skip = {}
             for hub in hubs:
                 if hub.hubIdentifier not in self.HUBMAP:
@@ -697,8 +708,13 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                 skip[self.HUBMAP[hub.hubIdentifier]['index']] = 1
 
                 if self.showHub(hub):
+                    if hub.items:
+                        hasContent = True
                     if self.HUBMAP[hub.hubIdentifier].get('do_updates'):
                         self.updateHubs[hub.hubIdentifier] = hub
+
+            if not hasContent:
+                self.setBoolProperty('no.content', True)
 
             lastSkip = min(skip.keys())
             focus = None
@@ -802,9 +818,26 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             mli = self.createGrandparentedListItem(obj, *self.THUMB_AR16X9_DIM, with_grandparent_title=True)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie16x9.png')
             return mli
-        elif obj.type in ('artist', 'playlist'):
+        elif obj.type == 'artist':
             mli = self.createSimpleListItem(obj, *self.THUMB_SQUARE_DIM)
             mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/music.png')
+            return mli
+        elif obj.TYPE == 'playlist':
+            if obj.playlistType == 'audio':
+                w, h = self.THUMB_SQUARE_DIM
+                thumb = obj.buildComposite(width=w, height=h, media='thumb')
+            else:
+                w, h = self.THUMB_AR16X9_DIM
+                thumb = obj.buildComposite(width=w, height=h, media='art')
+
+            mli = kodigui.ManagedListItem(
+                obj.title or '',
+                util.durationToText(obj.duration.asInt()),
+                # thumbnailImage=obj.composite.asTranscodedImageURL(*self.THUMB_DIMS[obj.playlistType]['item.thumb']),
+                thumbnailImage=thumb,
+                data_source=obj
+            )
+            mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(obj.playlistType == 'audio' and 'music' or 'movie'))
             return mli
         else:
             util.DEBUG_LOG('Unhandled Hub item: {0}'.format(obj.type))
@@ -821,7 +854,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             control.reset()
             return
 
-        self.setProperty('hub.4{0:02d}'.format(index), hub.title)
+        if not hubitems:
+            hub.reset()
+
+        self.setProperty('hub.4{0:02d}'.format(index), hub.title or kwargs.get('title'))
         self.setProperty('hub.text2lines.4{0:02d}'.format(index), text2lines and '1' or '')
 
         items = []

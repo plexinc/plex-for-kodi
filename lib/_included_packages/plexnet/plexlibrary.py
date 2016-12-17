@@ -423,12 +423,34 @@ class Playlist(playlist.BasePlaylist, signalsmixin.SignalsMixin):
     def defaultThumb(self):
         return self.composite
 
+    def buildComposite(self, **kwargs):
+        if kwargs:
+            params = '?' + '&'.join('{0}={1}'.format(k, v) for k, v in kwargs.items())
+        else:
+            params = ''
 
-class Hub(plexobjects.PlexObject):
+        path = self.composite + params
+        return self.getServer().buildUrl(path, True)
+
+
+class BaseHub(plexobjects.PlexObject):
+    def reset(self):
+        self.set('offset', 0)
+        self.set('size', len(self.items))
+        totalSize = self.items[0].container.totalSize.asInt()
+        if totalSize:  # Hubs from a list of hubs don't have this, so it it's not here this is intital and we can leave as is
+            self.set(
+                'more',
+                (self.items[0].container.offset.asInt() + self.items[0].container.size.asInt() < totalSize) and '1' or ''
+            )
+
+
+class Hub(BaseHub):
     TYPE = "Hub"
 
     def init(self, data):
         self.items = []
+
         container = plexobjects.PlexContainer(data, self.key, self.server, self.key or '')
 
         if self.type == 'genre':
@@ -481,6 +503,49 @@ class Hub(plexobjects.PlexObject):
             (items[0].container.offset.asInt() + items[0].container.size.asInt() < items[0].container.totalSize.asInt()) and '1' or ''
         )
         return items
+
+
+class PlaylistHub(BaseHub):
+    TYPE = "Hub"
+    type = None
+    hubIdentifier = None
+
+    def init(self, data):
+        try:
+            self.items = self.extend(0, 10)
+        except exceptions.BadRequest:
+            util.DEBUG_LOG('AudioPlaylistHub: Bad request: {0}'.format(self))
+            self.items = []
+
+    def extend(self, start=None, size=None):
+        path = '/playlists/all?playlistType={0}'.format(self.type)
+
+        args = {}
+
+        if size is not None:
+            args['X-Plex-Container-Start'] = start
+            args['X-Plex-Container-Size'] = size
+        else:
+            start = 0
+
+        if args:
+            path += '&' + util.joinArgs(args).lstrip('?')
+
+        items = plexobjects.listItems(self.server, path)
+        self.set('offset', start)
+        self.set('size', len(items))
+        self.set('more', (items[0].container.offset.asInt() + items[0].container.size.asInt() < items[0].container.totalSize.asInt()) and '1' or '')
+        return items
+
+
+class AudioPlaylistHub(PlaylistHub):
+    type = 'audio'
+    hubIdentifier = 'playlists.audio'
+
+
+class VideoPlaylistHub(PlaylistHub):
+    type = 'video'
+    hubIdentifier = 'playlists.video'
 
 
 SECTION_TYPES = {

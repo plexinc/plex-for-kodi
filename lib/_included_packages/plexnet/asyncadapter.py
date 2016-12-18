@@ -1,11 +1,13 @@
+import os
+import time
 from socket import timeout as SocketTimeout
 import socket
 
 from requests.packages.urllib3 import HTTPConnectionPool, HTTPSConnectionPool
 from requests.packages.urllib3.poolmanager import PoolManager, proxy_from_url
+from requests.packages.urllib3.connectionpool import VerifiedHTTPSConnection
 from requests.adapters import HTTPAdapter
 from requests.compat import urlparse
-from requests import utils as requests_utils
 from requests.packages.urllib3.util import (
     assert_fingerprint,
     resolve_cert_reqs,
@@ -17,22 +19,93 @@ from requests.packages.urllib3.packages.ssl_match_hostname import match_hostname
 
 from httplib import HTTPConnection
 import ssl
+import errno
 
-import util
-
-except_on_missing_scheme = requests_utils.except_on_missing_scheme
 
 DEFAULT_POOLBLOCK = False
 SSL_KEYWORDS = ('key_file', 'cert_file', 'cert_reqs', 'ca_certs',
                 'ssl_version')
 
 
-class AsyncVerifiedHTTPSConnection():
+def ABORT_FLAG_FUNCTION():
+    return False
+
+
+class TimeoutError(Exception):
+    pass
+
+
+class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
+    def __init__(self, *args, **kwargs):
+        VerifiedHTTPSConnection.__init__(self, *args, **kwargs)
+        self._canceled = False
+        self.deadline = 0
+
+    def _check_timeout(self):
+        if time.time() > self.deadline:
+            raise TimeoutError('connection timed out')
+
+    def create_connection(self, address, timeout=None, source_address=None):
+        """Connect to *address* and return the socket object.
+
+        Convenience function.  Connect to *address* (a 2-tuple ``(host,
+        port)``) and return the socket object.  Passing the optional
+        *timeout* parameter will set the timeout on the socket instance
+        before attempting to connect.  If no *timeout* is supplied, the
+        global default timeout setting returned by :func:`getdefaulttimeout`
+        is used.  If *source_address* is set it must be a tuple of (host, port)
+        for the socket to bind as a source address before making the connection.
+        An host of '' or port 0 tells the OS to use the default.
+        """
+        timeout = timeout or 10
+        host, port = address
+        err = None
+        for res in socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM):
+            af, socktype, proto, canonname, sa = res
+            sock = None
+            try:
+                sock = socket.socket(af, socktype, proto)
+                sock.setblocking(False)  # this is obviously critical
+                self.deadline = time.time() + timeout
+                sock.settimeout(timeout)
+
+                if source_address:
+                    sock.bind(source_address)
+                for msg in self._connect(sock, sa):
+                    if self._canceled or ABORT_FLAG_FUNCTION():
+                        return
+                sock.setblocking(True)
+                return sock
+
+            except socket.error as _:
+                err = _
+                if sock is not None:
+                    sock.close()
+
+        if err is not None:
+            raise err
+        else:
+            raise socket.error("getaddrinfo returns an empty list")
+
+    def _connect(self, sock, sa):
+        while not self._canceled and not ABORT_FLAG_FUNCTION():
+            self._check_timeout()  # this should be done at the beginning of each loop
+            status = sock.connect_ex(sa)
+            if status == errno.EISCONN:
+                break
+            elif status in (errno.EWOULDBLOCK, errno.EINPROGRESS, errno.EALREADY) or (os.name == 'nt' and status == errno.WSAEINVAL):
+                pass
+            yield
+
+        error = sock.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
+        if error:
+            # TODO: determine when this case can actually happen
+            raise socket.error((error,))
+
     def connect(self):
-        util.TEST('xxxxxxxxxxxx')
         # Add certificate verification
         try:
-            sock = socket.create_connection(
+            sock = self.create_connection(
                 address=(self.host, self.port),
                 timeout=self.timeout)
         except SocketTimeout:
@@ -174,7 +247,6 @@ class AsyncHTTPAdapter(HTTPAdapter):
         proxy = proxies.get(urlparse(url.lower()).scheme)
 
         if proxy:
-            except_on_missing_scheme(proxy)
             proxy_headers = self.proxy_headers(proxy)
 
             if proxy not in self.proxy_manager:

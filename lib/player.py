@@ -83,6 +83,15 @@ class BasePlayerHandler(object):
     def shouldSendTimeline(self, item):
         return item.ratingKey and item.getServer()
 
+    def currentDuration(self):
+        if self.player.playerObject:
+            try:
+                return int(self.player.getTotalTime() * 1000)
+            except RuntimeError:
+                pass
+
+        return 0
+
     def updateNowPlaying(self, force=False, refreshQueue=False, state=None):
         if self.ignoreTimelines:
             return
@@ -110,7 +119,9 @@ class BasePlayerHandler(object):
         if refreshQueue and self.playQueue:
             self.playQueue.refreshOnTimeline = True
 
-        plexapp.APP.nowplayingmanager.updatePlaybackState(self.timelineType, self.player.playerObject, state, time, self.playQueue)
+        plexapp.APP.nowplayingmanager.updatePlaybackState(
+            self.timelineType, self.player.playerObject, state, time, self.playQueue, duration=self.currentDuration()
+        )
 
 
 class SeekPlayerHandler(BasePlayerHandler):

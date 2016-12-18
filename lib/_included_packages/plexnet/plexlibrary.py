@@ -532,6 +532,10 @@ class PlaylistHub(BaseHub):
             path += '&' + util.joinArgs(args).lstrip('?')
 
         items = plexobjects.listItems(self.server, path)
+
+        if not items:
+            return
+
         self.set('offset', start)
         self.set('size', len(items))
         self.set('more', (items[0].container.offset.asInt() + items[0].container.size.asInt() < items[0].container.totalSize.asInt()) and '1' or '')

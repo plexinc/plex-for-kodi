@@ -131,13 +131,14 @@ class NowPlayingManager(object):
         for timelineType in self.TIMELINE_TYPES:
             self.timelines[timelineType] = TimelineData(timelineType)
 
-    def updatePlaybackState(self, timelineType, playerObject, state, time, playQueue=None):
+    def updatePlaybackState(self, timelineType, playerObject, state, time, playQueue=None, duration=0):
         timeline = self.timelines[timelineType]
         timeline.state = state
         timeline.item = playerObject.item
         timeline.choice = playerObject.choice
         timeline.playQueue = playQueue
         timeline.attrs["time"] = str(time)
+        timeline.duration = duration
 
         # self.sendTimelineToAll()
 
@@ -166,7 +167,7 @@ class NowPlayingManager(object):
 
         # It's possible with timers and in player seeking for the time to be greater than the
         # duration, which causes a 400, so in that case we'll set the time to the duration.
-        duration = timeline.item.duration.asInt()
+        duration = timeline.item.duration.asInt() or timeline.duration
         if time > duration:
             time = duration
 

@@ -74,7 +74,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.baseURL = None
         self.hasBif = bool(self.bifURL)
         self.baseOffset = 0
-        self.duration = 0
+        self._duration = 0
         self.offset = 0
         self.selectedOffset = 0
         self.bigSeekOffset = 0
@@ -398,10 +398,14 @@ class SeekDialog(kodigui.BaseDialog):
             self.handler.seek(self.trueOffset(), settings_changed=True)
 
     def setBigSeekShift(self):
+        closest = None
         for mli in self.bigSeekControl:
             if mli.dataSource > self.selectedOffset:
                 break
             closest = mli
+        if not closest:
+            return
+
         self.bigSeekOffset = self.selectedOffset - closest.dataSource
         pxOffset = int(self.bigSeekOffset / float(self.duration) * 1920)
         self.bigSeekGroupControl.setPosition(-8 + pxOffset, 917)
@@ -499,7 +503,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('shuffled', (self.handler.playlist and self.handler.playlist.isShuffled) and '1' or '')
         self.baseOffset = offset
         self.offset = 0
-        self.duration = duration
+        self._duration = duration
         self.bifURL = bif_url
         self.hasBif = bool(self.bifURL)
         if self.hasBif:
@@ -518,6 +522,13 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectedOffset = self.trueOffset()
 
         self.updateProgress()
+
+    @property
+    def duration(self):
+        try:
+            return self._duration or int(self.handler.player.getTotalTime() * 1000)
+        except RuntimeError:  # Not playing
+            return 1
 
     def updateProgress(self):
         if not self.initialized:

@@ -137,17 +137,7 @@ class MediaDecisionEngine(object):
         # audio stream the Roku will pick for a given language.
 
         numVideoStreams = 0
-        audioLanguageForceable = len(part.getStreamsOfType(plexstream.PlexStream.TYPE_AUDIO)) <= 1
         problematicAudioStream = False
-        audioStreamCompatible = None
-
-        if choice.audioStream:
-            audioLanguage = choice.audioStream.languageCode
-            audioLanguageChannelsSeen = -1
-        else:
-            # No audio stream, which is fine, so pretend like we saw it
-            audioLanguage = None
-            audioStreamCompatible = True
 
         if part.get('hasChapterVideoStream').asBool():
             numVideoStreams = 1
@@ -163,35 +153,6 @@ class MediaDecisionEngine(object):
                     stream.codec == "vp9" and item.settings.getGlobal("vp9Support")
                 ):
                     choice.sorts.videoDS = 1
-            elif streamType == stream.TYPE_AUDIO:
-
-                # This is a bit tricky. The only hint we can give the player is the
-                # language that we want to play. So we basically need to decide if
-                # telling it the language will result in the stream we want. We
-                # believe that the first, best compatible stream will be played,
-                # where "best" means that the Roku will prefer surround sound when
-                # possible. We can completely ignore streams with a different
-                # language set, as well as incompatible streams. For a compatible
-                # stream, if it has more channels than any compatible stream we've
-                # seen so far,: we think it will be the stream that gets played.
-                # So if the stream is our selected stream, that's a good thing. If
-                # it's not our selected stream,: that's a bad thing and we
-                # note that setting the language won't force the proper stream to
-                # be played.
-
-                if audioLanguage == stream.languageCode:
-                    numChannels = stream.channels.asInt()
-
-                    if item.settings.supportsAudioStream(stream.codec, numChannels):
-                        if stream.isSelected():
-                            audioStreamCompatible = True
-                        if numChannels > audioLanguageChannelsSeen:
-                            audioLanguageForceable = stream.isSelected()
-                            audioLanguageChannelsSeen = numChannels
-                    elif stream.isSelected():
-                        audioStreamCompatible = False
-                    elif stream.codec == "aac" and numChannels > 2 and not audioStreamCompatible:
-                        problematicAudioStream = True
 
         # Special cases to force direct play
         forceDirectPlay = False
@@ -220,10 +181,6 @@ class MediaDecisionEngine(object):
             util.LOG("MDE: Multiple video streams, won't try to direct play")
         elif problematicAudioStream:
             util.LOG("MDE: Problematic AAC stream with more than 2 channels prevents direct play")
-        elif audioStreamCompatible is not True:
-            util.LOG("MDE: Selected audio stream is incompatible")
-        elif not audioLanguageForceable:
-            util.LOG("MDE: Selected audio stream can't be forced by language")
         elif self.canDirectPlay(item, choice):
             choice.isDirectPlayable = True
         elif item.isMediaSynthesized:
@@ -259,7 +216,6 @@ class MediaDecisionEngine(object):
             choice.sorts.audioChannels = 0
 
         choice.sorts.videoDS = not (choice.sorts.videoDS is None or choice.forceTranscode is True) and choice.sorts.videoDS or 0
-        choice.sorts.audioDS = audioStreamCompatible and 1 or 0
         choice.sorts.resolution = choice.resolution
 
         # Server properties probably don't need to be associated with each choice

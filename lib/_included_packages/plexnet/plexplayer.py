@@ -25,7 +25,7 @@ class PlexPlayer(object):
 
     def terminate(self, code, reason):
         util.LOG('TERMINATE PLAYER: ({0}, {1})'.format(code, reason))
-        # TODO: Handle this ----------------------------------------------------------------------------------------------------------- TODO
+        # TODO: Handle this? ---------------------------------------------------------------------------------------------------------- TODO
 
     def rebuild(self, item, decision=None):
         # item.settings = self.item.settings

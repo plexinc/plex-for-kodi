@@ -7,6 +7,8 @@ import mimetypes
 import plexobjects
 from xml.etree import ElementTree
 
+import asyncadapter
+
 import callback
 import util
 
@@ -47,7 +49,9 @@ class HttpRequest(object):
         self.path = None
         self.hasParams = '?' in url
         self.ignoreResponse = False
-        self.session = requests.session()
+        self.session = requests.Session()
+        self.session.mount('https://', asyncadapter.HTTPAdapter())
+        self.session.mount('http://', asyncadapter.HTTPAdapter())
         self.session.headers = util.BASE_HEADERS.copy()
         self.currentResponse = None
         self.method = method

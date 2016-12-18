@@ -1,10 +1,10 @@
 [- 0.0.97 -]
 
 Add 'Play Version...' to the pre-play options (Issue #34)
-Added spring loaded playlists to Playlist section on Home screen
+Added spring loaded playlists to Playlist section on Home screen (Issue #28)
 Fix playlist composite images
-Fix: Extending a hub again after a section change was getting starting where the previous extension left off
-Handle no content and 404 for section hubs on Home screen
+Fix: Extending a hub again after a section change was starting where the previous extension left off
+Handle no content and 404 for section hubs on Home screen (Issue #52)
 Handle no content or no content for filter on library screen
 Handle videos without duration set
 Some Home screen hub loading optimization

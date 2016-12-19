@@ -1,5 +1,8 @@
 [- 0.0.98 -]
 
+Fix: Was allowing non-Plex-Pass users
+Fix: Some videos failed to play with certain audio stream selections
+Fix: Some videos failed to play due to a logging error
 
 [- 0.0.97 -]
 

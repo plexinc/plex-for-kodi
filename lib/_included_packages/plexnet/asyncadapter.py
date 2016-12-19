@@ -35,6 +35,10 @@ class TimeoutError(Exception):
     pass
 
 
+class CanceledException(Exception):
+    pass
+
+
 class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
     def __init__(self, *args, **kwargs):
         VerifiedHTTPSConnection.__init__(self, *args, **kwargs)
@@ -73,7 +77,7 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
                     sock.bind(source_address)
                 for msg in self._connect(sock, sa):
                     if self._canceled or ABORT_FLAG_FUNCTION():
-                        return
+                        raise CanceledException('Request canceled')
                 sock.setblocking(True)
                 return sock
 
@@ -144,8 +148,25 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
                 match_hostname(self.sock.getpeercert(),
                                self.assert_hostname or actual_host)
 
+    def cancel(self):
+        self._canceled = True
+
+
+class AsyncHTTPConnection(HTTPConnection):
+    def __init__(self, *args, **kwargs):
+        HTTPConnection.__init__(self, *args, **kwargs)
+        self._canceled = False
+        self.deadline = 0
+
+    def cancel(self):
+        self._canceled = True
+
 
 class AsyncHTTPConnectionPool(HTTPConnectionPool):
+    def __init__(self, *args, **kwargs):
+        HTTPConnectionPool.__init__(self, *args, **kwargs)
+        self.connections = []
+
     def _new_conn(self):
         """
         Return a fresh :class:`httplib.HTTPConnection`.
@@ -155,9 +176,7 @@ class AsyncHTTPConnectionPool(HTTPConnectionPool):
         extra_params = {}
         extra_params['strict'] = self.strict
 
-        conn = HTTPConnection(host=self.host, port=self.port,
-                              timeout=self.timeout.connect_timeout,
-                              **extra_params)
+        conn = AsyncHTTPConnection(host=self.host, port=self.port, timeout=self.timeout.connect_timeout, **extra_params)
 
         # Backport fix LP #1412545
         if getattr(conn, '_tunnel_host', None):
@@ -166,10 +185,20 @@ class AsyncHTTPConnectionPool(HTTPConnectionPool):
             # Mark this connection as not reusable
             conn.auto_open = 0
 
+        self.connections.append(conn)
+
         return conn
+
+    def cancel(self):
+        for c in self.connections:
+            c.cancel()
 
 
 class AsyncHTTPSConnectionPool(HTTPSConnectionPool):
+    def __init__(self, *args, **kwargs):
+        HTTPSConnectionPool.__init__(self, *args, **kwargs)
+        self.connections = []
+
     def _new_conn(self):
         """
         Return a fresh :class:`httplib.HTTPSConnection`.
@@ -186,11 +215,15 @@ class AsyncHTTPSConnectionPool(HTTPSConnectionPool):
 
         extra_params = {}
         extra_params['strict'] = self.strict
-        connection = connection_class(host=actual_host, port=actual_port,
-                                      timeout=self.timeout.connect_timeout,
-                                      **extra_params)
+        connection = connection_class(host=actual_host, port=actual_port, timeout=self.timeout.connect_timeout, **extra_params)
+
+        self.connections.append(connection)
 
         return self._prepare_conn(connection)
+
+    def cancel(self):
+        for c in self.connections:
+            c.cancel()
 
 
 pool_classes_by_scheme = {
@@ -219,6 +252,10 @@ class AsyncPoolManager(PoolManager):
 
 
 class AsyncHTTPAdapter(HTTPAdapter):
+    def cancel(self):
+        for c in self.connections:
+            c.cancel()
+
     def init_poolmanager(self, connections, maxsize, block=DEFAULT_POOLBLOCK):
         """Initializes a urllib3 PoolManager. This method should not be called
         from user code, and is only exposed for use when subclassing the
@@ -234,6 +271,7 @@ class AsyncHTTPAdapter(HTTPAdapter):
         self._pool_block = block
 
         self.poolmanager = AsyncPoolManager(num_pools=connections, maxsize=maxsize, block=block)
+        self.connections = []
 
     def get_connection(self, url, proxies=None):
         """Returns a urllib3 connection for the given URL. This should not be
@@ -265,4 +303,5 @@ class AsyncHTTPAdapter(HTTPAdapter):
             url = parsed.geturl()
             conn = self.poolmanager.connection_from_url(url)
 
+        self.connections.append(conn)
         return conn

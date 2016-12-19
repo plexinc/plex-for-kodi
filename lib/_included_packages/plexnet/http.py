@@ -52,8 +52,10 @@ class HttpRequest(object):
         self.hasParams = '?' in url
         self.ignoreResponse = False
         self.session = requests.Session()
-        self.session.mount('https://', asyncadapter.AsyncHTTPAdapter())
-        self.session.mount('http://', asyncadapter.AsyncHTTPAdapter())
+        self.httpsadapter = asyncadapter.AsyncHTTPAdapter()
+        self.httpadapter = asyncadapter.AsyncHTTPAdapter()
+        self.session.mount('https://', self.httpsadapter)
+        self.session.mount('http://', self.httpadapter)
         self.session.headers = util.BASE_HEADERS.copy()
         self.currentResponse = None
         self.method = method
@@ -203,6 +205,8 @@ class HttpRequest(object):
 
     def cancel(self):
         self._cancel = True
+        self.httpsadapter.cancel()
+        self.httpadapter.cancel()
         self.removeAsPending()
         self.killSocket()
 

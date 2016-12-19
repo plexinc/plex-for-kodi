@@ -71,7 +71,7 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
                 sock = socket.socket(af, socktype, proto)
                 sock.setblocking(False)  # this is obviously critical
                 self.deadline = time.time() + timeout
-                sock.settimeout(timeout)
+                # sock.settimeout(timeout)
 
                 if source_address:
                     sock.bind(source_address)

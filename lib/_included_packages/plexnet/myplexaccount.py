@@ -214,7 +214,7 @@ class MyPlexAccount(object):
         self.saveState()
 
     def hasPlexPass(self):
-        if self.hasPlexPass or self.isManaged:
+        if self.isPlexPass or self.isManaged:
             return True
 
         return self.adminHasPlexPass

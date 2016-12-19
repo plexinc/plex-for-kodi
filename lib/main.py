@@ -52,7 +52,7 @@ def main():
 
 
 def _main():
-    util.DEBUG_LOG('STARTED: {0}'.format(util.ADDON.getAddonInfo('version')))
+    util.DEBUG_LOG('[ STARTED: {0} -------------------------------------------------------------------- ]'.format(util.ADDON.getAddonInfo('version')))
     util.DEBUG_LOG('USER-AGENT: {0}'.format(plex.defaultUserAgent()))
     background.setSplash()
 

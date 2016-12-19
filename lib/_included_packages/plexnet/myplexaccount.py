@@ -196,6 +196,7 @@ class MyPlexAccount(object):
         # Booleans
         self.isSignedIn = False
         self.isPlexPass = False
+        self.adminHasPlexPass = False
         self.isManaged = False
         self.isSecure = False
         self.isExpired = expired

@@ -48,6 +48,11 @@ class SignInPlexPass(kodigui.BaseWindow):
         self.retry = False
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
 
+    def onAction(self, action):
+        if action == xbmcgui.ACTION_SELECT_ITEM:
+            self.retry = True
+            self.doClose()
+
     def onClick(self, controlID):
         if controlID == self.RETRY_BUTTON_ID:
             self.retry = True
@@ -70,6 +75,11 @@ class PreSignInWindow(kodigui.BaseWindow):
 
     def onFirstInit(self):
         self.signinButton = self.getControl(self.SIGNIN_BUTTON_ID)
+
+    def onAction(self, action):
+        if action == xbmcgui.ACTION_SELECT_ITEM:
+            self.doSignin = True
+            self.doClose()
 
     def onClick(self, controlID):
         if controlID == self.SIGNIN_BUTTON_ID:

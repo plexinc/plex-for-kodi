@@ -107,7 +107,7 @@ class PlexMedia(plexobjects.PlexObject):
             if hasattr(self, astr):
                 attr = getattr(self, astr)
                 if attr and not attr.NA:
-                    extra.append("{0}={1}".format(astr, attr))
+                    extra.append("{0}={1}".format(astr, repr(attr)))
 
         return self.versionString() + " " + ' '.join(extra)
 

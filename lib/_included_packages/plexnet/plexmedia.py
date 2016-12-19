@@ -107,18 +107,18 @@ class PlexMedia(plexobjects.PlexObject):
             if hasattr(self, astr):
                 attr = getattr(self, astr)
                 if attr and not attr.NA:
-                    extra.append("{0}={1}".format(astr, repr(attr)))
+                    extra.append("{0}={1}".format(astr, attr))
 
-        return self.versionString() + " " + ' '.join(extra)
+        return self.versionString(log_safe=True) + " " + ' '.join(extra)
 
-    def versionString(self):
+    def versionString(self, log_safe=False):
         details = []
         details.append(self.getVideoResolutionString())
         if self.bitrate.asInt() > 0:
             details.append(util.bitrateToString(self.bitrate.asInt() * 1000))
 
         detailString = ', '.join(details)
-        return u" \u2022 ".join(filter(None, [self.title, detailString]))
+        return (log_safe and ' * ' or u" \u2022 ").join(filter(None, [self.title, detailString]))
 
     def __eq__(self, other):
         if not other:

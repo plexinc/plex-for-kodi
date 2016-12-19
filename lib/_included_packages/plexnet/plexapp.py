@@ -459,6 +459,11 @@ def setUserAgent(agent):
     util.BASE_HEADERS = util.resetBaseHeaders()
 
 
+def setAbortFlagFunction(func):
+    import asyncadapter
+    asyncadapter.ABORT_FLAG_FUNCTION = func
+
+
 def refreshResources(force=False):
     import gdm
     gdm.DISCOVERY.discover()

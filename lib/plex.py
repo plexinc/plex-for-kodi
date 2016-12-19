@@ -17,7 +17,12 @@ class PlexTimer(plexapp.Timer):
         return xbmc.abortRequested
 
 
+def abortFlag():
+    return util.MONITOR.abortRequested()
+
+
 plexapp.setTimer(PlexTimer)
+plexapp.setAbortFlagFunction(abortFlag)
 
 maxVideoRes = plexapp.Res((3840, 2160))  # INTERFACE.globals["supports4k"] and plexapp.Res((3840, 2160)) or plexapp.Res((1920, 1080))
 

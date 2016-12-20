@@ -487,7 +487,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
                 self.deferReachabilityTimer.reset()
 
         if self.deferReachabilityTimer and logInfo:
-            util.LOG('Defer update reachability for all devices a few seconds: GDMactive={0}'.format(gdm.DISCOVERY.isActive()))
+            util.LOG('Defer reachability update for all devices: GDMactive={0}'.format(gdm.DISCOVERY.isActive()))
 
     def onDeferUpdateReachabilityTimer(self):
         if not self.selectedServer and self.searchContext:

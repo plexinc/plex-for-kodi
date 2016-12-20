@@ -50,9 +50,9 @@ class App(signalsmixin.SignalsMixin):
             requestID = context.request.getIdentity()
             self.pendingRequests[requestID] = context
 
-            if context.timeout:
-                request.timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, forcedArgs=[context]))
-                self.addTimer(request.timer)
+            # if context.timeout:
+            #     request.timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, forcedArgs=[context]))
+            #     self.addTimer(request.timer)
         elif context.callback:
             context.callback(None, context)
 
@@ -401,17 +401,19 @@ class Timer(object):
             while not self.event.isSet() and not self.shouldAbort():
                 while not self.event.wait(self.timeout) and not self.shouldAbort():
                     if self._reset:
-                        self._reset = False
                         return
 
                     self.function(*self.args, **self.kwargs)
                     if not self.repeat:
                         return
         finally:
-            if self in APP.timers:
-                APP.timers.remove(self)
+            if not self._reset:
+                if self in APP.timers:
+                    APP.timers.remove(self)
 
-            util.DEBUG_LOG('Timer {0}: FINISHED'.format(repr(self.function)))
+                util.DEBUG_LOG('Timer {0}: FINISHED'.format(repr(self.function)))
+
+            self._reset = False
 
     def cancel(self):
         self.event.set()

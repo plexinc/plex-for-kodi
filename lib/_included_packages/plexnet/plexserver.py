@@ -93,6 +93,9 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     def __repr__(self):
         return self.__str__()
 
+    def close(self):
+        self.session.cancel()
+
     def get(self, attr, default=None):
         return default
 

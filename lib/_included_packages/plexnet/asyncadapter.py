@@ -1,24 +1,15 @@
 import os
 import time
-from socket import timeout as SocketTimeout
 import socket
 
+import requests
 from requests.packages.urllib3 import HTTPConnectionPool, HTTPSConnectionPool
 from requests.packages.urllib3.poolmanager import PoolManager, proxy_from_url
 from requests.packages.urllib3.connectionpool import VerifiedHTTPSConnection
 from requests.adapters import HTTPAdapter
 from requests.compat import urlparse
-from requests.packages.urllib3.util import (
-    assert_fingerprint,
-    resolve_cert_reqs,
-    resolve_ssl_version,
-    ssl_wrap_socket,
-)
-from requests.packages.urllib3.exceptions import ConnectTimeoutError
-from requests.packages.urllib3.packages.ssl_match_hostname import match_hostname
 
 from httplib import HTTPConnection
-import ssl
 import errno
 
 
@@ -101,52 +92,21 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
                 pass
             yield
 
+        if self._canceled or ABORT_FLAG_FUNCTION():
+            raise CanceledException('Request canceled')
+
         error = sock.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
         if error:
             # TODO: determine when this case can actually happen
             raise socket.error((error,))
 
-    def connect(self):
-        # Add certificate verification
-        try:
-            sock = self.create_connection(
-                address=(self.host, self.port),
-                timeout=self.timeout)
-        except SocketTimeout:
-                raise ConnectTimeoutError(
-                    self, "Connection to %s timed out. (connect timeout=%s)" %
-                    (self.host, self.timeout))
+    def _new_conn(self):
+        sock = self.create_connection(
+            address=(self.host, self.port),
+            timeout=self.timeout
+        )
 
-        resolved_cert_reqs = resolve_cert_reqs(self.cert_reqs)
-        resolved_ssl_version = resolve_ssl_version(self.ssl_version)
-
-        if self._tunnel_host:
-            self.sock = sock
-            # Calls self._set_hostport(), so self.host is
-            # self._tunnel_host below.
-            self._tunnel()
-            self.auto_open = 0
-
-            # The name of the host we're requesting data from.
-            actual_host = self._tunnel_host
-        else:
-            actual_host = self.host
-
-        # Wrap socket using verification with the root certs in
-        # trusted_root_certs
-        self.sock = ssl_wrap_socket(sock, self.key_file, self.cert_file,
-                                    cert_reqs=resolved_cert_reqs,
-                                    ca_certs=self.ca_certs,
-                                    server_hostname=actual_host,
-                                    ssl_version=resolved_ssl_version)
-
-        if resolved_cert_reqs != ssl.CERT_NONE:
-            if self.assert_fingerprint:
-                assert_fingerprint(self.sock.getpeercert(binary_form=True),
-                                   self.assert_fingerprint)
-            elif self.assert_hostname is not False:
-                match_hostname(self.sock.getpeercert(),
-                               self.assert_hostname or actual_host)
+        return sock
 
     def cancel(self):
         self._canceled = True
@@ -305,3 +265,15 @@ class AsyncHTTPAdapter(HTTPAdapter):
 
         self.connections.append(conn)
         return conn
+
+
+class Session(requests.Session):
+    def __init__(self, *args, **kwargs):
+        requests.Session.__init__(self, *args, **kwargs)
+        self.mount('https://', AsyncHTTPAdapter())
+        self.mount('http://', AsyncHTTPAdapter())
+
+    def cancel(self):
+        for v in self.adapters.values():
+            v.close()
+            v.cancel()

@@ -26,9 +26,7 @@ def POST(*args, **kwargs):
 
 
 def Session():
-    s = requests.Session()
-    s.mount('https://', asyncadapter.AsyncHTTPAdapter())
-    s.mount('http://', asyncadapter.AsyncHTTPAdapter())
+    s = asyncadapter.Session()
     s.headers = util.BASE_HEADERS.copy()
     s.timeout = util.TIMEOUT
 
@@ -51,11 +49,7 @@ class HttpRequest(object):
         self.path = None
         self.hasParams = '?' in url
         self.ignoreResponse = False
-        self.session = requests.Session()
-        self.httpsadapter = asyncadapter.AsyncHTTPAdapter()
-        self.httpadapter = asyncadapter.AsyncHTTPAdapter()
-        self.session.mount('https://', self.httpsadapter)
-        self.session.mount('http://', self.httpadapter)
+        self.session = asyncadapter.Session()
         self.session.headers = util.BASE_HEADERS.copy()
         self.currentResponse = None
         self.method = method
@@ -205,8 +199,7 @@ class HttpRequest(object):
 
     def cancel(self):
         self._cancel = True
-        self.httpsadapter.cancel()
-        self.httpadapter.cancel()
+        self.session.cancel()
         self.removeAsPending()
         self.killSocket()
 

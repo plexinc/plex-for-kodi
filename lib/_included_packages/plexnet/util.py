@@ -101,7 +101,7 @@ def hideToken(token):
     # return 'X' * len(token)
     if not token:
         return token
-    return '*' * (len(token) - 4) + token[-4:]
+    return '****' + token[-4:]
 
 
 def cleanToken(url):

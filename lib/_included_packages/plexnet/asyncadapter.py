@@ -22,7 +22,7 @@ def ABORT_FLAG_FUNCTION():
     return False
 
 
-class TimeoutError(Exception):
+class TimeoutException(Exception):
     pass
 
 
@@ -38,7 +38,7 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
 
     def _check_timeout(self):
         if time.time() > self.deadline:
-            raise TimeoutError('connection timed out')
+            raise TimeoutException('connection timed out')
 
     def create_connection(self, address, timeout=None, source_address=None):
         """Connect to *address* and return the socket object.

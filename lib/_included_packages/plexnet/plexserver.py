@@ -292,7 +292,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if not force and self.activeConnection and self.activeConnection.state != plexresource.ResourceConnection.STATE_UNKNOWN:
             return
 
-        util.LOG('Updating reachability for {0}: connections={1}, allowFallback={2}'.format(repr(self.name), len(self.connections), allowFallback))
+        util.LOG('Updating reachability for {0}: conns={1}, allowFallback={2}'.format(repr(self.name), len(self.connections), allowFallback))
 
         epoch = time.time()
         retrySeconds = 60
@@ -301,9 +301,9 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             conn = self.connections[i]
             diff = epoch - (conn.lastTestedAt or 0)
             if conn.hasPendingRequest:
-                util.DEBUG_LOG("Skipping reachability test for {0} (has pending request)".format(conn))
+                util.DEBUG_LOG("Skip reachability test for {0} (has pending request)".format(conn))
             elif diff < minSeconds or (not self.isSecondary() and self.isReachable() and diff < retrySeconds):
-                util.DEBUG_LOG("Skipping reachability test for {0} (checked {1} seconds ago)".format(conn, diff))
+                util.DEBUG_LOG("Skip reachability test for {0} (checked {1} secs ago)".format(conn, diff))
             elif conn.testReachability(self, allowFallback):
                 self.pendingReachabilityRequests += 1
                 if conn.isSecure:

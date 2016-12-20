@@ -70,7 +70,7 @@ class HttpRequest(object):
         plexapp.APP.delRequest(self)
 
     def startAsync(self, *args, **kwargs):
-        self.logRequest(kwargs.get('body'))
+        self.logRequest(kwargs.get('body'), 10)
         self.thread = threadutils.KillableThread(target=self._startAsync, args=args, kwargs=kwargs, name='HTTP-ASYNC:{0}'.format(self.url))
         self.thread.start()
         return True
@@ -98,9 +98,16 @@ class HttpRequest(object):
 
             if self._cancel:
                 return
-        except Exception, e:
-            util.ERROR('Request failed', e)
+        except asyncadapter.TimeoutException:
+            import plexapp
+            plexapp.APP.onRequestTimeout(context)
+            self.removeAsPending()
             return
+        except Exception, e:
+            util.ERROR('Request failed {0}'.format(self.url), e)
+            if not hasattr(e, 'response'):
+                return
+            res = e.response
 
         if self.timer:
             self.timer.cancel()

@@ -186,10 +186,11 @@ class PlayableVideo(Video):
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
 
     def reload(self, *args, **kwargs):
-        if self.get('viewCount'):
-            del self.viewCount
-        if self.get('viewOffset'):
-            del self.viewOffset
+        if not kwargs.get('_soft'):
+            if self.get('viewCount'):
+                del self.viewCount
+            if self.get('viewOffset'):
+                del self.viewOffset
         Video.reload(self, *args, **kwargs)
         return self
 

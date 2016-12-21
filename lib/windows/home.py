@@ -249,9 +249,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         'playlists.video': {'index': 6, 'text2lines': True, 'ar16x9': True, 'title': T(32053, 'Video')},
     }
 
-    THUMB_POSTER_DIM = (287, 425)
-    THUMB_AR16X9_DIM = (619, 348)
-    THUMB_SQUARE_DIM = (425, 425)
+    THUMB_POSTER_DIM = (244, 361)
+    THUMB_AR16X9_DIM = (532, 299)
+    THUMB_SQUARE_DIM = (244, 244)
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)

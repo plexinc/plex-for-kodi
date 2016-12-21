@@ -55,7 +55,6 @@ class HttpRequest(object):
         self.method = method
         self.url = url
         self.thread = None
-        self.timer = None
 
         # Use our specific plex.direct CA cert if applicable to improve performance
         # if forceCertificate or url[:5] == "https":  # TODO: ---------------------------------------------------------------------------------IMPLEMENT
@@ -108,9 +107,6 @@ class HttpRequest(object):
             if not hasattr(e, 'response'):
                 return
             res = e.response
-
-        if self.timer:
-            self.timer.cancel()
 
         self.onResponse(res, context)
 

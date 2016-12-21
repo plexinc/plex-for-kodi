@@ -49,10 +49,6 @@ class App(signalsmixin.SignalsMixin):
         if started:
             requestID = context.request.getIdentity()
             self.pendingRequests[requestID] = context
-
-            # if context.timeout:
-            #     request.timer = createTimer(context.timeout, callback.Callable(self.onRequestTimeout, forcedArgs=[context]))
-            #     self.addTimer(request.timer)
         elif context.callback:
             context.callback(None, context)
 

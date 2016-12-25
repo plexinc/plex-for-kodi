@@ -117,7 +117,8 @@ SORT_KEYS = {
     },
     'photo': {
         'originallyAvailableAt': {'title': T(32373, 'By Date Taken'), 'display': T(32374, 'Date Taken')}
-    }
+    },
+    'photodirectory': {}
 }
 
 

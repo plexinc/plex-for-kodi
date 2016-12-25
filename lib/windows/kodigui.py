@@ -218,6 +218,9 @@ class ControlledDialog(ControlledBase, BaseDialog):
         BaseDialog.onAction(self, action)
 
 
+DUMMY_LIST_ITEM = xbmcgui.ListItem()
+
+
 class ManagedListItem(object):
     def __init__(self, label='', label2='', iconImage='', thumbnailImage='', path='', data_source=None, properties=None):
         self._listItem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, path)
@@ -250,6 +253,10 @@ class ManagedListItem(object):
                 return None
 
         return self._listItem
+
+    def invalidate(self):
+        self._valid = False
+        self._listItem = DUMMY_LIST_ITEM
 
     def _takeListItem(self, manager, lid):
         self._manager = manager
@@ -441,7 +448,7 @@ class ManagedControlList(object):
 
     def replaceItem(self, pos, mli):
         self[pos].onDestroy()
-        self[pos]._valid = False
+        self[pos].invalidate()
         self.items[pos] = mli
         li = self.control.getListItem(pos)
         mli._manager = self
@@ -457,7 +464,7 @@ class ManagedControlList(object):
 
         for i in self.items:
             i.onDestroy()
-            i._valid = False
+            i.invalidate()
 
         self.items = managed_items
         size = self.size()
@@ -506,7 +513,7 @@ class ManagedControlList(object):
     def removeItem(self, index):
         old = self.items.pop(index)
         old.onDestroy()
-        old._valid = False
+        old.invalidate()
 
         self.control.removeItem(index)
         top = self.control.size() - 1
@@ -597,7 +604,7 @@ class ManagedControlList(object):
         self.dataSource = None
         for i in self.items:
             i.onDestroy()
-            i._valid = False
+            i.invalidate()
         self.items = []
         self.control.reset()
 
@@ -641,6 +648,10 @@ class ManagedControlList(object):
 
     def bottomHasFocus(self):
         return self.getSelectedPosition() == self.size() - 1
+
+    def invalidate(self):
+        for item in self.items:
+            item._listItem = DUMMY_LIST_ITEM
 
     def newControl(self, window=None, control_id=None):
         self.controlID = control_id or self.controlID

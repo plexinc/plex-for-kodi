@@ -2,6 +2,7 @@ import os
 import random
 import urllib
 import json
+import threading
 
 import xbmc
 import xbmcgui
@@ -230,6 +231,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         self.sort = self.librarySettings.getSetting('sort', 'titleSort')
         self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
+        self.lock = threading.Lock()
 
     def doClose(self):
         for task in self.tasks:
@@ -468,7 +470,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.sortShowPanel(choice)
 
     def viewTypeButtonClicked(self):
-        win = self.nextWindow()
+        with self.lock:
+            self.showPanelControl.invalidate()
+            win = self.nextWindow()
+
         key = self.section.key
         if not key.isdigit():
             key = self.section.getLibrarySectionId()
@@ -870,30 +875,31 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('key', keys[0])
 
     def chunkCallback(self, items, start):
-        pos = start
-        self.setBackground(items)
-        thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
-        artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))
+        with self.lock:
+            pos = start
+            self.setBackground(items)
+            thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
+            artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))
 
-        showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
+            showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
 
-        for obj in items:
-            mli = self.showPanelControl[pos]
-            mli.setLabel(obj.defaultTitle or '')
-            mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
-            mli.dataSource = obj
-            mli.setProperty('summary', obj.get('summary'))
+            for obj in items:
+                mli = self.showPanelControl[pos]
+                mli.setLabel(obj.defaultTitle or '')
+                mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+                mli.dataSource = obj
+                mli.setProperty('summary', obj.get('summary'))
 
-            if showUnwatched:
-                mli.setLabel2(util.durationToText(obj.fixedDuration()))
-                mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
-                if not obj.isWatched:
-                    if self.section.TYPE == 'show':
-                        mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
-                    else:
-                        mli.setProperty('unwatched', '1')
+                if showUnwatched:
+                    mli.setLabel2(util.durationToText(obj.fixedDuration()))
+                    mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
+                    if not obj.isWatched:
+                        if self.section.TYPE == 'show':
+                            mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+                        else:
+                            mli.setProperty('unwatched', '1')
 
-            pos += 1
+                pos += 1
 
 
 class PostersWindow(kodigui.ControlledWindow):

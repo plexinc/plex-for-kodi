@@ -268,8 +268,6 @@ class ManagedListItem(object):
         return li
 
     def _updateListItem(self):
-        if not self._valid:
-            return
         self.listItem.setProperty('__ID__', self._ID)
         self.listItem.setLabel(self.label)
         self.listItem.setLabel2(self.label2)
@@ -285,13 +283,9 @@ class ManagedListItem(object):
         return self._manager.getManagedItemPosition(self)
 
     def addContextMenuItems(self, items, replaceItems=False):
-        if not self._valid:
-            return
         self.listItem.addContextMenuItems(items, replaceItems)
 
     def addStreamInfo(self, stype, values):
-        if not self._valid:
-            return
         self.listItem.addStreamInfo(stype, values)
 
     def getLabel(self):
@@ -316,55 +310,37 @@ class ManagedListItem(object):
         return self.listItem.isSelected()
 
     def select(self, selected):
-        if not self._valid:
-            return
         return self.listItem.select(selected)
 
     def setArt(self, values):
-        if not self._valid:
-            return
         return self.listItem.setArt(values)
 
     def setIconImage(self, icon):
         self.iconImage = icon
-        if not self._valid:
-            return
         return self.listItem.setIconImage(icon)
 
     def setInfo(self, itype, infoLabels):
-        if not self._valid:
-            return
         return self.listItem.setInfo(itype, infoLabels)
 
     def setLabel(self, label):
         self.label = label
-        if not self._valid:
-            return
         return self.listItem.setLabel(label)
 
     def setLabel2(self, label):
         self.label2 = label
-        if not self._valid:
-            return
         return self.listItem.setLabel2(label)
 
     def setMimeType(self, mimetype):
-        if not self._valid:
-            return
         return self.listItem.setMimeType(mimetype)
 
     def setPath(self, path):
         self.path = path
-        if not self._valid:
-            return
         return self.listItem.setPath(path)
 
     def setProperty(self, key, value):
         if self._manager:
             self._manager._properties[key] = 1
         self.properties[key] = value
-        if not self._valid:
-            return
         self.listItem.setProperty(key, value)
         return self
 
@@ -372,14 +348,10 @@ class ManagedListItem(object):
         return self.setProperty(key, boolean and '1' or '')
 
     def setSubtitles(self, subtitles):
-        if not self._valid:
-            return
         return self.listItem.setSubtitles(subtitles)  # List of strings - HELIX
 
     def setThumbnailImage(self, thumb):
         self.thumbnailImage = thumb
-        if not self._valid:
-            return
         return self.listItem.setThumbnailImage(thumb)
 
     def onDestroy(self):

@@ -937,6 +937,11 @@ class ListView16x9Window(PostersWindow):
     VIEWTYPE = 'list'
 
 
+class ListView16x9ChunkedWindow(PostersWindow):
+    xmlFile = 'script-plex-listview-16x9-chunked.xml'
+    VIEWTYPE = 'list'
+
+
 class SquaresWindow(PostersWindow):
     xmlFile = 'script-plex-squares.xml'
     VIEWTYPE = 'panel'

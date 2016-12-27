@@ -10,6 +10,7 @@ Improve startup and shutdown times
 Fix some server reaachability testing bugs and improve performance
 Possible fix for crashing when shutting down Kodi while the add-on is running
 Add workaround to allow launching from My Add-ons and shortcuts
+Fix text cutoff for post-play in Estuary
 
 [- 0.0.99 -]
 

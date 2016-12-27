@@ -7,7 +7,7 @@
     </coordinates>
     <defaultcontrol>250</defaultcontrol>
     <zorder>100</zorder>
-    <onload>SetProperty(photo,script.plex/home/background-fallback.jpg)</onload>
+    <onload>SetProperty(photo,script.plex/home/background-fallback.png)</onload>
     <controls>
         <control type="group">
             <control type="image">
@@ -15,7 +15,7 @@
                 <posy>0</posy>
                 <width>1920</width>
                 <height>1080</height>
-                <texture>script.plex/home/background-fallback.jpg</texture>
+                <texture>script.plex/home/background-fallback.png</texture>
             </control>
             <control type="image">
                 <posx>0</posx>

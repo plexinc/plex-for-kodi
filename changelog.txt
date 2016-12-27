@@ -3,7 +3,7 @@
 Fix some stability issues
 Fix encoding error on startup
 Improve fallbaack background quality
-Fix and error causing opening of photo directories to fail
+Fix an error causing opening of photo directories to fail
 Disable debug logging by default
 Make Home hub square items smaller
 Improve startup and shutdown times

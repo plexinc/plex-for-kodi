@@ -149,7 +149,7 @@ class MyPlexAccount(object):
             if not self.isAuthenticated and not self.isProtected and len(self.homeUsers) <= 1:
                 self.isAuthenticated = True
 
-            util.LOG("Authenticated as {0}:{1}".format(self.ID, self.title))
+            util.LOG("Authenticated as {0}:{1}".format(self.ID, repr(self.title)))
             util.LOG("SignedIn: {0}".format(self.isSignedIn))
             util.LOG("Offline: {0}".format(self.isOffline))
             util.LOG("Authenticated: {0}".format(self.isAuthenticated))

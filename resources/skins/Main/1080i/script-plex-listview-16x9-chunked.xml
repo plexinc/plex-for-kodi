@@ -6,7 +6,6 @@
         <posx>0</posx>
         <posy>0</posy>
     </coordinates>
-    <onload>SetProperty(max,10)</onload>
     <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
         <control type="group">
@@ -172,7 +171,7 @@
                 <posx>750</posx>
                 <posy>0</posy>
                 <width>1170</width>
-                <height>2000</height>
+                <height>1080</height>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
@@ -181,27 +180,12 @@
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>20000000</colordiffuse>
                 </control>
-                <control type="fixedlist" id="101">
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).CurrentItem,1)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).CurrentItem,2)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).CurrentItem,3)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).CurrentItem,4)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).CurrentItem,5)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
+                <control type="list" id="101">
                     <hitrect x="60" y="0" w="1010" h="945" />
                     <posx>0</posx>
-                    <posy>-380</posy>
+                    <posy>0</posy>
                     <width>1170</width>
-                    <height>2000</height>
+                    <height>945</height>
                     <onup>600</onup>
                     <onright>151</onright>
                     <onleft>304</onleft>
@@ -209,7 +193,6 @@
                     <orientation>vertical</orientation>
                     <preloaditems>4</preloaditems>
                     <pagecontrol>152</pagecontrol>
-                    <focusposition>5</focusposition>
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout height="76">
                         <control type="group">

@@ -25,6 +25,8 @@ from plexnet import playqueue
 
 from lib.util import T
 
+# CHUNK_SIZE = 500
+CHUNK_SIZE = 10
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -231,6 +233,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         self.sort = self.librarySettings.getSetting('sort', 'titleSort')
         self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
+        self.chunkMode = True
+        self.chunkMidStart = 0
+
         self.lock = threading.Lock()
 
     def doClose(self):
@@ -268,6 +273,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 controlID = self.getFocusId()
                 if controlID == self.POSTERS_PANEL_ID or controlID == self.SCROLLBAR_ID:
                     self.updateKey()
+                    self.checkChunkedNav()
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -334,6 +340,24 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.setProperty('key', mli.getProperty('key'))
 
         self.selectKey(mli)
+
+    def checkChunkedNav(self):
+        if not self.chunkMode:
+            return
+
+        mli = self.showPanelControl.getSelectedItem()
+        pos = int(mli.getProperty('pos'))
+        if pos >= self.chunkMidStart + CHUNK_SIZE:
+            self.shiftChunks()
+        elif pos < self.chunkMidStart:
+            self.shiftChunks(-1)
+
+    def shiftChunks(self, mod=1):
+        if self.chunkMidStart == 0:
+            return
+
+        offset = CHUNK_SIZE * mod
+        self.chunkMidStart += offset
 
     def selectKey(self, mli=None):
         if not mli:
@@ -749,12 +773,17 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('key', jumpList[0].key)
 
         tasks = []
-        for start in range(0, totalSize, 500):
+        ct = 0
+        for start in range(0, totalSize, CHUNK_SIZE):
             tasks.append(
                 ChunkRequestTask().setup(
-                    self.section, start, 500, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+                    self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
                 )
             )
+            ct += 1
+
+            if self.chunkMode and ct > 1:
+                break
 
         self.tasks = tasks
         backgroundthread.BGThreader.addTasksToFront(tasks)
@@ -883,8 +912,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
             showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
 
-            for obj in items:
+            for offset, obj in enumerate(items):
                 mli = self.showPanelControl[pos]
+                mli.setProperty('pos', str(start + offset))
                 mli.setLabel(obj.defaultTitle or '')
                 mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
                 mli.dataSource = obj

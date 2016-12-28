@@ -180,7 +180,7 @@
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>20000000</colordiffuse>
                 </control>
-                <control type="list" id="101">
+                <control type="wraplist" id="101">
                     <hitrect x="60" y="0" w="1010" h="945" />
                     <posx>0</posx>
                     <posy>0</posy>
@@ -193,6 +193,7 @@
                     <orientation>vertical</orientation>
                     <preloaditems>4</preloaditems>
                     <pagecontrol>152</pagecontrol>
+                    <focusposition>5</focusposition>
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout height="76">
                         <control type="group">

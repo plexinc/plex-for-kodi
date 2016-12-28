@@ -235,6 +235,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
         self.chunkMode = True
         self.chunkMidStart = 0
+        self.chunkListStart = 0
 
         self.lock = threading.Lock()
 
@@ -346,7 +347,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             return
 
         mli = self.showPanelControl.getSelectedItem()
-        pos = int(mli.getProperty('pos'))
+        pos = int(mli.getProperty('index'))
         if pos >= self.chunkMidStart + CHUNK_SIZE:
             self.shiftChunks()
         elif pos < self.chunkMidStart:
@@ -358,6 +359,20 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         offset = CHUNK_SIZE * mod
         self.chunkMidStart += offset
+        start = self.chunkMidStart - (mod * CHUNK_SIZE)
+
+        self.chunkListStart += offset
+        if self.chunkListStart < 0:
+            self.chunkListStart = self.showPanelControl.size() - (self.chunkListStart + 1)
+        elif self.chunkListStart >= self.showPanelControl.size():
+            self.chunkListStart = self.chunkListStart - self.showPanelControl.size()
+
+        task = ChunkRequestTask().setup(
+            self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+        )
+
+        self.tasks.append(task)
+        backgroundthread.BGThreader.addTasksToFront([task])
 
     def selectKey(self, mli=None):
         if not mli:
@@ -763,6 +778,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                     self.firstOfKeyItems[ji.key] = mli
                 idx += 1
 
+        if self.chunkMode:
+            items = items[:CHUNK_SIZE * 3]
+
         self.showPanelControl.reset()
         self.keyListControl.reset()
 
@@ -912,9 +930,17 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
             showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
 
+            listOffset = 0
+            if self.chunkMode:
+                startPos = int(self.showPanelControl[self.chunkListStart].getProperty('index'))
+                listOffset = start - startPos
+
+            util.TEST(startPos)
+            util.TEST(listOffset)
+
             for offset, obj in enumerate(items):
-                mli = self.showPanelControl[pos]
-                mli.setProperty('pos', str(start + offset))
+                mli = self.showPanelControl[listOffset + offset]
+                mli.setProperty('index', str(start + offset))
                 mli.setLabel(obj.defaultTitle or '')
                 mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
                 mli.dataSource = obj
@@ -984,7 +1010,7 @@ class ListViewSquareWindow(PostersWindow):
 
 VIEWS_POSTER = {
     'panel': PostersWindow,
-    'list': ListView16x9Window
+    'list': ListView16x9ChunkedWindow
 }
 
 VIEWS_SQUARE = {

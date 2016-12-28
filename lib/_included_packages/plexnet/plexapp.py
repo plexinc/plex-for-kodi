@@ -62,7 +62,7 @@ class App(signalsmixin.SignalsMixin):
 
         context.request.cancel()
 
-        util.WARN_LOG("Request to {0} timed out after {1} ms".format(context.request.url, context.timeout))
+        util.WARN_LOG("Request to {0} timed out after {1} ms".format(util.cleanToken(context.request.url), context.timeout))
 
         if context.callback:
             context.callback(None, context)

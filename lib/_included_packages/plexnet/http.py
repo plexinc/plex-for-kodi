@@ -158,7 +158,7 @@ class HttpRequest(object):
             # self.event = msg
             return res
         except Exception, e:
-            util.WARN_LOG("Request to {0} errored out after {1} ms: {2}".format(self.url, seconds, e.message))
+            util.WARN_LOG("Request to {0} errored out after {1} ms: {2}".format(util.cleanToken(self.url), seconds, e.message))
 
         return None
 
@@ -238,7 +238,7 @@ class HttpRequest(object):
         if not method:
             method = body is not None and "POST" or "GET"
         util.LOG(
-            "Starting request: {0} {1} (async={2} timeout={3})".format(method, re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', self.url), async, timeout)
+            "Starting request: {0} {1} (async={2} timeout={3})".format(method, util.cleanToken(self.url), async, timeout)
         )
 
 

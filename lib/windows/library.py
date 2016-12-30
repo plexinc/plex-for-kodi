@@ -211,6 +211,62 @@ class LibrarySettings(object):
         self._saveSettings()
 
 
+class ChunkedWrapList(kodigui.ManagedControlList):
+    LIST_MAX = CHUNK_SIZE * 3
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return self.items[idx]
+        else:
+            idx = idx % self.LIST_MAX
+            return self.getListItem(idx)
+
+
+class ChunkMode(object):
+    def __init__(self):
+        self.midStart = 0
+        self.itemCount = 0
+        self.keys = {}
+
+    def addKeyRange(self, key, krange):
+        self.keys[key] = krange
+
+    def getKey(self, pos):
+        for k, krange in self.keys.items():
+            if krange[0] <= pos <= krange[1]:
+                return k
+
+    def isAtBeginning(self):
+        return self.midStart == 0
+
+    def posIsForward(self, pos):
+        return pos >= self.midStart + CHUNK_SIZE
+
+    def posIsBackward(self, pos):
+        return pos < self.midStart
+
+    def shift(self, mod):
+        if mod < 0 and self.midStart == 0:
+            return None
+        elif mod > 0 and self.midStart + CHUNK_SIZE >= self.itemCount:
+            return None
+
+        offset = CHUNK_SIZE * mod
+        self.midStart += offset
+        start = self.midStart + offset
+
+        return start
+
+    def shiftToKey(self, key):
+        if key not in self.keys:
+            util.DEBUG_LOG('CHUNK MODE: NO ITEMS FOR KEY')
+            return
+
+        keyStart = self.keys[key][0]
+        self.midStart = keyStart - keyStart % CHUNK_SIZE
+        return keyStart, max(self.midStart - CHUNK_SIZE, 0)
+
+
 class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
     bgXML = 'script-plex-blank.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -233,9 +289,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         self.sort = self.librarySettings.getSetting('sort', 'titleSort')
         self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
-        self.chunkMode = True
-        self.chunkMidStart = 0
-        self.chunkListStart = 0
+        self.chunkMode = ChunkMode()
 
         self.lock = threading.Lock()
 
@@ -250,7 +304,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.keyListControl.newControl(self)
             self.setFocusId(self.VIEWTYPE_BUTTON_ID)
         else:
-            self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
+            if self.chunkMode:
+                self.showPanelControl = ChunkedWrapList(self, self.POSTERS_PANEL_ID, 5)
+            else:
+                self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
             self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
@@ -329,8 +386,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPhotoItemProperties(mli.dataSource)
 
-    def updateKey(self):
-        mli = self.showPanelControl.getSelectedItem()
+    def updateKey(self, mli=None):
+        mli = mli or self.showPanelControl.getSelectedItem()
         if not mli:
             return
 
@@ -347,32 +404,38 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             return
 
         mli = self.showPanelControl.getSelectedItem()
-        pos = int(mli.getProperty('index'))
-        if pos >= self.chunkMidStart + CHUNK_SIZE:
+        try:
+            pos = int(mli.getProperty('index'))
+        except ValueError:
+            if self.chunkMode.isAtBeginning():
+                idx = 0
+            else:
+                idx = (self.chunkMode.itemCount % self.showPanelControl.LIST_MAX) - 1
+
+            self.showPanelControl.selectItem(idx)
+            self.updateKey(self.showPanelControl[idx])
+            return
+
+        if self.chunkMode.posIsForward(pos):
             self.shiftChunks()
-        elif pos < self.chunkMidStart:
+        elif self.chunkMode.posIsBackward(pos):
             self.shiftChunks(-1)
 
     def shiftChunks(self, mod=1):
-        if self.chunkMidStart == 0:
+        util.TEST((self.chunkMode.midStart, self.chunkMode.itemCount))
+        start = self.chunkMode.shift(mod)
+        if start is None:
             return
 
-        offset = CHUNK_SIZE * mod
-        self.chunkMidStart += offset
-        start = self.chunkMidStart - (mod * CHUNK_SIZE)
+        if start < 0:
+            self.chunkCallback([None] * CHUNK_SIZE, -CHUNK_SIZE)
+        else:
+            task = ChunkRequestTask().setup(
+                self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+            )
 
-        self.chunkListStart += offset
-        if self.chunkListStart < 0:
-            self.chunkListStart = self.showPanelControl.size() - (self.chunkListStart + 1)
-        elif self.chunkListStart >= self.showPanelControl.size():
-            self.chunkListStart = self.chunkListStart - self.showPanelControl.size()
-
-        task = ChunkRequestTask().setup(
-            self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
-        )
-
-        self.tasks.append(task)
-        backgroundthread.BGThreader.addTasksToFront([task])
+            self.tasks.append(task)
+            backgroundthread.BGThreader.addTasksToFront([task])
 
     def selectKey(self, mli=None):
         if not mli:
@@ -393,11 +456,31 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if not li:
             return
 
-        mli = self.firstOfKeyItems.get(li.dataSource)
-        if not mli:
-            return
+        if self.chunkMode:
+            keyStart_start = self.chunkMode.shiftToKey(li.dataSource)
+            if not keyStart_start:
+                return
+            keyStart, start = keyStart_start
 
-        self.showPanelControl.selectItem(mli.pos())
+            pos = keyStart % self.showPanelControl.LIST_MAX
+            self.chunkCallback([None] * CHUNK_SIZE, 0)
+            mul = 3
+            if not start:
+                mul = 2
+
+            task = ChunkRequestTask().setup(
+                self.section, start, CHUNK_SIZE * mul, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+            )
+
+            self.tasks.append(task)
+            backgroundthread.BGThreader.addTasksToFront([task])
+        else:
+            mli = self.firstOfKeyItems.get(li.dataSource)
+            if not mli:
+                return
+            pos = mli.pos()
+
+        self.showPanelControl.selectItem(pos)
         self.setFocusId(self.POSTERS_PANEL_ID)
         self.setProperty('key', li.dataSource)
 
@@ -768,6 +851,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             jitems.append(mli)
             totalSize += ji.size.asInt()
 
+            if self.chunkMode:
+                self.chunkMode.addKeyRange(ji.key, (idx, (idx + ji.size.asInt()) - 1))
+
             for x in range(ji.size.asInt()):
                 mli = kodigui.ManagedListItem('')
                 mli.setProperty('key', ji.key)
@@ -779,7 +865,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 idx += 1
 
         if self.chunkMode:
-            items = items[:CHUNK_SIZE * 3]
+            self.chunkMode.itemCount = totalSize
+            items = items[:CHUNK_SIZE * 2] + [kodigui.ManagedListItem('') for i in range(CHUNK_SIZE)]
 
         self.showPanelControl.reset()
         self.keyListControl.reset()
@@ -930,30 +1017,31 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
             showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
 
-            listOffset = 0
-            if self.chunkMode:
-                startPos = int(self.showPanelControl[self.chunkListStart].getProperty('index'))
-                listOffset = start - startPos
-
-            util.TEST(startPos)
-            util.TEST(listOffset)
+            if self.chunkMode and len(items) < CHUNK_SIZE:
+                items += [None] * (CHUNK_SIZE - len(items))
 
             for offset, obj in enumerate(items):
-                mli = self.showPanelControl[listOffset + offset]
-                mli.setProperty('index', str(start + offset))
-                mli.setLabel(obj.defaultTitle or '')
-                mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
-                mli.dataSource = obj
-                mli.setProperty('summary', obj.get('summary'))
+                mli = self.showPanelControl[pos]
+                if obj:
+                    mli.setProperty('index', str(pos))
+                    mli.setLabel(obj.defaultTitle or '')
+                    mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+                    mli.dataSource = obj
+                    mli.setProperty('summary', obj.get('summary'))
 
-                if showUnwatched:
-                    mli.setLabel2(util.durationToText(obj.fixedDuration()))
-                    mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
-                    if not obj.isWatched:
-                        if self.section.TYPE == 'show':
-                            mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
-                        else:
-                            mli.setProperty('unwatched', '1')
+                    if self.chunkMode:
+                        mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                    if showUnwatched:
+                        mli.setLabel2(util.durationToText(obj.fixedDuration()))
+                        mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
+                        if not obj.isWatched:
+                            if self.section.TYPE == 'show':
+                                mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+                            else:
+                                mli.setProperty('unwatched', '1')
+                else:
+                    mli.clear()
 
                 pos += 1
 

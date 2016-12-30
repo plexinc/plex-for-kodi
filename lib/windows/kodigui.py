@@ -277,6 +277,16 @@ class ManagedListItem(object):
         for k in self._manager._properties.keys():
             self.listItem.setProperty(k, self.properties.get(k) or '')
 
+    def clear(self):
+        self.label = ''
+        self.label2 = ''
+        self.iconImage = ''
+        self.thumbnailImage = ''
+        self.path = ''
+        for k in self.properties:
+            self.properties[k] = ''
+        self._updateListItem()
+
     def pos(self):
         if not self._manager:
             return None

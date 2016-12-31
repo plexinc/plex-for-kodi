@@ -26,7 +26,7 @@ from plexnet import playqueue
 from lib.util import T
 
 # CHUNK_SIZE = 500
-CHUNK_SIZE = 10
+CHUNK_SIZE = 30
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -222,7 +222,7 @@ class ChunkedWrapList(kodigui.ManagedControlList):
             return self.getListItem(idx)
 
 
-class ChunkMode(object):
+class ChunkModeWrapped(object):
     def __init__(self):
         self.midStart = 0
         self.itemCount = 0
@@ -245,6 +245,9 @@ class ChunkMode(object):
     def posIsBackward(self, pos):
         return pos < self.midStart
 
+    def posIsValid(self, pos):
+        return self.midStart - CHUNK_SIZE <= pos < self.midStart + (CHUNK_SIZE * 2)
+
     def shift(self, mod):
         if mod < 0 and self.midStart == 0:
             return None
@@ -265,6 +268,66 @@ class ChunkMode(object):
         keyStart = self.keys[key][0]
         self.midStart = keyStart - keyStart % CHUNK_SIZE
         return keyStart, max(self.midStart - CHUNK_SIZE, 0)
+
+
+class ChunkModeSliding(object):
+    def __init__(self):
+        self.midStart = 0
+        self.itemCount = 0
+        self.keys = {}
+        self.objects = []
+
+    def addKeyRange(self, key, krange):
+        self.keys[key] = krange
+
+    def getKey(self, pos):
+        for k, krange in self.keys.items():
+            if krange[0] <= pos <= krange[1]:
+                return k
+
+    def isAtBeginning(self):
+        return self.midStart == 0
+
+    def posIsForward(self, pos):
+        return pos >= self.midStart + CHUNK_SIZE
+
+    def posIsBackward(self, pos):
+        return pos < self.midStart
+
+    def posIsValid(self, pos):
+        return self.midStart - CHUNK_SIZE <= pos < self.midStart + (CHUNK_SIZE * 2)
+
+    def shift(self, mod):
+        if mod < 0 and self.midStart == 0:
+            return None
+        elif mod > 0 and self.midStart + CHUNK_SIZE >= self.itemCount:
+            return None
+
+        offset = CHUNK_SIZE * mod
+        self.midStart += offset
+        start = self.midStart + offset
+
+        return start
+
+    def shiftToKey(self, key):
+        if key not in self.keys:
+            util.DEBUG_LOG('CHUNK MODE: NO ITEMS FOR KEY')
+            return
+
+        keyStart = self.keys[key][0]
+        self.midStart = keyStart - keyStart % CHUNK_SIZE
+        return keyStart, max(self.midStart - CHUNK_SIZE, 0)
+
+    def addObjects(self, pos, objects):
+        if not self.posIsValid(pos):
+            return
+
+        if pos == self.midStart - CHUNK_SIZE:
+            self.objects = objects + self.objects[CHUNK_SIZE:]
+        elif pos == self.midStart:
+            self.objects = self.objects[:CHUNK_SIZE] + objects + self.objects[CHUNK_SIZE * 2:]
+        elif pos == self.midStart + CHUNK_SIZE:
+            self.objects = self.objects[:CHUNK_SIZE * 2] + objects
 
 
 class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
@@ -289,7 +352,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         self.sort = self.librarySettings.getSetting('sort', 'titleSort')
         self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
-        self.chunkMode = ChunkMode()
+        self.chunkMode = ChunkModeWrapped()
 
         self.lock = threading.Lock()
 
@@ -406,6 +469,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         mli = self.showPanelControl.getSelectedItem()
         try:
             pos = int(mli.getProperty('index'))
+            if pos >= self.chunkMode.itemCount:
+                raise ValueError
         except ValueError:
             if self.chunkMode.isAtBeginning():
                 idx = 0
@@ -422,7 +487,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.shiftChunks(-1)
 
     def shiftChunks(self, mod=1):
-        util.TEST((self.chunkMode.midStart, self.chunkMode.itemCount))
         start = self.chunkMode.shift(mod)
         if start is None:
             return
@@ -463,7 +527,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             keyStart, start = keyStart_start
 
             pos = keyStart % self.showPanelControl.LIST_MAX
-            self.chunkCallback([None] * CHUNK_SIZE, 0)
+            self.chunkCallback([None] * self.showPanelControl.LIST_MAX, 0)
             mul = 3
             if not start:
                 mul = 2
@@ -1009,6 +1073,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('key', keys[0])
 
     def chunkCallback(self, items, start):
+        if self.chunkMode and not self.chunkMode.posIsValid(start):
+            return
+
         with self.lock:
             pos = start
             self.setBackground(items)
@@ -1042,6 +1109,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                                 mli.setProperty('unwatched', '1')
                 else:
                     mli.clear()
+                    mli.setProperty('index', '')
 
                 pos += 1
 

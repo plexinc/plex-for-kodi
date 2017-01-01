@@ -496,7 +496,7 @@ msgid "photos"
 msgstr ""
 
 msgctxt "#32350"
-msgid "shows"
+msgid "Shows"
 msgstr ""
 
 msgctxt "#32351"
@@ -920,9 +920,21 @@ msgid "Please change change or remove the current filter"
 msgstr ""
 
 msgctxt "#32456"
-msgid "Offline Mode"
+msgid "Show"
 msgstr ""
 
 msgctxt "#32457"
+msgid "By Show"
+msgstr ""
+
+msgctxt "#32458"
+msgid "Episodes"
+msgstr ""
+
+msgctxt "#32459"
+msgid "Offline Mode"
+msgstr ""
+
+msgctxt "#32460"
 msgid "Sign In"
 msgstr ""

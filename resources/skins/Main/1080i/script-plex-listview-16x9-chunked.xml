@@ -39,7 +39,7 @@
                 </control>
                 <control type="wraplist" id="101">
                     <hitrect x="60" y="0" w="1010" h="945" />
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),0)" reversible="true">
+                    <!-- <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),0)" reversible="true">
                         <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
                     </animation>
                     <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),1)" reversible="true">
@@ -53,11 +53,11 @@
                     </animation>
                     <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),4)" reversible="true">
                         <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
+                    </animation> -->
                     <posx>0</posx>
-                    <posy>-380</posy>
+                    <posy>0</posy>
                     <width>1170</width>
-                    <height>1325</height>
+                    <height>945</height>
                     <onup>600</onup>
                     <onright>151</onright>
                     <onleft>304</onleft>
@@ -436,7 +436,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>StringCompare(Window.Property(sort),titleSort) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>[StringCompare(Window.Property(sort),titleSort) | StringCompare(Window.Property(sort),show.titleSort)] + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1830</posx>
             <posy>150</posy>
@@ -770,6 +770,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="310">
+                    <visible>!StringCompare(Window.Property(media),show)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
@@ -779,9 +780,25 @@
                     <disabledcolor>FFFFFFFF</disabledcolor>
                     <align>center</align>
                     <aligny>center</aligny>
-                    <texturefocus>-</texturefocus>
                     <texturenofocus>-</texturenofocus>
-                    <textoffsetx>0</textoffsetx>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+                </control>
+                <control type="button" id="312">
+                    <visible>StringCompare(Window.Property(media),show)</visible>
+                    <width max="300">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <disabledcolor>FFFFFFFF</disabledcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
                     <textoffsety>0</textoffsety>
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>

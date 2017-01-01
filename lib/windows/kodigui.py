@@ -668,9 +668,27 @@ class MultiWindow(object):
     def __getattr__(self, name):
         return getattr(self._current, name)
 
+    def setWindows(self, windows):
+        self._windows = windows
+
+    def windowIndex(self, window):
+        if hasattr(window, 'MULTI_WINDOW_ID'):
+            for i, w in enumerate(self._windows):
+                if window.MULTI_WINDOW_ID == w.MULTI_WINDOW_ID:
+                    return i
+            return 0
+        else:
+            return self._windows.index(window.__class__)
+
     def nextWindow(self, window=None):
-        if not window:
-            idx = self._windows.index(self._current.__class__)
+        if window is False:
+            window = self._windows[self.windowIndex(self._current)]
+
+        if window:
+            if window.__class__ == self._current.__class__:
+                return None
+        else:
+            idx = self.windowIndex(self._current)
             idx += 1
             if idx >= len(self._windows):
                 idx = 0

@@ -127,7 +127,7 @@ class LibrarySection(plexobjects.PlexObject):
 
         return plexobjects.PlexObject.getAbsolutePath(self, key)
 
-    def all(self, start=None, size=None, filter_=None, sort=None, unwatched=False):
+    def all(self, start=None, size=None, filter_=None, sort=None, unwatched=False, type_=None):
         if self.key.startswith('/'):
             path = '{0}/all'.format(self.key)
         else:
@@ -145,6 +145,9 @@ class LibrarySection(plexobjects.PlexObject):
         if sort:
             args['sort'] = '{0}:{1}'.format(*sort)
 
+        if type_:
+            args['type'] = str(type_)
+
         if unwatched:
             args[self.TYPE == 'movie' and 'unwatched' or 'unwatchedLeaves'] = 1
 
@@ -153,7 +156,7 @@ class LibrarySection(plexobjects.PlexObject):
 
         return plexobjects.listItems(self.server, path)
 
-    def jumpList(self, filter_=None, sort=None, unwatched=False):
+    def jumpList(self, filter_=None, sort=None, unwatched=False, type_=None):
         if self.key.startswith('/'):
             path = '{0}/firstCharacter'.format(self.key)
         else:
@@ -166,6 +169,9 @@ class LibrarySection(plexobjects.PlexObject):
 
         if sort:
             args['sort'] = '{0}:{1}'.format(*sort)
+
+        if type_:
+            args['type'] = str(type_)
 
         if unwatched:
             args[self.TYPE == 'movie' and 'unwatched' or 'unwatchedLeaves'] = 1

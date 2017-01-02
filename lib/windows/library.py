@@ -25,8 +25,8 @@ from plexnet import playqueue
 
 from lib.util import T
 
-# CHUNK_SIZE = 500
-CHUNK_SIZE = 30
+CHUNK_SIZE = 200
+# CHUNK_SIZE = 30
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -127,6 +127,7 @@ SORT_KEYS = {
 }
 
 ITEM_TYPE = None
+
 
 def setItemType(type_=None):
     global ITEM_TYPE
@@ -285,16 +286,6 @@ class ChunkModeWrapped(object):
         self.midStart = keyStart - keyStart % CHUNK_SIZE
         return keyStart, max(self.midStart - CHUNK_SIZE, 0)
 
-
-    def shiftToKey(self, key):
-        if key not in self.keys:
-            util.DEBUG_LOG('CHUNK MODE: NO ITEMS FOR KEY')
-            return
-
-        keyStart = self.keys[key][0]
-        self.midStart = keyStart - keyStart % CHUNK_SIZE
-        return keyStart, max(self.midStart - CHUNK_SIZE, 0)
-
     def addObjects(self, pos, objects):
         if not self.posIsValid(pos):
             return
@@ -318,6 +309,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         windowutils.UtilMixin.__init__(self)
         self.section = kwargs.get('section')
         self.filter = kwargs.get('filter_')
+        setItemType()
         self.keyItems = {}
         self.firstOfKeyItems = {}
         self.tasks = backgroundthread.Tasks()
@@ -506,6 +498,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if start < 0:
             self.chunkCallback([None] * CHUNK_SIZE, -CHUNK_SIZE)
         else:
+            self.chunkCallback([False] * CHUNK_SIZE, start)
             task = ChunkRequestTask().setup(
                 self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
             )
@@ -621,7 +614,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         else:
             return
 
-
         result = dropdown.showDropdown(options, (1280, 106), with_indicator=True)
         if not result:
             return
@@ -641,11 +633,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         setItemType(choice)
 
         self.reset()
-        self.nextWindow(False)
-
-        self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
-        self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
-        self.fill()
+        if not self.nextWindow(False):
+            self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
+            self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
+            self.fill()
 
     def sortButtonClicked(self):
         desc = 'script.plex/indicators/arrow-down.png'
@@ -863,7 +854,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         updateWatched = False
         if self.section.TYPE == 'show':
-            self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
+            if ITEM_TYPE == 'episode':
+                self.openItem(mli.dataSource)
+            else:
+                self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'movie':
             self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
@@ -962,51 +956,65 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if ITEM_TYPE == 'episode':
             type_ = 4
 
-        jumpList = self.section.jumpList(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        if not jumpList:
-            if self.filter or self.filterUnwatched:
-                self.setBoolProperty('no.content.filtered', True)
-            else:
-                self.setBoolProperty('no.content', True)
-            return
-
-        for kidx, ji in enumerate(jumpList):
-            mli = kodigui.ManagedListItem(ji.title, data_source=ji.key)
-            mli.setProperty('key', ji.key)
-            mli.setProperty('original', '{0:02d}'.format(kidx))
-            self.keyItems[ji.key] = mli
-            jitems.append(mli)
-            totalSize += ji.size.asInt()
-
-            if self.chunkMode:
-                self.chunkMode.addKeyRange(ji.key, (idx, (idx + ji.size.asInt()) - 1))
-                idx += ji.size.asInt()
-            else:
-                for x in range(ji.size.asInt()):
+        if self.filter:
+            sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
+            totalSize = sectionAll.totalSize.asInt()
+            if not self.chunkMode:
+                for x in range(totalSize):
                     mli = kodigui.ManagedListItem('')
-                    mli.setProperty('key', ji.key)
                     mli.setProperty('thumb.fallback', fallback)
-                    mli.setProperty('index', str(idx))
+                    mli.setProperty('index', str(x))
                     items.append(mli)
-                    if not x:  # i.e. first item
-                        self.firstOfKeyItems[ji.key] = mli
-                    idx += 1
+        else:
+            jumpList = self.section.jumpList(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
+
+            if not jumpList:
+                if self.filter or self.filterUnwatched:
+                    self.setBoolProperty('no.content.filtered', True)
+                else:
+                    self.setBoolProperty('no.content', True)
+                return
+
+            for kidx, ji in enumerate(jumpList):
+                mli = kodigui.ManagedListItem(ji.title, data_source=ji.key)
+                mli.setProperty('key', ji.key)
+                mli.setProperty('original', '{0:02d}'.format(kidx))
+                self.keyItems[ji.key] = mli
+                jitems.append(mli)
+                totalSize += ji.size.asInt()
+
+                if self.chunkMode:
+                    self.chunkMode.addKeyRange(ji.key, (idx, (idx + ji.size.asInt()) - 1))
+                    idx += ji.size.asInt()
+                else:
+                    for x in range(ji.size.asInt()):
+                        mli = kodigui.ManagedListItem('')
+                        mli.setProperty('key', ji.key)
+                        mli.setProperty('thumb.fallback', fallback)
+                        mli.setProperty('index', str(idx))
+                        items.append(mli)
+                        if not x:  # i.e. first item
+                            self.firstOfKeyItems[ji.key] = mli
+                        idx += 1
+
+            self.setProperty('key', jumpList[0].key)
 
         if self.chunkMode:
             self.chunkMode.itemCount = totalSize
-            items = [kodigui.ManagedListItem('', properties={'index': str(i)}) for i in range(CHUNK_SIZE * 2)] + [kodigui.ManagedListItem('') for i in range(CHUNK_SIZE)]
+            items = [
+                kodigui.ManagedListItem('', properties={'index': str(i)}) for i in range(CHUNK_SIZE * 2)
+            ] + [
+                kodigui.ManagedListItem('') for i in range(CHUNK_SIZE)
+            ]
 
         self.showPanelControl.reset()
         self.keyListControl.reset()
 
         self.showPanelControl.addItems(items)
         self.keyListControl.addItems(jitems)
-
-        if jumpList:
-            self.setProperty('key', jumpList[0].key)
 
         tasks = []
         ct = 0
@@ -1141,7 +1149,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('key', keys[0])
 
     def chunkCallback(self, items, start):
-        util.TEST(start)
         if self.chunkMode and not self.chunkMode.posIsValid(start):
             return
 
@@ -1151,7 +1158,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
             artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))
 
-            showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
+            showUnwatched = True if self.section.TYPE in ('movie', 'show') else False
 
             if self.chunkMode and len(items) < CHUNK_SIZE:
                 items += [None] * (CHUNK_SIZE - len(items))
@@ -1160,6 +1167,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 for offset, obj in enumerate(items):
                     mli = self.showPanelControl[pos]
                     if obj:
+                        mli.dataSource = obj
                         mli.setProperty('index', str(pos))
                         if obj.index:
                             subtitle = u' - {0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index)
@@ -1168,23 +1176,21 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                         mli.setLabel((obj.defaultTitle or '') + subtitle)
 
                         mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
-                        mli.dataSource = obj
-                        mli.setProperty('summary', obj.get('summary'))
 
-                        if self.chunkMode:
-                            mli.setProperty('key', self.chunkMode.getKey(pos))
+                        mli.setProperty('summary', obj.summary)
 
-                        if showUnwatched:
-                            mli.setLabel2(util.durationToText(obj.fixedDuration()))
-                            mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
-                            if not obj.isWatched:
-                                if self.section.TYPE == 'show':
-                                    mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
-                                else:
-                                    mli.setProperty('unwatched', '1')
+                        mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                        mli.setLabel2(util.durationToText(obj.fixedDuration()))
+                        mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
+                        if not obj.isWatched:
+                            mli.setProperty('unwatched', '1')
                     else:
                         mli.clear()
-                        mli.setProperty('index', '')
+                        if obj is False:
+                            mli.setProperty('index', str(pos))
+                        else:
+                            mli.setProperty('index', '')
 
                     pos += 1
             else:
@@ -1210,7 +1216,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                                     mli.setProperty('unwatched', '1')
                     else:
                         mli.clear()
-                        mli.setProperty('index', '')
+                        if obj is False:
+                            mli.setProperty('index', str(pos))
+                        else:
+                            mli.setProperty('index', '')
 
                     pos += 1
 
@@ -1246,10 +1255,12 @@ class PostersWindow(kodigui.ControlledWindow):
     VIEWTYPE = 'panel'
     MULTI_WINDOW_ID = 0
 
+
 class PostersChunkedWindow(PostersWindow):
     xmlFile = 'script-plex-listview-16x9-chunked.xml'
     VIEWTYPE = 'list'
     MULTI_WINDOW_ID = 0
+
 
 class ListView16x9Window(PostersWindow):
     xmlFile = 'script-plex-listview-16x9.xml'
@@ -1268,6 +1279,7 @@ class SquaresWindow(PostersWindow):
     VIEWTYPE = 'panel'
     MULTI_WINDOW_ID = 0
 
+
 class SquaresChunkedWindow(PostersWindow):
     xmlFile = 'script-plex-listview-16x9-chunked.xml'
     VIEWTYPE = 'list'
@@ -1278,6 +1290,7 @@ class ListViewSquareWindow(PostersWindow):
     xmlFile = 'script-plex-listview-square.xml'
     VIEWTYPE = 'list'
     MULTI_WINDOW_ID = 1
+
 
 class ListViewSquareChunkedWindow(PostersWindow):
     xmlFile = 'script-plex-listview-16x9-chunked.xml'

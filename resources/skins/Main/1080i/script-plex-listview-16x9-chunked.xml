@@ -256,7 +256,7 @@
                                         <control type="label">
                                             <posx>0</posx>
                                             <posy>23</posy>
-                                            <width>510</width>
+                                            <width>915</width>
                                             <height>30</height>
                                             <font>font12</font>
                                             <align>left</align>

@@ -52,7 +52,11 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
         for the socket to bind as a source address before making the connection.
         An host of '' or port 0 tells the OS to use the default.
         """
-        timeout = timeout or 10
+        try:
+            timeout = float(timeout) or timeout
+        except:
+            timeout = timeout or 10
+
         host, port = address
         err = None
         for res in socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM):

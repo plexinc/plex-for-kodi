@@ -1049,9 +1049,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if plexapp.ACCOUNT.isSignedIn:
             items.append(kodigui.ManagedListItem(T(32344, 'Sign Out'), data_source='signout'))
         elif plexapp.ACCOUNT.isOffline:
-            items.append(kodigui.ManagedListItem(T(32456, 'Offline Mode'), data_source='go_online'))
+            items.append(kodigui.ManagedListItem(T(32459, 'Offline Mode'), data_source='go_online'))
         else:
-            items.append(kodigui.ManagedListItem(T(32457, 'Sign In'), data_source='signin'))
+            items.append(kodigui.ManagedListItem(T(32460, 'Sign In'), data_source='signin'))
 
         if len(items) > 1:
             items[0].setProperty('first', '1')

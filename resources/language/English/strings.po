@@ -918,3 +918,11 @@ msgstr ""
 msgctxt "#32455"
 msgid "Please change change or remove the current filter"
 msgstr ""
+
+msgctxt "#32456"
+msgid "Offline Mode"
+msgstr ""
+
+msgctxt "#32457"
+msgid "Sign In"
+msgstr ""

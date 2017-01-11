@@ -68,6 +68,8 @@ def _main():
                         elif result == 'signout':
                             signout()
                             break
+                        elif result == 'signin':
+                            break
                     try:
                         done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
                         if not plexapp.SERVERMANAGER.selectedServer:

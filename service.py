@@ -5,7 +5,7 @@ import xbmcaddon
 
 
 def main():
-    if xbmc.getInfoLabel('Window(10000).Property(script.plex.service.started'):
+    if xbmc.getInfoLabel('Window(10000).Property(script.plex.service.started)'):
         # Prevent add-on updates from starting a new version of the addon
         return
 

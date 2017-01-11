@@ -1024,10 +1024,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
     def showUserMenu(self, mouse=False):
         items = []
-        if len(plexapp.ACCOUNT.homeUsers) > 1:
-            items.append(kodigui.ManagedListItem(T(32342, 'Switch User'), data_source='switch'))
+        if plexapp.ACCOUNT.isSignedIn:
+            if len(plexapp.ACCOUNT.homeUsers) > 1:
+                items.append(kodigui.ManagedListItem(T(32342, 'Switch User'), data_source='switch'))
         items.append(kodigui.ManagedListItem(T(32343, 'Settings'), data_source='settings'))
-        items.append(kodigui.ManagedListItem(T(32344, 'Sign Out'), data_source='signout'))
+        if plexapp.ACCOUNT.isSignedIn:
+            items.append(kodigui.ManagedListItem(T(32344, 'Sign Out'), data_source='signout'))
+        elif plexapp.ACCOUNT.isOffline:
+            items.append(kodigui.ManagedListItem(T(32456, 'Offline Mode'), data_source='go_online'))
+        else:
+            items.append(kodigui.ManagedListItem(T(32457, 'Sign In'), data_source='signin'))
 
         if len(items) > 1:
             items[0].setProperty('first', '1')
@@ -1055,6 +1061,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if option == 'settings':
             import settings
             settings.openWindow()
+        elif option == 'go_online':
+            plexapp.ACCOUNT.refreshAccount()
         else:
             self.closeOption = option
             self.doClose()

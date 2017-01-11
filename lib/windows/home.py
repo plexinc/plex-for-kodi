@@ -314,6 +314,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         plexapp.SERVERMANAGER.on('reachable:server', self.onReachableServer)
 
         plexapp.APP.on('change:selectedServer', self.onSelectedServerChange)
+        plexapp.APP.on('account:response', self.displayServerAndUser)
 
         player.PLAYER.on('session.ended', self.updateOnDeckHubs)
         util.MONITOR.on('changed.watchstatus', self.updateOnDeckHubs)
@@ -324,6 +325,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         plexapp.SERVERMANAGER.off('reachable:server', self.onReachableServer)
 
         plexapp.APP.off('change:selectedServer', self.onSelectedServerChange)
+        plexapp.APP.off('account:response', self.displayServerAndUser)
 
         player.PLAYER.off('session.ended', self.updateOnDeckHubs)
         util.MONITOR.off('changed.watchstatus', self.updateOnDeckHubs)
@@ -548,9 +550,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.tasks.append(task)
         backgroundthread.BGThreader.addTask(task)
 
-    def displayServerAndUser(self):
-        self.setProperty('user.name', plexapp.ACCOUNT.title or plexapp.ACCOUNT.username)
+    def displayServerAndUser(self, **kwargs):
+        title = plexapp.ACCOUNT.title or plexapp.ACCOUNT.username or ' '
+        self.setProperty('user.name', title)
         self.setProperty('user.avatar', plexapp.ACCOUNT.thumb)
+        self.setProperty('user.avatar.letter', title[0].upper())
 
         if plexapp.SERVERMANAGER.selectedServer:
             self.setProperty('server.name', plexapp.SERVERMANAGER.selectedServer.name)

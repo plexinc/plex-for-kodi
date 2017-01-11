@@ -8268,7 +8268,19 @@
                             <posy>14</posy>
                             <width>40</width>
                             <height>39</height>
-                            <texture diffuse="script.plex/home/avatar-diffuse.png">$INFO[Window.Property(user.avatar)]</texture>
+                            <texture diffuse="script.plex/home/avatar-diffuse.png" fallback="script.plex/gray-square.png">$INFO[Window.Property(user.avatar)]</texture>
+                        </control>
+                        <control type="label">
+                            <visible>IsEmpty(Window.Property(user.avatar))</visible>
+                            <posx>0</posx>
+                            <posy>14</posy>
+                            <width>40</width>
+                            <height>39</height>
+                            <font>font10</font>
+                            <align>center</align>
+                            <aligny>center</aligny>
+                            <textcolor>FFFFFFFF</textcolor>
+                            <label>[B]$INFO[Window.Property(user.avatar.letter)][/B]</label>
                         </control>
                         <control type="image">
                             <visible>!Control.HasFocus(202)</visible>

@@ -61,7 +61,12 @@ def _main():
             if plex.init():
                 background.setSplash(False)
                 while not xbmc.abortRequested:
-                    if not plexapp.ACCOUNT.isAuthenticated and (len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected):
+                    if (
+                        not plexapp.ACCOUNT.isOffline and not
+                        plexapp.ACCOUNT.isAuthenticated and
+                        (len(plexapp.ACCOUNT.homeUsers) > 1 or plexapp.ACCOUNT.isProtected)
+
+                    ):
                         result = userselect.start()
                         if not result:
                             return

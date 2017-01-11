@@ -1,4 +1,7 @@
+import sys
+import os
 import re
+import traceback
 import requests
 import socket
 import threadutils
@@ -158,7 +161,10 @@ class HttpRequest(object):
             # self.event = msg
             return res
         except Exception, e:
-            util.WARN_LOG("Request to {0} errored out after {1} ms: {2}".format(util.cleanToken(self.url), seconds, e.message))
+            info = traceback.extract_tb(sys.exc_info()[2])[-1]
+            util.WARN_LOG(
+                "Request errored out - URL: {0} File: {1} Line: {2} Msg: {3}".format(util.cleanToken(self.url), os.path.basename(info[0]), info[1], e.message)
+            )
 
         return None
 

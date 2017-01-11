@@ -53,9 +53,9 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
         An host of '' or port 0 tells the OS to use the default.
         """
         try:
-            timeout = float(timeout) or timeout
-        except:
-            timeout = timeout or 10
+            timeout = float(timeout) or 10
+        except TypeError:
+            timeout = 10
 
         host, port = address
         err = None

@@ -425,7 +425,7 @@ class PlexPlayer(object):
             # have a valid duration.
 
             if isCurrentPart or len(self.media.parts) <= 1 or (
-                seekOffset >= obj.startOffset and seekOffset <= obj.startOffset + int(part.duration.asInt() / 1000)
+                seekOffset >= obj.startOffset and seekOffset <= obj.get('startOffset', 0) + int(part.duration.asInt() / 1000)
             ):
                 startOffset = seekOffset - (obj.startOffset or 0)
 
@@ -440,6 +440,7 @@ class PlexPlayer(object):
                 # potential failure, let it transcode from the start so that the first
                 # segment will always exist.
 
+                # TODO: Probably can remove this (Rick)
                 if startOffset <= 12:
                     startOffset = 0
             else:

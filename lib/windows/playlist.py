@@ -281,7 +281,7 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.playlistListControl.reset()
         self.playlistListControl.addItems(items)
 
-        if total <= PLAYLIST_PAGE_SIZE:
+        if total <= min(PLAYLIST_INITIAL_SIZE, PLAYLIST_PAGE_SIZE):
             return
 
         for start in range(endoffirst, total, PLAYLIST_PAGE_SIZE):

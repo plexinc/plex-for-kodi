@@ -20,6 +20,9 @@ codes = requests.codes
 status_codes = requests.status_codes._codes
 
 
+DEFAULT_TIMEOUT = asyncadapter.AsyncTimeout(10).setConnectTimeout(20)
+
+
 def GET(*args, **kwargs):
     return requests.get(*args, headers=util.BASE_HEADERS.copy(), timeout=util.TIMEOUT, **kwargs)
 
@@ -72,30 +75,31 @@ class HttpRequest(object):
         plexapp.APP.delRequest(self)
 
     def startAsync(self, *args, **kwargs):
-        self.logRequest(kwargs.get('body'), 10)
         self.thread = threadutils.KillableThread(target=self._startAsync, args=args, kwargs=kwargs, name='HTTP-ASYNC:{0}'.format(self.url))
         self.thread.start()
         return True
 
     def _startAsync(self, body=None, contentType=None, context=None):
+        timeout = context and context.timeout or DEFAULT_TIMEOUT
+        self.logRequest(body, timeout)
         if self._cancel:
             return
         try:
             if self.method == 'PUT':
-                res = self.session.put(self.url, timeout=10, stream=True)
+                res = self.session.put(self.url, timeout=timeout, stream=True)
             elif self.method == 'DELETE':
-                res = self.session.delete(self.url, timeout=10, stream=True)
+                res = self.session.delete(self.url, timeout=timeout, stream=True)
             elif self.method == 'HEAD':
-                res = self.session.head(self.url, timeout=10, stream=True)
+                res = self.session.head(self.url, timeout=timeout, stream=True)
             elif self.method == 'POST' or body is not None:
                 if not contentType:
                     self.session.headers["Content-Type"] = "application/x-www-form-urlencoded"
                 else:
                     self.session.headers["Content-Type"] = mimetypes.guess_type(contentType)
 
-                res = self.session.post(self.url, data=body or None, timeout=10, stream=True)
+                res = self.session.post(self.url, data=body or None, timeout=timeout, stream=True)
             else:
-                res = self.session.get(self.url, timeout=10, stream=True)
+                res = self.session.get(self.url, timeout=timeout, stream=True)
             self.currentResponse = res
 
             if self._cancel:
@@ -115,27 +119,27 @@ class HttpRequest(object):
 
         self.removeAsPending()
 
-    def getWithTimeout(self, seconds=10):
+    def getWithTimeout(self, seconds=DEFAULT_TIMEOUT):
         return HttpObjectResponse(self.getPostWithTimeout(seconds), self.path, self.server)
 
-    def postWithTimeout(self, seconds=10, body=None):
+    def postWithTimeout(self, seconds=DEFAULT_TIMEOUT, body=None):
         self.method = 'POST'
         return HttpObjectResponse(self.getPostWithTimeout(seconds, body), self.path, self.server)
 
-    def getToStringWithTimeout(self, seconds=10):
+    def getToStringWithTimeout(self, seconds=DEFAULT_TIMEOUT):
         res = self.getPostWithTimeout(seconds)
         if not res:
             return ''
         return res.text.encode('utf8')
 
-    def postToStringWithTimeout(self, body=None, seconds=10):
+    def postToStringWithTimeout(self, body=None, seconds=DEFAULT_TIMEOUT):
         self.method = 'POST'
         res = self.getPostWithTimeout(seconds, body)
         if not res:
             return ''
         return res.text.encode('utf8')
 
-    def getPostWithTimeout(self, seconds=10, body=None):
+    def getPostWithTimeout(self, seconds=DEFAULT_TIMEOUT, body=None):
         if self._cancel:
             return
 
@@ -225,6 +229,7 @@ class HttpRequest(object):
     def createRequestContext(self, requestType, callback_=None):
         context = RequestContext()
         context.requestType = requestType
+        context.timeout = DEFAULT_TIMEOUT
 
         if callback_:
             context.callback = callback.Callable(self.onResponse)

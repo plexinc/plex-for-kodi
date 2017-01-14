@@ -1,4 +1,3 @@
-import os
 import time
 import socket
 
@@ -11,7 +10,6 @@ from requests.compat import urlparse
 
 from httplib import HTTPConnection
 import errno
-
 
 DEFAULT_POOLBLOCK = False
 SSL_KEYWORDS = ('key_file', 'cert_file', 'cert_reqs', 'ca_certs',
@@ -30,11 +28,43 @@ class CanceledException(Exception):
     pass
 
 
+class AsyncTimeout(float):
+    def __repr__(self):
+        return '{0}({1})'.format(float(self), self.getConnectTimeout())
+
+    def __str__(self):
+        return repr(self)
+
+    @classmethod
+    def fromTimeout(cls, t):
+        if isinstance(t, AsyncTimeout):
+            return t
+
+        try:
+            return AsyncTimeout(float(t)) or DEFAULT_TIMEOUT
+        except TypeError:
+            return DEFAULT_TIMEOUT
+
+    def setConnectTimeout(self, val):
+        self._connectTimout = val
+        return self
+
+    def getConnectTimeout(self):
+        if hasattr(self, '_connectTimout'):
+            return self._connectTimout
+
+        return self
+
+
+DEFAULT_TIMEOUT = AsyncTimeout(10).setConnectTimeout(20)
+
+
 class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
     def __init__(self, *args, **kwargs):
         VerifiedHTTPSConnection.__init__(self, *args, **kwargs)
         self._canceled = False
         self.deadline = 0
+        self._timeout = AsyncTimeout(DEFAULT_TIMEOUT)
 
     def _check_timeout(self):
         if time.time() > self.deadline:
@@ -52,10 +82,8 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
         for the socket to bind as a source address before making the connection.
         An host of '' or port 0 tells the OS to use the default.
         """
-        try:
-            timeout = float(timeout) or 10
-        except TypeError:
-            timeout = 10
+        timeout = AsyncTimeout.fromTimeout(timeout)
+        self._timeout = timeout
 
         host, port = address
         err = None
@@ -65,7 +93,7 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
             try:
                 sock = socket.socket(af, socktype, proto)
                 sock.setblocking(False)  # this is obviously critical
-                self.deadline = time.time() + timeout
+                self.deadline = time.time() + timeout.getConnectTimeout()
                 # sock.settimeout(timeout)
 
                 if source_address:
@@ -88,12 +116,15 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
 
     def _connect(self, sock, sa):
         while not self._canceled and not ABORT_FLAG_FUNCTION():
+            time.sleep(0.01)
             self._check_timeout()  # this should be done at the beginning of each loop
             status = sock.connect_ex(sa)
-            if status == errno.EISCONN:
+            if not status or status == errno.EISCONN:
                 break
-            elif status in (errno.EWOULDBLOCK, errno.EINPROGRESS, errno.EALREADY) or (os.name == 'nt' and status == errno.WSAEINVAL):
-                pass
+            elif status in (errno.EINPROGRESS,):
+                self.deadline = time.time() + self._timeout.getConnectTimeout()
+            # elif status in (errno.EWOULDBLOCK, errno.EALREADY) or (os.name == 'nt' and status == errno.WSAEINVAL):
+            #     pass
             yield
 
         if self._canceled or ABORT_FLAG_FUNCTION():

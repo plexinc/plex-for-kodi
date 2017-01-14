@@ -564,7 +564,6 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             context.address = conn.connection
             context.proto = proto
             context.port = port
-            context.timeout = 10000
             plexapp.APP.startRequest(request, context)
 
     def onManualConnectionsResponse(self, request, response, context):

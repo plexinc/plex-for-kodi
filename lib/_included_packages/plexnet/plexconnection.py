@@ -138,7 +138,6 @@ class PlexConnection(object):
             self.request = http.HttpRequest(self.buildUrl(server, "/"))
             context = self.request.createRequestContext("reachability", callback.Callable(self.onReachabilityResponse))
             context.server = server
-            context.timeout = 10000
             util.addPlexHeaders(self.request, server.getToken())
             self.hasPendingRequest = plexapp.APP.startRequest(self.request, context)
             return True

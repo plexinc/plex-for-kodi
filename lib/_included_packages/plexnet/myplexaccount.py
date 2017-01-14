@@ -7,6 +7,7 @@ import plexapp
 import myplexrequest
 import locks
 import callback
+import asyncadapter
 
 import util
 
@@ -99,7 +100,6 @@ class MyPlexAccount(object):
         if self.authToken:
             request = myplexrequest.MyPlexRequest("/users/account")
             context = request.createRequestContext("account", callback.Callable(self.onAccountResponse))
-            context.timeout = 10000
             plexapp.APP.startRequest(request, context)
         else:
             plexapp.APP.clearInitializer("myplex")
@@ -230,7 +230,8 @@ class MyPlexAccount(object):
 
         request = myplexrequest.MyPlexRequest("/users/sign_in.xml")
         context = request.createRequestContext("sign_in", callback.Callable(self.onAccountResponse))
-        context.timeout = self.isOffline and 1000 or 10000
+        if self.isOffline:
+            context.timeout = self.isOffline and asyncadapter.AsyncTimeout(1).setConnectTimeout(2)
         plexapp.APP.startRequest(request, context, {})
 
     def refreshAccount(self):
@@ -257,7 +258,7 @@ class MyPlexAccount(object):
             return
 
         req = myplexrequest.MyPlexRequest("/api/home/users")
-        xml = req.getToStringWithTimeout(10)
+        xml = req.getToStringWithTimeout()
         data = ElementTree.fromstring(xml)
         if data.attrib.get('size') and data.find('User') is not None:
             self.homeUsers = []
@@ -291,7 +292,7 @@ class MyPlexAccount(object):
             # build path and post to myplex to swith the user
             path = '/api/home/users/{0}/switch'.format(userId)
             req = myplexrequest.MyPlexRequest(path)
-            xml = req.postToStringWithTimeout({'pin': pin}, 10)
+            xml = req.postToStringWithTimeout({'pin': pin})
             data = ElementTree.fromstring(xml)
 
             if data.attrib.get('authenticationToken'):

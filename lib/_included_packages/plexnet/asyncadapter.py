@@ -15,6 +15,13 @@ DEFAULT_POOLBLOCK = False
 SSL_KEYWORDS = ('key_file', 'cert_file', 'cert_reqs', 'ca_certs',
                 'ssl_version')
 
+WIN_WSAEINVAL = 10022
+WIN_EWOULDBLOCK = 10035
+WIN_ECONNRESET = 10054
+WIN_EISCONN = 10056
+WIN_ENOTCONN = 10057
+WIN_EHOSTUNREACH = 10065
+
 
 def ABORT_FLAG_FUNCTION():
     return False
@@ -122,9 +129,10 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
             self._check_timeout()  # this should be done at the beginning of each loop
             status = sock.connect_ex(sa)
             util.TEST((status, os.strerror(status)))
-            if not status or status == errno.EISCONN:
+            if not status or status in (errno.EISCONN, WIN_EISCONN):
+                util.TEST('xxxxxxxxx')
                 break
-            elif status in (errno.EINPROGRESS,):
+            elif status in (errno.EINPROGRESS, WIN_EWOULDBLOCK):
                 self.deadline = time.time() + self._timeout.getConnectTimeout()
             # elif status in (errno.EWOULDBLOCK, errno.EALREADY) or (os.name == 'nt' and status == errno.WSAEINVAL):
             #     pass

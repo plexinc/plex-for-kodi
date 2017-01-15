@@ -20,7 +20,7 @@ codes = requests.codes
 status_codes = requests.status_codes._codes
 
 
-DEFAULT_TIMEOUT = asyncadapter.AsyncTimeout(10).setConnectTimeout(20)
+DEFAULT_TIMEOUT = asyncadapter.AsyncTimeout(10).setConnectTimeout(10)
 
 
 def GET(*args, **kwargs):

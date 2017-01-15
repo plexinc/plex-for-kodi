@@ -63,7 +63,7 @@ class AsyncTimeout(float):
         return self
 
 
-DEFAULT_TIMEOUT = AsyncTimeout(10).setConnectTimeout(20)
+DEFAULT_TIMEOUT = AsyncTimeout(10).setConnectTimeout(10)
 
 
 class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
@@ -122,15 +122,11 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
             raise socket.error("getaddrinfo returns an empty list")
 
     def _connect(self, sock, sa):
-        import os
-        import util
         while not self._canceled and not ABORT_FLAG_FUNCTION():
             time.sleep(0.01)
             self._check_timeout()  # this should be done at the beginning of each loop
             status = sock.connect_ex(sa)
-            util.TEST((status, os.strerror(status)))
             if not status or status in (errno.EISCONN, WIN_EISCONN):
-                util.TEST('xxxxxxxxx')
                 break
             elif status in (errno.EINPROGRESS, WIN_EWOULDBLOCK):
                 self.deadline = time.time() + self._timeout.getConnectTimeout()

@@ -231,7 +231,7 @@ class MyPlexAccount(object):
         request = myplexrequest.MyPlexRequest("/users/sign_in.xml")
         context = request.createRequestContext("sign_in", callback.Callable(self.onAccountResponse))
         if self.isOffline:
-            context.timeout = self.isOffline and asyncadapter.AsyncTimeout(1).setConnectTimeout(2)
+            context.timeout = self.isOffline and asyncadapter.AsyncTimeout(1).setConnectTimeout(1)
         plexapp.APP.startRequest(request, context, {})
 
     def refreshAccount(self):

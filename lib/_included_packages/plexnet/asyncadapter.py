@@ -115,10 +115,13 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
             raise socket.error("getaddrinfo returns an empty list")
 
     def _connect(self, sock, sa):
+        import os
+        import util
         while not self._canceled and not ABORT_FLAG_FUNCTION():
             time.sleep(0.01)
             self._check_timeout()  # this should be done at the beginning of each loop
             status = sock.connect_ex(sa)
+            util.TEST((status, os.strerror(status)))
             if not status or status == errno.EISCONN:
                 break
             elif status in (errno.EINPROGRESS,):

@@ -7,7 +7,7 @@ Fix an error causing opening of photo directories to fail
 Disable debug logging by default
 Make Home hub square items smaller
 Improve startup and shutdown times
-Fix some server reaachability testing bugs and improve performance
+Fix some server reachability testing bugs and improve performance
 Possible fix for crashing when shutting down Kodi while the add-on is running
 Add workaround to allow launching from My Add-ons and shortcuts
 Fix text cutoff for post-play in Estuary

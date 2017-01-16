@@ -11,6 +11,9 @@ Fix some server reachability testing bugs and improve performance
 Possible fix for crashing when shutting down Kodi while the add-on is running
 Add workaround to allow launching from My Add-ons and shortcuts
 Fix text cutoff for post-play in Estuary
+Prevent the add-on from starting another instance on update
+Skip user select in offline mode
+Show 'Offline Mode' item in user options when in offline mode - selecting attempts going online
 
 [- 0.0.99 -]
 

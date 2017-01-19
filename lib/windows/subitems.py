@@ -376,10 +376,11 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if xbmc.getCondVisibility('Player.HasAudio + MusicPlayer.HasNext'):
             options.append({'key': 'play_next', 'display': 'Play Next'})
 
-        if self.mediaItem.isWatched:
-            options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
-        else:
-            options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
+        if self.mediaItem.type != 'artist':
+            if self.mediaItem.isWatched:
+                options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
+            else:
+                options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})

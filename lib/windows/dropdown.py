@@ -110,7 +110,8 @@ class DropdownDialog(kodigui.BaseDialog):
                 items.append(item)
                 options.append(o)
             else:
-                items[-1].setProperty('separator', '1')
+                if items:
+                    items[-1].setProperty('separator', '1')
 
         self.options = options
 

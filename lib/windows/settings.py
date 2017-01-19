@@ -231,6 +231,7 @@ class Settings(object):
                 ),
                 BoolSetting('gdm_discovery', T(32042, 'Server Discovery (GDM)'), True),
                 BoolSetting('kiosk.mode', T(32043, 'Start Plex On Kodi Startup'), False),
+                BoolSetting('debug', T(32024, 'Debug Logging'), False),
             )
         ),
         'manual': (

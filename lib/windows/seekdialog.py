@@ -177,7 +177,7 @@ class SeekDialog(kodigui.BaseDialog):
                     self.showOSD()
                     self.setFocusId(self.BIG_SEEK_LIST_ID)
                 elif action.getButtonCode() == 61519:
-                    xbmc.executebuiltin('Action(PlayerProcessInfo)')
+                    # xbmc.executebuiltin('Action(PlayerProcessInfo)')
                     xbmc.executebuiltin('Action(CodecInfo)')
             elif controlID == self.BIG_SEEK_LIST_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):

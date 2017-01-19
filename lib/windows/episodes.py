@@ -6,6 +6,7 @@ from lib import colors
 from lib import util
 from lib import backgroundthread
 from lib import metadata
+from lib import player
 
 from plexnet import plexapp, playlist, plexplayer
 
@@ -84,14 +85,18 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
-        self.episode = kwargs.get('episode')
-        self.season = kwargs.get('season') or self.episode.season()
+        self.reset(kwargs.get('episode'), kwargs.get('season'), kwargs.get('show'))
         self.parentList = kwargs.get('parentList')
-        self.show_ = kwargs.get('show') or self.season.show().reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
-        self.seasons = None
         self.lastItem = None
         self.lastFocusID = None
         self.tasks = backgroundthread.Tasks()
+
+    def reset(self, episode, season=None, show=None):
+        self.episode = episode
+        self.season = season or self.episode.season()
+        self.show_ = show or self.season.show().reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.parentList = None
+        self.seasons = None
 
     def doClose(self):
         kodigui.ControlledWindow.doClose(self)
@@ -99,6 +104,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             return
         self.tasks.cancel()
         self.tasks = None
+        player.PLAYER.off('new.video', self.onNewVideo)
 
     @busy.dialog()
     def onFirstInit(self):
@@ -110,22 +116,28 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.rolesListControl = kodigui.ManagedControlList(self, self.ROLES_LIST_ID, 5)
 
         self._setup()
-        self.selectEpisode()
-        self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
-        self.setFocusId(self.PLAY_BUTTON_ID)
+        self.postSetup()
 
     def onReInit(self):
+        self.selectEpisode()
+
         mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
 
         self.reloadItems(items=[mli])
 
+    def postSetup(self, from_select_episode=False):
+        self.selectEpisode(from_select_episode=from_select_episode)
+        self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
+        self.setFocusId(self.PLAY_BUTTON_ID)
+
     @busy.dialog()
     def setup(self):
         self._setup()
 
     def _setup(self):
+        player.PLAYER.on('new.video', self.onNewVideo)
         self.season.reload(includeExtras=1, includeExtrasCount=10)
         self.updateProperties()
         self.fillEpisodes()
@@ -133,7 +145,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         hasPrev = self.fillRelated(hasPrev)
         self.fillRoles(hasPrev)
 
-    def selectEpisode(self):
+    def selectEpisode(self, from_select_episode=False):
         if not self.episode:
             return
 
@@ -141,6 +153,11 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if mli.dataSource == self.episode:
                 self.episodeListControl.selectItem(mli.pos())
                 break
+        else:
+            if not from_select_episode:
+                self.reset(self.episode)
+                self._setup()
+                self.postSetup(from_select_episode=True)
 
         self.episode = None
 
@@ -180,6 +197,18 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             util.ERROR()
 
         kodigui.ControlledWindow.onAction(self, action)
+
+    def onNewVideo(self, video=None, **kwargs):
+        if not video:
+            return
+
+        if not video.type == 'episode':
+            return
+
+        util.DEBUG_LOG('Updating selected episode: {0}'.format(video))
+        self.episode = video
+
+        return True
 
     def checkOptionsAction(self, action):
         if action == xbmcgui.ACTION_MOVE_UP:

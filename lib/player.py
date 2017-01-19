@@ -668,6 +668,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)
 
     def _playVideo(self, offset=0, seeking=0, force_update=False):
+        self.trigger('new.video', video=self.video)
         self.trigger(
             'change.background',
             url=self.video.defaultArt.asTranscodedImageURL(1920, 1080, opacity=60, background=colors.noAlpha.Background)

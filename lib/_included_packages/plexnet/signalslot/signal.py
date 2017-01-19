@@ -137,7 +137,7 @@ class Signal(object):
         >>> need_something.emit()
         'got something'
         """
-        for slot in self.slots:
+        for slot in reversed(self.slots):
             result = slot(**kwargs)
 
             if result is not None:

@@ -8,13 +8,6 @@ from lib.util import T
 
 import plexnet
 
-'''
-    <setting id="transcode_format" label="32023" type="labelenum" values="mkv|hls" default="0" />
-    <setting id="playback_directplay_force" type="bool" label="32027" default="false" enable="eq(-1,true)" subsetting="true" />
-    <setting id="burn_subtitles" label="32031" type="enum" lvalues="32028|32029|32030" default="0" />
-    <setting id="allow_insecure" label="32032" type="enum" lvalues="32033|32034|32035" default = "0" />
-'''
-
 
 class Setting(object):
     type = None

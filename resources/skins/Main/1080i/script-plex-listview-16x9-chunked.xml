@@ -272,12 +272,14 @@
                 </control>
 
                 <control type="scrollbar" id="152">
+                    <visible>!StringCompare(Window(10000).Property(script.plex.item.type),episode)</visible>
                     <hitrect x="1108" y="33" w="90" h="879" />
                     <left>1128</left>
                     <top>33</top>
                     <width>10</width>
                     <height>879</height>
                     <onleft>101</onleft>
+                    <onright>951</onright>
                     <visible>true</visible>
                     <texturesliderbackground colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texturesliderbackground>
                     <texturesliderbar colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texturesliderbar>
@@ -288,6 +290,50 @@
                     <orientation>vertical</orientation>
                     <showonepage>false</showonepage>
                     <onleft>151</onleft>
+                </control>
+                <control type="group">
+                    <visible>StringCompare(Window(10000).Property(script.plex.item.type),episode)</visible>
+                    <left>1128</left>
+                    <top>33</top>
+                    <width>10</width>
+                    <height>879</height>
+                    <control type="image">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>10</width>
+                        <height>879</height>
+                        <texture colordiffuse="40000000" border="5">script.plex/white-square-rounded.png</texture>
+                    </control>
+                    <control type="group" id="950">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <control type="image" id="952">
+                            <visible>!Control.HasFocus(951)</visible>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>10</width>
+                            <height>10</height>
+                            <texture colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texture>
+                        </control>
+                        <control type="image" id="953">
+                            <visible>Control.HasFocus(951)</visible>
+                            <posx>0</posx>
+                            <posy>0</posy>
+                            <width>10</width>
+                            <height>10</height>
+                            <texture colordiffuse="FFE5A00D" border="5">script.plex/white-square-rounded.png</texture>
+                        </control>
+                    </control>
+                    <control type="button" id="951">
+                        <posx>0</posx>
+                        <posy>0</posy>
+                        <width>10</width>
+                        <height>879</height>
+                        <onleft>152</onleft>
+                        <texturefocus>-</texturefocus>
+                        <texturenofocus>-</texturenofocus>
+                        <label> </label>
+                    </control>
                 </control>
             </control>
 
@@ -436,7 +482,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>[StringCompare(Window.Property(sort),titleSort) | StringCompare(Window.Property(sort),show.titleSort)] + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window.Property(sort),titleSort) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1830</posx>
             <posy>150</posy>

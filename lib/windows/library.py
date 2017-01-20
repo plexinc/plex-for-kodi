@@ -298,6 +298,34 @@ class ChunkModeWrapped(object):
             self.objects = self.objects[:CHUNK_SIZE * 2] + objects
 
 
+class CustomScrollBar(object):
+    def __init__(self, window, bar_group_id, bar_image_id, bar_image_focus_id, button_id, min_bar_height=20):
+        self._barGroup = window.getControl(bar_group_id)
+        self._barImage = window.getControl(bar_image_id)
+        self._barImageFocus = window.getControl(bar_image_focus_id)
+        self._button = window.getControl(button_id)
+        self.height = self._button.getHeight()
+        self.x, self.y = self._barGroup.getPosition()
+        self._minBarHeight = min_bar_height
+        self._barHeight = min_bar_height
+        self.size = 0
+        self.count = 0
+        self.pos = 0
+
+    def setSizeAndCount(self, size, count):
+        self.size = size
+        self.count = count
+        self._barHeight = min(self.height, max(self._minBarHeight, int(self.height * (count / float(size)))))
+        self._moveHeigt = self.height - self._barHeight
+        self._barImage.setHeight(self._barHeight)
+        self._barImageFocus.setHeight(self._barHeight)
+
+    def setPosition(self, pos):
+        self.pos = pos
+        offset = int((pos / float(self.size - 1)) * self._moveHeigt)
+        self._barGroup.setPosition(self.x, self.y + offset)
+
+
 class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
     bgXML = 'script-plex-blank.xml'
     path = util.ADDON.getAddonInfo('path')
@@ -309,7 +337,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         windowutils.UtilMixin.__init__(self)
         self.section = kwargs.get('section')
         self.filter = kwargs.get('filter_')
-        setItemType()
+        self.setItemType()
         self.keyItems = {}
         self.firstOfKeyItems = {}
         self.tasks = backgroundthread.Tasks()
@@ -345,14 +373,23 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             else:
                 self.setWindows(VIEWS_POSTER.get('all'))
 
+    def setItemType(self, type_=None):
+        setItemType(type_)
+        util.setGlobalProperty('item.type', str(ITEM_TYPE))
+
     def doClose(self):
         self.tasks.cancel()
         kodigui.MultiWindow.doClose(self)
 
     def onFirstInit(self):
+        self.scrollBar = None
+        if ITEM_TYPE == 'episode':
+            self.scrollBar = CustomScrollBar(self, 950, 952, 953, 951)
+
         if self.showPanelControl:
             self.showPanelControl.newControl(self)
             self.keyListControl.newControl(self)
+            self.showPanelControl.selectItem(0)
             self.setFocusId(self.VIEWTYPE_BUTTON_ID)
         else:
             if self.chunkMode:
@@ -383,6 +420,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 if controlID == self.POSTERS_PANEL_ID or controlID == self.SCROLLBAR_ID:
                     self.updateKey()
                     self.checkChunkedNav(action)
+                elif controlID == self.CUSTOM_SCOLLBAR_BUTTON_ID:
+                    if action == xbmcgui.ACTION_MOVE_UP:
+                        self.shiftSelection(-12)
+                    elif action == xbmcgui.ACTION_MOVE_DOWN:
+                        self.shiftSelection(12)
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -439,6 +481,15 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPhotoItemProperties(mli.dataSource)
 
+    def shiftSelection(self, offset):
+        pos = self.showPanelControl.getSelectedPosition()
+        pos += offset
+        if pos < 0 or pos >= self.showPanelControl.size():
+            pos = pos % self.showPanelControl.size()
+
+        self.showPanelControl.selectItem(pos)
+        self.checkChunkedNav()
+
     def updateKey(self, mli=None):
         mli = mli or self.showPanelControl.getSelectedItem()
         if not mli:
@@ -452,7 +503,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.selectKey(mli)
 
-    def checkChunkedNav(self, action):
+    def checkChunkedNav(self, action=None):
         if not self.chunkMode:
             return
 
@@ -483,7 +534,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
             self.showPanelControl.selectItem(idx)
             self.updateKey(self.showPanelControl[idx])
+            self.scrollBar.setPosition(idx)
             return
+
+        if self.scrollBar:
+            self.scrollBar.setPosition(pos)
 
         if self.chunkMode.posIsForward(pos):
             self.shiftChunks()
@@ -630,7 +685,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPanelControl = None  # TODO: Need to do some check here I think
 
-        setItemType(choice)
+        self.setItemType(choice)
 
         self.reset()
         if not self.nextWindow(False):
@@ -1002,6 +1057,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
             self.setProperty('key', jumpList[0].key)
 
+        if self.scrollBar:
+            self.scrollBar.setSizeAndCount(totalSize, 12)
+
         if self.chunkMode:
             self.chunkMode.itemCount = totalSize
             items = [
@@ -1254,6 +1312,8 @@ class PostersWindow(kodigui.ControlledWindow):
 
     VIEWTYPE = 'panel'
     MULTI_WINDOW_ID = 0
+
+    CUSTOM_SCOLLBAR_BUTTON_ID = 951
 
 
 class PostersChunkedWindow(PostersWindow):

@@ -180,12 +180,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         if not path:
             return ''
 
-        # Build up our parameters
-        params = "&width={0}&height={1}".format(width, height)
-
-        # if extraOpts is not None:
-        for key in extraOpts:
-            params += "&{0}={1}".format(key, extraOpts[key])
+        params = ("&width=%s&height=%s" % (width, height)) + ''.join(["&%s=%s" % (key, extraOpts[key]) for key in extraOpts])
 
         if "://" in path:
             imageUrl = self.convertUrlToLoopBack(path)
@@ -201,7 +196,11 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             if selectedServer:
                 return selectedServer.buildUrl(path, True)
 
-        return self.buildUrl(path, True)
+        if self.activeConnection:
+            return self.activeConnection.simpleBuildUrl(self, path)
+        else:
+            util.WARN_LOG("Server connection is None, returning an empty url")
+            return ""
 
     def isReachable(self, onlySupported=True):
         if onlySupported and not self.isSupported:

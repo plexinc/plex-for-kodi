@@ -2,6 +2,7 @@ import os
 import random
 import urllib
 import json
+import time
 import threading
 
 import xbmc
@@ -232,14 +233,17 @@ class ChunkedWrapList(kodigui.ManagedControlList):
     LIST_MAX = CHUNK_SIZE * 3
 
     def __getitem__(self, idx):
-        if isinstance(idx, slice):
-            return self.items[idx]
-        else:
-            idx = idx % self.LIST_MAX
-            return self.getListItem(idx)
+        # if isinstance(idx, slice):
+        #     return self.items[idx]
+        # else:
+        idx = idx % self.LIST_MAX
+        return self.items[idx]
+        # return self.getListItem(idx)
 
 
 class ChunkModeWrapped(object):
+    ALL_MAX = CHUNK_SIZE * 2
+
     def __init__(self):
         self.midStart = 0
         self.itemCount = 0
@@ -257,9 +261,13 @@ class ChunkModeWrapped(object):
         return self.midStart == 0
 
     def posIsForward(self, pos):
+        if self.itemCount <= self.ALL_MAX:
+            return False
         return pos >= self.midStart + CHUNK_SIZE
 
     def posIsBackward(self, pos):
+        if self.itemCount <= self.ALL_MAX:
+            return False
         return pos < self.midStart
 
     def posIsValid(self, pos):
@@ -277,12 +285,13 @@ class ChunkModeWrapped(object):
 
         return start
 
-    def shiftToKey(self, key):
-        if key not in self.keys:
-            util.DEBUG_LOG('CHUNK MODE: NO ITEMS FOR KEY')
-            return
+    def shiftToKey(self, key, keyStart=None):
+        if keyStart is None:
+            if key not in self.keys:
+                util.DEBUG_LOG('CHUNK MODE: NO ITEMS FOR KEY')
+                return
 
-        keyStart = self.keys[key][0]
+            keyStart = self.keys[key][0]
         self.midStart = keyStart - keyStart % CHUNK_SIZE
         return keyStart, max(self.midStart - CHUNK_SIZE, 0)
 
@@ -308,6 +317,9 @@ class CustomScrollBar(object):
         self.x, self.y = self._barGroup.getPosition()
         self._minBarHeight = min_bar_height
         self._barHeight = min_bar_height
+        self.reset()
+
+    def reset(self):
         self.size = 0
         self.count = 0
         self.pos = 0
@@ -316,14 +328,26 @@ class CustomScrollBar(object):
         self.size = size
         self.count = count
         self._barHeight = min(self.height, max(self._minBarHeight, int(self.height * (count / float(size)))))
-        self._moveHeigt = self.height - self._barHeight
+        self._moveHeight = self.height - self._barHeight
         self._barImage.setHeight(self._barHeight)
         self._barImageFocus.setHeight(self._barHeight)
+        self.setPosition(0)
 
     def setPosition(self, pos):
         self.pos = pos
-        offset = int((pos / float(self.size - 1)) * self._moveHeigt)
+        offset = int((pos / float(self.size - 1)) * self._moveHeight)
         self._barGroup.setPosition(self.x, self.y + offset)
+
+    def getPosFromY(self, y):
+        y -= int(self._barHeight / 2) + 150
+        y = min(max(y, 0), self._moveHeight)
+        return int((self.size - 1) * (y / float(self._moveHeight)))
+
+    def onMouseDrag(self, window, action):
+        y = window.mouseXTrans(action.getAmount2())
+        y -= int(self._barHeight / 2) + 150
+        y = min(max(y, 0), self._moveHeight)
+        self._barGroup.setPosition(self.x, self.y)
 
 
 class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
@@ -345,6 +369,15 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.showPanelControl = None
         self.keyListControl = None
         self.lastItem = None
+
+        self.dcpjPos = 0
+        self.dcpjThread = None
+        self.dcpjTimeout = 0
+
+        self.dragging = False
+
+        self.cleared = True
+
         self.reset()
 
         self.lock = threading.Lock()
@@ -415,6 +448,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
     def onAction(self, action):
         try:
+            if self.dragging:
+                if not action == xbmcgui.ACTION_MOUSE_DRAG:
+                    self.dragging = False
+                    self.setBoolProperty('dragging', self.dragging)
+
             if action.getId() in MOVE_SET:
                 controlID = self.getFocusId()
                 if controlID == self.POSTERS_PANEL_ID or controlID == self.SCROLLBAR_ID:
@@ -425,6 +463,12 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                         self.shiftSelection(-12)
                     elif action == xbmcgui.ACTION_MOVE_DOWN:
                         self.shiftSelection(12)
+            # elif action == xbmcgui.KEY_MOUSE_DRAG_START:
+            #     self.onMouseDragStart(action)
+            # elif action == xbmcgui.KEY_MOUSE_DRAG_END:
+            #     self.onMouseDragEnd(action)
+            elif action == xbmcgui.ACTION_MOUSE_DRAG:
+                self.onMouseDrag(action)
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
@@ -481,14 +525,77 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPhotoItemProperties(mli.dataSource)
 
-    def shiftSelection(self, offset):
-        pos = self.showPanelControl.getSelectedPosition()
-        pos += offset
-        if pos < 0 or pos >= self.showPanelControl.size():
-            pos = pos % self.showPanelControl.size()
+    def onMouseDragStart(self, action):
+        if not self.scrollBar:
+            return
+
+        controlID = self.getFocusId()
+        if controlID != self.CUSTOM_SCOLLBAR_BUTTON_ID:
+            return
+
+        self.dragging = True
+        self.setBoolProperty('dragging', self.dragging)
+
+    def onMouseDragEnd(self, action):
+        if not self.scrollBar:
+            return
+
+        if not self.dragging:
+            return
+
+        self.dragging = False
+        self.setBoolProperty('dragging', self.dragging)
+
+        y = self.mouseXTrans(action.getAmount2())
+
+        pos = self.scrollBar.getPosFromY(y)
+        self.shiftSelection(pos=pos)
+
+    def onMouseDrag(self, action):
+        if not self.scrollBar:
+            return
+
+        if not self.dragging:
+            controlID = self.getFocusId()
+            if controlID != self.CUSTOM_SCOLLBAR_BUTTON_ID:
+                return
+
+            self.onMouseDragStart(action)
+            if not self.dragging:
+                return
+
+        # self.scrollBar.onMouseDrag(self, action)
+
+        y = self.mouseXTrans(action.getAmount2())
+
+        pos = self.scrollBar.getPosFromY(y)
+        if self.chunkMode.posIsForward(pos) or self.chunkMode.posIsBackward(pos):
+            self.shiftSelection(pos=pos)
+        else:
+            self.showPanelControl.selectItem(pos)
+            self.checkChunkedNav()
+
+    def shiftSelection(self, offset=0, pos=None):
+        if pos is not None:
+            self.scrollBar.setPosition(pos)
+            return self.delayedChunkedPosJump(pos)
+        else:
+            mli = self.showPanelControl.getSelectedItem()
+            idx = int(mli.getProperty('index'))
+            target = idx + offset
+            if target >= self.chunkMode.itemCount:
+                pos = self.chunkMode.itemCount - 1
+            elif target < 0:
+                pos = 0
+            else:
+                pos = self.showPanelControl.getSelectedPosition()
+                pos += offset
+
+            if pos < 0 or pos >= self.showPanelControl.size():
+                pos = pos % self.showPanelControl.size()
 
         self.showPanelControl.selectItem(pos)
-        self.checkChunkedNav()
+        self.checkChunkedNav(idx=pos)
 
     def updateKey(self, mli=None):
         mli = mli or self.showPanelControl.getSelectedItem()
@@ -503,7 +610,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.selectKey(mli)
 
-    def checkChunkedNav(self, action=None):
+    def checkChunkedNav(self, action=None, idx=None):
         if not self.chunkMode:
             return
 
@@ -523,18 +630,28 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         mli = self.showPanelControl.getSelectedItem()
 
         try:
-            pos = int(mli.getProperty('index'))
+            if idx is not None:
+                pos = int(self.showPanelControl[idx].getProperty('index'))
+            else:
+                pos = int(mli.getProperty('index'))
+
             if pos >= self.chunkMode.itemCount:
                 raise ValueError
         except ValueError:
-            if self.chunkMode.isAtBeginning():
+            if self.chunkMode.isAtBeginning() and action not in (xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_PAGE_DOWN):
                 idx = 0
             else:
                 idx = (self.chunkMode.itemCount % self.showPanelControl.LIST_MAX) - 1
 
             self.showPanelControl.selectItem(idx)
-            self.updateKey(self.showPanelControl[idx])
-            self.scrollBar.setPosition(idx)
+            mli = self.showPanelControl[idx]
+            self.updateKey(mli)
+            if self.scrollBar:
+                try:
+                    pos = int(mli.getProperty('index'))
+                    self.scrollBar.setPosition(pos)
+                except ValueError:
+                    pass
             return
 
         if self.scrollBar:
@@ -575,6 +692,57 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.section.key))
 
+    def delayedChunkedPosJump(self, pos):
+        if not self.cleared:
+            self.chunkCallback(None, None, clear=True)
+        self.dcpjTimeout = time.time() + 0.5
+        self.dcpjPos = pos
+        if not self.dcpjThread or not self.dcpjThread.isAlive():
+            self.dcpjThread = threading.Thread(target=self._chunkedPosJump)
+            self.dcpjThread.start()
+
+    def _chunkedPosJump(self):
+        while not util.MONITOR.waitForAbort(0.1):
+            if time.time() >= self.dcpjTimeout:
+                break
+        else:
+            return
+
+        keyStart_start = self.chunkMode.shiftToKey(None, keyStart=self.dcpjPos)
+        if not keyStart_start:
+            return
+
+        keyStart, start = keyStart_start
+        pos = keyStart % self.showPanelControl.LIST_MAX
+        self.chunkedPosJump(pos, start)
+        self.showPanelControl.selectItem(pos)
+
+    def chunkedPosJump(self, pos, start=None):
+        if start is None:
+            start = max(pos - CHUNK_SIZE, 0)
+
+        mul = 3
+        if not start:
+            mul = 2
+
+        tasks = []
+        for x in range(mul):
+            task = ChunkRequestTask().setup(
+                self.section,
+                start + (CHUNK_SIZE * x),
+                CHUNK_SIZE,
+                self.chunkCallback,
+                filter_=self.getFilterOpts(),
+                sort=self.getSortOpts(),
+                unwatched=self.filterUnwatched
+            )
+
+            self.tasks.add(task)
+            tasks.append(task)
+
+        mid = tasks.pop(1)
+        backgroundthread.BGThreader.addTasksToFront([mid] + tasks)
+
     def keyClicked(self):
         li = self.keyListControl.getSelectedItem()
         if not li:
@@ -587,17 +755,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             keyStart, start = keyStart_start
 
             pos = keyStart % self.showPanelControl.LIST_MAX
-            self.chunkCallback([None] * self.showPanelControl.LIST_MAX, 0)
-            mul = 3
-            if not start:
-                mul = 2
-
-            task = ChunkRequestTask().setup(
-                self.section, start, CHUNK_SIZE * mul, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
-            )
-
-            self.tasks.add(task)
-            backgroundthread.BGThreader.addTasksToFront([task])
+            self.chunkedPosJump(pos, start)
         else:
             mli = self.firstOfKeyItems.get(li.dataSource)
             if not mli:
@@ -1206,11 +1364,30 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if keys:
             self.setProperty('key', keys[0])
 
-    def chunkCallback(self, items, start):
+    def chunkCallback(self, items, start, clear=False):
+        if clear:
+            with self.lock:
+                items = [kodigui.ManagedListItem('') for i in range(CHUNK_SIZE * 3)]
+
+                self.showPanelControl.reset()
+                self.showPanelControl.addItems(items)
+
+                self.cleared = True
+            return
+
+        if self.cleared:
+            self.cleared = False
+            busy.widthDialog(self._chunkCallback, self, items, start)
+        else:
+            self._chunkCallback(items, start)
+
+    def _chunkCallback(self, items, start):
         if self.chunkMode and not self.chunkMode.posIsValid(start):
             return
 
         with self.lock:
+            if self.chunkMode and not self.chunkMode.posIsValid(start):
+                return
             pos = start
             self.setBackground(items)
             thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
@@ -1233,11 +1410,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                             subtitle = ' - ' + obj.originallyAvailableAt.asDatetime('%m/%d/%y')
                         mli.setLabel((obj.defaultTitle or '') + subtitle)
 
-                        mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+                        # mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
 
                         mli.setProperty('summary', obj.summary)
 
-                        mli.setProperty('key', self.chunkMode.getKey(pos))
+                        # # mli.setProperty('key', self.chunkMode.getKey(pos))
 
                         mli.setLabel2(util.durationToText(obj.fixedDuration()))
                         mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))

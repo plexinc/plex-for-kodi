@@ -185,15 +185,15 @@ class PlexConnection(object):
             # for this server have one. That will let us use a plex.tv token for
             # something like a manually configured connection.
 
-            if self.token:
-                token = self.token
-            else:
-                token = server.getToken()
+            token = self.token or server.getToken()
 
             if token:
                 url = http.addUrlParam(url, "X-Plex-Token=" + token)
 
         return url
+
+    def simpleBuildUrl(self, server, path):
+        return self.address + path + '&X-Plex-Token=' + (self.token or server.getToken())
 
     def getScore(self, recalc=False):
         if recalc:

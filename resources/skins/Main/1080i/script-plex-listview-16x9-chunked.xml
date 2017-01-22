@@ -308,7 +308,7 @@
                         <posx>0</posx>
                         <posy>0</posy>
                         <control type="image" id="952">
-                            <visible>!Control.HasFocus(951)</visible>
+                            <visible>!Control.HasFocus(951) + IsEmpty(Window.Property(dragging))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>10</width>
@@ -316,7 +316,7 @@
                             <texture colordiffuse="77FFFFFF" border="5">script.plex/white-square-rounded.png</texture>
                         </control>
                         <control type="image" id="953">
-                            <visible>Control.HasFocus(951)</visible>
+                            <visible>Control.HasFocus(951) | !IsEmpty(Window.Property(dragging))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>10</width>
@@ -325,6 +325,7 @@
                         </control>
                     </control>
                     <control type="button" id="951">
+                        <hitrect x="-20" y="0" w="90" h="879" />
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>10</width>

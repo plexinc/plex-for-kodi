@@ -484,7 +484,7 @@ msgid "By Name"
 msgstr ""
 
 msgctxt "#32347"
-msgid "artists"
+msgid "Artists"
 msgstr ""
 
 msgctxt "#32348"
@@ -938,3 +938,16 @@ msgstr ""
 msgctxt "#32460"
 msgid "Sign In"
 msgstr ""
+
+msgctxt "#32461"
+msgid "Albums"
+msgstr ""
+
+msgctxt "#32462"
+msgid "Artist"
+msgstr ""
+
+msgctxt "#32463"
+msgid "By Artist"
+msgstr ""
+

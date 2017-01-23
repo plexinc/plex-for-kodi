@@ -14,7 +14,7 @@
             <width>1920</width>
             <height>1080</height>
             <fadetime>1000</fadetime>
-            <texture fallback="script.plex/home/background-fallback.jpg" background="true">$INFO[Window.Property(background)]</texture>
+            <texture fallback="script.plex/home/background-fallback.png" background="true">$INFO[Window.Property(background)]</texture>
         </control>
 
         <control type="group" id="50">
@@ -39,21 +39,6 @@
                 </control>
                 <control type="wraplist" id="101">
                     <hitrect x="60" y="0" w="1010" h="945" />
-                    <!-- <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),0)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),1)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),2)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),3)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation>
-                    <animation type="Conditional" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),4)" reversible="true">
-                        <effect type="slide" end="0,76" tween="quadratic" easing="out"/>
-                    </animation> -->
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1170</width>
@@ -344,7 +329,7 @@
                 <width>1920</width>
                 <height>1080</height>
                 <fadetime>1000</fadetime>
-                <texture fallback="script.plex/home/background-fallback.jpg" background="true" diffuse="script.plex/masks/listview-16x9-backgroundmask.png">$INFO[Window.Property(background)]</texture>
+                <texture fallback="script.plex/home/background-fallback.png" background="true" diffuse="script.plex/masks/listview-16x9-backgroundmask.png">$INFO[Window.Property(background)]</texture>
             </control>
 
             <control type="grouplist" id="300">
@@ -893,7 +878,7 @@
                     <posy>0</posy>
                     <width>1920</width>
                     <height>1080</height>
-                    <texture>script.plex/home/background-fallback.jpg</texture>
+                    <texture>script.plex/home/background-fallback.png</texture>
                 </control>
                 <control type="image">
                     <posx>0</posx>

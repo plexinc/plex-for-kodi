@@ -95,6 +95,7 @@ TYPE_KEYS = {
 
 TYPE_PLURAL = {
     'artist': T(32347, 'artists'),
+    'album': T(32461, 'albums'),
     'movie': T(32348, 'movies'),
     'photo': T(32349, 'photos'),
     'show': T(32350, 'Shows'),
@@ -119,7 +120,8 @@ SORT_KEYS = {
         'show.titleSort': {'title': T(32457, 'By Show'), 'display': T(32456, 'Show')},
     },
     'artist': {
-        'lastViewedAt': {'title': T(32369, 'By Date Played'), 'display': T(32370, 'Date Played')}
+        'lastViewedAt': {'title': T(32369, 'By Date Played'), 'display': T(32370, 'Date Played')},
+        'artist.titleSort': {'title': T(32463, 'By Artist'), 'display': T(32462, 'Artist')},
     },
     'photo': {
         'originallyAvailableAt': {'title': T(32373, 'By Date Taken'), 'display': T(32374, 'Date Taken')}
@@ -157,6 +159,8 @@ class ChunkRequestTask(backgroundthread.Task):
             type_ = None
             if ITEM_TYPE == 'episode':
                 type_ = 4
+            elif ITEM_TYPE == 'album':
+                type_ = 9
             items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched, type_=type_)
             if self.isCanceled():
                 return
@@ -245,6 +249,9 @@ class ChunkModeWrapped(object):
     ALL_MAX = CHUNK_SIZE * 2
 
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.midStart = 0
         self.itemCount = 0
         self.keys = {}
@@ -387,12 +394,14 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         if ITEM_TYPE == 'episode':
             self.sort = self.librarySettings.getSetting('sort', 'show.titleSort')
+        elif ITEM_TYPE == 'album':
+            self.sort = self.librarySettings.getSetting('sort', 'artist.titleSort')
         else:
             self.sort = self.librarySettings.getSetting('sort', 'titleSort')
         self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
 
         self.chunkMode = None
-        if ITEM_TYPE == 'episode':
+        if ITEM_TYPE in ('episode', 'album'):
             self.chunkMode = ChunkModeWrapped()
 
         if self.chunkMode:
@@ -416,7 +425,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
     def onFirstInit(self):
         self.scrollBar = None
-        if ITEM_TYPE == 'episode':
+        if ITEM_TYPE in ('episode', 'album'):
             self.scrollBar = CustomScrollBar(self, 950, 952, 953, 951)
 
         if self.showPanelControl:
@@ -581,7 +590,12 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             return self.delayedChunkedPosJump(pos)
         else:
             mli = self.showPanelControl.getSelectedItem()
-            idx = int(mli.getProperty('index'))
+
+            try:
+                idx = int(mli.getProperty('index'))
+            except ValueError:
+                return
+
             target = idx + offset
             if target >= self.chunkMode.itemCount:
                 pos = self.chunkMode.itemCount - 1
@@ -652,6 +666,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                     self.scrollBar.setPosition(pos)
                 except ValueError:
                     pass
+
+            if idx == 0 and not action == xbmcgui.ACTION_PAGE_UP:
+                self.setFocusId(600)
+
             return
 
         if self.scrollBar:
@@ -824,6 +842,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.section.TYPE == 'show':
             for t in ('show', 'episode'):
                 options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
+        elif self.section.TYPE == 'artist':
+            for t in ('artist', 'album'):
+                options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
         else:
             return
 
@@ -846,6 +867,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.setItemType(choice)
 
         self.reset()
+
+        self.clearFilters()
+        self.resetSort()
+
         if not self.nextWindow(False):
             self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
             self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
@@ -878,11 +903,18 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                     option['indicator'] = self.sort == stype and ind or ''
                     options.append(option)
         elif self.section.TYPE == 'artist':
-            for stype in ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort'):
-                option = SORT_KEYS['artist'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
-                option['type'] = stype
-                option['indicator'] = self.sort == stype and ind or ''
-                options.append(option)
+            if ITEM_TYPE == 'album':
+                for stype in ('addedAt', 'lastViewedAt', 'viewCount', 'originallyAvailableAt', 'artist.titleSort', 'titleSort', 'rating'):
+                    option = SORT_KEYS['artist'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
+                    option['type'] = stype
+                    option['indicator'] = self.sort == stype and ind or ''
+                    options.append(option)
+            else:
+                for stype in ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort'):
+                    option = SORT_KEYS['artist'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
+                    option['type'] = stype
+                    option['indicator'] = self.sort == stype and ind or ''
+                    options.append(option)
         elif self.section.TYPE == 'photo':
             for stype in ('addedAt', 'originallyAvailableAt', 'titleSort', 'rating'):
                 option = SORT_KEYS['photo'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
@@ -1020,6 +1052,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             if ITEM_TYPE == 'episode':
                 for k in ('year', 'collection', 'resolution'):
                     options.append(optionsMap[k])
+            elif ITEM_TYPE == 'album':
+                for k in ('genre', 'year', 'decade', 'collection', 'labels'):
+                    options.append(optionsMap[k])
             else:
                 for k in ('year', 'genre', 'contentRating', 'network', 'collection', 'actor', 'labels'):
                     options.append(optionsMap[k])
@@ -1049,6 +1084,27 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.filter or choice in ('clear_filter', 'unwatched'):
             self.fill()
 
+    def clearFilters(self):
+        self.filter = None
+        self.filterUnwatched = False
+        self.librarySettings.setSetting('filter.unwatched', self.filterUnwatched)
+        self.updateFilterDisplay()
+
+    def resetSort(self):
+        if ITEM_TYPE == 'episode':
+            self.sort = 'show.titleSort'
+        elif ITEM_TYPE == 'album':
+            self.sort = 'artist.titleSort'
+        else:
+            self.sort = 'titleSort'
+        self.sortDesc = False
+
+        self.librarySettings.setSetting('sort', self.sort)
+        self.librarySettings.setSetting('sort.desc', self.sortDesc)
+
+        self.setProperty('sort', self.sort)
+        self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
+
     def updateFilterDisplay(self):
         if self.filter:
             disp = self.filter['display']
@@ -1067,7 +1123,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         updateWatched = False
         if self.section.TYPE == 'show':
-            if ITEM_TYPE == 'episode':
+            if ITEM_TYPE in ('episode', 'album'):
                 self.openItem(mli.dataSource)
             else:
                 self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
@@ -1134,6 +1190,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.setProperty('background', item.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
 
     def fill(self):
+        if self.chunkMode:
+            self.chunkMode.reset()
+
         if self.section.TYPE in ('photo', 'photodirectory'):
             self.fillPhotos()
         else:
@@ -1168,6 +1227,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         type_ = None
         if ITEM_TYPE == 'episode':
             type_ = 4
+        elif ITEM_TYPE == 'album':
+            type_ = 9
 
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
@@ -1231,6 +1292,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPanelControl.addItems(items)
         self.keyListControl.addItems(jitems)
+
+        self.showPanelControl.selectItem(0)
 
         tasks = []
         ct = 0
@@ -1428,6 +1491,34 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                             mli.setProperty('index', '')
 
                     pos += 1
+
+            elif ITEM_TYPE == 'album':
+                for offset, obj in enumerate(items):
+                    mli = self.showPanelControl[pos]
+                    if obj:
+                        mli.dataSource = obj
+                        mli.setProperty('index', str(pos))
+                        mli.setLabel(u'{0} \u2022 {1}'.format(obj.parentTitle, obj.title))
+
+                        mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+
+                        mli.setProperty('summary', obj.summary)
+
+                        # # mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                        mli.setLabel2(obj.year)
+
+                        if self.chunkMode:
+                            mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                    else:
+                        mli.clear()
+                        if obj is False:
+                            mli.setProperty('index', str(pos))
+                        else:
+                            mli.setProperty('index', '')
+
+                    pos += 1
             else:
                 for offset, obj in enumerate(items):
                     mli = self.showPanelControl[pos]
@@ -1518,7 +1609,7 @@ class SquaresWindow(PostersWindow):
 
 
 class SquaresChunkedWindow(PostersWindow):
-    xmlFile = 'script-plex-listview-16x9-chunked.xml'
+    xmlFile = 'script-plex-listview-square-chunked.xml'
     VIEWTYPE = 'list'
     MULTI_WINDOW_ID = 0
 
@@ -1530,7 +1621,7 @@ class ListViewSquareWindow(PostersWindow):
 
 
 class ListViewSquareChunkedWindow(PostersWindow):
-    xmlFile = 'script-plex-listview-16x9-chunked.xml'
+    xmlFile = 'script-plex-listview-square-chunked.xml'
     VIEWTYPE = 'list'
     MULTI_WINDOW_ID = 1
 

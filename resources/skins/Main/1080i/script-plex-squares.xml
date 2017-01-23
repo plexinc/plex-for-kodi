@@ -621,6 +621,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="310">
+                    <visible>!StringCompare(Window.Property(media),artist)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
@@ -630,9 +631,25 @@
                     <disabledcolor>FFFFFFFF</disabledcolor>
                     <align>center</align>
                     <aligny>center</aligny>
-                    <texturefocus>-</texturefocus>
                     <texturenofocus>-</texturenofocus>
-                    <textoffsetx>0</textoffsetx>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+                </control>
+                <control type="button" id="312">
+                    <visible>StringCompare(Window.Property(media),artist)</visible>
+                    <width max="300">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <disabledcolor>FFFFFFFF</disabledcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
                     <textoffsety>0</textoffsety>
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>

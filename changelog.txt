@@ -5,6 +5,7 @@ Fix (Issue #65): When returning from playback episode pre-play did not update th
 Fix: Codec info button ('o') handling on Krypton+
 Remove mkv/hls testing option in add-on Kodi settings
 Add Debug Logging option to Advanced Settings
+Fix: Post-play after the last item in the playlist was replaying the last item instead of the displayed up next item
 
 [- 0.0.100 -]
 

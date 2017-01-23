@@ -491,7 +491,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def playVideo(self, prev=False):
         self.cancelTimer()
         try:
-            if self.playlist:
+            if not self.next and self.playlist:
                 if prev:
                     self.playlist.prev()
                 self.aborted = False

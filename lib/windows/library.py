@@ -655,7 +655,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             if self.chunkMode.isAtBeginning() and action not in (xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_PAGE_DOWN):
                 idx = 0
             else:
-                idx = (self.chunkMode.itemCount % self.showPanelControl.LIST_MAX) - 1
+                idx = ((self.chunkMode.itemCount - 1) % self.showPanelControl.LIST_MAX)
 
             self.showPanelControl.selectItem(idx)
             mli = self.showPanelControl[idx]
@@ -1123,7 +1123,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         updateWatched = False
         if self.section.TYPE == 'show':
-            if ITEM_TYPE in ('episode', 'album'):
+            if ITEM_TYPE == 'episode':
                 self.openItem(mli.dataSource)
             else:
                 self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
@@ -1132,7 +1132,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'artist':
-            self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
+            if ITEM_TYPE == 'album':
+                self.openItem(mli.dataSource)
+            else:
+                self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
         elif self.section.TYPE in ('photo', 'photodirectory'):
             self.showPhoto(mli.dataSource)
 

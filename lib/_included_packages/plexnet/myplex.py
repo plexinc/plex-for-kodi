@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import util
 import http
 from threading import Thread
 from xml.etree import ElementTree
@@ -45,7 +46,13 @@ class PinLogin(object):
                 if response.status_code != http.codes.ok:
                     self._expired = True
                     break
-                data = ElementTree.fromstring(response.text.encode('utf-8'))
+                try:
+                    data = ElementTree.fromstring(response.text.encode('utf-8'))
+                except Exception, e:
+                    util.ERROR('PinLogin data error: {0}'.format(e.__class__), err=e)
+                    time.sleep(self.POLL_INTERVAL)
+                    continue
+
                 token = data.find('auth_token').text
                 if token:
                     self.authenticationToken = token

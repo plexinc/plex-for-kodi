@@ -187,7 +187,7 @@ class PhotoPropertiesTask(backgroundthread.Task):
 
 
 class LibrarySettings(object):
-    def __init__(self, section_or_server_id, item_type=None):
+    def __init__(self, section_or_server_id):
         if isinstance(section_or_server_id, basestring):
             self.serverID = section_or_server_id
             self.sectionID = None
@@ -195,15 +195,15 @@ class LibrarySettings(object):
             self.serverID = section_or_server_id.getServer().uuid
             self.sectionID = section_or_server_id.key
 
-        if item_type:
-            self._itemType = '.{0}'.format(item_type)
-        else:
-            self._itemType = ''
+        self.itemType = None
 
         self._loadSettings()
 
     def _loadSettings(self):
-        jsonString = util.getSetting('library.settings.{0}{1}'.format(self.serverID, self._itemType), '')
+        if not self.sectionID:
+            return
+
+        jsonString = util.getSetting('library.settings.{0}'.format(self.serverID), '')
         self._settings = {}
         try:
             self._settings = json.loads(jsonString)
@@ -212,6 +212,8 @@ class LibrarySettings(object):
         except:
             util.ERROR()
 
+        self.itemType = self.getItemType()
+
     def _saveSettings(self):
         jsonString = json.dumps(self._settings)
         util.setSetting('library.settings.{0}'.format(self.serverID), jsonString)
@@ -219,16 +221,38 @@ class LibrarySettings(object):
     def setSection(self, section_id):
         self.sectionID = section_id
 
+    def getItemType(self):
+        if not self._settings or self.sectionID not in self._settings:
+            return None
+
+        return self._settings[self.sectionID].get('ITEM_TYPE')
+
+    def setItemType(self, item_type):
+        self.itemType = item_type
+        if self.sectionID not in self._settings:
+            self._settings[self.sectionID] = {}
+
+        self._settings[self.sectionID]['ITEM_TYPE'] = item_type
+
+        self._saveSettings()
+
     def getSetting(self, setting, default=None):
         if not self._settings or self.sectionID not in self._settings:
             return default
 
-        return self._settings[self.sectionID].get(setting, default)
+        if self.itemType not in self._settings[self.sectionID]:
+            return default
+
+        return self._settings[self.sectionID][self.itemType].get(setting, default)
 
     def setSetting(self, setting, value):
         if self.sectionID not in self._settings:
             self._settings[self.sectionID] = {}
-        self._settings[self.sectionID][setting] = value
+
+        if self.itemType not in self._settings[self.sectionID]:
+            self._settings[self.sectionID][self.itemType] = {}
+
+        self._settings[self.sectionID][self.itemType][setting] = value
 
         self._saveSettings()
 
@@ -342,7 +366,7 @@ class CustomScrollBar(object):
 
     def setPosition(self, pos):
         self.pos = pos
-        offset = int((pos / float(self.size - 1)) * self._moveHeight)
+        offset = int((pos / float(max(self.size, 2) - 1)) * self._moveHeight)
         self._barGroup.setPosition(self.x, self.y + offset)
 
     def getPosFromY(self, y):
@@ -368,7 +392,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         windowutils.UtilMixin.__init__(self)
         self.section = kwargs.get('section')
         self.filter = kwargs.get('filter_')
-        self.setItemType()
         self.keyItems = {}
         self.firstOfKeyItems = {}
         self.tasks = backgroundthread.Tasks()
@@ -384,13 +407,13 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.dragging = False
 
         self.cleared = True
-
+        self.librarySettings = LibrarySettings(self.section)
         self.reset()
 
         self.lock = threading.Lock()
 
     def reset(self):
-        self.librarySettings = LibrarySettings(self.section, ITEM_TYPE)
+        self.setItemType(self.librarySettings.itemType)
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         if ITEM_TYPE == 'episode':
             self.sort = self.librarySettings.getSetting('sort', 'show.titleSort')
@@ -404,16 +427,25 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if ITEM_TYPE in ('episode', 'album'):
             self.chunkMode = ChunkModeWrapped()
 
+        key = self.section.key
+        if not key.isdigit():
+            key = self.section.getLibrarySectionId()
+        viewtype = util.getSetting('viewtype.{0}.{1}'.format(self.section.server.uuid, key))
+
         if self.chunkMode:
             if self.section.TYPE in ('artist', 'photo', 'photodirectory'):
                 self.setWindows(VIEWS_SQUARE_CHUNKED.get('all'))
+                self.setDefault(VIEWS_SQUARE_CHUNKED.get(viewtype))
             else:
                 self.setWindows(VIEWS_POSTER_CHUNKED.get('all'))
+                self.setDefault(VIEWS_POSTER_CHUNKED.get(viewtype))
         else:
             if self.section.TYPE in ('artist', 'photo', 'photodirectory'):
                 self.setWindows(VIEWS_SQUARE.get('all'))
+                self.setDefault(VIEWS_SQUARE.get(viewtype))
             else:
                 self.setWindows(VIEWS_POSTER.get('all'))
+                self.setDefault(VIEWS_POSTER.get(viewtype))
 
     def setItemType(self, type_=None):
         setItemType(type_)
@@ -667,7 +699,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 except ValueError:
                     pass
 
-            if idx == 0 and not action == xbmcgui.ACTION_PAGE_UP:
+            if idx == 0 and action == xbmcgui.ACTION_MOVE_UP:
                 self.setFocusId(600)
 
             return
@@ -865,6 +897,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.showPanelControl = None  # TODO: Need to do some check here I think
 
         self.setItemType(choice)
+        self.librarySettings.setItemType(choice)
 
         self.reset()
 

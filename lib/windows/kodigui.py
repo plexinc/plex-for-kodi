@@ -671,6 +671,9 @@ class MultiWindow(object):
     def setWindows(self, windows):
         self._windows = windows
 
+    def setDefault(self, default):
+        self._next = default or self._windows[0]
+
     def windowIndex(self, window):
         if hasattr(window, 'MULTI_WINDOW_ID'):
             for i, w in enumerate(self._windows):

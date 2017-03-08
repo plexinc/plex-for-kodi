@@ -35,18 +35,11 @@ import os
 import json
 import codecs
 import polib
-from pprint import pprint
-
 
 def main():
 	script_dir = os.path.dirname(os.path.realpath(__file__))
-	
 	PlexWeb_dir = os.path.join(script_dir, "Transiflex")
 	pfkTranslation_dir = os.path.join(script_dir, "PlexForKodi")
-	
-	StringMatches = os.path.join(script_dir, "translation.matches.json")
-	
-	#language_dir = os.path.join(script_dir, "Temp")
 	language_dir = os.path.abspath(script_dir+"/../../resources/language")
 	
 	
@@ -63,6 +56,7 @@ def main():
 		['Czech', 'cs', 'cs']
 	]
 	
+	StringMatches = os.path.join(script_dir, "translation.matches.json")
 	StringMatches_data = json.load(codecs.open(StringMatches, 'r', 'utf-8-sig'))
 	
 	transiflex_file_default = os.path.join(PlexWeb_dir, "for_use_plex-web_en-usjson_"+defaultLanguage[1]+".json")
@@ -99,7 +93,7 @@ def main():
 
 		po.save(save_dir+"/strings.po")
 		print("Generated:  "+language[0])
-		#pprint(transiflex_data)
+	print("Finished!")
 	
 def setupFile(language, languageShort):
 	po = polib.POFile()
@@ -111,11 +105,11 @@ def setupFile(language, languageShort):
 		'POT-Creation-Date': 'YYYY-MM-DD 00:00+0100',
 		'PO-Revision-Date': 'YYYY-MM-DD 00:00+0100',
 		'Last-Translator': 'FULL NAME <EMAIL@ADDRESS>',
-		'Language-Team': language[0],
+		'Language-Team': language,
 		'MIME-Version': '1.0',
 		'Content-Type': 'text/plain; charset=UTF-8',
 		'Content-Transfer-Encoding': '8bit',
-		'Language': language[2],
+		'Language': languageShort,
 		'Plural-Forms': 'nplurals=2; plural=(n != 1);'
 	}
 	return po

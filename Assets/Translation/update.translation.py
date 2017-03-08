@@ -2,12 +2,12 @@
 
 """
     File name: update.translation.py
-    Author: Niklas Wagner <skaronator.com>
+    Author: Niklas Wagner (skaronator.com)
 	Contributors:
 		* None
     Date created: 2017-03-07
     Date last modified: 2017-03-08
-    Python Version: 3.4
+    Python Version: 3.5
 	Dependencies:
 		* https://pypi.python.org/pypi/polib
 	
@@ -27,7 +27,6 @@
 		* Replace "Searching..." with "Searching for {1}"?
 		* Merge "Couldn't reach plex.tv" and "Make sure your device is connected to the internet"
 
-		
 """
 
 
@@ -53,37 +52,32 @@ def main():
 		['Spanish', 'es_ES', 'es'],
 		['French', 'fr', 'fr'],
 		['Russian', 'ru', 'ru'],
-		['Czech', 'cs', 'cs']
+		['Czech', 'cs', 'cs'],
+		['Afrikaans', 'af', 'af'],
+		['Korean', 'ko', 'ko'],
+		['Dutch', 'nl', 'nl'],
+		['Italian', 'it', 'it'],
+		['Polish', 'pl', 'pl']
 	]
 	
-	StringMatches = os.path.join(script_dir, "translation.matches.json")
-	StringMatches_data = json.load(codecs.open(StringMatches, 'r', 'utf-8-sig'))
-	
-	transiflex_file_default = os.path.join(PlexWeb_dir, "for_use_plex-web_en-usjson_"+defaultLanguage[1]+".json")
-	transiflex_data_default = json.load(codecs.open(transiflex_file_default, 'r', 'utf-8-sig'))
-	
-	pfk_file_default = os.path.join(pfkTranslation_dir, "plex_for_kodi_"+defaultLanguage[1]+".json")
-	pfk_data_default = json.load(codecs.open(pfk_file_default, 'r', 'utf-8-sig'))
 
-	
+	StringMatches = loadJSON(script_dir, "translation.matches.json")
+	transiflex_data_default = loadJSON(PlexWeb_dir, "for_use_plex-web_en-usjson_"+defaultLanguage[1]+".json")
+	pfk_data_default = loadJSON(pfkTranslation_dir, "plex_for_kodi_"+defaultLanguage[1]+".json")
+
 	for language in supportedLanguages:
 		print("Generating: "+language[0])
 	
 		transiflex_data = {}
 		if language[0] != defaultLanguage[0]:
-			transiflex_file = os.path.join(PlexWeb_dir, "for_use_plex-web_en-usjson_"+language[1]+".json")
-			if os.path.isfile(transiflex_file):
-				transiflex_data = json.load(codecs.open(transiflex_file, 'r', 'utf-8-sig'))
+			transiflex_data = loadJSON(PlexWeb_dir, "for_use_plex-web_en-usjson_"+language[1]+".json")
 				
 		pfk_data = {}
 		if language[0] != defaultLanguage[0]:
-			pfk_file = os.path.join(pfkTranslation_dir, "plex_for_kodi_"+language[1]+".json")
-			if os.path.isfile(pfk_file):
-				pfk_data = json.load(codecs.open(pfk_file, 'r', 'utf-8-sig'))
+			pfk_data = loadJSON(pfkTranslation_dir, "plex_for_kodi_"+language[1]+".json")
 
-		
 		po = setupFile(language[0], language[2])
-		po = matchTransiflex(po, StringMatches_data, transiflex_data, transiflex_data_default)
+		po = matchTransiflex(po, StringMatches, transiflex_data, transiflex_data_default)
 		po = matchPFK(po, pfk_data, pfk_data_default)
 		
 		save_dir = language_dir+"/"+language[0]
@@ -97,7 +91,6 @@ def main():
 	
 def setupFile(language, languageShort):
 	po = polib.POFile()
-		
 	po.metadata = {
 		'INFO': 'THESE FILES ARE AUTOMATICALLY GENERATED, PLEASE DO NOT MODIFY!',
 		'Project-Id-Version': 'XBMC-Addons',
@@ -114,52 +107,44 @@ def setupFile(language, languageShort):
 	}
 	return po
 	
-def matchTransiflex(po, StringMatches_data, transiflex_data, defaultData):
-	for matchSTR, matchIDs in StringMatches_data.items():
+def matchTransiflex(po, StringMatches, transiflex_data, defaultData):
+	for matchSTR, matchIDs in StringMatches.items():
 		# Convert String to Array
 		if not isinstance(matchIDs, list):
 			matchIDs = [matchIDs]
 
 		if matchSTR in transiflex_data:
 			for matchID in matchIDs:
-				entry = polib.POEntry(
-					msgctxt = matchID,
-					msgid=defaultData[matchSTR],
-					msgstr=transiflex_data[matchSTR]
-				)
-			
-				po.append(entry)
+				po = poAppend(po, matchID, defaultData[matchSTR], transiflex_data[matchSTR])
 		else:
 			for matchID in matchIDs:
-				entry = polib.POEntry(
-					msgctxt = matchID,
-					msgid=defaultData[matchSTR],
-					msgstr=""
-				)
-			
-				po.append(entry)
+				po = poAppend(po, matchID, defaultData[matchSTR], "")
 				
 	return po
 
 def matchPFK(po, pfk_data, defaultData):
 	if len(pfk_data) > 0:
 		for matchID, matchSTR in pfk_data.items():
-			defaultData.pop(matchID, None)
-			entry = polib.POEntry(
-					msgctxt=matchID,
-					msgid=defaultData[matchID],
-					msgstr=matchSTR
-				)
-			po.append(entry)
+			defaultData.pop(matchID, None) #remove element from default data (english language) since we have a real translation
+			po = poAppend(po, matchID, defaultData[matchID], matchSTR)
 	if len(defaultData) > 0:	
 		for matchID, matchSTR in defaultData.items():
-			entry = polib.POEntry(
-					msgctxt=matchID,
-					msgid=matchSTR,
-					msgstr=""
-				)
-			po.append(entry)
+			po = poAppend(po, matchID, matchSTR, "")
 	return po
 
+def loadJSON(dir, filename):
+	file = os.path.join(dir, filename)
+	if os.path.isfile(file):
+		return json.load(codecs.open(file, 'r', 'utf-8-sig'))
+	return {}
+	
+def poAppend(po, msgctxt, msgid, msgstr):
+	entry = polib.POEntry(
+			msgctxt=msgctxt,
+			msgid=msgid,
+			msgstr=msgstr
+		)
+	po.append(entry)
+	return po
 
 main()

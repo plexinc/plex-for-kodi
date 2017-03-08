@@ -6,8 +6,8 @@ msgstr ""
 "POT-Creation-Date: YYYY-MM-DD 00:00+0100\n"
 "PO-Revision-Date: YYYY-MM-DD 00:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: G\n"
-"Language: r\n"
+"Language-Team: D\n"
+"Language: n\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,11 +15,11 @@ msgstr ""
 
 msgctxt "#32444"
 msgid "Lyrics"
-msgstr "Liedtext"
+msgstr "Sangtekster"
 
 msgctxt "#32301"
 msgid "Go to Artist"
-msgstr "Zum Interpreten"
+msgstr "Gå til kunstner"
 
 msgctxt "#32328"
 msgid "Yes"
@@ -31,147 +31,147 @@ msgstr "Musikvideo"
 
 msgctxt "#32397"
 msgid "Quality"
-msgstr "Qualität"
+msgstr "Kvalitet"
 
 msgctxt "#32042"
 msgid "Network Discovery"
-msgstr "Gerätesuche im Netzwerk"
+msgstr "Netværkssynlighed"
 
 msgctxt "#32419"
 msgid "Cast"
-msgstr "Darsteller"
+msgstr "Medvirkende"
 
 msgctxt "#32028"
 msgid "Always"
-msgstr "Immer"
+msgstr "Altid"
 
 msgctxt "#32457"
 msgid "Sign In"
-msgstr "Anmelden"
+msgstr "Log Ind"
 
 msgctxt "#32347"
 msgid "Artists"
-msgstr "Interpreten"
+msgstr "Kunstnere"
 
 msgctxt "#32424"
 msgid "Suspend"
-msgstr "Ruhezustand"
+msgstr "Dvale"
 
 msgctxt "#32375"
 msgid "No filters available."
-msgstr "Keine Filter verfügbar."
+msgstr "Ingen filtre tilgængelige"
 
 msgctxt "#32318"
 msgid "Mark Unwatched"
-msgstr "Als \"Ungesehen\" markieren"
+msgstr "Markér som ikke-set"
 
 msgctxt "#32389"
 msgid "Model"
-msgstr "Modell"
+msgstr "Model"
 
 msgctxt "#32415"
 msgid "Edit"
-msgstr "Bearbeiten"
+msgstr "Redigér"
 
 msgctxt "#32209"
 msgid "Concert"
-msgstr "Konzert"
+msgstr "Koncert"
 
 msgctxt "#32046"
 msgid "Connection 2 IP"
-msgstr "Verbindung 2 IP"
+msgstr "Forbindelse 2 IP"
 
 msgctxt "#32319"
 msgid "Mark Watched"
-msgstr "Als \"Gesehen\" markieren"
+msgstr "Markér som set"
 
 msgctxt "#32329"
 msgid "No"
-msgstr "Nein"
+msgstr "Nej"
 
 msgctxt "#32432"
 msgid "Space"
-msgstr "Leerzeichen"
+msgstr "Plads"
 
 msgctxt "#32307"
 msgid "More"
-msgstr "Mehr"
+msgstr "Mere"
 
 msgctxt "#32426"
 msgid "Reboot"
-msgstr "Reboot"
+msgstr "Genstart"
 
 msgctxt "#32348"
 msgid "Movies"
-msgstr "Filme"
+msgstr "Film"
 
 msgctxt "#32376"
 msgid "Clear Filter"
-msgstr "Filter löschen"
+msgstr "Nulstil Filter"
 
 msgctxt "#32401"
 msgid "Directors"
-msgstr "Regisseure"
+msgstr "Instruktører"
 
 msgctxt "#32406"
 msgid "Subtitles delay"
-msgstr "Untertitel Verzögerung"
+msgstr "Undertekstforsinkelse"
 
 msgctxt "#32342"
 msgid "Switch User..."
-msgstr "Benutzer wechseln..."
+msgstr "Skift bruger"
 
 msgctxt "#32439"
 msgid "Playing Next"
-msgstr "Spiele Fortsetzung"
+msgstr "Afspiller næste"
 
 msgctxt "#32050"
 msgid "Manual Servers"
-msgstr "Manuelle Server"
+msgstr "Brugerindstillede servere"
 
 msgctxt "#32423"
 msgid "Power Off"
-msgstr "Ausschalten"
+msgstr "Luk ned"
 
 msgctxt "#32388"
 msgid "Make"
-msgstr "Hersteller"
+msgstr "Lav"
 
 msgctxt "#32313"
 msgid "File unavailable"
-msgstr "Datei nicht verfügbar"
+msgstr "Fil findes ikke"
 
 msgctxt "#32411"
 msgid "Unknown"
-msgstr "Unbekannt"
+msgstr "Ukendt"
 
 msgctxt "#32441"
 msgid "Unknown"
-msgstr "Unbekannt"
+msgstr "Ukendt"
 
 msgctxt "#32300"
 msgid "Go to Album"
-msgstr "Gehe zu Album"
+msgstr "Gå til Album"
 
 msgctxt "#32390"
 msgid "Aperture"
-msgstr "Blende"
+msgstr "Blænde"
 
 msgctxt "#32451"
 msgid "Play Version..."
-msgstr "Version abspielen..."
+msgstr "Afspil Version..."
 
 msgctxt "#32021"
 msgid "Remote Quality"
-msgstr "Qualität für entfernte Geräte"
+msgstr "\"Remote\" Kvalitet"
 
 msgctxt "#32027"
 msgid "Forced"
-msgstr "Erzwungen"
+msgstr "Tvunget"
 
 msgctxt "#32443"
 msgid "Forced"
-msgstr "Erzwungen"
+msgstr "Tvunget"
 
 msgctxt "#32392"
 msgid "Lens"
@@ -179,7 +179,7 @@ msgstr "Objektiv"
 
 msgctxt "#32325"
 msgid "Play Next"
-msgstr "Fortsetzen"
+msgstr "Afspil næste"
 
 msgctxt "#32203"
 msgid "Interview"
@@ -187,7 +187,7 @@ msgstr "Interview"
 
 msgctxt "#32391"
 msgid "Exposure"
-msgstr "Belichtung"
+msgstr "Udsættelse"
 
 msgctxt "#32001"
 msgid "Original"
@@ -195,19 +195,19 @@ msgstr "Original"
 
 msgctxt "#32429"
 msgid "Resume from {1}"
-msgstr "Fortsetzen ab {1}"
+msgstr "Genoptag fra {1}"
 
 msgctxt "#32210"
 msgid "Featurette"
-msgstr "Featurette"
+msgstr "Bag filmen"
 
 msgctxt "#32395"
 msgid "Audio"
-msgstr "Ton"
+msgstr "Lyd"
 
 msgctxt "#32206"
 msgid "Scene"
-msgstr "Szene"
+msgstr "Scene"
 
 msgctxt "#32445"
 msgid "Mono"
@@ -215,19 +215,19 @@ msgstr "Mono"
 
 msgctxt "#32384"
 msgid "Actor"
-msgstr "Schauspieler"
+msgstr "Skuespiller"
 
 msgctxt "#32358"
 msgid "Name"
-msgstr "Name"
+msgstr "Navn"
 
 msgctxt "#32323"
 msgid "Go to Show"
-msgstr "Gehe zur Show"
+msgstr "Gå til Show"
 
 msgctxt "#32400"
 msgid "Go to Season"
-msgstr "Gehe zu Staffel"
+msgstr "Gå til sæson"
 
 msgctxt "#32394"
 msgid "Music"
@@ -235,140 +235,140 @@ msgstr "Musik"
 
 msgctxt "#32341"
 msgid "This server is offline or unreachable"
-msgstr "Dieser Server ist offline oder nicht erreichbar"
+msgstr "Serveren er slukket eller utilgængelig"
 
 msgctxt "#32022"
 msgid "Online Quality"
-msgstr "Online Qualität"
+msgstr "Online kvalitet"
 
 msgctxt "#32436"
 msgid "Paused"
-msgstr "Pausiert"
+msgstr "Pauset"
 
 msgctxt "#32308"
 msgid "Available"
-msgstr "Verfügbar"
+msgstr "Tilgængelig"
 
 msgctxt "#32380"
 msgid "Content Rating"
-msgstr "Altersfreigabe"
+msgstr "Indholds bedømmelse"
 
 msgctxt "#32377"
 msgid "Year"
-msgstr "Jahr"
+msgstr "År"
 
 msgctxt "#32387"
 msgid "Labels"
-msgstr "Beschriftungen"
+msgstr "Etiketter"
 
 msgctxt "#32316"
 msgid "Resume"
-msgstr "Fortsetzen"
+msgstr "Fortsæt"
 
 msgctxt "#32208"
 msgid "Lyric Music Video"
-msgstr "Musikvideo mit Liedtext"
+msgstr "Lyrik Musikvideo"
 
 msgctxt "#32211"
 msgid "Short"
-msgstr "Kurzfilm"
+msgstr "Kortfilm"
 
 msgctxt "#32305"
 msgid "Extras"
-msgstr "Extras"
+msgstr "Ekstramateriale"
 
 msgctxt "#32362"
 msgid "Resolution"
-msgstr "Auflösung"
+msgstr "Opløsning"
 
 msgctxt "#32100"
 msgid ""
 "Do not prompt to select a user or enter a PIN during startup on this device."
-msgstr "Beim Start des Geräts nicht nach Benutzer oder PIN fragen."
+msgstr "Spørg ikke om brugernavn eller pinkode under start af denne enhed"
 
 msgctxt "#32336"
 msgid "Exit"
-msgstr "Beenden"
+msgstr "Afslut"
 
 msgctxt "#32422"
 msgid "Exit"
-msgstr "Beenden"
+msgstr "Afslut"
 
 msgctxt "#32332"
 msgid "Home"
-msgstr "Home"
+msgstr "Hjem"
 
 msgctxt "#32039"
 msgid "Play \"Up Next\" videos automatically"
-msgstr "Spiele \"Nachfolgende\" Videos automatisch ab"
+msgstr "Afspil \"Up Next\" videoer automatisk"
 
 msgctxt "#32202"
 msgid "Deleted Scene"
-msgstr "Gelöschte Szene"
+msgstr "Slettet scene"
 
 msgctxt "#32350"
 msgid "TV Shows"
-msgstr "TV-Serien"
+msgstr "Tv-serier"
 
 msgctxt "#32393"
 msgid "TV Shows"
-msgstr "TV-Serien"
+msgstr "Tv-serier"
 
 msgctxt "#32322"
 msgid "Delete"
-msgstr "Löschen"
+msgstr "Slet"
 
 msgctxt "#32033"
 msgid "Never"
-msgstr "Nie"
+msgstr "Aldrig"
 
 msgctxt "#32051"
 msgid "Privacy"
-msgstr "Datenschutz"
+msgstr "Privatliv"
 
 msgctxt "#32382"
 msgid "Collection"
-msgstr "Sammlung"
+msgstr "Samling"
 
 msgctxt "#32386"
 msgid "Studio"
-msgstr "Studio"
+msgstr "Filmstudie"
 
 msgctxt "#32205"
 msgid "Behind the Scenes"
-msgstr "Hinter den Kulissen"
+msgstr "Bag om kulisserne"
 
 msgctxt "#32044"
 msgid "Connection 1 IP"
-msgstr "Verbindung 1 IP"
+msgstr "Forbindelse 1 IP"
 
 msgctxt "#32045"
 msgid "Connection 1 Port"
-msgstr "Verbindung 1 Port"
+msgstr "Forbindelse 1 port"
 
 msgctxt "#32049"
 msgid "Advanced"
-msgstr "Erweitert"
+msgstr "Avanceret"
 
 msgctxt "#32345"
 msgid "All"
-msgstr "Alle"
+msgstr "Alt"
 
 msgctxt "#32381"
 msgid "Network"
-msgstr "Netzwerk"
+msgstr "Netværk"
 
 msgctxt "#32047"
 msgid "Connection 2 Port"
-msgstr "Verbindung 2 Port"
+msgstr "Forbindelse 2 port"
 
 msgctxt "#32038"
 msgid "Automatically Sign In"
-msgstr "Automatisch anmelden"
+msgstr "Automatisk login"
 
 msgctxt "#32440"
 msgid "On Deck"
-msgstr "Aktuell"
+msgstr "Igangværende"
 
 msgctxt "#32420"
 msgid "Disc"
@@ -380,15 +380,15 @@ msgstr "Land"
 
 msgctxt "#32454"
 msgid "Can't find anything matching your current filters."
-msgstr "Die aktuellen Filter haben keine Treffer ergeben."
+msgstr "Ingen resultater blev fundet som matcher dine nuværende filtre"
 
 msgctxt "#32304"
 msgid "Episode"
-msgstr "Folge"
+msgstr "Afsnit"
 
 msgctxt "#32032"
 msgid "Allow insecure connection"
-msgstr "Unsichere Verbindung erlauben."
+msgstr "Tillad usikre forbindelser"
 
 msgctxt "#32379"
 msgid "Genre"
@@ -396,51 +396,51 @@ msgstr "Genre"
 
 msgctxt "#32000"
 msgid "Main"
-msgstr "Allgemein"
+msgstr "Hovedmenu"
 
 msgctxt "#32031"
 msgid "Burn Subtitles"
-msgstr "Untertitel einbrennen"
+msgstr "Brænd undertekster"
 
 msgctxt "#32029"
 msgid "Only image formats"
-msgstr "Nur Bildformate"
+msgstr "Kun billedformater"
 
 msgctxt "#32354"
 msgid "Release Date"
-msgstr "Erscheinungsdatum"
+msgstr "Frigivelses dato"
 
 msgctxt "#32317"
 msgid "Start from beginning"
-msgstr "Von Anfang an abspielen"
+msgstr "Start fra begyndelsen"
 
 msgctxt "#32421"
 msgid "Sign Out"
-msgstr "Abmelden"
+msgstr "Log ud"
 
 msgctxt "#32344"
 msgid "Sign Out"
-msgstr "Abmelden"
+msgstr "Log ud"
 
 msgctxt "#32335"
 msgid "Are you ready to exit Plex?"
-msgstr "Möchtest du Plex wirklich verlassen?"
+msgstr "Er du klar til at afslutte Plex?"
 
 msgctxt "#32020"
 msgid "Local Quality"
-msgstr "Qualität für lokale Geräte"
+msgstr "Lokal Kvalitet"
 
 msgctxt "#32433"
 msgid "Clear"
-msgstr "Löschen"
+msgstr "Ryd"
 
 msgctxt "#32438"
 msgid "Previous"
-msgstr "Vorherig"
+msgstr "Forrige"
 
 msgctxt "#32212"
 msgid "Other"
-msgstr "Andere"
+msgstr "Andet"
 
 msgctxt "#32446"
 msgid "Stereo"
@@ -448,31 +448,31 @@ msgstr "Stereo"
 
 msgctxt "#32053"
 msgid "video"
-msgstr "Video"
+msgstr "video"
 
 msgctxt "#32030"
 msgid "Automatic"
-msgstr "Automatisch"
+msgstr "Automatisk"
 
 msgctxt "#32368"
 msgid "Unwatched"
-msgstr "Ungesehen"
+msgstr "Ikke set"
 
 msgctxt "#32312"
 msgid "Unavailable"
-msgstr "Nicht verfügbar"
+msgstr "Ikke tilgængelig"
 
 msgctxt "#32360"
 msgid "Rating"
-msgstr "Bewertung"
+msgstr "Bedømmelse"
 
 msgctxt "#32303"
 msgid "Season"
-msgstr "Staffel"
+msgstr "Sæson"
 
 msgctxt "#32383"
 msgid "Director"
-msgstr "Regisseur"
+msgstr "Instruktør"
 
 msgctxt "#32349"
 msgid "Photos"
@@ -480,59 +480,59 @@ msgstr "Fotos"
 
 msgctxt "#32343"
 msgid "Settings"
-msgstr "Einstellungen"
+msgstr "Indstillinger"
 
 msgctxt "#32309"
 msgid "None"
-msgstr "Kein(e)"
+msgstr "Ingen"
 
 msgctxt "#32447"
 msgid "None"
-msgstr "Kein(e)"
+msgstr "Ingen"
 
 msgctxt "#32356"
 msgid "Date Viewed"
-msgstr "Angesehen am"
+msgstr "Dato set"
 
 msgctxt "#32402"
 msgid "Writer"
-msgstr "Autor"
+msgstr "Forfatter"
 
 msgctxt "#32026"
 msgid "Allow Direct Stream"
-msgstr "Direktes Streaming erlauben"
+msgstr "Tillad Direct Stream"
 
 msgctxt "#32025"
 msgid "Allow Direct Play"
-msgstr "Direkte Wiedergabe erlauben"
+msgstr "Tillad Direct Play"
 
 msgctxt "#32396"
 msgid "Subtitles"
-msgstr "Untertitel"
+msgstr "Undertekster"
 
 msgctxt "#32352"
 msgid "Date Added"
-msgstr "Hinzugefügt am"
+msgstr "Dato tilføjet"
 
 msgctxt "#32450"
 msgid "Select a version"
-msgstr "Version auswählen"
+msgstr "Vælg en version"
 
 msgctxt "#32337"
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "Annuller"
 
 msgctxt "#32333"
 msgid "Playlists"
-msgstr "Wiedergabelisten"
+msgstr "Kø"
 
 msgctxt "#32427"
 msgid "Failed"
-msgstr "Fehlgeschlagen"
+msgstr "Fejlet"
 
 msgctxt "#32034"
 msgid "On same network as server"
-msgstr "Im selben Netzwerk wie der Server"
+msgstr "På samme netværk som server"
 
 msgctxt "#32207"
 msgid "Live Music Video"
@@ -540,35 +540,35 @@ msgstr "Live Musikvideo"
 
 msgctxt "#32052"
 msgid "About"
-msgstr "Über"
+msgstr "Om"
 
 msgctxt "#32435"
 msgid "No Results"
-msgstr "Keine Ergebnisse"
+msgstr "Ingen resultater"
 
 msgctxt "#32403"
 msgid "Writers"
-msgstr "Autoren"
+msgstr "Manuskriptforfattere"
 
 msgctxt "#32302"
 msgid "Go to {1}"
-msgstr "Gehe zu {1}"
+msgstr "Gå til {1}"
 
 msgctxt "#32324"
 msgid "Go to {1}"
-msgstr "Gehe zu {1}"
+msgstr "Gå til {1}"
 
 msgctxt "#32201"
 msgid "Trailer"
-msgstr "Trailer"
+msgstr "Forfilm"
 
 msgctxt "#32364"
 msgid "Duration"
-msgstr "Dauer"
+msgstr "Spilletid"
 
 msgctxt "#32431"
 msgid "Search"
-msgstr "Suchen"
+msgstr "Søg"
 
 msgctxt "#32104"
 msgid ""

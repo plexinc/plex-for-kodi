@@ -71,8 +71,12 @@ def main():
 	
 	supportedLanguages = [
 		defaultLanguage,
-		#<Kodi Folder Name>, <Search String in Filename>
-		['German', 'de', 'de_DE']
+		#<Kodi Folder Name>, <Search String in Filename>, <language tag in .po files>
+		['German', 'de', 'de_DE'],
+		['Danish', 'da', 'da_DK'],
+		['Spanish', 'es_ES', 'es'],
+		['French', 'fr', 'fr'],
+		['Russian', 'ru', 'ru']
 	]
 	
 	StringMatches_data = json.load(codecs.open(StringMatches, 'r', 'utf-8-sig'))
@@ -85,10 +89,7 @@ def main():
 
 	
 	for language in supportedLanguages:
-		pfk_file = os.path.join(pfkTranslation_dir, "plex_for_kodi_"+language[1]+".json")
-		if not os.path.isfile(pfk_file):
-			pfk_file = pfk_file_default
-		
+	
 		transiflex_data = {}
 		if language[0] != defaultLanguage[0]:
 			transiflex_file = os.path.join(PlexWeb_dir, "for_use_plex-web_en-usjson_"+language[1]+".json")

@@ -6,7 +6,7 @@
 	Contributors:
 		* None
     Date created: 2017-03-07
-    Date last modified: 2017-03-07
+    Date last modified: 2017-03-08
     Python Version: 3.4
 	Dependencies:
 		* https://pypi.python.org/pypi/polib
@@ -28,19 +28,6 @@
 		* Merge "Couldn't reach plex.tv" and "Make sure your device is connected to the internet"
 
 		
-	Translation compromise:
-		* "Force" -> "Forced"
-		* "This item is currently unavailable." -> "File unavailable"
-		* "Switch User" -> "Switch User..."
-		* "Shows" -> "TV Shows"
-		* "Camera Make" -> "Make"
-		* "Camera Model" -> "Model"
-		* "Shutter Speed" -> "Exposure"
-		* "Shutdown" -> "Power Off"
-		* "Hibernate" -> "Suspend"
-		* "Choose Version" -> "Select a version"
-		* "No Content available for this filter" -> "Can't find anything matching your current filters."
-		* "Server is not accessible. Please sign into your server and check your connection." -> "This server is offline or unreachable"
 """
 
 
@@ -63,10 +50,6 @@ def main():
 	language_dir = os.path.abspath(script_dir+"/../../resources/language")
 	
 	
-	print("script_dir: "+script_dir)
-	print("language_dir: "+language_dir)
-	
-	
 	defaultLanguage = ['English', 'en_US', 'en_gb']
 	
 	supportedLanguages = [
@@ -76,7 +59,8 @@ def main():
 		['Danish', 'da', 'da_DK'],
 		['Spanish', 'es_ES', 'es'],
 		['French', 'fr', 'fr'],
-		['Russian', 'ru', 'ru']
+		['Russian', 'ru', 'ru'],
+		['Czech', 'cs', 'cs']
 	]
 	
 	StringMatches_data = json.load(codecs.open(StringMatches, 'r', 'utf-8-sig'))
@@ -89,6 +73,7 @@ def main():
 
 	
 	for language in supportedLanguages:
+		print("Generating: "+language[0])
 	
 		transiflex_data = {}
 		if language[0] != defaultLanguage[0]:
@@ -111,14 +96,16 @@ def main():
 		
 		if not os.path.exists(save_dir):
 			os.makedirs(save_dir)
-		
+
 		po.save(save_dir+"/strings.po")
+		print("Generated:  "+language[0])
 		#pprint(transiflex_data)
 	
 def setupFile(language, languageShort):
 	po = polib.POFile()
 		
 	po.metadata = {
+		'INFO': 'THESE FILES ARE AUTOMATICALLY GENERATED, PLEASE DO NOT MODIFY!',
 		'Project-Id-Version': 'XBMC-Addons',
 		'Report-Msgid-Bugs-To': 'alanwww1@xbmc.org',
 		'POT-Creation-Date': 'YYYY-MM-DD 00:00+0100',

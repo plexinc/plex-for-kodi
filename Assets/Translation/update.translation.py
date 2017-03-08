@@ -81,70 +81,30 @@ def main():
 	transiflex_data_default = json.load(codecs.open(transiflex_file_default, 'r', 'utf-8-sig'))
 	
 	pfk_file_default = os.path.join(pfkTranslation_dir, "plex_for_kodi_"+defaultLanguage[1]+".json")
-	#pfk_data_default = json.load(codecs.open(pfk_file_default, 'r', 'utf-8-sig'))
+	pfk_data_default = json.load(codecs.open(pfk_file_default, 'r', 'utf-8-sig'))
 
 	
 	for language in supportedLanguages:
-		po = polib.POFile()
-		
-		po.metadata = {
-			'Project-Id-Version': 'XBMC-Addons',
-			'Report-Msgid-Bugs-To': 'alanwww1@xbmc.org',
-			'POT-Creation-Date': 'YYYY-MM-DD 00:00+0100',
-			'PO-Revision-Date': 'YYYY-MM-DD 00:00+0100',
-			'Last-Translator': 'FULL NAME <EMAIL@ADDRESS>',
-			'Language-Team': language[0],
-			'MIME-Version': '1.0',
-			'Content-Type': 'text/plain; charset=UTF-8',
-			'Content-Transfer-Encoding': '8bit',
-			'Language': language[2],
-			'Plural-Forms': 'nplurals=2; plural=(n != 1);'
-		}
-	
-		transiflex_file = os.path.join(PlexWeb_dir, "for_use_plex-web_en-usjson_"+language[1]+".json")
 		pfk_file = os.path.join(pfkTranslation_dir, "plex_for_kodi_"+language[1]+".json")
 		if not os.path.isfile(pfk_file):
 			pfk_file = pfk_file_default
 		
-		
-		if os.path.isfile(transiflex_file):
-			transiflex_data = json.load(codecs.open(transiflex_file, 'r', 'utf-8-sig'))
-
-			for matchSTR, matchIDs in StringMatches_data.items():
-				# Convert String to Array
-				if not isinstance(matchIDs, list):
-					matchIDs = [matchIDs]
-					
+		transiflex_data = {}
+		if language[0] != defaultLanguage[0]:
+			transiflex_file = os.path.join(PlexWeb_dir, "for_use_plex-web_en-usjson_"+language[1]+".json")
+			if os.path.isfile(transiflex_file):
+				transiflex_data = json.load(codecs.open(transiflex_file, 'r', 'utf-8-sig'))
 				
-				if matchSTR in transiflex_data:
-					for matchID in matchIDs:
-						if language[0] == 'English':
-							entry = polib.POEntry(
-								msgctxt = matchID,
-								msgid=transiflex_data[matchSTR],
-								msgstr=""
-							)
-						else:
-							entry = polib.POEntry(
-								msgctxt = matchID,
-								msgid=transiflex_data_default[matchSTR],
-								msgstr=transiflex_data[matchSTR]
-							)
-						
-						po.append(entry)
-				else:
-					print("ERROR: No Array Key found for '"+matchSTR+"'")
-		
-		
-		pfk_data = json.load(codecs.open(pfk_file, 'r', 'utf-8-sig'))
+		pfk_data = {}
+		if language[0] != defaultLanguage[0]:
+			pfk_file = os.path.join(pfkTranslation_dir, "plex_for_kodi_"+language[1]+".json")
+			if os.path.isfile(pfk_file):
+				pfk_data = json.load(codecs.open(pfk_file, 'r', 'utf-8-sig'))
 
-		for matchID, matchSTR in pfk_data.items():
-			entry = polib.POEntry(
-					msgctxt=matchID,
-					msgid=matchSTR,
-					msgstr=""
-				)
-			po.append(entry)
+		
+		po = setupFile(language[0], language[2])
+		po = matchTransiflex(po, StringMatches_data, transiflex_data, transiflex_data_default)
+		po = matchPFK(po, pfk_data, pfk_data_default)
 		
 		save_dir = language_dir+"/"+language[0]
 		
@@ -154,7 +114,70 @@ def main():
 		po.save(save_dir+"/strings.po")
 		#pprint(transiflex_data)
 	
+def setupFile(language, languageShort):
+	po = polib.POFile()
+		
+	po.metadata = {
+		'Project-Id-Version': 'XBMC-Addons',
+		'Report-Msgid-Bugs-To': 'alanwww1@xbmc.org',
+		'POT-Creation-Date': 'YYYY-MM-DD 00:00+0100',
+		'PO-Revision-Date': 'YYYY-MM-DD 00:00+0100',
+		'Last-Translator': 'FULL NAME <EMAIL@ADDRESS>',
+		'Language-Team': language[0],
+		'MIME-Version': '1.0',
+		'Content-Type': 'text/plain; charset=UTF-8',
+		'Content-Transfer-Encoding': '8bit',
+		'Language': language[2],
+		'Plural-Forms': 'nplurals=2; plural=(n != 1);'
+	}
+	return po
 	
+def matchTransiflex(po, StringMatches_data, transiflex_data, defaultData):
+	for matchSTR, matchIDs in StringMatches_data.items():
+		# Convert String to Array
+		if not isinstance(matchIDs, list):
+			matchIDs = [matchIDs]
+
+		if matchSTR in transiflex_data:
+			for matchID in matchIDs:
+				entry = polib.POEntry(
+					msgctxt = matchID,
+					msgid=defaultData[matchSTR],
+					msgstr=transiflex_data[matchSTR]
+				)
+			
+				po.append(entry)
+		else:
+			for matchID in matchIDs:
+				entry = polib.POEntry(
+					msgctxt = matchID,
+					msgid=defaultData[matchSTR],
+					msgstr=""
+				)
+			
+				po.append(entry)
+				
+	return po
+
+def matchPFK(po, pfk_data, defaultData):
+	if len(pfk_data) > 0:
+		for matchID, matchSTR in pfk_data.items():
+			defaultData.pop(matchID, None)
+			entry = polib.POEntry(
+					msgctxt=matchID,
+					msgid=defaultData[matchID],
+					msgstr=matchSTR
+				)
+			po.append(entry)
+	if len(defaultData) > 0:	
+		for matchID, matchSTR in defaultData.items():
+			entry = polib.POEntry(
+					msgctxt=matchID,
+					msgid=matchSTR,
+					msgstr=""
+				)
+			po.append(entry)
+	return po
 
 
 main()

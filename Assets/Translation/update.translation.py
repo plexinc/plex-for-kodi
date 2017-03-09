@@ -6,7 +6,7 @@
 	Contributors:
 		* None
     Date created: 2017-03-07
-    Date last modified: 2017-03-08
+    Date last modified: 2017-03-09
     Python Version: 3.5
 	Dependencies:
 		* https://pypi.python.org/pypi/polib
@@ -21,7 +21,6 @@
 		* Download newest translation from Plex Web Repo instead of using local files.
 		* Host the "PlexForKodi" translation strings on Transiflex or integrate it in the Plex Web Transiflex Repo.
 		* Maybe add PMS Transiflex as well since some strings are missing in Plex Web but in PMS (Quality Settings for example)
-		* Sort .po file elements by string id so github history doesn't change so much
 		
 	Translation Todo:
 		* Merge "By Date Added", "By Release Date" with "By {1}" translation
@@ -116,23 +115,20 @@ def matchTransiflex(po, StringMatches, transiflex_data, defaultData):
 		if not isinstance(matchIDs, list):
 			matchIDs = [matchIDs]
 
-		if matchSTR in transiflex_data:
-			for matchID in matchIDs:
+		for matchID in matchIDs:
+			if matchSTR in transiflex_data:
 				po = poAppend(po, matchID, defaultData[matchSTR], transiflex_data[matchSTR])
-		else:
-			for matchID in matchIDs:
+			else:
 				po = poAppend(po, matchID, defaultData[matchSTR], "")
-				
 	return po
 
 def matchPFK(po, pfk_data, defaultData):
-	if len(pfk_data) > 0:
-		for matchID, matchSTR in pfk_data.items():
-			defaultData.pop(matchID, None) #remove element from default data (english language) since we have a real translation
-			po = poAppend(po, matchID, defaultData[matchID], matchSTR)
-	if len(defaultData) > 0:	
-		for matchID, matchSTR in defaultData.items():
-			po = poAppend(po, matchID, matchSTR, "")
+	for matchID, matchSTR in pfk_data.items():
+		defaultData.pop(matchID, None) #remove element from default data (english language) since we have a real translation
+		po = poAppend(po, matchID, defaultData[matchID], matchSTR)
+		
+	for matchID, matchSTR in defaultData.items():
+		po = poAppend(po, matchID, matchSTR, "")
 	return po
 
 def loadJSON(dir, filename):

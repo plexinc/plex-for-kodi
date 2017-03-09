@@ -65,7 +65,7 @@
 	"Are you ready to exit Plex?": "#32335",
 	"Exit": ["#32336", "#32422"],
 	"Cancel": "#32337",
-	"Switch User...": "#32342",
+	"Switch User": "#32342",
 	"Settings": "#32343",
 	"Sign Out": ["#32421", "#32344"],
 	"All": "#32345",

@@ -21,6 +21,7 @@
 		* Download newest translation from Plex Web Repo instead of using local files.
 		* Host the "PlexForKodi" translation strings on Transiflex or integrate it in the Plex Web Transiflex Repo.
 		* Maybe add PMS Transiflex as well since some strings are missing in Plex Web but in PMS (Quality Settings for example)
+		* Sort .po file elements by string id so github history doesn't change so much
 		
 	Translation Todo:
 		* Merge "By Date Added", "By Release Date" with "By {1}" translation
@@ -34,6 +35,7 @@ import os
 import json
 import codecs
 import polib
+import collections
 
 def main():
 	script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -64,6 +66,7 @@ def main():
 	StringMatches = loadJSON(script_dir, "translation.matches.json")
 	transiflex_data_default = loadJSON(PlexWeb_dir, "for_use_plex-web_en-usjson_"+defaultLanguage[1]+".json")
 	pfk_data_default = loadJSON(pfkTranslation_dir, "plex_for_kodi_"+defaultLanguage[1]+".json")
+
 
 	for language in supportedLanguages:
 		print("Generating: "+language[0])
@@ -135,7 +138,9 @@ def matchPFK(po, pfk_data, defaultData):
 def loadJSON(dir, filename):
 	file = os.path.join(dir, filename)
 	if os.path.isfile(file):
-		return json.load(codecs.open(file, 'r', 'utf-8-sig'))
+		dict = json.load(codecs.open(file, 'r', 'utf-8-sig'))
+		#sort by key name to have a better github history
+		return collections.OrderedDict(sorted(dict.items()))
 	return {}
 	
 def poAppend(po, msgctxt, msgid, msgstr):

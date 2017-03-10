@@ -190,7 +190,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             options.append({'key': 'to_show', 'display': T(32323, 'Go to Show')})
 
         if self.video.type in ('episode', 'movie'):
-            options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.video.getLibrarySectionTitle())})
+            options.append({'key': 'to_section', 'display': T(32324, u'Go to {1}').format('', self.video.getLibrarySectionTitle())})
 
         if self.video.server.allowsMediaDeletion:
             options.append({'key': 'delete', 'display': T(32322, 'Delete')})

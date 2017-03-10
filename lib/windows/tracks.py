@@ -233,7 +233,7 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 options.append(dropdown.SEPARATOR)
 
             options.append({'key': 'to_artist', 'display': T(32301, 'Go to Artist')})
-            options.append({'key': 'to_section', 'display': T(32302, u'Go to {0}').format(self.album.getLibrarySectionTitle())})
+            options.append({'key': 'to_section', 'display': T(32302, u'Go to {1}').format('', self.album.getLibrarySectionTitle())})
 
         pos = (460, 1106)
         bottom = True

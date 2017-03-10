@@ -43,7 +43,7 @@ class UtilMixin():
                 if i.get('viewOffset'):
                     choice = dropdown.showDropdown(
                         options=[
-                            {'key': 'resume', 'display': T(32429, 'Resume from {0}').format(util.timeDisplay(i.viewOffset.asInt()).lstrip('0').lstrip(':'))},
+                            {'key': 'resume', 'display': T(32429, 'Resume from {1}').format('', util.timeDisplay(i.viewOffset.asInt()).lstrip('0').lstrip(':'))},
                             {'key': 'play', 'display': T(32317, 'Play from beginning')}
                         ],
                         pos=(660, 441),

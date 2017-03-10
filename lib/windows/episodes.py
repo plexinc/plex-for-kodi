@@ -527,7 +527,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             options.append(dropdown.SEPARATOR)
 
         options.append({'key': 'to_show', 'display': T(32323, 'Go To Show')})
-        options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.season.getLibrarySectionTitle())})
+        options.append({'key': 'to_section', 'display': T(32324, u'Go to {1}').format('', self.season.getLibrarySectionTitle())})
 
         pos = (500, 620)
         bottom = False

@@ -6,8 +6,8 @@ msgstr ""
 "POT-Creation-Date: YYYY-MM-DD 00:00+0100\n"
 "PO-Revision-Date: YYYY-MM-DD 00:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: English\n"
-"Language: en_gb\n"
+"Language-Team: Danish\n"
+"Language: da_DK\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,11 +16,11 @@ msgstr ""
 
 msgctxt "#32000"
 msgid "Main"
-msgstr ""
+msgstr "Hovedmenu"
 
 msgctxt "#32001"
 msgid "Original"
-msgstr ""
+msgstr "Original"
 
 msgctxt "#32002"
 msgid "20 Mbps 1080p"
@@ -76,15 +76,15 @@ msgstr ""
 
 msgctxt "#32020"
 msgid "Local Quality"
-msgstr ""
+msgstr "Lokal Kvalitet"
 
 msgctxt "#32021"
 msgid "Remote Quality"
-msgstr ""
+msgstr "\"Remote\" Kvalitet"
 
 msgctxt "#32022"
 msgid "Online Quality"
-msgstr ""
+msgstr "Online kvalitet"
 
 msgctxt "#32023"
 msgid "Transcode Format"
@@ -96,47 +96,47 @@ msgstr ""
 
 msgctxt "#32025"
 msgid "Allow Direct Play"
-msgstr ""
+msgstr "Tillad Direct Play"
 
 msgctxt "#32026"
 msgid "Allow Direct Stream"
-msgstr ""
+msgstr "Tillad Direct Stream"
 
 msgctxt "#32027"
 msgid "Forced"
-msgstr ""
+msgstr "Tvunget"
 
 msgctxt "#32028"
 msgid "Always"
-msgstr ""
+msgstr "Altid"
 
 msgctxt "#32029"
 msgid "Only image formats"
-msgstr ""
+msgstr "Kun billedformater"
 
 msgctxt "#32030"
 msgid "Automatic"
-msgstr ""
+msgstr "Automatisk"
 
 msgctxt "#32031"
 msgid "Burn Subtitles"
-msgstr ""
+msgstr "Brænd undertekster"
 
 msgctxt "#32032"
 msgid "Allow insecure connection"
-msgstr ""
+msgstr "Tillad usikre forbindelser"
 
 msgctxt "#32033"
 msgid "Never"
-msgstr ""
+msgstr "Aldrig"
 
 msgctxt "#32034"
 msgid "On same network as server"
-msgstr ""
+msgstr "På samme netværk som server"
 
 msgctxt "#32035"
 msgid "Always"
-msgstr ""
+msgstr "Altid"
 
 msgctxt "#32036"
 msgid "Allow 4K"
@@ -148,11 +148,11 @@ msgstr ""
 
 msgctxt "#32038"
 msgid "Automatically Sign In"
-msgstr ""
+msgstr "Automatisk login"
 
 msgctxt "#32039"
 msgid "Play \"Up Next\" videos automatically"
-msgstr ""
+msgstr "Afspil \"Up Next\" videoer automatisk"
 
 msgctxt "#32040"
 msgid "Enable Subtitle Downloading"
@@ -160,7 +160,7 @@ msgstr ""
 
 msgctxt "#32042"
 msgid "Network Discovery"
-msgstr ""
+msgstr "Netværkssynlighed"
 
 msgctxt "#32043"
 msgid "Start Plex On Kodi Startup"
@@ -168,43 +168,43 @@ msgstr ""
 
 msgctxt "#32044"
 msgid "Connection 1 IP"
-msgstr ""
+msgstr "Forbindelse 1 IP"
 
 msgctxt "#32045"
 msgid "Connection 1 Port"
-msgstr ""
+msgstr "Forbindelse 1 port"
 
 msgctxt "#32046"
 msgid "Connection 2 IP"
-msgstr ""
+msgstr "Forbindelse 2 IP"
 
 msgctxt "#32047"
 msgid "Connection 2 Port"
-msgstr ""
+msgstr "Forbindelse 2 port"
 
 msgctxt "#32048"
 msgid "Audio"
-msgstr ""
+msgstr "Lyd"
 
 msgctxt "#32049"
 msgid "Advanced"
-msgstr ""
+msgstr "Avanceret"
 
 msgctxt "#32050"
 msgid "Manual Servers"
-msgstr ""
+msgstr "Brugerindstillede servere"
 
 msgctxt "#32051"
 msgid "Privacy"
-msgstr ""
+msgstr "Privatliv"
 
 msgctxt "#32052"
 msgid "About"
-msgstr ""
+msgstr "Om"
 
 msgctxt "#32053"
 msgid "video"
-msgstr ""
+msgstr "video"
 
 msgctxt "#32054"
 msgid "Addon Version"
@@ -225,7 +225,7 @@ msgstr ""
 msgctxt "#32100"
 msgid ""
 "Do not prompt to select a user or enter a PIN during startup on this device."
-msgstr ""
+msgstr "Spørg ikke om brugernavn eller pinkode under start af denne enhed"
 
 msgctxt "#32101"
 msgid ""
@@ -255,75 +255,75 @@ msgstr ""
 
 msgctxt "#32201"
 msgid "Trailer"
-msgstr ""
+msgstr "Forfilm"
 
 msgctxt "#32202"
 msgid "Deleted Scene"
-msgstr ""
+msgstr "Slettet scene"
 
 msgctxt "#32203"
 msgid "Interview"
-msgstr ""
+msgstr "Interview"
 
 msgctxt "#32204"
 msgid "Music Video"
-msgstr ""
+msgstr "Musikvideo"
 
 msgctxt "#32205"
 msgid "Behind the Scenes"
-msgstr ""
+msgstr "Bag om kulisserne"
 
 msgctxt "#32206"
 msgid "Scene"
-msgstr ""
+msgstr "Scene"
 
 msgctxt "#32207"
 msgid "Live Music Video"
-msgstr ""
+msgstr "Live Musikvideo"
 
 msgctxt "#32208"
 msgid "Lyric Music Video"
-msgstr ""
+msgstr "Lyrik Musikvideo"
 
 msgctxt "#32209"
 msgid "Concert"
-msgstr ""
+msgstr "Koncert"
 
 msgctxt "#32210"
 msgid "Featurette"
-msgstr ""
+msgstr "Bag filmen"
 
 msgctxt "#32211"
 msgid "Short"
-msgstr ""
+msgstr "Kortfilm"
 
 msgctxt "#32212"
 msgid "Other"
-msgstr ""
+msgstr "Andet"
 
 msgctxt "#32300"
 msgid "Go to Album"
-msgstr ""
+msgstr "Gå til Album"
 
 msgctxt "#32301"
 msgid "Go to Artist"
-msgstr ""
+msgstr "Gå til kunstner"
 
 msgctxt "#32302"
 msgid "Go to {1}"
-msgstr ""
+msgstr "Gå til {1}"
 
 msgctxt "#32303"
 msgid "Season"
-msgstr ""
+msgstr "Sæson"
 
 msgctxt "#32304"
 msgid "Episode"
-msgstr ""
+msgstr "Afsnit"
 
 msgctxt "#32305"
 msgid "Extras"
-msgstr ""
+msgstr "Ekstramateriale"
 
 msgctxt "#32306"
 msgid "Related Shows"
@@ -331,15 +331,15 @@ msgstr ""
 
 msgctxt "#32307"
 msgid "More"
-msgstr ""
+msgstr "Mere"
 
 msgctxt "#32308"
 msgid "Available"
-msgstr ""
+msgstr "Tilgængelig"
 
 msgctxt "#32309"
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 msgctxt "#32310"
 msgid "S"
@@ -351,11 +351,11 @@ msgstr ""
 
 msgctxt "#32312"
 msgid "Unavailable"
-msgstr ""
+msgstr "Ikke tilgængelig"
 
 msgctxt "#32313"
 msgid "File unavailable"
-msgstr ""
+msgstr "Fil findes ikke"
 
 msgctxt "#32314"
 msgid "In Progress"
@@ -367,19 +367,19 @@ msgstr ""
 
 msgctxt "#32316"
 msgid "Resume"
-msgstr ""
+msgstr "Fortsæt"
 
 msgctxt "#32317"
 msgid "Start from beginning"
-msgstr ""
+msgstr "Start fra begyndelsen"
 
 msgctxt "#32318"
 msgid "Mark Unwatched"
-msgstr ""
+msgstr "Markér som ikke-set"
 
 msgctxt "#32319"
 msgid "Mark Watched"
-msgstr ""
+msgstr "Markér som set"
 
 msgctxt "#32320"
 msgid "Mark Season Unwatched"
@@ -391,19 +391,19 @@ msgstr ""
 
 msgctxt "#32322"
 msgid "Delete"
-msgstr ""
+msgstr "Slet"
 
 msgctxt "#32323"
 msgid "Go to Show"
-msgstr ""
+msgstr "Gå til Show"
 
 msgctxt "#32324"
 msgid "Go to {1}"
-msgstr ""
+msgstr "Gå til {1}"
 
 msgctxt "#32325"
 msgid "Play Next"
-msgstr ""
+msgstr "Afspil næste"
 
 msgctxt "#32326"
 msgid "Really Delete?"
@@ -415,11 +415,11 @@ msgstr ""
 
 msgctxt "#32328"
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 msgctxt "#32329"
 msgid "No"
-msgstr ""
+msgstr "Nej"
 
 msgctxt "#32330"
 msgid "Message"
@@ -431,11 +431,11 @@ msgstr ""
 
 msgctxt "#32332"
 msgid "Home"
-msgstr ""
+msgstr "Hjem"
 
 msgctxt "#32333"
 msgid "Playlists"
-msgstr ""
+msgstr "Kø"
 
 msgctxt "#32334"
 msgid "Confirm Exit"
@@ -443,15 +443,15 @@ msgstr ""
 
 msgctxt "#32335"
 msgid "Are you ready to exit Plex?"
-msgstr ""
+msgstr "Er du klar til at afslutte Plex?"
 
 msgctxt "#32336"
 msgid "Exit"
-msgstr ""
+msgstr "Afslut"
 
 msgctxt "#32337"
 msgid "Cancel"
-msgstr ""
+msgstr "Annuller"
 
 msgctxt "#32338"
 msgid "No Servers Found"
@@ -467,23 +467,23 @@ msgstr ""
 
 msgctxt "#32341"
 msgid "This server is offline or unreachable"
-msgstr ""
+msgstr "Serveren er slukket eller utilgængelig"
 
 msgctxt "#32342"
 msgid "Switch User"
-msgstr ""
+msgstr "Skift bruger"
 
 msgctxt "#32343"
 msgid "Settings"
-msgstr ""
+msgstr "Indstillinger"
 
 msgctxt "#32344"
 msgid "Sign Out"
-msgstr ""
+msgstr "Log ud"
 
 msgctxt "#32345"
 msgid "All"
-msgstr ""
+msgstr "Alt"
 
 msgctxt "#32346"
 msgid "By Name"
@@ -491,19 +491,19 @@ msgstr ""
 
 msgctxt "#32347"
 msgid "Artists"
-msgstr ""
+msgstr "Kunstnere"
 
 msgctxt "#32348"
 msgid "Movies"
-msgstr ""
+msgstr "Film"
 
 msgctxt "#32349"
 msgid "Photos"
-msgstr ""
+msgstr "Fotos"
 
 msgctxt "#32350"
 msgid "TV Shows"
-msgstr ""
+msgstr "Tv-serier"
 
 msgctxt "#32351"
 msgid "By Date Added"
@@ -511,7 +511,7 @@ msgstr ""
 
 msgctxt "#32352"
 msgid "Date Added"
-msgstr ""
+msgstr "Dato tilføjet"
 
 msgctxt "#32353"
 msgid "By Release Date"
@@ -519,7 +519,7 @@ msgstr ""
 
 msgctxt "#32354"
 msgid "Release Date"
-msgstr ""
+msgstr "Frigivelses dato"
 
 msgctxt "#32355"
 msgid "By Date Viewed"
@@ -527,7 +527,7 @@ msgstr ""
 
 msgctxt "#32356"
 msgid "Date Viewed"
-msgstr ""
+msgstr "Dato set"
 
 msgctxt "#32357"
 msgid "By Name"
@@ -535,7 +535,7 @@ msgstr ""
 
 msgctxt "#32358"
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 msgctxt "#32359"
 msgid "By Rating"
@@ -543,7 +543,7 @@ msgstr ""
 
 msgctxt "#32360"
 msgid "Rating"
-msgstr ""
+msgstr "Bedømmelse"
 
 msgctxt "#32361"
 msgid "By Resolution"
@@ -551,7 +551,7 @@ msgstr ""
 
 msgctxt "#32362"
 msgid "Resolution"
-msgstr ""
+msgstr "Opløsning"
 
 msgctxt "#32363"
 msgid "By Duration"
@@ -559,7 +559,7 @@ msgstr ""
 
 msgctxt "#32364"
 msgid "Duration"
-msgstr ""
+msgstr "Spilletid"
 
 msgctxt "#32365"
 msgid "By First Aired"
@@ -575,7 +575,7 @@ msgstr ""
 
 msgctxt "#32368"
 msgid "Unwatched"
-msgstr ""
+msgstr "Ikke set"
 
 msgctxt "#32369"
 msgid "By Date Played"
@@ -603,15 +603,15 @@ msgstr ""
 
 msgctxt "#32375"
 msgid "No filters available."
-msgstr ""
+msgstr "Ingen filtre tilgængelige"
 
 msgctxt "#32376"
 msgid "Clear Filter"
-msgstr ""
+msgstr "Nulstil Filter"
 
 msgctxt "#32377"
 msgid "Year"
-msgstr ""
+msgstr "År"
 
 msgctxt "#32378"
 msgid "Decade"
@@ -619,79 +619,79 @@ msgstr ""
 
 msgctxt "#32379"
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 msgctxt "#32380"
 msgid "Content Rating"
-msgstr ""
+msgstr "Indholds bedømmelse"
 
 msgctxt "#32381"
 msgid "Network"
-msgstr ""
+msgstr "Netværk"
 
 msgctxt "#32382"
 msgid "Collection"
-msgstr ""
+msgstr "Samling"
 
 msgctxt "#32383"
 msgid "Director"
-msgstr ""
+msgstr "Instruktør"
 
 msgctxt "#32384"
 msgid "Actor"
-msgstr ""
+msgstr "Skuespiller"
 
 msgctxt "#32385"
 msgid "Country"
-msgstr ""
+msgstr "Land"
 
 msgctxt "#32386"
 msgid "Studio"
-msgstr ""
+msgstr "Filmstudie"
 
 msgctxt "#32387"
 msgid "Labels"
-msgstr ""
+msgstr "Etiketter"
 
 msgctxt "#32388"
 msgid "Make"
-msgstr ""
+msgstr "Lav"
 
 msgctxt "#32389"
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 msgctxt "#32390"
 msgid "Aperture"
-msgstr ""
+msgstr "Blænde"
 
 msgctxt "#32391"
 msgid "Exposure"
-msgstr ""
+msgstr "Udsættelse"
 
 msgctxt "#32392"
 msgid "Lens"
-msgstr ""
+msgstr "Objektiv"
 
 msgctxt "#32393"
 msgid "TV Shows"
-msgstr ""
+msgstr "Tv-serier"
 
 msgctxt "#32394"
 msgid "Music"
-msgstr ""
+msgstr "Musik"
 
 msgctxt "#32395"
 msgid "Audio"
-msgstr ""
+msgstr "Lyd"
 
 msgctxt "#32396"
 msgid "Subtitles"
-msgstr ""
+msgstr "Undertekster"
 
 msgctxt "#32397"
 msgid "Quality"
-msgstr ""
+msgstr "Kvalitet"
 
 msgctxt "#32398"
 msgid "Kodi Video Settings"
@@ -703,19 +703,19 @@ msgstr ""
 
 msgctxt "#32400"
 msgid "Go to Season"
-msgstr ""
+msgstr "Gå til sæson"
 
 msgctxt "#32401"
 msgid "Directors"
-msgstr ""
+msgstr "Instruktører"
 
 msgctxt "#32402"
 msgid "Writer"
-msgstr ""
+msgstr "Forfatter"
 
 msgctxt "#32403"
 msgid "Writers"
-msgstr ""
+msgstr "Manuskriptforfattere"
 
 msgctxt "#32404"
 msgid "Related Movies"
@@ -727,7 +727,7 @@ msgstr ""
 
 msgctxt "#32406"
 msgid "Subtitles delay"
-msgstr ""
+msgstr "Undertekstforsinkelse"
 
 msgctxt "#32407"
 msgid "Next Subtitle"
@@ -747,7 +747,7 @@ msgstr ""
 
 msgctxt "#32411"
 msgid "Unknown"
-msgstr ""
+msgstr "Ukendt"
 
 msgctxt "#32412"
 msgid "Edit or Clear"
@@ -763,7 +763,7 @@ msgstr ""
 
 msgctxt "#32415"
 msgid "Edit"
-msgstr ""
+msgstr "Redigér"
 
 msgctxt "#32416"
 msgid "Enter IP Address"
@@ -779,27 +779,27 @@ msgstr ""
 
 msgctxt "#32419"
 msgid "Cast"
-msgstr ""
+msgstr "Medvirkende"
 
 msgctxt "#32420"
 msgid "Disc"
-msgstr ""
+msgstr "Disk"
 
 msgctxt "#32421"
 msgid "Sign Out"
-msgstr ""
+msgstr "Log ud"
 
 msgctxt "#32422"
 msgid "Exit"
-msgstr ""
+msgstr "Afslut"
 
 msgctxt "#32423"
 msgid "Power Off"
-msgstr ""
+msgstr "Luk ned"
 
 msgctxt "#32424"
 msgid "Suspend"
-msgstr ""
+msgstr "Dvale"
 
 msgctxt "#32425"
 msgid "Hibernate"
@@ -807,11 +807,11 @@ msgstr ""
 
 msgctxt "#32426"
 msgid "Reboot"
-msgstr ""
+msgstr "Genstart"
 
 msgctxt "#32427"
 msgid "Failed"
-msgstr ""
+msgstr "Fejlet"
 
 msgctxt "#32428"
 msgid "Login failed!"
@@ -819,7 +819,7 @@ msgstr ""
 
 msgctxt "#32429"
 msgid "Resume from {1}"
-msgstr ""
+msgstr "Genoptag fra {1}"
 
 msgctxt "#32430"
 msgid "Discovery"
@@ -827,15 +827,15 @@ msgstr ""
 
 msgctxt "#32431"
 msgid "Search"
-msgstr ""
+msgstr "Søg"
 
 msgctxt "#32432"
 msgid "Space"
-msgstr ""
+msgstr "Plads"
 
 msgctxt "#32433"
 msgid "Clear"
-msgstr ""
+msgstr "Ryd"
 
 msgctxt "#32434"
 msgid "Searching..."
@@ -843,11 +843,11 @@ msgstr ""
 
 msgctxt "#32435"
 msgid "No Results"
-msgstr ""
+msgstr "Ingen resultater"
 
 msgctxt "#32436"
 msgid "Paused"
-msgstr ""
+msgstr "Pauset"
 
 msgctxt "#32437"
 msgid "Welcome"
@@ -855,19 +855,19 @@ msgstr ""
 
 msgctxt "#32438"
 msgid "Previous"
-msgstr ""
+msgstr "Forrige"
 
 msgctxt "#32439"
 msgid "Playing Next"
-msgstr ""
+msgstr "Afspiller næste"
 
 msgctxt "#32440"
 msgid "On Deck"
-msgstr ""
+msgstr "Igangværende"
 
 msgctxt "#32441"
 msgid "Unknown"
-msgstr ""
+msgstr "Ukendt"
 
 msgctxt "#32442"
 msgid "Embedded"
@@ -875,23 +875,23 @@ msgstr ""
 
 msgctxt "#32443"
 msgid "Forced"
-msgstr ""
+msgstr "Tvunget"
 
 msgctxt "#32444"
 msgid "Lyrics"
-msgstr ""
+msgstr "Sangtekster"
 
 msgctxt "#32445"
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 msgctxt "#32446"
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 msgctxt "#32447"
 msgid "None"
-msgstr ""
+msgstr "Ingen"
 
 msgctxt "#32448"
 msgid "Playback Failed!"
@@ -904,11 +904,11 @@ msgstr ""
 
 msgctxt "#32450"
 msgid "Select a version"
-msgstr ""
+msgstr "Vælg en version"
 
 msgctxt "#32451"
 msgid "Play Version..."
-msgstr ""
+msgstr "Afspil Version..."
 
 msgctxt "#32452"
 msgid "No Content available in this library"
@@ -921,7 +921,7 @@ msgstr ""
 
 msgctxt "#32454"
 msgid "Can't find anything matching your current filters."
-msgstr ""
+msgstr "Ingen resultater blev fundet som matcher dine nuværende filtre"
 
 msgctxt "#32455"
 msgid "Please change or remove the current filter"
@@ -933,4 +933,4 @@ msgstr ""
 
 msgctxt "#32457"
 msgid "Sign In"
-msgstr ""
+msgstr "Log Ind"

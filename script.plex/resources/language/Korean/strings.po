@@ -6,8 +6,8 @@ msgstr ""
 "POT-Creation-Date: YYYY-MM-DD 00:00+0100\n"
 "PO-Revision-Date: YYYY-MM-DD 00:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: English\n"
-"Language: en_gb\n"
+"Language-Team: Korean\n"
+"Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,11 +16,11 @@ msgstr ""
 
 msgctxt "#32000"
 msgid "Main"
-msgstr ""
+msgstr "메인"
 
 msgctxt "#32001"
 msgid "Original"
-msgstr ""
+msgstr "원본"
 
 msgctxt "#32002"
 msgid "20 Mbps 1080p"
@@ -76,15 +76,15 @@ msgstr ""
 
 msgctxt "#32020"
 msgid "Local Quality"
-msgstr ""
+msgstr "로컬 품질"
 
 msgctxt "#32021"
 msgid "Remote Quality"
-msgstr ""
+msgstr "원격 품질"
 
 msgctxt "#32022"
 msgid "Online Quality"
-msgstr ""
+msgstr "온라인 품질"
 
 msgctxt "#32023"
 msgid "Transcode Format"
@@ -96,47 +96,47 @@ msgstr ""
 
 msgctxt "#32025"
 msgid "Allow Direct Play"
-msgstr ""
+msgstr "직접 재생 허용"
 
 msgctxt "#32026"
 msgid "Allow Direct Stream"
-msgstr ""
+msgstr "직접 스트리밍 허용"
 
 msgctxt "#32027"
 msgid "Forced"
-msgstr ""
+msgstr "강제"
 
 msgctxt "#32028"
 msgid "Always"
-msgstr ""
+msgstr "항상"
 
 msgctxt "#32029"
 msgid "Only image formats"
-msgstr ""
+msgstr "이미지 형식만"
 
 msgctxt "#32030"
 msgid "Automatic"
-msgstr ""
+msgstr "자동"
 
 msgctxt "#32031"
 msgid "Burn Subtitles"
-msgstr ""
+msgstr "영상에 자막표시"
 
 msgctxt "#32032"
 msgid "Allow insecure connection"
-msgstr ""
+msgstr "비보안 연결 허용"
 
 msgctxt "#32033"
 msgid "Never"
-msgstr ""
+msgstr "안함"
 
 msgctxt "#32034"
 msgid "On same network as server"
-msgstr ""
+msgstr "서버와 동일 네트워크"
 
 msgctxt "#32035"
 msgid "Always"
-msgstr ""
+msgstr "항상"
 
 msgctxt "#32036"
 msgid "Allow 4K"
@@ -148,11 +148,11 @@ msgstr ""
 
 msgctxt "#32038"
 msgid "Automatically Sign In"
-msgstr ""
+msgstr "자동으로 로그인"
 
 msgctxt "#32039"
 msgid "Play \"Up Next\" videos automatically"
-msgstr ""
+msgstr "다음 동영상을 자동으로 재생"
 
 msgctxt "#32040"
 msgid "Enable Subtitle Downloading"
@@ -160,7 +160,7 @@ msgstr ""
 
 msgctxt "#32042"
 msgid "Network Discovery"
-msgstr ""
+msgstr "네트워크 검색"
 
 msgctxt "#32043"
 msgid "Start Plex On Kodi Startup"
@@ -168,43 +168,43 @@ msgstr ""
 
 msgctxt "#32044"
 msgid "Connection 1 IP"
-msgstr ""
+msgstr "연결 1 IP"
 
 msgctxt "#32045"
 msgid "Connection 1 Port"
-msgstr ""
+msgstr "연결 1 포트"
 
 msgctxt "#32046"
 msgid "Connection 2 IP"
-msgstr ""
+msgstr "연결 2 IP"
 
 msgctxt "#32047"
 msgid "Connection 2 Port"
-msgstr ""
+msgstr "연결 2 포트"
 
 msgctxt "#32048"
 msgid "Audio"
-msgstr ""
+msgstr "오디오"
 
 msgctxt "#32049"
 msgid "Advanced"
-msgstr ""
+msgstr "고급"
 
 msgctxt "#32050"
 msgid "Manual Servers"
-msgstr ""
+msgstr "수동 서버"
 
 msgctxt "#32051"
 msgid "Privacy"
-msgstr ""
+msgstr "개인정보"
 
 msgctxt "#32052"
 msgid "About"
-msgstr ""
+msgstr "정보"
 
 msgctxt "#32053"
 msgid "video"
-msgstr ""
+msgstr "비디오"
 
 msgctxt "#32054"
 msgid "Addon Version"
@@ -225,7 +225,7 @@ msgstr ""
 msgctxt "#32100"
 msgid ""
 "Do not prompt to select a user or enter a PIN during startup on this device."
-msgstr ""
+msgstr "시작시 사용자를 선택하거나 핀번호 입력 메시지를 표시안함."
 
 msgctxt "#32101"
 msgid ""
@@ -255,75 +255,75 @@ msgstr ""
 
 msgctxt "#32201"
 msgid "Trailer"
-msgstr ""
+msgstr "예고편"
 
 msgctxt "#32202"
 msgid "Deleted Scene"
-msgstr ""
+msgstr "삭제장면"
 
 msgctxt "#32203"
 msgid "Interview"
-msgstr ""
+msgstr "인터뷰"
 
 msgctxt "#32204"
 msgid "Music Video"
-msgstr ""
+msgstr "뮤직 비디오"
 
 msgctxt "#32205"
 msgid "Behind the Scenes"
-msgstr ""
+msgstr "뒷 이야기"
 
 msgctxt "#32206"
 msgid "Scene"
-msgstr ""
+msgstr "장면"
 
 msgctxt "#32207"
 msgid "Live Music Video"
-msgstr ""
+msgstr "라이브 뮤직 비디오"
 
 msgctxt "#32208"
 msgid "Lyric Music Video"
-msgstr ""
+msgstr "가사 뮤직 비디오"
 
 msgctxt "#32209"
 msgid "Concert"
-msgstr ""
+msgstr "콘서트"
 
 msgctxt "#32210"
 msgid "Featurette"
-msgstr ""
+msgstr "부가영상"
 
 msgctxt "#32211"
 msgid "Short"
-msgstr ""
+msgstr "단편"
 
 msgctxt "#32212"
 msgid "Other"
-msgstr ""
+msgstr "기타"
 
 msgctxt "#32300"
 msgid "Go to Album"
-msgstr ""
+msgstr "앨범으로 가기"
 
 msgctxt "#32301"
 msgid "Go to Artist"
-msgstr ""
+msgstr "아티스트로 가기"
 
 msgctxt "#32302"
 msgid "Go to {1}"
-msgstr ""
+msgstr "{1}에 이동"
 
 msgctxt "#32303"
 msgid "Season"
-msgstr ""
+msgstr "시즌"
 
 msgctxt "#32304"
 msgid "Episode"
-msgstr ""
+msgstr "에피소드"
 
 msgctxt "#32305"
 msgid "Extras"
-msgstr ""
+msgstr "추가 항목"
 
 msgctxt "#32306"
 msgid "Related Shows"
@@ -331,15 +331,15 @@ msgstr ""
 
 msgctxt "#32307"
 msgid "More"
-msgstr ""
+msgstr "더 보기"
 
 msgctxt "#32308"
 msgid "Available"
-msgstr ""
+msgstr "이용가능"
 
 msgctxt "#32309"
 msgid "None"
-msgstr ""
+msgstr "사용 안 함"
 
 msgctxt "#32310"
 msgid "S"
@@ -351,11 +351,11 @@ msgstr ""
 
 msgctxt "#32312"
 msgid "Unavailable"
-msgstr ""
+msgstr "이용할 수없음"
 
 msgctxt "#32313"
 msgid "File unavailable"
-msgstr ""
+msgstr "파일 이용할 수 없음"
 
 msgctxt "#32314"
 msgid "In Progress"
@@ -367,19 +367,19 @@ msgstr ""
 
 msgctxt "#32316"
 msgid "Resume"
-msgstr ""
+msgstr "계속하기"
 
 msgctxt "#32317"
 msgid "Start from beginning"
-msgstr ""
+msgstr "처음부터 재생"
 
 msgctxt "#32318"
 msgid "Mark Unwatched"
-msgstr ""
+msgstr "보지 않음으로 표시"
 
 msgctxt "#32319"
 msgid "Mark Watched"
-msgstr ""
+msgstr "보았음으로 표시"
 
 msgctxt "#32320"
 msgid "Mark Season Unwatched"
@@ -391,19 +391,19 @@ msgstr ""
 
 msgctxt "#32322"
 msgid "Delete"
-msgstr ""
+msgstr "삭제"
 
 msgctxt "#32323"
 msgid "Go to Show"
-msgstr ""
+msgstr "쇼로 가기"
 
 msgctxt "#32324"
 msgid "Go to {1}"
-msgstr ""
+msgstr "{1}에 이동"
 
 msgctxt "#32325"
 msgid "Play Next"
-msgstr ""
+msgstr "다음 재생"
 
 msgctxt "#32326"
 msgid "Really Delete?"
@@ -415,11 +415,11 @@ msgstr ""
 
 msgctxt "#32328"
 msgid "Yes"
-msgstr ""
+msgstr "예"
 
 msgctxt "#32329"
 msgid "No"
-msgstr ""
+msgstr "아니요"
 
 msgctxt "#32330"
 msgid "Message"
@@ -431,11 +431,11 @@ msgstr ""
 
 msgctxt "#32332"
 msgid "Home"
-msgstr ""
+msgstr "홈"
 
 msgctxt "#32333"
 msgid "Playlists"
-msgstr ""
+msgstr "재생목록"
 
 msgctxt "#32334"
 msgid "Confirm Exit"
@@ -443,15 +443,15 @@ msgstr ""
 
 msgctxt "#32335"
 msgid "Are you ready to exit Plex?"
-msgstr ""
+msgstr "Plex를 종료하시겠습니까?"
 
 msgctxt "#32336"
 msgid "Exit"
-msgstr ""
+msgstr "종료"
 
 msgctxt "#32337"
 msgid "Cancel"
-msgstr ""
+msgstr "취소"
 
 msgctxt "#32338"
 msgid "No Servers Found"
@@ -467,23 +467,23 @@ msgstr ""
 
 msgctxt "#32341"
 msgid "This server is offline or unreachable"
-msgstr ""
+msgstr "서버가 온라인 상태가 아니거나 연결이 불가능한 상태입니다"
 
 msgctxt "#32342"
 msgid "Switch User"
-msgstr ""
+msgstr "사용자 전환"
 
 msgctxt "#32343"
 msgid "Settings"
-msgstr ""
+msgstr "설정"
 
 msgctxt "#32344"
 msgid "Sign Out"
-msgstr ""
+msgstr "로그아웃"
 
 msgctxt "#32345"
 msgid "All"
-msgstr ""
+msgstr "모두"
 
 msgctxt "#32346"
 msgid "By Name"
@@ -491,19 +491,19 @@ msgstr ""
 
 msgctxt "#32347"
 msgid "Artists"
-msgstr ""
+msgstr "아티스트"
 
 msgctxt "#32348"
 msgid "Movies"
-msgstr ""
+msgstr "영화"
 
 msgctxt "#32349"
 msgid "Photos"
-msgstr ""
+msgstr "사진"
 
 msgctxt "#32350"
 msgid "TV Shows"
-msgstr ""
+msgstr "TV 쇼"
 
 msgctxt "#32351"
 msgid "By Date Added"
@@ -511,7 +511,7 @@ msgstr ""
 
 msgctxt "#32352"
 msgid "Date Added"
-msgstr ""
+msgstr "추가된 날짜"
 
 msgctxt "#32353"
 msgid "By Release Date"
@@ -519,7 +519,7 @@ msgstr ""
 
 msgctxt "#32354"
 msgid "Release Date"
-msgstr ""
+msgstr "개봉일"
 
 msgctxt "#32355"
 msgid "By Date Viewed"
@@ -527,7 +527,7 @@ msgstr ""
 
 msgctxt "#32356"
 msgid "Date Viewed"
-msgstr ""
+msgstr "감상한 날짜"
 
 msgctxt "#32357"
 msgid "By Name"
@@ -535,7 +535,7 @@ msgstr ""
 
 msgctxt "#32358"
 msgid "Name"
-msgstr ""
+msgstr "이름"
 
 msgctxt "#32359"
 msgid "By Rating"
@@ -543,7 +543,7 @@ msgstr ""
 
 msgctxt "#32360"
 msgid "Rating"
-msgstr ""
+msgstr "평점"
 
 msgctxt "#32361"
 msgid "By Resolution"
@@ -551,7 +551,7 @@ msgstr ""
 
 msgctxt "#32362"
 msgid "Resolution"
-msgstr ""
+msgstr "해상도"
 
 msgctxt "#32363"
 msgid "By Duration"
@@ -559,7 +559,7 @@ msgstr ""
 
 msgctxt "#32364"
 msgid "Duration"
-msgstr ""
+msgstr "시간"
 
 msgctxt "#32365"
 msgid "By First Aired"
@@ -575,7 +575,7 @@ msgstr ""
 
 msgctxt "#32368"
 msgid "Unwatched"
-msgstr ""
+msgstr "보지 않음"
 
 msgctxt "#32369"
 msgid "By Date Played"
@@ -603,15 +603,15 @@ msgstr ""
 
 msgctxt "#32375"
 msgid "No filters available."
-msgstr ""
+msgstr "사용가능한 필터 없음."
 
 msgctxt "#32376"
 msgid "Clear Filter"
-msgstr ""
+msgstr "필터 초기화"
 
 msgctxt "#32377"
 msgid "Year"
-msgstr ""
+msgstr "연도"
 
 msgctxt "#32378"
 msgid "Decade"
@@ -619,79 +619,79 @@ msgstr ""
 
 msgctxt "#32379"
 msgid "Genre"
-msgstr ""
+msgstr "장르"
 
 msgctxt "#32380"
 msgid "Content Rating"
-msgstr ""
+msgstr "컨텐츠 등급"
 
 msgctxt "#32381"
 msgid "Network"
-msgstr ""
+msgstr "네트워크"
 
 msgctxt "#32382"
 msgid "Collection"
-msgstr ""
+msgstr "컬렉션"
 
 msgctxt "#32383"
 msgid "Director"
-msgstr ""
+msgstr "감독"
 
 msgctxt "#32384"
 msgid "Actor"
-msgstr ""
+msgstr "배우"
 
 msgctxt "#32385"
 msgid "Country"
-msgstr ""
+msgstr "국가"
 
 msgctxt "#32386"
 msgid "Studio"
-msgstr ""
+msgstr "제작사"
 
 msgctxt "#32387"
 msgid "Labels"
-msgstr ""
+msgstr "라벨"
 
 msgctxt "#32388"
 msgid "Make"
-msgstr ""
+msgstr "생성"
 
 msgctxt "#32389"
 msgid "Model"
-msgstr ""
+msgstr "모델"
 
 msgctxt "#32390"
 msgid "Aperture"
-msgstr ""
+msgstr "조리개"
 
 msgctxt "#32391"
 msgid "Exposure"
-msgstr ""
+msgstr "노출"
 
 msgctxt "#32392"
 msgid "Lens"
-msgstr ""
+msgstr "렌즈"
 
 msgctxt "#32393"
 msgid "TV Shows"
-msgstr ""
+msgstr "TV 쇼"
 
 msgctxt "#32394"
 msgid "Music"
-msgstr ""
+msgstr "음악"
 
 msgctxt "#32395"
 msgid "Audio"
-msgstr ""
+msgstr "오디오"
 
 msgctxt "#32396"
 msgid "Subtitles"
-msgstr ""
+msgstr "자막"
 
 msgctxt "#32397"
 msgid "Quality"
-msgstr ""
+msgstr "품질"
 
 msgctxt "#32398"
 msgid "Kodi Video Settings"
@@ -703,19 +703,19 @@ msgstr ""
 
 msgctxt "#32400"
 msgid "Go to Season"
-msgstr ""
+msgstr "시즌으로 가기"
 
 msgctxt "#32401"
 msgid "Directors"
-msgstr ""
+msgstr "감독"
 
 msgctxt "#32402"
 msgid "Writer"
-msgstr ""
+msgstr "각본"
 
 msgctxt "#32403"
 msgid "Writers"
-msgstr ""
+msgstr "각본"
 
 msgctxt "#32404"
 msgid "Related Movies"
@@ -727,7 +727,7 @@ msgstr ""
 
 msgctxt "#32406"
 msgid "Subtitles delay"
-msgstr ""
+msgstr "자막 지연"
 
 msgctxt "#32407"
 msgid "Next Subtitle"
@@ -747,7 +747,7 @@ msgstr ""
 
 msgctxt "#32411"
 msgid "Unknown"
-msgstr ""
+msgstr "알 수 없음"
 
 msgctxt "#32412"
 msgid "Edit or Clear"
@@ -763,7 +763,7 @@ msgstr ""
 
 msgctxt "#32415"
 msgid "Edit"
-msgstr ""
+msgstr "편집"
 
 msgctxt "#32416"
 msgid "Enter IP Address"
@@ -779,27 +779,27 @@ msgstr ""
 
 msgctxt "#32419"
 msgid "Cast"
-msgstr ""
+msgstr "출연"
 
 msgctxt "#32420"
 msgid "Disc"
-msgstr ""
+msgstr "디스크"
 
 msgctxt "#32421"
 msgid "Sign Out"
-msgstr ""
+msgstr "로그아웃"
 
 msgctxt "#32422"
 msgid "Exit"
-msgstr ""
+msgstr "종료"
 
 msgctxt "#32423"
 msgid "Power Off"
-msgstr ""
+msgstr "전원 끄기"
 
 msgctxt "#32424"
 msgid "Suspend"
-msgstr ""
+msgstr "중지됨"
 
 msgctxt "#32425"
 msgid "Hibernate"
@@ -807,11 +807,11 @@ msgstr ""
 
 msgctxt "#32426"
 msgid "Reboot"
-msgstr ""
+msgstr "재시작"
 
 msgctxt "#32427"
 msgid "Failed"
-msgstr ""
+msgstr "실패"
 
 msgctxt "#32428"
 msgid "Login failed!"
@@ -819,7 +819,7 @@ msgstr ""
 
 msgctxt "#32429"
 msgid "Resume from {1}"
-msgstr ""
+msgstr "{1}에서 다시 시작"
 
 msgctxt "#32430"
 msgid "Discovery"
@@ -827,15 +827,15 @@ msgstr ""
 
 msgctxt "#32431"
 msgid "Search"
-msgstr ""
+msgstr "검색"
 
 msgctxt "#32432"
 msgid "Space"
-msgstr ""
+msgstr "공간"
 
 msgctxt "#32433"
 msgid "Clear"
-msgstr ""
+msgstr "비우기"
 
 msgctxt "#32434"
 msgid "Searching..."
@@ -843,11 +843,11 @@ msgstr ""
 
 msgctxt "#32435"
 msgid "No Results"
-msgstr ""
+msgstr "결과 없음"
 
 msgctxt "#32436"
 msgid "Paused"
-msgstr ""
+msgstr "일시정지됨"
 
 msgctxt "#32437"
 msgid "Welcome"
@@ -855,19 +855,19 @@ msgstr ""
 
 msgctxt "#32438"
 msgid "Previous"
-msgstr ""
+msgstr "이전"
 
 msgctxt "#32439"
 msgid "Playing Next"
-msgstr ""
+msgstr "다음 재생"
 
 msgctxt "#32440"
 msgid "On Deck"
-msgstr ""
+msgstr "감상중"
 
 msgctxt "#32441"
 msgid "Unknown"
-msgstr ""
+msgstr "알 수 없음"
 
 msgctxt "#32442"
 msgid "Embedded"
@@ -875,23 +875,23 @@ msgstr ""
 
 msgctxt "#32443"
 msgid "Forced"
-msgstr ""
+msgstr "강제"
 
 msgctxt "#32444"
 msgid "Lyrics"
-msgstr ""
+msgstr "가사"
 
 msgctxt "#32445"
 msgid "Mono"
-msgstr ""
+msgstr "모노"
 
 msgctxt "#32446"
 msgid "Stereo"
-msgstr ""
+msgstr "스테레오"
 
 msgctxt "#32447"
 msgid "None"
-msgstr ""
+msgstr "사용 안 함"
 
 msgctxt "#32448"
 msgid "Playback Failed!"
@@ -904,11 +904,11 @@ msgstr ""
 
 msgctxt "#32450"
 msgid "Select a version"
-msgstr ""
+msgstr "버전 선택"
 
 msgctxt "#32451"
 msgid "Play Version..."
-msgstr ""
+msgstr "재생 버전..."
 
 msgctxt "#32452"
 msgid "No Content available in this library"
@@ -921,7 +921,7 @@ msgstr ""
 
 msgctxt "#32454"
 msgid "Can't find anything matching your current filters."
-msgstr ""
+msgstr "필터에 맞는 항목을 찾을 수 없습니다."
 
 msgctxt "#32455"
 msgid "Please change or remove the current filter"
@@ -933,4 +933,4 @@ msgstr ""
 
 msgctxt "#32457"
 msgid "Sign In"
-msgstr ""
+msgstr "로그인"

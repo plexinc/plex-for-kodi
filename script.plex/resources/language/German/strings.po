@@ -6,8 +6,8 @@ msgstr ""
 "POT-Creation-Date: YYYY-MM-DD 00:00+0100\n"
 "PO-Revision-Date: YYYY-MM-DD 00:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: English\n"
-"Language: en_gb\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,11 +16,11 @@ msgstr ""
 
 msgctxt "#32000"
 msgid "Main"
-msgstr ""
+msgstr "Allgemein"
 
 msgctxt "#32001"
 msgid "Original"
-msgstr ""
+msgstr "Original"
 
 msgctxt "#32002"
 msgid "20 Mbps 1080p"
@@ -76,15 +76,15 @@ msgstr ""
 
 msgctxt "#32020"
 msgid "Local Quality"
-msgstr ""
+msgstr "Qualität für lokale Geräte"
 
 msgctxt "#32021"
 msgid "Remote Quality"
-msgstr ""
+msgstr "Qualität für entfernte Geräte"
 
 msgctxt "#32022"
 msgid "Online Quality"
-msgstr ""
+msgstr "Online Qualität"
 
 msgctxt "#32023"
 msgid "Transcode Format"
@@ -96,47 +96,47 @@ msgstr ""
 
 msgctxt "#32025"
 msgid "Allow Direct Play"
-msgstr ""
+msgstr "Direkte Wiedergabe erlauben"
 
 msgctxt "#32026"
 msgid "Allow Direct Stream"
-msgstr ""
+msgstr "Direktes Streaming erlauben"
 
 msgctxt "#32027"
 msgid "Forced"
-msgstr ""
+msgstr "Erzwungen"
 
 msgctxt "#32028"
 msgid "Always"
-msgstr ""
+msgstr "Immer"
 
 msgctxt "#32029"
 msgid "Only image formats"
-msgstr ""
+msgstr "Nur Bildformate"
 
 msgctxt "#32030"
 msgid "Automatic"
-msgstr ""
+msgstr "Automatisch"
 
 msgctxt "#32031"
 msgid "Burn Subtitles"
-msgstr ""
+msgstr "Untertitel einbrennen"
 
 msgctxt "#32032"
 msgid "Allow insecure connection"
-msgstr ""
+msgstr "Unsichere Verbindung erlauben."
 
 msgctxt "#32033"
 msgid "Never"
-msgstr ""
+msgstr "Nie"
 
 msgctxt "#32034"
 msgid "On same network as server"
-msgstr ""
+msgstr "Im selben Netzwerk wie der Server"
 
 msgctxt "#32035"
 msgid "Always"
-msgstr ""
+msgstr "Immer"
 
 msgctxt "#32036"
 msgid "Allow 4K"
@@ -148,11 +148,11 @@ msgstr ""
 
 msgctxt "#32038"
 msgid "Automatically Sign In"
-msgstr ""
+msgstr "Automatisch anmelden"
 
 msgctxt "#32039"
 msgid "Play \"Up Next\" videos automatically"
-msgstr ""
+msgstr "Spiele \"Nachfolgende\" Videos automatisch ab"
 
 msgctxt "#32040"
 msgid "Enable Subtitle Downloading"
@@ -160,7 +160,7 @@ msgstr ""
 
 msgctxt "#32042"
 msgid "Network Discovery"
-msgstr ""
+msgstr "Gerätesuche im Netzwerk"
 
 msgctxt "#32043"
 msgid "Start Plex On Kodi Startup"
@@ -168,43 +168,43 @@ msgstr ""
 
 msgctxt "#32044"
 msgid "Connection 1 IP"
-msgstr ""
+msgstr "Verbindung 1 IP"
 
 msgctxt "#32045"
 msgid "Connection 1 Port"
-msgstr ""
+msgstr "Verbindung 1 Port"
 
 msgctxt "#32046"
 msgid "Connection 2 IP"
-msgstr ""
+msgstr "Verbindung 2 IP"
 
 msgctxt "#32047"
 msgid "Connection 2 Port"
-msgstr ""
+msgstr "Verbindung 2 Port"
 
 msgctxt "#32048"
 msgid "Audio"
-msgstr ""
+msgstr "Ton"
 
 msgctxt "#32049"
 msgid "Advanced"
-msgstr ""
+msgstr "Erweitert"
 
 msgctxt "#32050"
 msgid "Manual Servers"
-msgstr ""
+msgstr "Manuelle Server"
 
 msgctxt "#32051"
 msgid "Privacy"
-msgstr ""
+msgstr "Datenschutz"
 
 msgctxt "#32052"
 msgid "About"
-msgstr ""
+msgstr "Über"
 
 msgctxt "#32053"
 msgid "video"
-msgstr ""
+msgstr "Video"
 
 msgctxt "#32054"
 msgid "Addon Version"
@@ -225,7 +225,7 @@ msgstr ""
 msgctxt "#32100"
 msgid ""
 "Do not prompt to select a user or enter a PIN during startup on this device."
-msgstr ""
+msgstr "Beim Start des Geräts nicht nach Benutzer oder PIN fragen."
 
 msgctxt "#32101"
 msgid ""
@@ -255,75 +255,75 @@ msgstr ""
 
 msgctxt "#32201"
 msgid "Trailer"
-msgstr ""
+msgstr "Trailer"
 
 msgctxt "#32202"
 msgid "Deleted Scene"
-msgstr ""
+msgstr "Gelöschte Szene"
 
 msgctxt "#32203"
 msgid "Interview"
-msgstr ""
+msgstr "Interview"
 
 msgctxt "#32204"
 msgid "Music Video"
-msgstr ""
+msgstr "Musikvideo"
 
 msgctxt "#32205"
 msgid "Behind the Scenes"
-msgstr ""
+msgstr "Hinter den Kulissen"
 
 msgctxt "#32206"
 msgid "Scene"
-msgstr ""
+msgstr "Szene"
 
 msgctxt "#32207"
 msgid "Live Music Video"
-msgstr ""
+msgstr "Live Musikvideo"
 
 msgctxt "#32208"
 msgid "Lyric Music Video"
-msgstr ""
+msgstr "Musikvideo mit Liedtext"
 
 msgctxt "#32209"
 msgid "Concert"
-msgstr ""
+msgstr "Konzert"
 
 msgctxt "#32210"
 msgid "Featurette"
-msgstr ""
+msgstr "Featurette"
 
 msgctxt "#32211"
 msgid "Short"
-msgstr ""
+msgstr "Kurzfilm"
 
 msgctxt "#32212"
 msgid "Other"
-msgstr ""
+msgstr "Andere"
 
 msgctxt "#32300"
 msgid "Go to Album"
-msgstr ""
+msgstr "Gehe zu Album"
 
 msgctxt "#32301"
 msgid "Go to Artist"
-msgstr ""
+msgstr "Zum Interpreten"
 
 msgctxt "#32302"
 msgid "Go to {1}"
-msgstr ""
+msgstr "Gehe zu {1}"
 
 msgctxt "#32303"
 msgid "Season"
-msgstr ""
+msgstr "Staffel"
 
 msgctxt "#32304"
 msgid "Episode"
-msgstr ""
+msgstr "Folge"
 
 msgctxt "#32305"
 msgid "Extras"
-msgstr ""
+msgstr "Extras"
 
 msgctxt "#32306"
 msgid "Related Shows"
@@ -331,15 +331,15 @@ msgstr ""
 
 msgctxt "#32307"
 msgid "More"
-msgstr ""
+msgstr "Mehr"
 
 msgctxt "#32308"
 msgid "Available"
-msgstr ""
+msgstr "Verfügbar"
 
 msgctxt "#32309"
 msgid "None"
-msgstr ""
+msgstr "Kein(e)"
 
 msgctxt "#32310"
 msgid "S"
@@ -351,11 +351,11 @@ msgstr ""
 
 msgctxt "#32312"
 msgid "Unavailable"
-msgstr ""
+msgstr "Nicht verfügbar"
 
 msgctxt "#32313"
 msgid "File unavailable"
-msgstr ""
+msgstr "Datei nicht verfügbar"
 
 msgctxt "#32314"
 msgid "In Progress"
@@ -367,19 +367,19 @@ msgstr ""
 
 msgctxt "#32316"
 msgid "Resume"
-msgstr ""
+msgstr "Fortsetzen"
 
 msgctxt "#32317"
 msgid "Start from beginning"
-msgstr ""
+msgstr "Von Anfang an abspielen"
 
 msgctxt "#32318"
 msgid "Mark Unwatched"
-msgstr ""
+msgstr "Als \"Ungesehen\" markieren"
 
 msgctxt "#32319"
 msgid "Mark Watched"
-msgstr ""
+msgstr "Als \"Gesehen\" markieren"
 
 msgctxt "#32320"
 msgid "Mark Season Unwatched"
@@ -391,19 +391,19 @@ msgstr ""
 
 msgctxt "#32322"
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
 
 msgctxt "#32323"
 msgid "Go to Show"
-msgstr ""
+msgstr "Gehe zur Show"
 
 msgctxt "#32324"
 msgid "Go to {1}"
-msgstr ""
+msgstr "Gehe zu {1}"
 
 msgctxt "#32325"
 msgid "Play Next"
-msgstr ""
+msgstr "Fortsetzen"
 
 msgctxt "#32326"
 msgid "Really Delete?"
@@ -415,11 +415,11 @@ msgstr ""
 
 msgctxt "#32328"
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 msgctxt "#32329"
 msgid "No"
-msgstr ""
+msgstr "Nein"
 
 msgctxt "#32330"
 msgid "Message"
@@ -431,11 +431,11 @@ msgstr ""
 
 msgctxt "#32332"
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 msgctxt "#32333"
 msgid "Playlists"
-msgstr ""
+msgstr "Wiedergabelisten"
 
 msgctxt "#32334"
 msgid "Confirm Exit"
@@ -443,15 +443,15 @@ msgstr ""
 
 msgctxt "#32335"
 msgid "Are you ready to exit Plex?"
-msgstr ""
+msgstr "Möchtest du Plex wirklich verlassen?"
 
 msgctxt "#32336"
 msgid "Exit"
-msgstr ""
+msgstr "Beenden"
 
 msgctxt "#32337"
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 msgctxt "#32338"
 msgid "No Servers Found"
@@ -467,23 +467,23 @@ msgstr ""
 
 msgctxt "#32341"
 msgid "This server is offline or unreachable"
-msgstr ""
+msgstr "Dieser Server ist offline oder nicht erreichbar"
 
 msgctxt "#32342"
 msgid "Switch User"
-msgstr ""
+msgstr "Benutzer wechseln"
 
 msgctxt "#32343"
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 msgctxt "#32344"
 msgid "Sign Out"
-msgstr ""
+msgstr "Abmelden"
 
 msgctxt "#32345"
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
 msgctxt "#32346"
 msgid "By Name"
@@ -491,19 +491,19 @@ msgstr ""
 
 msgctxt "#32347"
 msgid "Artists"
-msgstr ""
+msgstr "Interpreten"
 
 msgctxt "#32348"
 msgid "Movies"
-msgstr ""
+msgstr "Filme"
 
 msgctxt "#32349"
 msgid "Photos"
-msgstr ""
+msgstr "Fotos"
 
 msgctxt "#32350"
 msgid "TV Shows"
-msgstr ""
+msgstr "TV-Serien"
 
 msgctxt "#32351"
 msgid "By Date Added"
@@ -511,7 +511,7 @@ msgstr ""
 
 msgctxt "#32352"
 msgid "Date Added"
-msgstr ""
+msgstr "Hinzugefügt am"
 
 msgctxt "#32353"
 msgid "By Release Date"
@@ -519,7 +519,7 @@ msgstr ""
 
 msgctxt "#32354"
 msgid "Release Date"
-msgstr ""
+msgstr "Erscheinungsdatum"
 
 msgctxt "#32355"
 msgid "By Date Viewed"
@@ -527,7 +527,7 @@ msgstr ""
 
 msgctxt "#32356"
 msgid "Date Viewed"
-msgstr ""
+msgstr "Angesehen am"
 
 msgctxt "#32357"
 msgid "By Name"
@@ -535,7 +535,7 @@ msgstr ""
 
 msgctxt "#32358"
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 msgctxt "#32359"
 msgid "By Rating"
@@ -543,7 +543,7 @@ msgstr ""
 
 msgctxt "#32360"
 msgid "Rating"
-msgstr ""
+msgstr "Bewertung"
 
 msgctxt "#32361"
 msgid "By Resolution"
@@ -551,7 +551,7 @@ msgstr ""
 
 msgctxt "#32362"
 msgid "Resolution"
-msgstr ""
+msgstr "Auflösung"
 
 msgctxt "#32363"
 msgid "By Duration"
@@ -559,7 +559,7 @@ msgstr ""
 
 msgctxt "#32364"
 msgid "Duration"
-msgstr ""
+msgstr "Dauer"
 
 msgctxt "#32365"
 msgid "By First Aired"
@@ -575,7 +575,7 @@ msgstr ""
 
 msgctxt "#32368"
 msgid "Unwatched"
-msgstr ""
+msgstr "Ungesehen"
 
 msgctxt "#32369"
 msgid "By Date Played"
@@ -603,15 +603,15 @@ msgstr ""
 
 msgctxt "#32375"
 msgid "No filters available."
-msgstr ""
+msgstr "Keine Filter verfügbar."
 
 msgctxt "#32376"
 msgid "Clear Filter"
-msgstr ""
+msgstr "Filter löschen"
 
 msgctxt "#32377"
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 msgctxt "#32378"
 msgid "Decade"
@@ -619,79 +619,79 @@ msgstr ""
 
 msgctxt "#32379"
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 msgctxt "#32380"
 msgid "Content Rating"
-msgstr ""
+msgstr "Altersfreigabe"
 
 msgctxt "#32381"
 msgid "Network"
-msgstr ""
+msgstr "Netzwerk"
 
 msgctxt "#32382"
 msgid "Collection"
-msgstr ""
+msgstr "Sammlung"
 
 msgctxt "#32383"
 msgid "Director"
-msgstr ""
+msgstr "Regisseur"
 
 msgctxt "#32384"
 msgid "Actor"
-msgstr ""
+msgstr "Schauspieler"
 
 msgctxt "#32385"
 msgid "Country"
-msgstr ""
+msgstr "Land"
 
 msgctxt "#32386"
 msgid "Studio"
-msgstr ""
+msgstr "Studio"
 
 msgctxt "#32387"
 msgid "Labels"
-msgstr ""
+msgstr "Beschriftungen"
 
 msgctxt "#32388"
 msgid "Make"
-msgstr ""
+msgstr "Hersteller"
 
 msgctxt "#32389"
 msgid "Model"
-msgstr ""
+msgstr "Modell"
 
 msgctxt "#32390"
 msgid "Aperture"
-msgstr ""
+msgstr "Blende"
 
 msgctxt "#32391"
 msgid "Exposure"
-msgstr ""
+msgstr "Belichtung"
 
 msgctxt "#32392"
 msgid "Lens"
-msgstr ""
+msgstr "Objektiv"
 
 msgctxt "#32393"
 msgid "TV Shows"
-msgstr ""
+msgstr "TV-Serien"
 
 msgctxt "#32394"
 msgid "Music"
-msgstr ""
+msgstr "Musik"
 
 msgctxt "#32395"
 msgid "Audio"
-msgstr ""
+msgstr "Ton"
 
 msgctxt "#32396"
 msgid "Subtitles"
-msgstr ""
+msgstr "Untertitel"
 
 msgctxt "#32397"
 msgid "Quality"
-msgstr ""
+msgstr "Qualität"
 
 msgctxt "#32398"
 msgid "Kodi Video Settings"
@@ -703,19 +703,19 @@ msgstr ""
 
 msgctxt "#32400"
 msgid "Go to Season"
-msgstr ""
+msgstr "Gehe zu Staffel"
 
 msgctxt "#32401"
 msgid "Directors"
-msgstr ""
+msgstr "Regisseure"
 
 msgctxt "#32402"
 msgid "Writer"
-msgstr ""
+msgstr "Autor"
 
 msgctxt "#32403"
 msgid "Writers"
-msgstr ""
+msgstr "Autoren"
 
 msgctxt "#32404"
 msgid "Related Movies"
@@ -727,7 +727,7 @@ msgstr ""
 
 msgctxt "#32406"
 msgid "Subtitles delay"
-msgstr ""
+msgstr "Untertitel Verzögerung"
 
 msgctxt "#32407"
 msgid "Next Subtitle"
@@ -747,7 +747,7 @@ msgstr ""
 
 msgctxt "#32411"
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 msgctxt "#32412"
 msgid "Edit or Clear"
@@ -763,7 +763,7 @@ msgstr ""
 
 msgctxt "#32415"
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 msgctxt "#32416"
 msgid "Enter IP Address"
@@ -779,27 +779,27 @@ msgstr ""
 
 msgctxt "#32419"
 msgid "Cast"
-msgstr ""
+msgstr "Darsteller"
 
 msgctxt "#32420"
 msgid "Disc"
-msgstr ""
+msgstr "Disk"
 
 msgctxt "#32421"
 msgid "Sign Out"
-msgstr ""
+msgstr "Abmelden"
 
 msgctxt "#32422"
 msgid "Exit"
-msgstr ""
+msgstr "Beenden"
 
 msgctxt "#32423"
 msgid "Power Off"
-msgstr ""
+msgstr "Ausschalten"
 
 msgctxt "#32424"
 msgid "Suspend"
-msgstr ""
+msgstr "Ruhezustand"
 
 msgctxt "#32425"
 msgid "Hibernate"
@@ -807,11 +807,11 @@ msgstr ""
 
 msgctxt "#32426"
 msgid "Reboot"
-msgstr ""
+msgstr "Reboot"
 
 msgctxt "#32427"
 msgid "Failed"
-msgstr ""
+msgstr "Fehlgeschlagen"
 
 msgctxt "#32428"
 msgid "Login failed!"
@@ -819,7 +819,7 @@ msgstr ""
 
 msgctxt "#32429"
 msgid "Resume from {1}"
-msgstr ""
+msgstr "Fortsetzen ab {1}"
 
 msgctxt "#32430"
 msgid "Discovery"
@@ -827,15 +827,15 @@ msgstr ""
 
 msgctxt "#32431"
 msgid "Search"
-msgstr ""
+msgstr "Suchen"
 
 msgctxt "#32432"
 msgid "Space"
-msgstr ""
+msgstr "Leerzeichen"
 
 msgctxt "#32433"
 msgid "Clear"
-msgstr ""
+msgstr "Löschen"
 
 msgctxt "#32434"
 msgid "Searching..."
@@ -843,11 +843,11 @@ msgstr ""
 
 msgctxt "#32435"
 msgid "No Results"
-msgstr ""
+msgstr "Keine Ergebnisse"
 
 msgctxt "#32436"
 msgid "Paused"
-msgstr ""
+msgstr "Pausiert"
 
 msgctxt "#32437"
 msgid "Welcome"
@@ -855,19 +855,19 @@ msgstr ""
 
 msgctxt "#32438"
 msgid "Previous"
-msgstr ""
+msgstr "Vorherig"
 
 msgctxt "#32439"
 msgid "Playing Next"
-msgstr ""
+msgstr "Spiele Fortsetzung"
 
 msgctxt "#32440"
 msgid "On Deck"
-msgstr ""
+msgstr "Aktuell"
 
 msgctxt "#32441"
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 msgctxt "#32442"
 msgid "Embedded"
@@ -875,23 +875,23 @@ msgstr ""
 
 msgctxt "#32443"
 msgid "Forced"
-msgstr ""
+msgstr "Erzwungen"
 
 msgctxt "#32444"
 msgid "Lyrics"
-msgstr ""
+msgstr "Liedtext"
 
 msgctxt "#32445"
 msgid "Mono"
-msgstr ""
+msgstr "Mono"
 
 msgctxt "#32446"
 msgid "Stereo"
-msgstr ""
+msgstr "Stereo"
 
 msgctxt "#32447"
 msgid "None"
-msgstr ""
+msgstr "Kein(e)"
 
 msgctxt "#32448"
 msgid "Playback Failed!"
@@ -904,11 +904,11 @@ msgstr ""
 
 msgctxt "#32450"
 msgid "Select a version"
-msgstr ""
+msgstr "Version auswählen"
 
 msgctxt "#32451"
 msgid "Play Version..."
-msgstr ""
+msgstr "Version abspielen..."
 
 msgctxt "#32452"
 msgid "No Content available in this library"
@@ -921,7 +921,7 @@ msgstr ""
 
 msgctxt "#32454"
 msgid "Can't find anything matching your current filters."
-msgstr ""
+msgstr "Die aktuellen Filter haben keine Treffer ergeben."
 
 msgctxt "#32455"
 msgid "Please change or remove the current filter"
@@ -933,4 +933,4 @@ msgstr ""
 
 msgctxt "#32457"
 msgid "Sign In"
-msgstr ""
+msgstr "Anmelden"

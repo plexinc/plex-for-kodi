@@ -21,7 +21,6 @@
 		* Download newest translation from Plex Web Repo instead of using local files.
 		* Host the "PlexForKodi" translation strings on Transiflex or integrate it in the Plex Web Transiflex Repo.
 		* Maybe add PMS Transiflex as well since some strings are missing in Plex Web but in PMS (Quality Settings for example)
-		* Sort .po elements by msgid
 		
 	Translation Todo:
 		* Merge "By Date Added", "By Release Date" with "By {1}" translation

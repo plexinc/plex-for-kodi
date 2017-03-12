@@ -26,6 +26,22 @@ from lib.util import T
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
 HUB_PAGE_SIZE = 10
 
+MOVE_SET = frozenset(
+    (
+        xbmcgui.ACTION_MOVE_LEFT,
+        xbmcgui.ACTION_MOVE_RIGHT,
+        xbmcgui.ACTION_MOVE_UP,
+        xbmcgui.ACTION_MOVE_DOWN,
+        xbmcgui.ACTION_MOUSE_MOVE,
+        xbmcgui.ACTION_PAGE_UP,
+        xbmcgui.ACTION_PAGE_DOWN,
+        xbmcgui.ACTION_FIRST_PAGE,
+        xbmcgui.ACTION_LAST_PAGE,
+        xbmcgui.ACTION_MOUSE_WHEEL_DOWN,
+        xbmcgui.ACTION_MOUSE_WHEEL_UP
+    )
+)
+
 
 class HubsList(list):
     def init(self):
@@ -383,9 +399,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
-            elif 399 < controlID < 500 and action in (
-                xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_PAGE_DOWN, xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_MOUSE_MOVE, xbmcgui.ACTION_MOUSE_WHEEL_DOWN
-            ):
+            elif 399 < controlID < 500 and action.getId() in MOVE_SET:
                 self.checkHubItem(controlID)
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):

@@ -403,7 +403,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.section.TYPE == 'photodirectory':
             if options:
                 options.append(dropdown.SEPARATOR)
-            options.append({'key': 'to_section', 'display': T(32324, u'Go to {0}').format(self.section.getLibrarySectionTitle())})
+            options.append({'key': 'to_section', 'display': T(32324, u'Go to {1}').format('', self.section.getLibrarySectionTitle())})
 
         choice = dropdown.showDropdown(options, (255, 205))
         if not choice:

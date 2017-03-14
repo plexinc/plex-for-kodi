@@ -303,8 +303,8 @@ msgid "Go to Artist"
 msgstr "Přejít na interpreta"
 
 msgctxt "#32302"
-msgid "Go to {0}"
-msgstr "Přejít na {0}"
+msgid "Go to {1}"
+msgstr "Přejít na {1}"
 
 msgctxt "#32303"
 msgid "Season"
@@ -391,8 +391,8 @@ msgid "Go To Show"
 msgstr "Přejít na seriál"
 
 msgctxt "#32324"
-msgid "Go To {0}"
-msgstr "Přejít na {0}"
+msgid "Go To {1}"
+msgstr "Přejít na {1}"
 
 msgctxt "#32325"
 msgid "Play Next"

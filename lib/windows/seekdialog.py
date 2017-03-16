@@ -156,9 +156,9 @@ class SeekDialog(kodigui.BaseDialog):
             if controlID == self.MAIN_BUTTON_ID:
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
-                elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
+                elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
                     return self.seekForward(10000)
-                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
+                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
                     return self.seekBack(10000)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
@@ -170,7 +170,12 @@ class SeekDialog(kodigui.BaseDialog):
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
                     self.showOSD()
                     self.setFocusId(self.MAIN_BUTTON_ID)
-                elif action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN):
+                elif action in (
+                    xbmcgui.ACTION_MOVE_UP,
+                    xbmcgui.ACTION_MOVE_DOWN,
+                    xbmcgui.ACTION_BIG_STEP_FORWARD,
+                    xbmcgui.ACTION_BIG_STEP_BACK
+                ):
                     self.selectedOffset = self.trueOffset()
                     self.setBigSeekShift()
                     self.updateProgress()
@@ -180,15 +185,19 @@ class SeekDialog(kodigui.BaseDialog):
                     # xbmc.executebuiltin('Action(PlayerProcessInfo)')
                     xbmc.executebuiltin('Action(CodecInfo)')
             elif controlID == self.BIG_SEEK_LIST_ID:
-                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_NEXT_ITEM):
+                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_BIG_STEP_FORWARD):
                     return self.updateBigSeek()
-                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_PREV_ITEM):
+                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_BIG_STEP_BACK):
                     return self.updateBigSeek()
 
             if action.getButtonCode() == 61516:
                 builtin.Action('CycleSubtitle')
             elif action.getButtonCode() == 61524:
                 builtin.Action('ShowSubtitles')
+            elif action == xbmcgui.ACTION_NEXT_ITEM:
+                self.handler.next()
+            elif action == xbmcgui.ACTION_PREV_ITEM:
+                self.handler.prev()
             elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
                 if self.osdVisible():
                     self.hideOSD()

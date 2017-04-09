@@ -5,6 +5,7 @@ import json
 import threading
 import time
 import requests
+import socket
 
 import xbmc
 
@@ -77,7 +78,7 @@ class PlexInterface(plexapp.AppInterface):
         'provides': 'player',
         'device': plexapp._platform,
         'model': 'Unknown',
-        'friendlyName': 'Kodi Plex Addon',
+        'friendlyName': socket.gethostname(),
         'supports1080p60': True,
         'vp9Support': True,
         'transcodeVideoQualities': [

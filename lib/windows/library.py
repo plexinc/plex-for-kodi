@@ -133,8 +133,10 @@ ITEM_TYPE = None
 
 
 def setItemType(type_=None):
+    assert type_ is not None, "Invalid type: None"
     global ITEM_TYPE
     ITEM_TYPE = type_
+    util.setGlobalProperty('item.type', str(ITEM_TYPE))
 
 
 class ChunkRequestTask(backgroundthread.Task):
@@ -195,8 +197,6 @@ class LibrarySettings(object):
             self.serverID = section_or_server_id.getServer().uuid
             self.sectionID = section_or_server_id.key
 
-        self.itemType = None
-
         self._loadSettings()
 
     def _loadSettings(self):
@@ -212,14 +212,7 @@ class LibrarySettings(object):
         except:
             util.ERROR()
 
-        self.itemType = self.getItemType()
-
-    def _saveSettings(self):
-        jsonString = json.dumps(self._settings)
-        util.setSetting('library.settings.{0}'.format(self.serverID), jsonString)
-
-    def setSection(self, section_id):
-        self.sectionID = section_id
+        setItemType(self.getItemType() or ITEM_TYPE)
 
     def getItemType(self):
         if not self._settings or self.sectionID not in self._settings:
@@ -228,7 +221,8 @@ class LibrarySettings(object):
         return self._settings[self.sectionID].get('ITEM_TYPE')
 
     def setItemType(self, item_type):
-        self.itemType = item_type
+        setItemType(item_type)
+
         if self.sectionID not in self._settings:
             self._settings[self.sectionID] = {}
 
@@ -236,23 +230,30 @@ class LibrarySettings(object):
 
         self._saveSettings()
 
+    def _saveSettings(self):
+        jsonString = json.dumps(self._settings)
+        util.setSetting('library.settings.{0}'.format(self.serverID), jsonString)
+
+    def setSection(self, section_id):
+        self.sectionID = section_id
+
     def getSetting(self, setting, default=None):
         if not self._settings or self.sectionID not in self._settings:
             return default
 
-        if self.itemType not in self._settings[self.sectionID]:
+        if ITEM_TYPE not in self._settings[self.sectionID]:
             return default
 
-        return self._settings[self.sectionID][self.itemType].get(setting, default)
+        return self._settings[self.sectionID][ITEM_TYPE].get(setting, default)
 
     def setSetting(self, setting, value):
         if self.sectionID not in self._settings:
             self._settings[self.sectionID] = {}
 
-        if self.itemType not in self._settings[self.sectionID]:
-            self._settings[self.sectionID][self.itemType] = {}
+        if ITEM_TYPE not in self._settings[self.sectionID]:
+            self._settings[self.sectionID][ITEM_TYPE] = {}
 
-        self._settings[self.sectionID][self.itemType][setting] = value
+        self._settings[self.sectionID][ITEM_TYPE][setting] = value
 
         self._saveSettings()
 
@@ -413,7 +414,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.lock = threading.Lock()
 
     def reset(self):
-        self.setItemType(self.librarySettings.itemType)
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         if ITEM_TYPE == 'episode':
             self.sort = self.librarySettings.getSetting('sort', 'show.titleSort')
@@ -446,10 +446,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             else:
                 self.setWindows(VIEWS_POSTER.get('all'))
                 self.setDefault(VIEWS_POSTER.get(viewtype))
-
-    def setItemType(self, type_=None):
-        setItemType(type_)
-        util.setGlobalProperty('item.type', str(ITEM_TYPE))
 
     def doClose(self):
         self.tasks.cancel()
@@ -886,9 +882,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         choice = result['type']
 
-        if choice == 'show':
-            choice = None
-
         if choice == ITEM_TYPE:
             return
 
@@ -896,7 +889,6 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPanelControl = None  # TODO: Need to do some check here I think
 
-        self.setItemType(choice)
         self.librarySettings.setItemType(choice)
 
         self.reset()
@@ -1669,7 +1661,7 @@ VIEWS_POSTER = {
 }
 
 VIEWS_POSTER_CHUNKED = {
-    'panel': PostersWindow,
+    'panel': PostersChunkedWindow,
     'list': ListView16x9ChunkedWindow,
     'all': (PostersChunkedWindow, ListView16x9ChunkedWindow)
 }
@@ -1681,7 +1673,7 @@ VIEWS_SQUARE = {
 }
 
 VIEWS_SQUARE_CHUNKED = {
-    'panel': SquaresWindow,
-    'list': ListViewSquareWindow,
+    'panel': SquaresChunkedWindow,
+    'list': ListViewSquareChunkedWindow,
     'all': (SquaresChunkedWindow, ListViewSquareChunkedWindow)
 }

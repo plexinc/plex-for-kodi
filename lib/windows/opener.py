@@ -118,6 +118,7 @@ def playlistClicked(pl):
 
 def sectionClicked(section, filter_=None):
     import library
+    library.ITEM_TYPE = section.TYPE
     key = section.key
     if not key.isdigit():
         key = section.getLibrarySectionId()

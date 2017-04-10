@@ -1,10 +1,12 @@
 [- 0.0.102 -]
 
-Add Czech translation
+Add Czech translation (thanks to Pavuucek)
 Handle connection errors on link screen polling
 Handle skip next/prev when playing video playlists
 Home Screen: Navigating to the 'More' button now causes an update for all movement
 Add ability to view episodes/albums in library view
+Add German translations (thanks to coffinbearer)
+Friendly name now includes hostname to differentiate Kodi devices
 
 [- 0.0.101 -]
 

@@ -139,7 +139,7 @@ msgstr "Mindig"
 
 msgctxt "#32036"
 msgid "Allow 4K"
-msgstr 4K engedélyezése"
+msgstr "4K engedélyezése"
 
 msgctxt "#32037"
 msgid "Allow HEVC (h265)"
@@ -573,7 +573,7 @@ msgstr "Nem megtekintettek"
 
 msgctxt "#32369"
 msgid "By Date Played"
-msgstr "Lejátszás détuma szerint"
+msgstr "Lejátszás dátuma szerint"
 
 msgctxt "#32370"
 msgid "Date Played"
@@ -668,7 +668,7 @@ msgid "Lens"
 msgstr "Lencsék"
 
 msgctxt "#32393"
-msgid "TV műsorok"
+msgid "TV Shows"
 msgstr "Sorozatok"
 
 msgctxt "#32394"
@@ -705,11 +705,11 @@ msgstr "Rendezők"
 
 msgctxt "#32402"
 msgid "Writer"
-msgstr "író"
+msgstr "Szerző"
 
 msgctxt "#32403"
 msgid "Writers"
-msgstr "írók"
+msgstr "Szerzők"
 
 msgctxt "#32404"
 msgid "Related Movies"
@@ -736,8 +736,8 @@ msgid "Enable Subtitles"
 msgstr "Feliratok engedélyezése"
 
 msgctxt "#32410"
-msgid "Platform verzió"
-msgstr ""
+msgid "Platform Version"
+msgstr "Platform verzió"
 
 msgctxt "#32411"
 msgid "Unknown"
@@ -909,7 +909,7 @@ msgstr "Nincs elérhető tartalom ebben a könyvtárban"
 
 msgctxt "#32453"
 msgid "Please add content and/or check that 'Include in dashboard' is enabled."
-msgstr "Kérem vegyen fel tartalmat és/vagy ellenőrizze, hogy az "Include in dashboard" beállítás engedélyezve van."
+msgstr "Kérem adjon hozzá tartalmat és/vagy ellenőrizze, hogy a 'Hozzáadás az irányítópulthoz' opció be van kapcsolva"
 
 msgctxt "#32454"
 msgid "No Content available for this filter"

@@ -405,7 +405,7 @@ msgstr "Tényleg törli?"
 
 msgctxt "#32327"
 msgid "Are you sure you really want to delete this media?"
-msgstr "Biztos benne, hogy törli az az alábbi tartalmat?"
+msgstr "Biztos benne, hogy törli az alábbi tartalmat?"
 
 msgctxt "#32328"
 msgid "Yes"

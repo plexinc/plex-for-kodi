@@ -16,12 +16,15 @@
     <extension point="xbmc.service" library="service.py" start="startup"></extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plex for Kodi</summary>
+        <summary lang="de">Plex für Kodi</summary>
         <description lang="en">Official Plex for Kodi add-on</description>
+        <description lang="de">Offizielles Plex für Kodi Addon</description>
         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
         <forum>https://forums.plex.tv/categories/plex-for-kodi</forum>
         <website>https://www.plex.tv</website>
         <source>https://github.com/plexinc/plex-for-kodi</source>
         <platform>all</platform>
-        <disclaimer>This beta release requires a Plex Pass</disclaimer>
+        <disclaimer lang="en">This beta release requires a Plex Pass</disclaimer>
+        <disclaimer lang="de">Diese Beta Version benötigt einen Plex Pass</disclaimer>
     </extension>
 </addon>

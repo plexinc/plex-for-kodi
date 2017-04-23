@@ -42,7 +42,13 @@ class PinLogin(object):
         try:
             start = time.time()
             while not self._abort and time.time() - start < 300:
-                response = http.GET(self.POLL.format(self.id))
+                try:
+                    response = http.GET(self.POLL.format(self.id))
+                except Exception, e:
+                    util.ERROR('PinLogin connection error: {0}'.format(e.__class__), err=e)
+                    time.sleep(self.POLL_INTERVAL)
+                    continue
+
                 if response.status_code != http.codes.ok:
                     self._expired = True
                     break

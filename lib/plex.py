@@ -77,7 +77,7 @@ class PlexInterface(plexapp.AppInterface):
         'provides': 'player',
         'device': plexapp._platform,
         'model': 'Unknown',
-        'friendlyName': 'Kodi Plex Addon',
+        'friendlyName': 'Kodi Add-on ({0})'.format(platform.node()),
         'supports1080p60': True,
         'vp9Support': True,
         'transcodeVideoQualities': [

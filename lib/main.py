@@ -17,12 +17,12 @@ BACKGROUND = None
 
 
 def waitForThreads():
-    util.DEBUG_LOG('Checking for any remaining threads')
+    util.DEBUG_LOG('Main: Checking for any remaining threads')
     while len(threading.enumerate()) > 1:
         for t in threading.enumerate():
             if t != threading.currentThread():
                 if t.isAlive():
-                    util.DEBUG_LOG('Waiting on: {0}...'.format(t.name))
+                    util.DEBUG_LOG('Main: Waiting on: {0}...'.format(t.name))
                     if isinstance(t, threading._Timer):
                         t.cancel()
                         t.join()
@@ -34,12 +34,12 @@ def waitForThreads():
 
 @atexit.register
 def realExit():
-    xbmc.log('script.plex: REALLY FINISHED', xbmc.LOGNOTICE)
+    xbmc.log('Main: script.plex: REALLY FINISHED', xbmc.LOGNOTICE)
 
 
 def signout():
     util.setSetting('auth.token', '')
-    util.DEBUG_LOG('Signing out...')
+    util.DEBUG_LOG('Main: Signing out...')
     plexapp.ACCOUNT.signOut()
 
 
@@ -75,17 +75,19 @@ def _main():
                             break
                         elif result == 'signin':
                             break
+                        util.DEBUG_LOG('Main: User selected')
+
                     try:
                         done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
                         if not plexapp.SERVERMANAGER.selectedServer:
-                            util.DEBUG_LOG('Waiting for selected server...')
+                            util.DEBUG_LOG('Main: Waiting for selected server...')
                             try:
                                 background.setBusy()
                                 done.wait()
                             finally:
                                 background.setBusy(False)
 
-                        util.DEBUG_LOG('STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
+                        util.DEBUG_LOG('Main: STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
 
                         windowutils.HOME = home.HomeWindow.open()
                         util.CRON.cancelReceiver(windowutils.HOME)
@@ -108,7 +110,7 @@ def _main():
     except:
         util.ERROR()
     finally:
-        util.DEBUG_LOG('SHUTTING DOWN...')
+        util.DEBUG_LOG('Main: SHUTTING DOWN...')
         background.setShutdown()
         player.shutdown()
         plexapp.APP.preShutdown()

@@ -99,7 +99,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def trueOffset(self):
         if self.handler.mode == self.handler.MODE_ABSOLUTE:
-            return self.offset
+            return (self.handler.player.playerObject.startOffset * 1000) + self.offset
         else:
             return self.baseOffset + self.offset
 
@@ -140,7 +140,6 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onAction(self, action):
         try:
-            # util.TEST((action.getId(), action.getButtonCode(), action.getAmount1(), action.getAmount2()))
             self.resetTimeout()
 
             controlID = self.getFocusId()
@@ -556,7 +555,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectionBox.setPosition(-50, 0)
         self.setProperty('time.selection', util.simplifiedTimeDisplay(self.selectedOffset))
         if self.hasBif:
-            self.setProperty('bif.image', self.baseURL.format(self.selectedOffset))
+            self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(self.selectedOffset))
             self.bifImageControl.setPosition(bifx, 752)
 
         self.seekbarControl.setWidth(w)

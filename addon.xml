@@ -17,8 +17,10 @@
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plex for Kodi</summary>
         <summary lang="de">Plex für Kodi</summary>
+        <summary lang="hu">Plex for Kodi</summary>
         <description lang="en">Official Plex for Kodi add-on</description>
         <description lang="de">Offizielles Plex für Kodi Addon</description>
+        <description lang="hu">Hivatalos Plex for Kodi add-on</description>
         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
         <forum>https://forums.plex.tv/categories/plex-for-kodi</forum>
         <website>https://www.plex.tv</website>

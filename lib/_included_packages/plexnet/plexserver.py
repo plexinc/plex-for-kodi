@@ -221,7 +221,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         else:
             schemeAndHost = self.activeConnection.address
 
-        return url[:len(schemeAndHost)] == schemeAndHost
+        return url.startswith(schemeAndHost)
 
     def getToken(self):
         # It's dangerous to use for each here, because it may reset the index
@@ -445,10 +445,8 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
     def convertUrlToLoopBack(self, url):
         # If the URL starts with our server URL, replace it with 127.0.0.1:32400.
-        baseuri = self.activeConnection.address
         if self.isRequestToServer(url):
-            url = "http://127.0.0.1:32400" + url[len(baseuri):]
-
+            url = 'http://127.0.0.1:32400/' + url.split('://', 1)[-1].split('/', 1)[-1]
         return url
 
     def resetLastTest(self):

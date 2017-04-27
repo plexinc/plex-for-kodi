@@ -1,3 +1,9 @@
+[- 0.0.102 -]
+
+Add Czech translation
+Handle connection errors on link screen polling
+Handle skip next/prev when playing video playlists
+
 [- 0.0.101 -]
 
 Fix (Issue #68): Artist screen options button was showing Mark Unwatched

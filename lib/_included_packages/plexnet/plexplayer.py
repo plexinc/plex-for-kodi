@@ -15,6 +15,7 @@ class PlexPlayer(object):
     def __init__(self, item, seekValue=0, forceUpdate=False):
         self.decision = None
         self.seekValue = seekValue
+        self.metadata = None
         self.init(item, forceUpdate)
 
     def init(self, item, forceUpdate=False):
@@ -98,6 +99,9 @@ class PlexPlayer(object):
             partObj.startOffset = startOffset
 
             part = self.media.parts[partIndex]
+
+            partObj.partDuration = part.duration.asInt()
+
             if part.isIndexed():
                 partObj.sdBifPath = part.getIndexPath("sd")
                 partObj.hdBifPath = part.getIndexPath("hd")
@@ -154,6 +158,13 @@ class PlexPlayer(object):
         util.LOG("Constructed video item for playback: {0}".format(dict(obj)))
 
         return self.metadata
+
+    @property
+    def startOffset(self):
+        return self.metadata and self.metadata.startOffset or 0
+
+    def offsetIsValid(self, offset_seconds):
+        return self.metadata.startOffset <= offset_seconds < self.metadata.startOffset + (self.metadata.partDuration / 1000)
 
     def isLiveHls(url=None, headers=None):
         # Check to see if this is a live HLS playlist to fix two issues. One is a
@@ -373,6 +384,9 @@ class PlexPlayer(object):
     def hasMoreParts(self):
         return (self.metadata is not None and self.metadata.nextPart is not None)
 
+    def getNextPartOffset(self):
+        return self.metadata.nextPart.startOffset * 1000
+
     def goToNextPart(self):
         oldPart = self.metadata
         if oldPart is None:
@@ -390,10 +404,16 @@ class PlexPlayer(object):
 
     def getBifUrl(self, offset=0):
         server = self.item.getServer()
-        if server is not None and self.metadata is not None:
-            bifUrl = self.metadata.hdBifPath or self.metadata.sdBifPath
-            if bifUrl is not None:
-                return server.buildUrl('{0}/{1}'.format(bifUrl, offset), True)
+        startOffset = 0
+        for part in self.media.parts:
+            duration = part.duration.asInt()
+            if startOffset <= offset < startOffset + duration:
+                bifUrl = part.getIndexPath("hd") or part.getIndexPath("sd")
+                if bifUrl is not None:
+                    url = server.buildUrl('{0}/{1}'.format(bifUrl, offset - startOffset), True)
+                    return url
+
+            startOffset += duration
 
         return None
 
@@ -485,7 +505,7 @@ class PlexPlayer(object):
         # Build the decision path now that we have build our stream url, and only if the server supports it.
         if server.supportsFeature("streamingBrain"):
             decisionPath = builder.getRelativeUrl().replace(obj.transcodeEndpoint, self.DECISION_ENDPOINT)
-            if decisionPath[:len(self.DECISION_ENDPOINT)] == self.DECISION_ENDPOINT:
+            if decisionPath.startswith(self.DECISION_ENDPOINT):
                 obj.decisionPath = decisionPath
 
         return obj

@@ -11,6 +11,7 @@ Fix issue #64 (multi part movies won't playback)
 Improve timeline reporting
 Friendly name now includes hostname to differentiate Kodi devices
 Possible fix for issue #102
+Fix a bug causing an error on server decisions
 
 [- 0.0.101 -]
 

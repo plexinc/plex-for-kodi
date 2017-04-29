@@ -117,7 +117,7 @@ class PlexStream(plexobjects.PlexObject):
         return self.getServer().buildUrl(self.getSubtitlePath(), True)
 
     def isSelected(self):
-        return self.selected.asInt() == 1
+        return self.selected.asBool()
 
     def setSelected(self, selected):
         self.selected = plexobjects.PlexValue(selected and '1' or '0')

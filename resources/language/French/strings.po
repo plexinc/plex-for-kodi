@@ -248,7 +248,7 @@ msgstr ""
 
 
 msgctxt "#32201"
-msgid "Trailer"
+msgid "Bande-annonce"
 msgstr ""
 
 msgctxt "#32202"
@@ -356,7 +356,7 @@ msgid "En cours"
 msgstr ""
 
 msgctxt "#32315"
-msgid "Poursuivre la lecture?"
+msgid "Poursuivre la lecture ?"
 msgstr ""
 
 msgctxt "#32316"
@@ -452,7 +452,7 @@ msgid "Aucun serveur trouvé"
 msgstr ""
 
 msgctxt "#32339"
-msgid "Server non accessible"
+msgid "Serveur non accessible"
 msgstr ""
 
 msgctxt "#32340"

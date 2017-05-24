@@ -19,6 +19,7 @@
         <summary lang="de">Plex für Kodi</summary>
         <description lang="en">Official Plex for Kodi add-on</description>
         <description lang="de">Offizielles Plex für Kodi Addon</description>
+        <description lang="fr">Add-on Officiel Plex pour Kodi</description>
         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
         <forum>https://forums.plex.tv/categories/plex-for-kodi</forum>
         <website>https://www.plex.tv</website>
@@ -26,5 +27,6 @@
         <platform>all</platform>
         <disclaimer lang="en">This beta release requires a Plex Pass</disclaimer>
         <disclaimer lang="de">Diese Beta Version benötigt einen Plex Pass</disclaimer>
+      	<disclaimer lang="fr">Cette version beta requiert un Plex Pass</disclaimer>
     </extension>
 </addon>

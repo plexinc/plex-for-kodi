@@ -656,8 +656,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         mli.setProperty('summary', video.summary.strip().replace('\t', ' '))
 
         if video.index:
-            mli.setProperty('season', '{0} {1}'.format(T(32303, 'Season'), video.parentIndex))
-            mli.setProperty('episode', '{0} {1}'.format(T(32304, 'Episode'), video.index))
+            mli.setProperty('season', u'{0} {1}'.format(T(32303, 'Season'), video.parentIndex))
+            mli.setProperty('episode', u'{0} {1}'.format(T(32304, 'Episode'), video.index))
         else:
             mli.setProperty('season', '')
             mli.setProperty('episode', '')

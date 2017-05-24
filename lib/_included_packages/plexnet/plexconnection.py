@@ -193,7 +193,12 @@ class PlexConnection(object):
         return url
 
     def simpleBuildUrl(self, server, path):
-        return self.address + path + '&X-Plex-Token=' + (self.token or server.getToken())
+        token = (self.token or server.getToken())
+        param = ''
+        if token:
+            param = '&X-Plex-Token={0}'.format(token)
+
+        return '{0}{1}{2}'.format(self.address, path, param)
 
     def getScore(self, recalc=False):
         if recalc:

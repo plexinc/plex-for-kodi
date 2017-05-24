@@ -7,11 +7,14 @@ Add ability to view episodes/albums in library view
 Add German translation (thanks to coffinbearer)
 Add Czech translation (thanks to Pavuucek)
 Add Hungarian translation (thanks to vampywiz17)
+Add Frensh translation (thanks to raffoul/rlimbach)
 Fix issue #64 (multi part movies won't playback)
 Improve timeline reporting
 Friendly name now includes hostname to differentiate Kodi devices
 Possible fix for issue #102
 Fix a bug causing an error on server decisions
+Fix errors caused by localization on episodes and pre-play screens
+Fix some errors cause when no internet
 
 [- 0.0.101 -]
 

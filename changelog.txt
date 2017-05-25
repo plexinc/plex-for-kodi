@@ -14,7 +14,7 @@ Friendly name now includes hostname to differentiate Kodi devices
 Possible fix for issue #102
 Fix a bug causing an error on server decisions
 Fix errors caused by localization on episodes and pre-play screens
-Fix some errors cause when no internet
+Fix some errors caused when no internet
 
 [- 0.0.101 -]
 

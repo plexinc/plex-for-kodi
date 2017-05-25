@@ -912,7 +912,7 @@ msgstr "Bitte Inhalte ergänzen und/oder prüfen ob 'In Dashboard anzeigen' akti
 
 msgctxt "#32454"
 msgid "No Content available for this filter"
-msgstr "Keine Ergebnisse mit dem aktuellen Filter"
+msgstr "Mit diesem Filter ist kein Inhalt verfügbar"
 
 msgctxt "#32455"
 msgid "Please change change or remove the current filter"

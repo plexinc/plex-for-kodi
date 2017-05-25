@@ -829,7 +829,7 @@ msgstr "Space"
 
 msgctxt "#32433"
 msgid "Clear"
-msgstr "Törlés"
+msgstr "Törlés mind"
 
 msgctxt "#32434"
 msgid "Searching..."

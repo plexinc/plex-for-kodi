@@ -1,3 +1,7 @@
+[- 0.0.103 -]
+
+Improved hub vertical scrolling animation
+
 [- 0.0.102 -]
 
 Handle connection errors on link screen polling

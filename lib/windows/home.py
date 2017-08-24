@@ -643,7 +643,12 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             plli.setProperty('item', '1')
             items.append(plli)
 
-        sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
+        try:
+            sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
+        except plexnet.exceptions.BadRequest:
+            self.setFocusId(self.SERVER_BUTTON_ID)
+            util.messageDialog("Error", "Bad request")
+            return
 
         if plexapp.SERVERMANAGER.selectedServer.hasHubs():
             self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection, PlaylistsSection] + sections]

@@ -358,6 +358,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.showHubs(self.lastSection, update=True)
 
     def shutdown(self):
+        self.serverList.reset()
         self.unhookSignals()
 
     def onAction(self, action):

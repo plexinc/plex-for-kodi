@@ -302,21 +302,22 @@ def init():
 
 
 def requirePlexPass():
-    if not plexapp.ACCOUNT.hasPlexPass():
-        from windows import signin, background
-        background.setSplash(False)
-        w = signin.SignInPlexPass.open()
-        retry = w.retry
-        del w
-        util.DEBUG_LOG('PlexPass required. Signing out...')
-        plexapp.ACCOUNT.signOut()
-        plexapp.SERVERMANAGER.clearState()
-        if retry:
-            return 'RETRY'
-        else:
-            return False
-
     return True
+    # if not plexapp.ACCOUNT.hasPlexPass():
+    #     from windows import signin, background
+    #     background.setSplash(False)
+    #     w = signin.SignInPlexPass.open()
+    #     retry = w.retry
+    #     del w
+    #     util.DEBUG_LOG('PlexPass required. Signing out...')
+    #     plexapp.ACCOUNT.signOut()
+    #     plexapp.SERVERMANAGER.clearState()
+    #     if retry:
+    #         return 'RETRY'
+    #     else:
+    #         return False
+
+    # return True
 
 
 def authorize():

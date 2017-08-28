@@ -95,10 +95,14 @@ def _main():
                         if not windowutils.HOME.closeOption:
                             return
 
-                        if windowutils.HOME.closeOption == 'signout':
+                        closeOption = windowutils.HOME.closeOption
+
+                        windowutils.shutdownHome()
+
+                        if closeOption == 'signout':
                             signout()
                             break
-                        elif windowutils.HOME.closeOption == 'switch':
+                        elif closeOption == 'switch':
                             plexapp.ACCOUNT.isAuthenticated = False
                     finally:
                         windowutils.shutdownHome()

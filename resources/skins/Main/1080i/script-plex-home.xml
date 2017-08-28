@@ -26,121 +26,121 @@
         </control>
 
         <control type="grouplist" id="50">
-            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections))">Conditional</animation>
+            <animation effect="slide" end="0,-135" time="200" tween="sine" easing="inout" condition="!IsEmpty(Window.Property(off.sections))">Conditional</animation>
 
             <!-- 501 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
-                <effect type="slide" end="0,-345" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-345" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 502 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 503 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),2) + Control.IsVisible(502)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 504 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),3) + Control.IsVisible(503)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 505 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),4) + Control.IsVisible(504)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 506 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),5) + Control.IsVisible(505)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 507 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),6) + Control.IsVisible(506)" reversible="true">
-                <effect type="slide" end="0,-440" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-440" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 508 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),7) + Control.IsVisible(507)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 509 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),8) + Control.IsVisible(508)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 510 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),9) + Control.IsVisible(509)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 511 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),10) + Control.IsVisible(510)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 512 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),11) + Control.IsVisible(511)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 520 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),12) + Control.IsVisible(512)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 521 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),13) + Control.IsVisible(520)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 522 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),14) + Control.IsVisible(521)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 513 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),15) + Control.IsVisible(522)" reversible="true">
-                <effect type="slide" end="0,-400" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-400" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 514 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),16) + Control.IsVisible(513)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 515 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),17) + Control.IsVisible(514)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 516 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),18) + Control.IsVisible(515)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 517 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),19) + Control.IsVisible(516)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 518 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),20) + Control.IsVisible(517)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 519 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),21) + Control.IsVisible(518)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
             <!-- 523 Focus animation -->
             <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),22) + Control.IsVisible(519)" reversible="true">
-                <effect type="slide" end="0,-540" time="200" tween="quadratic" easing="out"/>
+                <effect type="slide" end="0,-540" time="200" tween="sine" easing="inout"/>
             </animation>
 
 
@@ -157,8 +157,8 @@
                 <width>2130</width>
                 <height>200</height>
                 <control type="fixedlist" id="101">
-                    <animation effect="slide" end="-110,0" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).Position,3)">Conditional</animation>
-                    <animation effect="slide" end="-110,0" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).Position,4)">Conditional</animation>
+                    <animation effect="slide" end="-110,0" time="200" tween="sine" easing="inout" condition="IntegerGreaterThan(Container(101).Position,3)">Conditional</animation>
+                    <animation effect="slide" end="-110,0" time="200" tween="sine" easing="inout" condition="IntegerGreaterThan(Container(101).Position,4)">Conditional</animation>
                     <posx>-300</posx>
                     <posy>0</posy>
                     <width>2430</width>
@@ -7769,7 +7769,7 @@
 
 
         <control type="group" id="200">
-            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(off.sections)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
+            <animation effect="slide" end="0,-135" time="200" tween="sine" easing="inout" condition="!IsEmpty(Window.Property(off.sections)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>

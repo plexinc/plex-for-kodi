@@ -131,7 +131,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             pass
 
     def markDevicesAsRefreshing(self):
-        for uuid in self.serversByUuid:
+        for uuid in self.serversByUuid.keys():
             self.serversByUuid[uuid].markAsRefreshing()
 
     def mergeServer(self, server):

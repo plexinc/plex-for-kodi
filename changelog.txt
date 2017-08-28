@@ -1,5 +1,6 @@
-[- 0.0.103 -]
+[- 0.1.0 -]
 
+Remove PlexPass requirement
 Improved hub vertical scrolling animation
 Fix (#87): Switching between managed users causes Kodi to crashing
 Fix (#119): Occasional crashes when exiting the add-on

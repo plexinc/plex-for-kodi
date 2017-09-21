@@ -1,5 +1,6 @@
 import time
 import threading
+import re
 
 import xbmc
 import xbmcgui
@@ -725,22 +726,26 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             hasContent = False
             skip = {}
             for hub in hubs:
-                if hub.hubIdentifier not in self.HUBMAP:
+                identifier = re.sub('\.\d+$', '', hub.hubIdentifier)
+                if identifier not in self.HUBMAP:
                     util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
                     continue
 
-                skip[self.HUBMAP[hub.hubIdentifier]['index']] = 1
+                skip[self.HUBMAP[identifier]['index']] = 1
 
                 if self.showHub(hub):
                     if hub.items:
                         hasContent = True
-                    if self.HUBMAP[hub.hubIdentifier].get('do_updates'):
-                        self.updateHubs[hub.hubIdentifier] = hub
+                    if self.HUBMAP[identifier].get('do_updates'):
+                        self.updateHubs[identifier] = hub
 
             if not hasContent:
                 self.setBoolProperty('no.content', True)
 
-            lastSkip = min(skip.keys())
+            lastSkip = 0
+            if skip:
+                lastSkip = min(skip.keys())
+
             focus = None
             if update:
                 for i, control in enumerate(self.hubControls):
@@ -757,9 +762,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.showBusy(False)
 
     def showHub(self, hub, items=None):
-        if hub.hubIdentifier in self.HUBMAP:
-            util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
-            self._showHub(hub, hubitems=items, **self.HUBMAP[hub.hubIdentifier])
+        identifier = re.sub('\.\d+$', '', hub.hubIdentifier)
+        if identifier in self.HUBMAP:
+            util.DEBUG_LOG('Hub: {0} ({1})'.format(identifier, len(hub.items)))
+            self._showHub(hub, hubitems=items, **self.HUBMAP[identifier])
             return True
         else:
             util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))

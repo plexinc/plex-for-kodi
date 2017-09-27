@@ -1,4 +1,4 @@
-[- 0.1.2a1 -]
+[- 0.1.2 -]
 
 Fix issue with hubs not showing with (newer?) server versions
 

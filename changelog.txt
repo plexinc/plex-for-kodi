@@ -1,3 +1,7 @@
+[- 0.1.2 -]
+
+Fix issue with hubs not showing with (newer?) server versions
+
 [- 0.1.1 -]
 
 Remove PlexPass disclaimer from add-on info

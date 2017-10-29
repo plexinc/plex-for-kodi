@@ -450,7 +450,7 @@ def getProgressImage(obj):
 
 
 def trackIsPlaying(track):
-    return xbmc.getCondVisibility('SubString(MusicPlayer.Comment,{0},Left)'.format('PLEX-{0}:'.format(track.ratingKey)))
+    return xbmc.getCondVisibility('String.StartsWith(MusicPlayer.Comment,{0})'.format('PLEX-{0}:'.format(track.ratingKey)))
 
 
 def addURLParams(url, params):

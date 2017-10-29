@@ -29,10 +29,10 @@
                 <!-- Doesn't work for all aspects -->
                 <!-- <animation effect="zoom" start="56" end="100" time="200" center="960,540" reversible="false" condition="StringCompare(Window.Property(rotate),90) | StringCompare(Window.Property(rotate),270)">Conditional</animation>
                 <animation effect="zoom" start="178" end="100" time="200" center="960,540" reversible="false" condition="StringCompare(Window.Property(rotate),0) | StringCompare(Window.Property(rotate),180)">Conditional</animation> -->
-                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="IntegerGreaterThan(Window.Property(rotate),89)">Conditional</animation>
-                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="IntegerGreaterThan(Window.Property(rotate),179)">Conditional</animation>
-                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="IntegerGreaterThan(Window.Property(rotate),269)">Conditional</animation>
-                <animation effect="rotate" time="200" start="270" end="360" center="960,540" reversible="false" condition="!IntegerGreaterThan(Window.Property(rotate),89)">Conditional</animation>
+                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="Integer.IsGreater(Window.Property(rotate),89)">Conditional</animation>
+                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="Integer.IsGreater(Window.Property(rotate),179)">Conditional</animation>
+                <animation effect="rotate" time="200" start="0" end="90" center="960,540" reversible="false" condition="Integer.IsGreater(Window.Property(rotate),269)">Conditional</animation>
+                <animation effect="rotate" time="200" start="270" end="360" center="960,540" reversible="false" condition="!Integer.IsGreater(Window.Property(rotate),89)">Conditional</animation>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
@@ -49,7 +49,7 @@
             <height>1080</height>
             <texturefocus>-</texturefocus>
             <texturenofocus>-</texturenofocus>
-            <usealttexture>!IsEmpty(Window.Property(OSD))</usealttexture>
+            <usealttexture>!String.IsEmpty(Window.Property(OSD))</usealttexture>
             <alttexturefocus>-</alttexturefocus>
             <alttexturenofocus>-</alttexturenofocus>
             <label> </label>
@@ -58,15 +58,15 @@
             <altclick>SetProperty(OSD,)</altclick>
             <ondown>SetProperty(OSD,1)</ondown>
             <ondown>SetFocus(400)</ondown>
-            <onfocus condition="!IsEmpty(Window.Property(show.pqueue))">SetFocus(501)</onfocus>
-            <onfocus condition="!IsEmpty(Window.Property(OSD))">SetFocus(400)</onfocus>
+            <onfocus condition="!String.IsEmpty(Window.Property(show.pqueue))">SetFocus(501)</onfocus>
+            <onfocus condition="!String.IsEmpty(Window.Property(OSD))">SetFocus(400)</onfocus>
         </control>
         <control type="group" id="200">
-            <animation effect="slide" start="0,0" end="0,-135" time="100" condition="!IsEmpty(Window.Property(show.pqueue))">Conditional</animation>
+            <animation effect="slide" start="0,0" end="0,-135" time="100" condition="!String.IsEmpty(Window.Property(show.pqueue))">Conditional</animation>
             <posx>0</posx>
             <posy>0</posy>
             <control type="group">
-                <visible allowhiddenfocus="true">!IsEmpty(Window.Property(OSD))</visible>
+                <visible allowhiddenfocus="true">!String.IsEmpty(Window.Property(OSD))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>940</posy>
@@ -94,7 +94,7 @@
                     <usecontrolcoords>true</usecontrolcoords>
 
                     <control type="togglebutton" id="401">
-                        <visible>IsEmpty(Window.Property(no.playlist))</visible>
+                        <visible>String.IsEmpty(Window.Property(no.playlist))</visible>
                         <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                         <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                         <hitrect x="28" y="28" w="69" h="45" />
@@ -105,14 +105,14 @@
                         <font>font12</font>
                         <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texturefocus>
                         <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texturenofocus>
-                        <usealttexture>!IsEmpty(Window.Property(pq.repeat))</usealttexture>
+                        <usealttexture>!String.IsEmpty(Window.Property(pq.repeat))</usealttexture>
                         <alttexturefocus colordiffuse="FFCC7B19">script.plex/buttons/repeat-focus.png</alttexturefocus>
                         <alttexturenofocus colordiffuse="FFCC7B19">script.plex/buttons/repeat.png</alttexturenofocus>
                         <label> </label>
                     </control>
                     <control type="button" id="421">
                         <enable>false</enable>
-                        <visible>!IsEmpty(Window.Property(no.playlist))</visible>
+                        <visible>!String.IsEmpty(Window.Property(no.playlist))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -124,7 +124,7 @@
                     </control>
 
                     <control type="togglebutton" id="402">
-                        <visible>IsEmpty(Window.Property(no.playlist))</visible>
+                        <visible>String.IsEmpty(Window.Property(no.playlist))</visible>
                         <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                         <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                         <hitrect x="28" y="28" w="69" h="45" />
@@ -135,14 +135,14 @@
                         <font>font12</font>
                         <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texturefocus>
                         <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
-                        <usealttexture>!IsEmpty(Window.Property(pq.shuffled))</usealttexture>
+                        <usealttexture>!String.IsEmpty(Window.Property(pq.shuffled))</usealttexture>
                         <alttexturefocus colordiffuse="FFCC7B19">script.plex/buttons/shuffle-focus.png</alttexturefocus>
                         <alttexturenofocus colordiffuse="FFCC7B19">script.plex/buttons/shuffle.png</alttexturenofocus>
                         <label> </label>
                     </control>
                     <control type="button" id="422">
                         <enable>false</enable>
-                        <visible>!IsEmpty(Window.Property(no.playlist))</visible>
+                        <visible>!String.IsEmpty(Window.Property(no.playlist))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -169,7 +169,7 @@
 
 
                     <control type="button" id="404">
-                        <visible>IsEmpty(Window.Property(hide.prev))</visible>
+                        <visible>String.IsEmpty(Window.Property(hide.prev))</visible>
                         <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                         <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                         <hitrect x="58" y="28" w="69" h="45" />
@@ -184,7 +184,7 @@
                     </control>
                     <control type="button" id="424">
                         <enable>false</enable>
-                        <visible>!IsEmpty(Window.Property(hide.prev))</visible>
+                        <visible>!String.IsEmpty(Window.Property(hide.prev))</visible>
                         <posx>30</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -205,7 +205,7 @@
                         <font>font12</font>
                         <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/play-focus.png</texturefocus>
                         <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/play.png</texturenofocus>
-                        <usealttexture>!IsEmpty(Window.Property(playing))</usealttexture>
+                        <usealttexture>!String.IsEmpty(Window.Property(playing))</usealttexture>
                         <alttexturefocus colordiffuse="FFE5A00D">script.plex/buttons/pause-focus.png</alttexturefocus>
                         <alttexturenofocus colordiffuse="99FFFFFF">script.plex/buttons/pause.png</alttexturenofocus>
                         <label> </label>
@@ -224,7 +224,7 @@
                         <label> </label>
                     </control>
                     <control type="button" id="409">
-                        <visible>IsEmpty(Window.Property(hide.next))</visible>
+                        <visible>String.IsEmpty(Window.Property(hide.next))</visible>
                         <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                         <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                         <hitrect x="28" y="28" w="69" h="45" />
@@ -239,7 +239,7 @@
                     </control>
                     <control type="button" id="419">
                         <enable>false</enable>
-                        <visible>!IsEmpty(Window.Property(hide.next))</visible>
+                        <visible>!String.IsEmpty(Window.Property(hide.next))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -261,7 +261,7 @@
                         <font>font12</font>
                         <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/square2x2-focus.png</texturefocus>
                         <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/square2x2.png</texturenofocus>
-                        <usealttexture>!IsEmpty(Window.Property(show.pqueue))</usealttexture>
+                        <usealttexture>!String.IsEmpty(Window.Property(show.pqueue))</usealttexture>
                         <alttexturefocus colordiffuse="FFCC7B19">script.plex/buttons/square2x2-focus.png</alttexturefocus>
                         <alttexturenofocus colordiffuse="FFCC7B19">script.plex/buttons/square2x2-focus.png</alttexturenofocus>
                         <onclick>SetProperty(show.pqueue,1)</onclick>
@@ -279,7 +279,7 @@
                         <font>font12</font>
                         <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/info-focus.png</texturefocus>
                         <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/info.png</texturenofocus>
-                        <usealttexture>!IsEmpty(Window.Property(show.info))</usealttexture>
+                        <usealttexture>!String.IsEmpty(Window.Property(show.info))</usealttexture>
                         <alttexturefocus colordiffuse="FFCC7B19">script.plex/buttons/info-focus.png</alttexturefocus>
                         <alttexturenofocus colordiffuse="FFCC7B19">script.plex/buttons/info-focus.png</alttexturenofocus>
                         <onclick>SetProperty(show.info,1)</onclick>
@@ -416,7 +416,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(show.info))</visible>
+            <visible>!String.IsEmpty(Window.Property(show.info))</visible>
             <posx>1470</posx>
             <posy>0</posy>
             <width>450</width>
@@ -490,7 +490,7 @@
                     <label> </label>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(camera.model))</visible>
+                    <visible>!String.IsEmpty(Window.Property(camera.model))</visible>
                     <width>450</width>
                     <height>37</height>
                     <control type="button">
@@ -517,7 +517,7 @@
                     </control>
                 </control>
                 <control type="button">
-                    <visible>!IsEmpty(Window.Property(camera.lens))</visible>
+                    <visible>!String.IsEmpty(Window.Property(camera.lens))</visible>
                     <width>450</width>
                     <height>37</height>
                     <texturefocus>script.plex/white-square.png</texturefocus>
@@ -530,7 +530,7 @@
                     <label>$INFO[Window.Property(camera.lens)]</label>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(photo.container))</visible>
+                    <visible>!String.IsEmpty(Window.Property(photo.container))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>450</width>
@@ -583,7 +583,7 @@
                     <label> </label>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(camera.settings))</visible>
+                    <visible>!String.IsEmpty(Window.Property(camera.settings))</visible>
                     <width>450</width>
                     <height>80</height>
                     <!-- sep -->
@@ -642,7 +642,7 @@
                 </control>
 
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(photo.summary))</visible>
+                    <visible>!String.IsEmpty(Window.Property(photo.summary))</visible>
                     <width>450</width>
                     <height>152</height>
                     <control type="image">

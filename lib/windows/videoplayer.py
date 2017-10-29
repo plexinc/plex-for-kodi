@@ -187,11 +187,11 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             y += 360
         if xbmc.getCondVisibility('Control.IsVisible(501)'):
             y += 520
-        if xbmc.getCondVisibility('!IsEmpty(Window.Property(on.extras))'):
+        if xbmc.getCondVisibility('!String.IsEmpty(Window.Property(on.extras))'):
             y -= 300
-        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
+        if xbmc.getCondVisibility('Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)'):
             y -= 500
-        if xbmc.getCondVisibility('IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
+        if xbmc.getCondVisibility('Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)'):
             y -= 500
 
         focus = int(xbmc.getInfoLabel('Container(403).Position'))

@@ -9,7 +9,7 @@
     <controls>
 
         <control type="image">
-            <visible>!IsEmpty(Window.Property(pin.image.0))</visible>
+            <visible>!String.IsEmpty(Window.Property(pin.image.0))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>
@@ -17,7 +17,7 @@
             <texture>script.plex/sign_in/pin-display.jpg</texture>
         </control>
         <control type="image">
-            <visible>IsEmpty(Window.Property(pin.image.0)) + IsEmpty(Window.Property(linking))</visible>
+            <visible>String.IsEmpty(Window.Property(pin.image.0)) + String.IsEmpty(Window.Property(linking))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>
@@ -25,7 +25,7 @@
             <texture>script.plex/sign_in/generating-code.jpg</texture>
         </control>
         <control type="image">
-            <visible>!IsEmpty(Window.Property(linking))</visible>
+            <visible>!String.IsEmpty(Window.Property(linking))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>

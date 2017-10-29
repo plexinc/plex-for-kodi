@@ -148,7 +148,7 @@
             </control>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>0</posx>
                 <posy>585</posy>
@@ -488,9 +488,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

@@ -1723,8 +1723,8 @@
             </control>
 
             <control type="group">
-                <animation effect="fade" start="0" end="100" time="100" condition="!IsEmpty(Window.Property(searching))">Visible</animation>
-                <visible>!IsEmpty(Window.Property(searching))</visible>
+                <animation effect="fade" start="0" end="100" time="100" condition="!String.IsEmpty(Window.Property(searching))">Visible</animation>
+                <visible>!String.IsEmpty(Window.Property(searching))</visible>
                 <posx>0</posx>
                 <posy>993</posy>
                 <control type="label">
@@ -1743,7 +1743,7 @@
                     <posx>480</posx>
                     <posy>0</posy>
                     <control type="image">
-                        <visible>!IsEmpty(Window.Property(searching))</visible>
+                        <visible>!String.IsEmpty(Window.Property(searching))</visible>
                         <animation effect="rotate" start="0" end="-36000" time="100000" center="19.5,19.5" reversible="false">Visible</animation>
                         <posx>0</posx>
                         <posy>0</posy>
@@ -1754,7 +1754,7 @@
                 </control>
             </control>
             <control type="group">
-                <visible>!IsEmpty(Window.Property(no.results)) + IsEmpty(Window.Property(searching))</visible>
+                <visible>!String.IsEmpty(Window.Property(no.results)) + String.IsEmpty(Window.Property(searching))</visible>
                 <posx>0</posx>
                 <posy>993</posy>
                 <control type="label">
@@ -1774,202 +1774,202 @@
 
         <control type="grouplist" id="3000">
             <!-- 2108 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),8) + Control.IsVisible(2008)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),8) + Control.IsVisible(2008)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2109 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),9) + Control.IsVisible(2009)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),9) + Control.IsVisible(2009)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2110 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),10) + Control.IsVisible(2010)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),10) + Control.IsVisible(2010)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2111 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),11) + Control.IsVisible(2011)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),11) + Control.IsVisible(2011)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2112 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),12) + Control.IsVisible(2012)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),12) + Control.IsVisible(2012)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2113 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),13) + Control.IsVisible(2013)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),13) + Control.IsVisible(2013)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2114 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),14) + Control.IsVisible(2014)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),14) + Control.IsVisible(2014)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2115 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),15) + Control.IsVisible(2015)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),15) + Control.IsVisible(2015)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2116 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),16) + Control.IsVisible(2016)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),16) + Control.IsVisible(2016)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2117 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),17) + Control.IsVisible(2017)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),17) + Control.IsVisible(2017)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2118 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),18) + Control.IsVisible(2018)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),18) + Control.IsVisible(2018)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2119 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),19) + Control.IsVisible(2019)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),19) + Control.IsVisible(2019)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2120 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),20) + Control.IsVisible(2020)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),20) + Control.IsVisible(2020)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2121 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),21) + Control.IsVisible(2021)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),21) + Control.IsVisible(2021)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2122 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),22) + Control.IsVisible(2022)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),22) + Control.IsVisible(2022)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2123 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),23) + Control.IsVisible(2023)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),23) + Control.IsVisible(2023)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2124 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),24) + Control.IsVisible(2024)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),24) + Control.IsVisible(2024)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2125 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),25) + Control.IsVisible(2025)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),25) + Control.IsVisible(2025)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2126 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),26) + Control.IsVisible(2026)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),26) + Control.IsVisible(2026)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2127 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),27) + Control.IsVisible(2027)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),27) + Control.IsVisible(2027)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2128 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),28) + Control.IsVisible(2028)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),28) + Control.IsVisible(2028)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2129 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),29) + Control.IsVisible(2029)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),29) + Control.IsVisible(2029)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2130 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),30) + Control.IsVisible(2030)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),30) + Control.IsVisible(2030)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2131 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),31) + Control.IsVisible(2031)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),31) + Control.IsVisible(2031)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2132 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),32) + Control.IsVisible(2032)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),32) + Control.IsVisible(2032)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2133 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),33) + Control.IsVisible(2033)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),33) + Control.IsVisible(2033)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2134 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),34) + Control.IsVisible(2034)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),34) + Control.IsVisible(2034)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2135 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),35) + Control.IsVisible(2035)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),35) + Control.IsVisible(2035)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2136 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),36) + Control.IsVisible(2036)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),36) + Control.IsVisible(2036)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2137 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),37) + Control.IsVisible(2037)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),37) + Control.IsVisible(2037)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2138 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),38) + Control.IsVisible(2038)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),38) + Control.IsVisible(2038)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2139 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),39) + Control.IsVisible(2039)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),39) + Control.IsVisible(2039)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2140 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),40) + Control.IsVisible(2040)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),40) + Control.IsVisible(2040)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2141 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),41) + Control.IsVisible(2041)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),41) + Control.IsVisible(2041)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2142 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),42) + Control.IsVisible(2042)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),42) + Control.IsVisible(2042)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2143 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),43) + Control.IsVisible(2043)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),43) + Control.IsVisible(2043)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2144 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),44) + Control.IsVisible(2044)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),44) + Control.IsVisible(2044)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2145 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),45) + Control.IsVisible(2045)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),45) + Control.IsVisible(2045)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2146 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),46) + Control.IsVisible(2046)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),46) + Control.IsVisible(2046)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
             <!-- 2147 Focus animation -->
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),47) + Control.IsVisible(2047)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),47) + Control.IsVisible(2047)" reversible="true">
                 <effect type="slide" end="0,-420" time="200" tween="quadratic" easing="out"/>
             </animation>
 
@@ -1986,7 +1986,7 @@
 
             <control type="group" id="2000">
                 <defaultcontrol>2100</defaultcontrol>
-                <visible>IntegerGreaterThan(Container(2100).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2100).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="label">
@@ -2117,7 +2117,7 @@
             </control>
 
             <control type="group" id="2001">
-                <visible>IntegerGreaterThan(Container(2101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="label">
@@ -2248,7 +2248,7 @@
             </control>
 
             <control type="group" id="2002">
-                <visible>IntegerGreaterThan(Container(2102).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2102).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="label">
@@ -2379,7 +2379,7 @@
             </control>
 
             <control type="group" id="2003">
-                <visible>IntegerGreaterThan(Container(2103).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2103).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="label">
@@ -2526,7 +2526,7 @@
             </control>
 
             <control type="group" id="2004">
-                <visible>IntegerGreaterThan(Container(2104).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2104).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -2665,7 +2665,7 @@
             </control>
 
             <control type="group" id="2005">
-                <visible>IntegerGreaterThan(Container(2105).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2105).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -2804,7 +2804,7 @@
             </control>
 
             <control type="group" id="2006">
-                <visible>IntegerGreaterThan(Container(2106).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2106).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -2943,7 +2943,7 @@
             </control>
 
             <control type="group" id="2007">
-                <visible>IntegerGreaterThan(Container(2107).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2107).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -3098,7 +3098,7 @@
             </control>
 
             <control type="group" id="2008">
-                <visible>IntegerGreaterThan(Container(2108).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2108).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -3237,7 +3237,7 @@
             </control>
 
             <control type="group" id="2009">
-                <visible>IntegerGreaterThan(Container(2109).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2109).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -3376,7 +3376,7 @@
             </control>
 
             <control type="group" id="2010">
-                <visible>IntegerGreaterThan(Container(2110).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2110).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -3515,7 +3515,7 @@
             </control>
 
             <control type="group" id="2011">
-                <visible>IntegerGreaterThan(Container(2111).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2111).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -3670,7 +3670,7 @@
             </control>
 
             <control type="group" id="2012">
-                <visible>IntegerGreaterThan(Container(2112).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2112).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -3809,7 +3809,7 @@
             </control>
 
             <control type="group" id="2013">
-                <visible>IntegerGreaterThan(Container(2113).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2113).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -3948,7 +3948,7 @@
             </control>
 
             <control type="group" id="2014">
-                <visible>IntegerGreaterThan(Container(2114).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2114).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -4087,7 +4087,7 @@
             </control>
 
             <control type="group" id="2015">
-                <visible>IntegerGreaterThan(Container(2115).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2115).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -4242,7 +4242,7 @@
             </control>
 
             <control type="group" id="2016">
-                <visible>IntegerGreaterThan(Container(2116).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2116).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -4381,7 +4381,7 @@
             </control>
 
             <control type="group" id="2017">
-                <visible>IntegerGreaterThan(Container(2117).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2117).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -4520,7 +4520,7 @@
             </control>
 
             <control type="group" id="2018">
-                <visible>IntegerGreaterThan(Container(2118).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2118).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -4659,7 +4659,7 @@
             </control>
 
             <control type="group" id="2019">
-                <visible>IntegerGreaterThan(Container(2119).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2119).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -4814,7 +4814,7 @@
             </control>
 
             <control type="group" id="2020">
-                <visible>IntegerGreaterThan(Container(2120).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2120).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -4953,7 +4953,7 @@
             </control>
 
             <control type="group" id="2021">
-                <visible>IntegerGreaterThan(Container(2121).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2121).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -5092,7 +5092,7 @@
             </control>
 
             <control type="group" id="2022">
-                <visible>IntegerGreaterThan(Container(2122).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2122).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -5231,7 +5231,7 @@
             </control>
 
             <control type="group" id="2023">
-                <visible>IntegerGreaterThan(Container(2123).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2123).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -5386,7 +5386,7 @@
             </control>
 
             <control type="group" id="2024">
-                <visible>IntegerGreaterThan(Container(2124).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2124).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -5525,7 +5525,7 @@
             </control>
 
             <control type="group" id="2025">
-                <visible>IntegerGreaterThan(Container(2125).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2125).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -5664,7 +5664,7 @@
             </control>
 
             <control type="group" id="2026">
-                <visible>IntegerGreaterThan(Container(2126).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2126).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -5803,7 +5803,7 @@
             </control>
 
             <control type="group" id="2027">
-                <visible>IntegerGreaterThan(Container(2127).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2127).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -5958,7 +5958,7 @@
             </control>
 
             <control type="group" id="2028">
-                <visible>IntegerGreaterThan(Container(2128).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2128).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -6097,7 +6097,7 @@
             </control>
 
             <control type="group" id="2029">
-                <visible>IntegerGreaterThan(Container(2129).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2129).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -6236,7 +6236,7 @@
             </control>
 
             <control type="group" id="2030">
-                <visible>IntegerGreaterThan(Container(2130).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2130).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -6375,7 +6375,7 @@
             </control>
 
             <control type="group" id="2031">
-                <visible>IntegerGreaterThan(Container(2131).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2131).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -6530,7 +6530,7 @@
             </control>
 
             <control type="group" id="2032">
-                <visible>IntegerGreaterThan(Container(2132).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2132).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -6669,7 +6669,7 @@
             </control>
 
             <control type="group" id="2033">
-                <visible>IntegerGreaterThan(Container(2133).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2133).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -6808,7 +6808,7 @@
             </control>
 
             <control type="group" id="2034">
-                <visible>IntegerGreaterThan(Container(2134).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2134).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -6947,7 +6947,7 @@
             </control>
 
             <control type="group" id="2035">
-                <visible>IntegerGreaterThan(Container(2135).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2135).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -7102,7 +7102,7 @@
             </control>
 
             <control type="group" id="2036">
-                <visible>IntegerGreaterThan(Container(2136).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2136).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -7241,7 +7241,7 @@
             </control>
 
             <control type="group" id="2037">
-                <visible>IntegerGreaterThan(Container(2137).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2137).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -7380,7 +7380,7 @@
             </control>
 
             <control type="group" id="2038">
-                <visible>IntegerGreaterThan(Container(2138).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2138).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -7519,7 +7519,7 @@
             </control>
 
             <control type="group" id="2039">
-                <visible>IntegerGreaterThan(Container(2139).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2139).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -7674,7 +7674,7 @@
             </control>
 
             <control type="group" id="2040">
-                <visible>IntegerGreaterThan(Container(2140).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2140).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -7813,7 +7813,7 @@
             </control>
 
             <control type="group" id="2041">
-                <visible>IntegerGreaterThan(Container(2141).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2141).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -7952,7 +7952,7 @@
             </control>
 
             <control type="group" id="2042">
-                <visible>IntegerGreaterThan(Container(2142).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2142).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -8091,7 +8091,7 @@
             </control>
 
             <control type="group" id="2043">
-                <visible>IntegerGreaterThan(Container(2143).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2143).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -8246,7 +8246,7 @@
             </control>
 
             <control type="group" id="2044">
-                <visible>IntegerGreaterThan(Container(2144).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2144).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -8385,7 +8385,7 @@
             </control>
 
             <control type="group" id="2045">
-                <visible>IntegerGreaterThan(Container(2145).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2145).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">
@@ -8524,7 +8524,7 @@
             </control>
 
             <control type="group" id="2046">
-                <visible>IntegerGreaterThan(Container(2146).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2146).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>320</height>
                 <control type="image">
@@ -8663,7 +8663,7 @@
             </control>
 
             <control type="group" id="2047">
-                <visible>IntegerGreaterThan(Container(2147).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(2147).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <width>1356</width>
                 <height>420</height>
                 <control type="image">

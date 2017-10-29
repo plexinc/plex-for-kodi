@@ -34,7 +34,7 @@
                 <posx>60</posx>
                 <posy>0</posy>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(is.poster))</visible>
+                    <visible>!String.IsEmpty(Window.Property(is.poster))</visible>
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>
@@ -53,7 +53,7 @@
                     </control>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(is.square))</visible>
+                    <visible>!String.IsEmpty(Window.Property(is.square))</visible>
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>
@@ -72,7 +72,7 @@
                     </control>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(is.16x9))</visible>
+                    <visible>!String.IsEmpty(Window.Property(is.16x9))</visible>
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>

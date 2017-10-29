@@ -182,8 +182,8 @@
                 </control>
 
                 <control type="list" id="100">
-                    <visible>IntegerGreaterThan(Container(100).NumItems,0)</visible>
-                    <enable>IsEmpty(Window.Property(section.about))</enable>
+                    <visible>Integer.IsGreater(Container(100).NumItems,0)</visible>
+                    <enable>String.IsEmpty(Window.Property(section.about))</enable>
                     <posx>604</posx>
                     <posy>0</posy>
                     <width>776</width>
@@ -235,7 +235,7 @@
                             <posx>643</posx>
                             <posy>55</posy>
                             <control type="image">
-                                <visible>!IsEmpty(ListItem.Property(checkbox))</visible>
+                                <visible>!String.IsEmpty(ListItem.Property(checkbox))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>45</width>
@@ -243,7 +243,7 @@
                                 <texture colordiffuse="EE000000" border="10">script.plex/settings/checkbox.png</texture>
                             </control>
                             <control type="image">
-                                <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
+                                <visible>!String.IsEmpty(ListItem.Property(checkbox.checked))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>45</width>
@@ -353,7 +353,7 @@
                             <posx>643</posx>
                             <posy>55</posy>
                             <control type="image">
-                                <visible>!IsEmpty(ListItem.Property(checkbox))</visible>
+                                <visible>!String.IsEmpty(ListItem.Property(checkbox))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>45</width>
@@ -361,7 +361,7 @@
                                 <texture colordiffuse="EE000000" border="10">script.plex/settings/checkbox.png</texture>
                             </control>
                             <control type="image">
-                                <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
+                                <visible>!String.IsEmpty(ListItem.Property(checkbox.checked))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>45</width>
@@ -391,7 +391,7 @@
                 </control>
 
                 <control type="button" id="150">
-                    <visible>IntegerGreaterThan(Container(100).NumItems,0) + IsEmpty(Window.Property(section.about))</visible>
+                    <visible>Integer.IsGreater(Container(100).NumItems,0) + String.IsEmpty(Window.Property(section.about))</visible>
                     <width>10</width>
                     <height>10</height>
                     <onright>125</onright>
@@ -405,8 +405,8 @@
                 </control>
 
                 <control type="list" id="125">
-                    <visible allowhiddenfocus="true">Control.HasFocus(125) + IntegerGreaterThan(Container(100).NumItems,0)</visible>
-                    <enable>IntegerGreaterThan(Container(100).NumItems,0) + IsEmpty(Window.Property(section.about))</enable>
+                    <visible allowhiddenfocus="true">Control.HasFocus(125) + Integer.IsGreater(Container(100).NumItems,0)</visible>
+                    <enable>Integer.IsGreater(Container(100).NumItems,0) + String.IsEmpty(Window.Property(section.about))</enable>
 
                     <posx>1383</posx>
                     <posy>0</posy>
@@ -447,7 +447,7 @@
                             <posx>637</posx>
                             <posy>55</posy>
                             <control type="image">
-                                <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
+                                <visible>!String.IsEmpty(ListItem.Property(checkbox.checked))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>45</width>
@@ -490,7 +490,7 @@
                             <posx>637</posx>
                             <posy>55</posy>
                             <control type="image">
-                                <visible>!IsEmpty(ListItem.Property(checkbox.checked))</visible>
+                                <visible>!String.IsEmpty(ListItem.Property(checkbox.checked))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>45</width>

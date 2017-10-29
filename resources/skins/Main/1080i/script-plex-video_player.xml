@@ -15,7 +15,7 @@
             <texture background="true" fallback="script.plex/home/background-fallback.png">$INFO[Window.Property(background)]</texture>
         </control>
         <control type="group">
-            <visible>!IsEmpty(Window.Property(post.play))</visible>
+            <visible>!String.IsEmpty(Window.Property(post.play))</visible>
             <control type="group">
                 <control type="image">
                     <posx>0</posx>
@@ -27,13 +27,13 @@
             </control>
 
             <control type="group" id="50">
-                <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras))">Conditional</animation>
+                <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras))">Conditional</animation>
 
-                <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
+                <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
                     <effect type="slide" end="0,-500" time="200" tween="quadratic" easing="out"/>
                 </animation>
 
-                <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
+                <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
                     <effect type="slide" end="0,-500" time="200" tween="quadratic" easing="out"/>
                 </animation>
 
@@ -160,7 +160,7 @@
                         </control>
 
                         <control type="group">
-                            <visible>!IsEmpty(Window.Property(has.next))</visible>
+                            <visible>!String.IsEmpty(Window.Property(has.next))</visible>
                             <control type="label">
                                 <scroll>false</scroll>
                                 <posx>572</posx>
@@ -208,7 +208,7 @@
                                             <aspectratio>scale</aspectratio>
                                         </control>
                                         <control type="group">
-                                            <visible>!IsEmpty(Window.Property(countdown)) + IntegerGreaterThan(Window.Property(countdown),-1)</visible>
+                                            <visible>!String.IsEmpty(Window.Property(countdown)) + Integer.IsGreater(Window.Property(countdown),-1)</visible>
                                             <posx>192.5</posx>
                                             <posy>75.5</posy>
                                             <control type="image">
@@ -273,7 +273,7 @@
                     </control>
 
                     <control type="group">
-                        <visible>!IsEmpty(Window.Property(has.next))</visible>
+                        <visible>!String.IsEmpty(Window.Property(has.next))</visible>
                         <control type="label">
                             <scroll>false</scroll>
                             <posx>1177</posx>
@@ -312,7 +312,7 @@
                     </control>
 
                     <control type="group">
-                        <visible>IsEmpty(Window.Property(has.next))</visible>
+                        <visible>String.IsEmpty(Window.Property(has.next))</visible>
                         <control type="label">
                             <scroll>false</scroll>
                             <posx>580</posx>
@@ -361,7 +361,7 @@
                     <itemgap>0</itemgap>
 
                     <control type="group" id="500">
-                        <visible>IntegerGreaterThan(Container(400).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                        <visible>Integer.IsGreater(Container(400).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                         <height>360</height>
                         <width>1920</width>
                         <control type="image">
@@ -518,12 +518,12 @@
                     </control>
 
                     <control type="group" id="501">
-                        <visible>IntegerGreaterThan(Container(401).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                        <visible>Integer.IsGreater(Container(401).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                         <defaultcontrol>401</defaultcontrol>
                         <width>1920</width>
                         <height>520</height>
                         <control type="image">
-                            <visible>!IsEmpty(Window.Property(divider.401))</visible>
+                            <visible>!String.IsEmpty(Window.Property(divider.401))</visible>
                             <posx>60</posx>
                             <posy>0</posy>
                             <width>1800</width>
@@ -576,7 +576,7 @@
                                             <aspectratio>scale</aspectratio>
                                         </control>
                                         <control type="group">
-                                            <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(progress))</visible>
                                             <posx>0</posx>
                                             <posy>351</posy>
                                             <control type="image">
@@ -648,7 +648,7 @@
                                                 <aspectratio>scale</aspectratio>
                                             </control>
                                             <control type="group">
-                                                <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                                <visible>!String.IsEmpty(ListItem.Property(progress))</visible>
                                                 <posx>0</posx>
                                                 <posy>351</posy>
                                                 <control type="image">
@@ -695,12 +695,12 @@
                     </control>
 
                     <control type="group" id="503">
-                        <visible>IntegerGreaterThan(Container(403).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                        <visible>Integer.IsGreater(Container(403).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                         <defaultcontrol>403</defaultcontrol>
                         <width>1920</width>
                         <height>410</height>
                         <control type="image">
-                            <visible>!IsEmpty(Window.Property(divider.403))</visible>
+                            <visible>!String.IsEmpty(Window.Property(divider.403))</visible>
                             <posx>60</posx>
                             <posy>20</posy>
                             <width>1800</width>
@@ -830,7 +830,7 @@
             </control>
 
             <control type="group" id="200">
-                <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
+                <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
                 <defaultcontrol always="true">201</defaultcontrol>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -838,7 +838,7 @@
                 <height>135</height>
                 <control type="image">
                     <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                    <visible>ControlGroup(200).HasFocus(0) + !IsEmpty(Window.Property(on.extras))</visible>
+                    <visible>ControlGroup(200).HasFocus(0) + !String.IsEmpty(Window.Property(on.extras))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1920</width>
@@ -1017,9 +1017,9 @@
             </control>
 
             <control type="group">
-                <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
                 <control type="group" >
-                    <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                    <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                     <control type="image">
                         <posx>0</posx>
                         <posy>0</posy>

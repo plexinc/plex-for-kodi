@@ -400,13 +400,19 @@ class ManagedControlList(object):
             bottom = 0
             top = self.size()
 
-        for idx in range(bottom, top):
-            li = self.control.getListItem(idx)
-            mli = self.items[idx]
-            self._properties.update(mli.properties)
-            mli._manager = self
-            mli._listItem = li
-            mli._updateListItem()
+        try:
+            for idx in range(bottom, top):
+                li = self.control.getListItem(idx)
+                mli = self.items[idx]
+                self._properties.update(mli.properties)
+                mli._manager = self
+                mli._listItem = li
+                mli._updateListItem()
+        except RuntimeError:
+            xbmc.log('kodigui.ManagedControlList._updateItems: Runtime error', xbmc.LOGNOTICE)
+            return False
+
+        return True
 
     def _nextID(self):
         self._idCounter += 1
@@ -440,7 +446,7 @@ class ManagedControlList(object):
     def replaceItems(self, managed_items):
         if not self.items:
             self.addItems(managed_items)
-            return
+            return True
 
         oldSize = self.size()
 

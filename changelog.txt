@@ -1,3 +1,7 @@
+[- 0.1.3 -]
+
+Fix incompatibility with requests module update
+
 [- 0.1.2 -]
 
 Fix issue with hubs not showing with (newer?) server versions

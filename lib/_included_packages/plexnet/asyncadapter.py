@@ -235,7 +235,7 @@ pool_classes_by_scheme = {
 
 
 class AsyncPoolManager(PoolManager):
-    def _new_pool(self, scheme, host, port):
+    def _new_pool(self, scheme, host, port, request_context=None):
         """
         Create a new :class:`ConnectionPool` based on host, port and scheme.
 

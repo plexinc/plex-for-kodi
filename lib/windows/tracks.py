@@ -116,7 +116,7 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif controlID == self.TRACKS_LIST_ID:
             self.trackPanelClicked()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
-            self.show_AudioPlayer()
+            self.showAudioPlayer()
         elif controlID == self.PLAY_BUTTON_ID:
             self.playButtonClicked()
         elif controlID == self.SHUFFLE_BUTTON_ID:

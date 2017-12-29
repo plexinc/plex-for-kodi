@@ -134,7 +134,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif controlID == self.NEXT_BUTTON_ID:
             self.playVideo()
         elif controlID == self.PLAYER_STATUS_BUTTON_ID:
-            self.show_AudioPlayer()
+            self.showAudioPlayer()
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
 

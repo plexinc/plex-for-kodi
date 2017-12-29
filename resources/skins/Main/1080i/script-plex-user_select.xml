@@ -218,7 +218,7 @@
                 <onleft>100</onleft>
                 <onright>100</onright>
                 <ondown condition="Player.HasAudio">600</ondown>
-                <ondown condition="!IsEmpty(Container(101).ListItem.Property(protected))">400</ondown>
+                <ondown condition="!String.IsEmpty(Container(101).ListItem.Property(protected))">400</ondown>
                 <orientation>horizontal</orientation>
                 <focusposition>3</focusposition>
 
@@ -253,7 +253,7 @@
                             <texture diffuse="script.plex/user_select/avatar-diffuse.png" fallback="script.plex/gray-square.png">$INFO[ListItem.Thumb]</texture>
                         </control>
                         <control type="label">
-                            <visible>IsEmpty(ListItem.Thumb)</visible>
+                            <visible>String.IsEmpty(ListItem.Thumb)</visible>
                             <posx>54</posx>
                             <posy>54</posy>
                             <width>192</width>
@@ -266,7 +266,7 @@
                         </control>
 
                         <control type="group">
-                            <visible>!IsEmpty(ListItem.Property(protected))</visible>
+                            <visible>!String.IsEmpty(ListItem.Property(protected))</visible>
                             <posx>15</posx>
                             <posy>231</posy>
                             <control type="image">
@@ -287,7 +287,7 @@
                         </control>
 
                         <control type="group">
-                            <visible>!IsEmpty(ListItem.Property(admin))</visible>
+                            <visible>!String.IsEmpty(ListItem.Property(admin))</visible>
                             <posx>231</posx>
                             <posy>231</posy>
                             <control type="image">
@@ -399,7 +399,7 @@
                             <texture diffuse="script.plex/user_select/avatar-diffuse.png" fallback="script.plex/gray-square.png">$INFO[ListItem.Thumb]</texture>
                         </control>
                         <control type="label">
-                            <visible>IsEmpty(ListItem.Thumb)</visible>
+                            <visible>String.IsEmpty(ListItem.Thumb)</visible>
                             <posx>54</posx>
                             <posy>54</posy>
                             <width>192</width>
@@ -412,7 +412,7 @@
                         </control>
 
                         <control type="group">
-                            <visible>!IsEmpty(ListItem.Property(protected))</visible>
+                            <visible>!String.IsEmpty(ListItem.Property(protected))</visible>
                             <posx>15</posx>
                             <posy>231</posy>
                             <control type="image">
@@ -433,7 +433,7 @@
                         </control>
 
                         <control type="group">
-                            <visible>!IsEmpty(ListItem.Property(admin))</visible>
+                            <visible>!String.IsEmpty(ListItem.Property(admin))</visible>
                             <posx>231</posx>
                             <posy>231</posy>
                             <control type="image">
@@ -472,7 +472,7 @@
 
             <control type="group" id="400">
                 <defaultcontrol always="true">205</defaultcontrol>
-                <visible allowhiddenfocus="true">!IsEmpty(Container(101).ListItem.Property(protected)) + ControlGroup(400).HasFocus(0) + !IsEmpty(Window.Property(initialized))</visible>
+                <visible allowhiddenfocus="true">!String.IsEmpty(Container(101).ListItem.Property(protected)) + ControlGroup(400).HasFocus(0) + !String.IsEmpty(Window.Property(initialized))</visible>
                 <posx>810</posx>
                 <posy>375</posy>
                 <control type="button">
@@ -505,7 +505,7 @@
                     <colordiffuse>40FFFFFF</colordiffuse>
                 </control>
                 <control type="label">
-                    <visible>IsEmpty(Container(101).ListItem.Property(editing.pin))</visible>
+                    <visible>String.IsEmpty(Container(101).ListItem.Property(editing.pin))</visible>
                     <posx>0</posx>
                     <posy>-75</posy>
                     <width>300</width>
@@ -517,7 +517,7 @@
                     <label>$INFO[Container(101).ListItem.Label]</label>
                 </control>
                 <control type="label">
-                    <visible>!IsEmpty(Container(101).ListItem.Property(editing.pin))</visible>
+                    <visible>!String.IsEmpty(Container(101).ListItem.Property(editing.pin))</visible>
                     <posx>0</posx>
                     <posy>-75</posy>
                     <width>300</width>
@@ -803,7 +803,7 @@
                         <label> </label>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(Window.Property(dropdown))</visible>
+                        <visible>!String.IsEmpty(Window.Property(dropdown))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>124</width>
@@ -814,7 +814,7 @@
                         <posx>27</posx>
                         <posy>13</posy>
                         <control type="group">
-                            <visible>!Control.HasFocus(500) + IsEmpty(Window.Property(dropdown))</visible>
+                            <visible>!Control.HasFocus(500) + String.IsEmpty(Window.Property(dropdown))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="image">
@@ -833,7 +833,7 @@
                             </control>
                         </control>
                         <control type="group">
-                            <visible>Control.HasFocus(500) | !IsEmpty(Window.Property(dropdown))</visible>
+                            <visible>Control.HasFocus(500) | !String.IsEmpty(Window.Property(dropdown))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="image">
@@ -887,7 +887,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(busy))</visible>
+            <visible>!String.IsEmpty(Window.Property(busy))</visible>
             <control type="image">
                 <posx>840</posx>
                 <posy>465</posy>

@@ -26,7 +26,7 @@
                     <texture background="true">$INFO[Player.Art(fanart)]</texture>
                 </control>
                 <control type="image">
-                    <visible>!IsEmpty(Player.Art(fanart))</visible>
+                    <visible>!String.IsEmpty(Player.Art(fanart))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1920</width>
@@ -116,7 +116,7 @@
             </control>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>819</posx>
                 <posy>0</posy>
@@ -214,7 +214,7 @@
                                 <label>[B]$INFO[ListItem.Property(track.duration)][/B]</label>
                             </control>
                             <control type="image">
-                                <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                <visible>String.IsEmpty(ListItem.Property(is.footer))</visible>
                                 <posx>0</posx>
                                 <posy>97</posy>
                                 <width>861</width>
@@ -299,7 +299,7 @@
                                     <label>[B]$INFO[ListItem.Property(track.duration)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                    <visible>String.IsEmpty(ListItem.Property(is.footer))</visible>
                                     <posx>0</posx>
                                     <posy>97</posy>
                                     <width>861</width>
@@ -458,7 +458,7 @@
                 <control type="group">
                     <visible>!Control.HasFocus(401)</visible>
                     <control type="image">
-                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + String.IsEmpty(Window.Property(pq.repeat))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -466,7 +466,7 @@
                         <texture colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texture>
                     </control>
                     <control type="image">
-                        <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                        <visible>Playlist.IsRepeat | !String.IsEmpty(Window.Property(pq.repeat))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -485,7 +485,7 @@
                 <control type="group">
                     <visible>Control.HasFocus(401)</visible>
                     <control type="image">
-                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                        <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + String.IsEmpty(Window.Property(pq.repeat))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -493,7 +493,7 @@
                         <texture colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texture>
                     </control>
                     <control type="image">
-                        <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                        <visible>Playlist.IsRepeat | !String.IsEmpty(Window.Property(pq.repeat))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>125</width>
@@ -512,7 +512,7 @@
             </control>
 
             <control type="togglebutton" id="402">
-                <visible>IsEmpty(Window.Property(pq.isremote))</visible>
+                <visible>String.IsEmpty(Window.Property(pq.isremote))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -530,7 +530,7 @@
             </control>
 
             <control type="group" id="432">
-                <visible>!IsEmpty(Window.Property(pq.isremote))</visible>
+                <visible>!String.IsEmpty(Window.Property(pq.isremote))</visible>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false" condition="Control.HasFocus(422)">Conditional</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false" condition="!Control.HasFocus(422)">Conditional</animation>
                 <width>125</width>
@@ -550,7 +550,7 @@
                     <label> </label>
                 </control>
                 <control type="group">
-                    <visible>IsEmpty(Window.Property(pq.shuffled))</visible>
+                    <visible>String.IsEmpty(Window.Property(pq.shuffled))</visible>
                     <control type="image">
                         <visible>!Control.HasFocus(422)</visible>
                         <posx>0</posx>
@@ -569,7 +569,7 @@
                     </control>
                 </control>
                 <control type="group">
-                    <visible>!IsEmpty(Window.Property(pq.shuffled))</visible>
+                    <visible>!String.IsEmpty(Window.Property(pq.shuffled))</visible>
                     <control type="image">
                         <visible>!Control.HasFocus(422)</visible>
                         <posx>0</posx>
@@ -590,7 +590,7 @@
             </control>
 
             <control type="button" id="404">
-                <enable>MusicPlayer.HasPrevious | !IsEmpty(Window.Property(pq.hasprevious))</enable>
+                <enable>MusicPlayer.HasPrevious | !String.IsEmpty(Window.Property(pq.hasprevious))</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />
@@ -630,7 +630,7 @@
                 <label> </label>
             </control>
             <control type="button" id="409">
-                <enable>MusicPlayer.HasNext | !IsEmpty(Window.Property(pq.hasnext))</enable>
+                <enable>MusicPlayer.HasNext | !String.IsEmpty(Window.Property(pq.hasnext))</enable>
                 <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                 <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                 <hitrect x="28" y="28" w="69" h="45" />

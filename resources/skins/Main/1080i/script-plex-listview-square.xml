@@ -59,7 +59,7 @@
                 <aspectratio>scale</aspectratio>
             </control>
             <control type="group">
-                <visible>!IsEmpty(Container(101).ListItem.Label2)</visible>
+                <visible>!String.IsEmpty(Container(101).ListItem.Label2)</visible>
                 <control type="label">
                     <posx>0</posx>
                     <posy>355</posy>
@@ -84,7 +84,7 @@
                 </control>
             </control>
             <control type="group">
-                <visible>IsEmpty(Container(101).ListItem.Label2)</visible>
+                <visible>String.IsEmpty(Container(101).ListItem.Label2)</visible>
                 <control type="label">
                     <posx>0</posx>
                     <posy>355</posy>
@@ -163,7 +163,7 @@
                 </control>
                 <control type="button" id="303">
                     <hitrect x="20" y="20" w="86" h="60" />
-                    <visible>IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
+                    <visible>String.IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -177,7 +177,7 @@
                 </control>
                 <control type="button" id="304">
                     <hitrect x="20" y="20" w="86" h="60" />
-                    <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
+                    <visible>String.IsEmpty(Window.Property(hide.filteroptions))</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -192,7 +192,7 @@
             </control>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>750</posx>
                 <posy>0</posy>
@@ -226,7 +226,7 @@
                             <posy>24</posy>
                             <control type="group">
                                 <control type="image">
-                                    <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                    <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
                                     <posx>880</posx>
                                     <posy>-3</posy>
                                     <width>35</width>
@@ -234,7 +234,7 @@
                                     <texture>script.plex/indicators/unwatched.png</texture>
                                 </control>
                                 <control type="group">
-                                    <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                    <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                     <posx>861</posx>
                                     <posy>14</posy>
                                     <control type="image">
@@ -260,7 +260,7 @@
                                     <posx>0</posx>
                                     <posy>0</posy>
                                     <control type="label">
-                                        <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>0</posx>
                                         <posy>0</posy>
                                         <width>915</width>
@@ -272,7 +272,7 @@
                                         <label>[B]$INFO[ListItem.Label][/B]</label>
                                     </control>
                                     <control type="label">
-                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>0</posx>
                                         <posy>0</posy>
                                         <width>915</width>
@@ -286,7 +286,7 @@
                                 </control>
                             </control>
                             <control type="image">
-                                <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                <visible>String.IsEmpty(ListItem.Property(is.footer))</visible>
                                 <posx>0</posx>
                                 <posy>72</posy>
                                 <width>915</width>
@@ -306,7 +306,7 @@
                                 <posy>24</posy>
                                 <control type="group">
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
                                         <posx>880</posx>
                                         <posy>-2</posy>
                                         <width>35</width>
@@ -314,7 +314,7 @@
                                         <texture>script.plex/indicators/unwatched.png</texture>
                                     </control>
                                     <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                         <posx>861</posx>
                                         <posy>14</posy>
                                         <control type="image">
@@ -343,7 +343,7 @@
                                             <posx>0</posx>
                                             <posy>0</posy>
                                             <control type="label">
-                                                <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                                <visible>String.IsEmpty(ListItem.Property(is.folder))</visible>
                                                 <posx>0</posx>
                                                 <posy>0</posy>
                                                 <width>915</width>
@@ -355,7 +355,7 @@
                                                 <label>[B]$INFO[ListItem.Label][/B]</label>
                                             </control>
                                             <control type="label">
-                                                <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                                <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                                 <posx>0</posx>
                                                 <posy>0</posy>
                                                 <width>915</width>
@@ -370,7 +370,7 @@
                                     </control>
                                 </control>
                                 <control type="image">
-                                    <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                    <visible>String.IsEmpty(ListItem.Property(is.footer))</visible>
                                     <posx>0</posx>
                                     <posy>72</posy>
                                     <width>915</width>
@@ -402,7 +402,7 @@
 
                                 <control type="group">
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
                                         <posx>957</posx>
                                         <posy>0</posy>
                                         <width>48</width>
@@ -410,11 +410,11 @@
                                         <texture>script.plex/indicators/unwatched-rounded.png</texture>
                                     </control>
                                     <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                         <posx>933</posx>
                                         <posy>15</posy>
                                         <control type="image">
-                                            <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                             <posx>0</posx>
                                             <posy>0</posy>
                                             <width>57</width>
@@ -437,7 +437,7 @@
                                         <posx>60</posx>
                                         <posy>0</posy>
                                         <control type="label">
-                                            <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                            <visible>String.IsEmpty(ListItem.Property(is.folder))</visible>
                                             <posx>0</posx>
                                             <posy>23</posy>
                                             <width>885</width>
@@ -449,7 +449,7 @@
                                             <label>[B]$INFO[ListItem.Label][/B]</label>
                                         </control>
                                         <control type="label">
-                                            <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                             <posx>0</posx>
                                             <posy>23</posy>
                                             <width>885</width>
@@ -489,7 +489,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>StringCompare(Window.Property(sort),titleSort) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window.Property(sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1830</posx>
             <posy>150</posy>
@@ -772,7 +772,7 @@
             </control>
             <control type="grouplist" id="600">
                 <defaultcontrol>311</defaultcontrol>
-                <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
+                <visible>String.IsEmpty(Window.Property(hide.filteroptions))</visible>
                 <right>340</right>
                 <posy>35</posy>
                 <width>1000</width>
@@ -882,9 +882,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

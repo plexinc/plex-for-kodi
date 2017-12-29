@@ -32,7 +32,7 @@
             <defaultcontrol always="true">101</defaultcontrol>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -180,7 +180,7 @@
             </control>
 
             <control type="group" id="300">
-                <visible>IntegerGreaterThan(Container(301).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(301).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <animation effect="slide" end="0,-420" condition="!Control.IsVisible(100)">Conditional</animation>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>0</posx>
@@ -525,9 +525,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

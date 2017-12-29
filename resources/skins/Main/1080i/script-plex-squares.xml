@@ -27,15 +27,15 @@
         </control>
 
         <control type="group" id="50">
-            <animation effect="slide" time="200" end="0,-135" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5)">Conditional</animation>
-            <animation effect="slide" time="200" end="0,-200" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IntegerGreaterThan(Container(101).Position,5)">Conditional</animation>
+            <animation effect="slide" time="200" end="0,-135" condition="Integer.IsGreater(Container(101).ListItem.Property(index),5)">Conditional</animation>
+            <animation effect="slide" time="200" end="0,-200" condition="Integer.IsGreater(Container(101).ListItem.Property(index),5) + Integer.IsGreater(Container(101).Position,5)">Conditional</animation>
             <posx>0</posx>
             <posy>135</posy>
             <defaultcontrol>101</defaultcontrol>
 
             <control type="grouplist" id="300">
                 <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
-                <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IsEmpty(Window.Property(no.content)) + IsEmpty(Window.Property(no.content.filtered))</visible>
+                <visible>!Integer.IsGreater(Container(101).ListItem.Property(index),5) + String.IsEmpty(Window.Property(no.content)) + String.IsEmpty(Window.Property(no.content.filtered))</visible>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>30</posx>
                 <posy>-25</posy>
@@ -75,7 +75,7 @@
                 </control>
                 <control type="button" id="303">
                     <hitrect x="20" y="20" w="86" h="60" />
-                    <visible>IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
+                    <visible>String.IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -89,7 +89,7 @@
                 </control>
                 <control type="button" id="304">
                     <hitrect x="20" y="20" w="86" h="60" />
-                    <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
+                    <visible>String.IsEmpty(Window.Property(hide.filteroptions))</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -104,7 +104,7 @@
             </control>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -146,7 +146,7 @@
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="image">
-                                    <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                    <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                     <posx>0</posx>
                                     <posy>244</posy>
                                     <width>244</width>
@@ -183,7 +183,7 @@
                                 <control type="group">
                                     <visible>Control.HasFocus(101)</visible>
                                     <control type="image">
-                                        <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>-40</posx>
                                         <posy>-40</posy>
                                         <width>334</width>
@@ -191,7 +191,7 @@
                                         <texture border="42">script.plex/drop-shadow.png</texture>
                                     </control>
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>-40</posx>
                                         <posy>-40</posy>
                                         <width>334</width>
@@ -218,7 +218,7 @@
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>0</posx>
                                         <posy>244</posy>
                                         <width>244</width>
@@ -242,7 +242,7 @@
                                 <control type="group">
                                     <visible>Control.HasFocus(101)</visible>
                                     <control type="image">
-                                        <visible>IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>0</posx>
                                         <posy>0</posy>
                                         <width>254</width>
@@ -250,7 +250,7 @@
                                         <texture border="10">script.plex/home/selected.png</texture>
                                     </control>
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(is.folder))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(is.folder))</visible>
                                         <posx>0</posx>
                                         <posy>0</posy>
                                         <width>254</width>
@@ -267,7 +267,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1780</posx>
             <posy>150</posy>
@@ -411,7 +411,7 @@
 
 
         <control type="group" id="200">
-            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
+            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="Integer.IsGreater(Container(101).ListItem.Property(index),5) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
@@ -419,7 +419,7 @@
             <height>135</height>
             <control type="image">
                 <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                <visible>ControlGroup(200).HasFocus(0) + IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
+                <visible>ControlGroup(200).HasFocus(0) + Integer.IsGreater(Container(101).ListItem.Property(index),5)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
@@ -579,7 +579,7 @@
                 </control>
             </control>
             <control type="grouplist">
-                <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
+                <visible>String.IsEmpty(Window.Property(hide.filteroptions))</visible>
                 <right>340</right>
                 <posy>35</posy>
                 <width>1000</width>
@@ -689,7 +689,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(no.content))</visible>
+            <visible>!String.IsEmpty(Window.Property(no.content))</visible>
             <posx>0</posx>
             <posy>465</posy>
             <control type="label">
@@ -717,7 +717,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(no.content.filtered))</visible>
+            <visible>!String.IsEmpty(Window.Property(no.content.filtered))</visible>
             <posx>0</posx>
             <posy>465</posy>
             <control type="label">
@@ -745,9 +745,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

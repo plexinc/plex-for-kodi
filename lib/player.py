@@ -837,7 +837,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         url = 'plugin://script.plex/play?{0}'.format(data)
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(800, 800))
         li.setInfo('music', {
-            'artist': unicode(track.grandparentTitle),
+            'artist': unicode(track.originalTitle or track.grandparentTitle),
             'title': unicode(track.title),
             'album': unicode(track.parentTitle),
             'discnumber': track.parentIndex.asInt(),

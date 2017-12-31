@@ -302,14 +302,6 @@ class SeekPlayerHandler(BasePlayerHandler):
 
         self.updateNowPlaying(force=True, refreshQueue=True)
 
-        self.seeking = self.NO_SEEK
-
-        if self.mode == self.MODE_ABSOLUTE:
-            self.seekAbsolute()
-
-        self.setSubtitles()
-        self.setAudioTrack()
-
     def onPlayBackResumed(self):
         self.updateNowPlaying()
         # self.hideOSD()
@@ -400,6 +392,15 @@ class SeekPlayerHandler(BasePlayerHandler):
     def updateOffset(self):
         self.offset = int(self.player.getTime() * 1000)
 
+    def initPlayback(self):
+        self.seeking = self.NO_SEEK
+
+        if self.mode == self.MODE_ABSOLUTE:
+            self.seekAbsolute()
+
+        self.setSubtitles()
+        self.setAudioTrack()
+
     def onPlayBackFailed(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackFailed - Seeking={0}'.format(self.seeking))
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
@@ -417,6 +418,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onVideoWindowOpened(self):
         self.getDialog().show()
+
+        self.initPlayback()
 
     def onVideoWindowClosed(self):
         self.hideOSD()

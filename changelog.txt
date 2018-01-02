@@ -3,9 +3,12 @@
 Kodi v18: Fix skin compatability issues
 Kodi v18: Fix incompatibility with requests module update
 Kodi v18: Fix issue with playback not resuming properly when direct playing
+Kodi v18: Fix issue with progress bar not moving on music player/music playlist screens
 Fix album display on artist screen
 Fix bug causing failure to show audio player when clicking the mini player from some screens
 Show original artist when available (Issue #143)
+Improve centering over label backgrounds on pre-play screens
+Fix some spots where tokens could still be logged
 
 [- 0.1.3 -]
 

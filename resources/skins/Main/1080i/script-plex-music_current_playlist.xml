@@ -697,10 +697,10 @@
                 <visible>!Control.HasFocus(500)</visible>
                 <description>Progressbar</description>
                 <posx>0</posx>
-                <posy>-1</posy>
+                <posy>2</posy>
                 <width>819</width>
                 <height>6</height>
-                <texturebg>-</texturebg>
+                <texturebg>script.plex/transparent-6px.png</texturebg>
                 <lefttexture>-</lefttexture>
                 <midtexture colordiffuse="FFCC7B19">script.plex/white-square-6px.png</midtexture>
                 <righttexture>-</righttexture>
@@ -711,10 +711,10 @@
                 <visible>Control.HasFocus(500)</visible>
                 <description>Progressbar</description>
                 <posx>0</posx>
-                <posy>-1</posy>
+                <posy>2</posy>
                 <width>819</width>
                 <height>6</height>
-                <texturebg>-</texturebg>
+                <texturebg>script.plex/transparent-6px.png</texturebg>
                 <lefttexture>-</lefttexture>
                 <midtexture colordiffuse="FFAC5B00">script.plex/white-square-6px.png</midtexture>
                 <righttexture>-</righttexture>

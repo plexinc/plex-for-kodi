@@ -9,8 +9,8 @@ from windows import seekdialog
 import util
 from plexnet import plexplayer
 from plexnet import plexapp
-
 from plexnet import signalsmixin
+from plexnet import util as plexnetUtil
 
 FIVE_MINUTES_MILLIS = 300000
 
@@ -720,7 +720,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         url = meta.streamUrls[0]
         bifURL = self.playerObject.getBifUrl()
-        util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
+        util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(plexnetUtil.cleanToken(url), offset, bifURL and ' - indexed' or ''))
 
         self.stopAndWait()  # Stop before setting up the handler to prevent player events from causing havoc
 
@@ -832,10 +832,6 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.play(plist, startpos=startpos)
 
     def createTrackListItem(self, track, fanart=None, index=0):
-        # pobj = plexplayer.PlexAudioPlayer(track)
-        # url = pobj.build()['url']  # .streams[0]['url']
-        # util.DEBUG_LOG('Playing URL: {0}'.format(url))
-        # url += '&X-Plex-Platform=Chrome'
         data = base64.urlsafe_b64encode(track.serialize())
         url = 'plugin://script.plex/play?{0}'.format(data)
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(800, 800))

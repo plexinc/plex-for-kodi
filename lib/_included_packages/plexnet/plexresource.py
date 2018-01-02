@@ -105,13 +105,13 @@ class ResourceConnection(plexobjects.PlexObject):
             return self.http_url
 
     def connect(self):
-        util.LOG('Connecting: {0}'.format(self.URL))
+        util.LOG('Connecting: {0}'.format(util.cleanToken(self.URL)))
         try:
             self.data = self.query('/')
             self.reachable = True
             return True
         except Exception as err:
-            util.ERROR(self.URL, err)
+            util.ERROR(util.cleanToken(self.URL), err)
 
         util.LOG('Connecting: Secure failed, trying insecure...')
         self.secure = False
@@ -121,7 +121,7 @@ class ResourceConnection(plexobjects.PlexObject):
             self.reachable = True
             return True
         except Exception as err:
-            util.ERROR(self.URL, err)
+            util.ERROR(util.cleanToken(self.URL), err)
 
         return False
 

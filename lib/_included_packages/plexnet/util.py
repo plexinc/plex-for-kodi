@@ -41,7 +41,7 @@ X_PLEX_VERSION = VERSION                       # Plex application version number
 USER_AGENT = '{0}/{1}'.format(PROJECT, VERSION)
 
 try:
-    _platform = platform.platform()
+    _platform = platform.system()
 except:
     try:
         _platform = platform.platform(terse=True)

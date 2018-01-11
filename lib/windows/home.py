@@ -1,5 +1,6 @@
 import time
 import threading
+import re
 
 import xbmc
 import xbmcgui
@@ -25,6 +26,22 @@ from lib.util import T
 
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
 HUB_PAGE_SIZE = 10
+
+MOVE_SET = frozenset(
+    (
+        xbmcgui.ACTION_MOVE_LEFT,
+        xbmcgui.ACTION_MOVE_RIGHT,
+        xbmcgui.ACTION_MOVE_UP,
+        xbmcgui.ACTION_MOVE_DOWN,
+        xbmcgui.ACTION_MOUSE_MOVE,
+        xbmcgui.ACTION_PAGE_UP,
+        xbmcgui.ACTION_PAGE_DOWN,
+        xbmcgui.ACTION_FIRST_PAGE,
+        xbmcgui.ACTION_LAST_PAGE,
+        xbmcgui.ACTION_MOUSE_WHEEL_DOWN,
+        xbmcgui.ACTION_MOUSE_WHEEL_UP
+    )
+)
 
 
 class HubsList(list):
@@ -342,6 +359,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.showHubs(self.lastSection, update=True)
 
     def shutdown(self):
+        self.serverList.reset()
         self.unhookSignals()
 
     def onAction(self, action):
@@ -383,9 +401,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
-            elif 399 < controlID < 500 and action in (
-                xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_PAGE_DOWN, xbmcgui.ACTION_LAST_PAGE, xbmcgui.ACTION_MOUSE_MOVE, xbmcgui.ACTION_MOUSE_WHEEL_DOWN
-            ):
+            elif 399 < controlID < 500 and action.getId() in MOVE_SET:
                 self.checkHubItem(controlID)
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
@@ -629,7 +645,12 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             plli.setProperty('item', '1')
             items.append(plli)
 
-        sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
+        try:
+            sections = plexapp.SERVERMANAGER.selectedServer.library.sections()
+        except plexnet.exceptions.BadRequest:
+            self.setFocusId(self.SERVER_BUTTON_ID)
+            util.messageDialog("Error", "Bad request")
+            return
 
         if plexapp.SERVERMANAGER.selectedServer.hasHubs():
             self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection, PlaylistsSection] + sections]
@@ -705,22 +726,26 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             hasContent = False
             skip = {}
             for hub in hubs:
-                if hub.hubIdentifier not in self.HUBMAP:
+                identifier = re.sub('\.\d+$', '', hub.hubIdentifier)
+                if identifier not in self.HUBMAP:
                     util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
                     continue
 
-                skip[self.HUBMAP[hub.hubIdentifier]['index']] = 1
+                skip[self.HUBMAP[identifier]['index']] = 1
 
                 if self.showHub(hub):
                     if hub.items:
                         hasContent = True
-                    if self.HUBMAP[hub.hubIdentifier].get('do_updates'):
-                        self.updateHubs[hub.hubIdentifier] = hub
+                    if self.HUBMAP[identifier].get('do_updates'):
+                        self.updateHubs[identifier] = hub
 
             if not hasContent:
                 self.setBoolProperty('no.content', True)
 
-            lastSkip = min(skip.keys())
+            lastSkip = 0
+            if skip:
+                lastSkip = min(skip.keys())
+
             focus = None
             if update:
                 for i, control in enumerate(self.hubControls):
@@ -737,9 +762,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.showBusy(False)
 
     def showHub(self, hub, items=None):
-        if hub.hubIdentifier in self.HUBMAP:
-            util.DEBUG_LOG('Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
-            self._showHub(hub, hubitems=items, **self.HUBMAP[hub.hubIdentifier])
+        identifier = re.sub('\.\d+$', '', hub.hubIdentifier)
+        if identifier in self.HUBMAP:
+            util.DEBUG_LOG('Hub: {0} ({1})'.format(identifier, len(hub.items)))
+            self._showHub(hub, hubitems=items, **self.HUBMAP[identifier])
             return True
         else:
             util.DEBUG_LOG('UNHANDLED - Hub: {0} ({1})'.format(hub.hubIdentifier, len(hub.items)))
@@ -1035,9 +1061,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if plexapp.ACCOUNT.isSignedIn:
             items.append(kodigui.ManagedListItem(T(32344, 'Sign Out'), data_source='signout'))
         elif plexapp.ACCOUNT.isOffline:
-            items.append(kodigui.ManagedListItem(T(32456, 'Offline Mode'), data_source='go_online'))
+            items.append(kodigui.ManagedListItem(T(32459, 'Offline Mode'), data_source='go_online'))
         else:
-            items.append(kodigui.ManagedListItem(T(32457, 'Sign In'), data_source='signin'))
+            items.append(kodigui.ManagedListItem(T(32460, 'Sign In'), data_source='signin'))
 
         if len(items) > 1:
             items[0].setProperty('first', '1')

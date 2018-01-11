@@ -17,8 +17,8 @@ class Tasks(list):
             self.append(task)
 
     def cancel(self):
-        for t in self:
-            t.cancel()
+        while self:
+            self.pop().cancel()
 
 
 class Task:
@@ -225,5 +225,6 @@ class ThreaderManager:
         self.threader.shutdown()
         for a in self.abandoned:
             a.shutdown()
+
 
 BGThreader = ThreaderManager()

@@ -5,12 +5,15 @@ import sys
 import base64
 from lib import _included_packages, plex, util
 from plexnet import audio, plexplayer, plexapp
+from plexnet import util as plexnetUtil
 
 HANDLE = int(sys.argv[1])
 
+BASE_LOG = util.LOG
+
 
 def LOG(msg):
-    xbmc.log('script.plex (plugin): {0}'.format(msg))
+    BASE_LOG('(plugin) - {0}'.format(plexnetUtil.cleanToken(msg)))
 
 
 util.LOG = LOG

@@ -9,7 +9,7 @@
     <backgroundcolor>0xff111111</backgroundcolor>
     <controls>
         <control type="image">
-            <visible>!IsEmpty(Window(10000).Property(script.plex.background.splash))</visible>
+            <visible>!String.IsEmpty(Window(10000).Property(script.plex.background.splash))</visible>
             <posx>710</posx>
             <posy>459</posy>
             <width>500</width>
@@ -18,7 +18,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window(10000).Property(script.plex.background.busy))</visible>
+            <visible>!String.IsEmpty(Window(10000).Property(script.plex.background.busy))</visible>
             <control type="image">
                 <posx>812</posx>
                 <posy>135</posy>
@@ -44,7 +44,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window(10000).Property(script.plex.background.shutdown))</visible>
+            <visible>!String.IsEmpty(Window(10000).Property(script.plex.background.shutdown))</visible>
             <control type="image">
                 <posx>840</posx>
                 <posy>465</posy>

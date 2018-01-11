@@ -9,7 +9,7 @@
     <defaultcontrol>800</defaultcontrol>
     <controls>
         <control type="button" id="800">
-            <visible allowhiddenfocus="true">IsEmpty(Window.Property(show.OSD))</visible>
+            <visible allowhiddenfocus="true">String.IsEmpty(Window.Property(show.OSD))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <width>1920</width>
@@ -20,10 +20,10 @@
             <onclick>SetProperty(show.OSD,1)</onclick>
         </control>
         <control type="group" id="802">
-            <visible>[!IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar)] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(playerprocessinfo)</visible>
+            <visible>[!String.IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar)] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(playerprocessinfo)</visible>
             <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group">
-                <visible>IsEmpty(Window.Property(settings.visible)) + [Window.IsVisible(seekbar) | Window.IsVisible(videoosd) | Player.ShowInfo]</visible>
+                <visible>String.IsEmpty(Window.Property(settings.visible)) + [Window.IsVisible(seekbar) | Window.IsVisible(videoosd) | Player.ShowInfo]</visible>
                 <animation effect="fade" start="100" end="0">Hidden</animation>
                 <posx>0</posx>
                 <posy>0</posy>
@@ -62,7 +62,7 @@
                 <posx>0</posx>
                 <posy>40</posy>
                 <control type="label">
-                    <visible>!IsEmpty(Window.Property(is.show))</visible>
+                    <visible>!String.IsEmpty(Window.Property(is.show))</visible>
                     <posx>60</posx>
                     <posy>0</posy>
                     <width>1500</width>
@@ -74,7 +74,7 @@
                     <label>[B]$INFO[VideoPlayer.TVShowTitle][/B]$INFO[VideoPlayer.Title, &#8226; ]$INFO[VideoPlayer.Season, &#8226; Season ]$INFO[VideoPlayer.Episode, Episode ]</label>
                 </control>
                 <control type="label">
-                    <visible>IsEmpty(Window.Property(is.show))</visible>
+                    <visible>String.IsEmpty(Window.Property(is.show))</visible>
                     <posx>60</posx>
                     <posy>0</posy>
                     <width>1500</width>
@@ -135,7 +135,7 @@
                     <label>$INFO[Window.Property(time.end)]</label>
                 </control>
                 <control type="label">
-                    <visible>Player.Paused + IsEmpty(Window.Property(show.OSD))</visible>
+                    <visible>Player.Paused + String.IsEmpty(Window.Property(show.OSD))</visible>
                     <animation effect="fade" time="200" delay="200" end="100">Visible</animation>
                     <posx>0</posx>
                     <posy>20</posy>
@@ -161,7 +161,7 @@
                     <colordiffuse>A0000000</colordiffuse>
                 </control>
                 <control type="image" id="200">
-                    <visible>Control.HasFocus(100) | !IsEmpty(Window.Property(button.seek))</visible>
+                    <visible>Control.HasFocus(100) | !String.IsEmpty(Window.Property(button.seek))</visible>
                     <posx>0</posx>
                     <posy>1</posy>
                     <width>1</width>
@@ -180,10 +180,10 @@
             </control>
         </control>
         <control type="group" id="801">
-            <visible>!IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings)</visible>
+            <visible>!String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings)</visible>
             <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group" id="300">
-                <visible>!IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(501) | !IsEmpty(Window.Property(button.seek))]</visible>
+                <visible>!String.IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))]</visible>
                 <animation effect="fade" time="100" delay="100" end="100">Visible</animation>
                 <posx>0</posx>
                 <posy>752</posy>
@@ -241,7 +241,7 @@
                     <control type="group">
                         <visible>!Control.HasFocus(401)</visible>
                         <control type="image">
-                            <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                            <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + String.IsEmpty(Window.Property(pq.repeat))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>125</width>
@@ -249,7 +249,7 @@
                             <texture colordiffuse="99FFFFFF">script.plex/buttons/repeat.png</texture>
                         </control>
                         <control type="image">
-                            <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                            <visible>Playlist.IsRepeat | !String.IsEmpty(Window.Property(pq.repeat))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>125</width>
@@ -257,7 +257,7 @@
                             <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat.png</texture>
                         </control>
                         <control type="image">
-                            <visible>Playlist.IsRepeatOne | !IsEmpty(Window.Property(pq.repeat.one))</visible>
+                            <visible>Playlist.IsRepeatOne | !String.IsEmpty(Window.Property(pq.repeat.one))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>125</width>
@@ -268,7 +268,7 @@
                     <control type="group">
                         <visible>Control.HasFocus(401)</visible>
                         <control type="image">
-                            <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + IsEmpty(Window.Property(pq.repeat))</visible>
+                            <visible>!Playlist.IsRepeatOne + !Playlist.IsRepeat + String.IsEmpty(Window.Property(pq.repeat))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>125</width>
@@ -276,7 +276,7 @@
                             <texture colordiffuse="FFE5A00D">script.plex/buttons/repeat-focus.png</texture>
                         </control>
                         <control type="image">
-                            <visible>Playlist.IsRepeat | !IsEmpty(Window.Property(pq.repeat))</visible>
+                            <visible>Playlist.IsRepeat | !String.IsEmpty(Window.Property(pq.repeat))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>125</width>
@@ -284,7 +284,7 @@
                             <texture colordiffuse="FFCC7B19">script.plex/buttons/repeat-focus.png</texture>
                         </control>
                         <control type="image">
-                            <visible>Playlist.IsRepeatOne | !IsEmpty(Window.Property(pq.repeat.one))</visible>
+                            <visible>Playlist.IsRepeatOne | !String.IsEmpty(Window.Property(pq.repeat.one))</visible>
                             <posx>0</posx>
                             <posy>0</posy>
                             <width>125</width>
@@ -295,7 +295,7 @@
                 </control>
 
                 <control type="togglebutton" id="402">
-                    <visible>!IsEmpty(Window.Property(has.playlist))</visible>
+                    <visible>!String.IsEmpty(Window.Property(has.playlist))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <hitrect x="28" y="28" w="69" h="45" />
@@ -306,14 +306,14 @@
                     <font>font12</font>
                     <texturefocus colordiffuse="FFE5A00D">script.plex/buttons/shuffle-focus.png</texturefocus>
                     <texturenofocus colordiffuse="99FFFFFF">script.plex/buttons/shuffle.png</texturenofocus>
-                    <usealttexture>!IsEmpty(Window.Property(pq.shuffled))</usealttexture>
+                    <usealttexture>!String.IsEmpty(Window.Property(pq.shuffled))</usealttexture>
                     <alttexturefocus colordiffuse="FFCC7B19">script.plex/buttons/shuffle-focus.png</alttexturefocus>
                     <alttexturenofocus colordiffuse="FFCC7B19">script.plex/buttons/shuffle.png</alttexturenofocus>
                     <label> </label>
                 </control>
                 <control type="button" id="422">
                     <enable>false</enable>
-                    <visible>IsEmpty(Window.Property(has.playlist))</visible>
+                    <visible>String.IsEmpty(Window.Property(has.playlist))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>125</width>
@@ -340,7 +340,7 @@
 
 
                 <control type="button" id="404">
-                    <visible>!IsEmpty(Window.Property(pq.hasprev))</visible>
+                    <visible>!String.IsEmpty(Window.Property(pq.hasprev))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                     <hitrect x="58" y="28" w="69" h="45" />
@@ -355,7 +355,7 @@
                 </control>
                 <control type="button" id="424">
                     <enable>false</enable>
-                    <visible>IsEmpty(Window.Property(pq.hasprev))</visible>
+                    <visible>String.IsEmpty(Window.Property(pq.hasprev))</visible>
                     <posx>30</posx>
                     <posy>0</posy>
                     <width>125</width>
@@ -467,7 +467,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="409">
-                    <visible>!IsEmpty(Window.Property(pq.hasnext))</visible>
+                    <visible>!String.IsEmpty(Window.Property(pq.hasnext))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <hitrect x="28" y="28" w="69" h="45" />
@@ -482,7 +482,7 @@
                 </control>
                 <control type="button" id="419">
                     <enable>false</enable>
-                    <visible>IsEmpty(Window.Property(pq.hasnext))</visible>
+                    <visible>String.IsEmpty(Window.Property(pq.hasnext))</visible>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>125</width>
@@ -494,7 +494,7 @@
 
 
                 <control type="button" id="410">
-                    <visible>!IsEmpty(Window.Property(pq.hasnext)) | !IsEmpty(Window.Property(pq.hasprev))</visible>
+                    <visible>!String.IsEmpty(Window.Property(pq.hasnext)) | !String.IsEmpty(Window.Property(pq.hasprev))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                     <hitrect x="58" y="28" w="69" h="45" />
@@ -509,7 +509,7 @@
                 </control>
                 <control type="button" id="430">
                     <enable>false</enable>
-                    <visible>IsEmpty(Window.Property(pq.hasnext)) + IsEmpty(Window.Property(pq.hasprev))</visible>
+                    <visible>String.IsEmpty(Window.Property(pq.hasnext)) + String.IsEmpty(Window.Property(pq.hasprev))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="93,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="93,50" reversible="false">UnFocus</animation>
                     <hitrect x="28" y="28" w="69" h="45" />
@@ -523,7 +523,7 @@
                     <label> </label>
                 </control>
                 <control type="button" id="412">
-                    <visible>!IsEmpty(Window.Property(subtitle.downloads))</visible>
+                    <visible>!String.IsEmpty(Window.Property(subtitle.downloads))</visible>
                     <animation effect="zoom" start="100" end="124" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="124" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <hitrect x="28" y="28" w="69" h="45" />
@@ -556,7 +556,7 @@
 
             <control type="group" id="500">
                 <animation effect="slide" time="100" start="0,0" end="0,20" reversible="true" condition="Control.HasFocus(501)">Conditional</animation>
-                <visible allowhiddenfocus="true">IsEmpty(Window.Property(mouse.mode)) + IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)]</visible>
+                <visible allowhiddenfocus="true">String.IsEmpty(Window.Property(mouse.mode)) + String.IsEmpty(Window.Property(hide.bigseek)) + [Control.HasFocus(501) | Control.HasFocus(100)]</visible>
                 <posx>-8</posx>
                 <posy>917</posy>
                 <control type="image">
@@ -615,7 +615,7 @@
             </control>
 
             <control type="group" id="202">
-                <visible>Control.HasFocus(100) | Control.HasFocus(501) | !IsEmpty(Window.Property(button.seek))</visible>
+                <visible>Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))</visible>
                 <posx>0</posx>
                 <posy>896</posy>
                 <control type="group" id="203">

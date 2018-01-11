@@ -277,6 +277,16 @@ class ManagedListItem(object):
         for k in self._manager._properties.keys():
             self.listItem.setProperty(k, self.properties.get(k) or '')
 
+    def clear(self):
+        self.label = ''
+        self.label2 = ''
+        self.iconImage = ''
+        self.thumbnailImage = ''
+        self.path = ''
+        for k in self.properties:
+            self.properties[k] = ''
+        self._updateListItem()
+
     def pos(self):
         if not self._manager:
             return None
@@ -390,13 +400,19 @@ class ManagedControlList(object):
             bottom = 0
             top = self.size()
 
-        for idx in range(bottom, top):
-            li = self.control.getListItem(idx)
-            mli = self.items[idx]
-            self._properties.update(mli.properties)
-            mli._manager = self
-            mli._listItem = li
-            mli._updateListItem()
+        try:
+            for idx in range(bottom, top):
+                li = self.control.getListItem(idx)
+                mli = self.items[idx]
+                self._properties.update(mli.properties)
+                mli._manager = self
+                mli._listItem = li
+                mli._updateListItem()
+        except RuntimeError:
+            xbmc.log('kodigui.ManagedControlList._updateItems: Runtime error', xbmc.LOGNOTICE)
+            return False
+
+        return True
 
     def _nextID(self):
         self._idCounter += 1
@@ -430,7 +446,7 @@ class ManagedControlList(object):
     def replaceItems(self, managed_items):
         if not self.items:
             self.addItems(managed_items)
-            return
+            return True
 
         oldSize = self.size()
 
@@ -658,9 +674,30 @@ class MultiWindow(object):
     def __getattr__(self, name):
         return getattr(self._current, name)
 
+    def setWindows(self, windows):
+        self._windows = windows
+
+    def setDefault(self, default):
+        self._next = default or self._windows[0]
+
+    def windowIndex(self, window):
+        if hasattr(window, 'MULTI_WINDOW_ID'):
+            for i, w in enumerate(self._windows):
+                if window.MULTI_WINDOW_ID == w.MULTI_WINDOW_ID:
+                    return i
+            return 0
+        else:
+            return self._windows.index(window.__class__)
+
     def nextWindow(self, window=None):
-        if not window:
-            idx = self._windows.index(self._current.__class__)
+        if window is False:
+            window = self._windows[self.windowIndex(self._current)]
+
+        if window:
+            if window.__class__ == self._current.__class__:
+                return None
+        else:
+            idx = self.windowIndex(self._current)
             idx += 1
             if idx >= len(self._windows):
                 idx = 0

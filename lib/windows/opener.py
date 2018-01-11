@@ -118,6 +118,7 @@ def playlistClicked(pl):
 
 def sectionClicked(section, filter_=None):
     import library
+    library.ITEM_TYPE = section.TYPE
     key = section.key
     if not key.isdigit():
         key = section.getLibrarySectionId()
@@ -125,12 +126,12 @@ def sectionClicked(section, filter_=None):
     if section.TYPE in ('artist', 'photo', 'photodirectory'):
         default = library.VIEWS_SQUARE.get(viewtype)
         return handleOpen(
-            library.LibraryWindow, windows=(library.SquaresWindow, library.ListViewSquareWindow), default_window=default, section=section, filter_=filter_
+            library.LibraryWindow, windows=library.VIEWS_SQUARE.get('all'), default_window=default, section=section, filter_=filter_
         )
     else:
         default = library.VIEWS_POSTER.get(viewtype)
         return handleOpen(
-            library.LibraryWindow, windows=(library.PostersWindow, library.ListView16x9Window), default_window=default, section=section, filter_=filter_
+            library.LibraryWindow, windows=library.VIEWS_POSTER.get('all'), default_window=default, section=section, filter_=filter_
         )
 
 

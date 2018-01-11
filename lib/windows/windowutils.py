@@ -19,6 +19,9 @@ class UtilMixin():
         else:
             self.closeWithCommand('HOME')
 
+    def openItem(self, obj):
+        self.processCommand(opener.open(obj))
+
     def openWindow(self, window_class, **kwargs):
         self.processCommand(opener.handleOpen(window_class, **kwargs))
 

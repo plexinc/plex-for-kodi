@@ -441,6 +441,20 @@ class Cron(threading.Thread):
             self._receivers.pop(self._receivers.index(receiver))
 
 
+def getPlatform():
+    for key in [
+        'System.Platform.Android',
+        'System.Platform.Linux.RaspberryPi',
+        'System.Platform.Linux',
+        'System.Platform.Windows',
+        'System.Platform.OSX',
+        'System.Platform.IOS',
+        'System.Platform.Darwin',
+        'System.Platform.ATV2'
+    ]:
+        if xbmc.getCondVisibility(key):
+            return key.rsplit('.', 1)[-1]
+
 def getProgressImage(obj):
     if not obj.get('viewOffset'):
         return ''
@@ -450,7 +464,7 @@ def getProgressImage(obj):
 
 
 def trackIsPlaying(track):
-    return xbmc.getCondVisibility('SubString(MusicPlayer.Comment,{0},Left)'.format('PLEX-{0}:'.format(track.ratingKey)))
+    return xbmc.getCondVisibility('String.StartsWith(MusicPlayer.Comment,{0})'.format('PLEX-{0}:'.format(track.ratingKey)))
 
 
 def addURLParams(url, params):

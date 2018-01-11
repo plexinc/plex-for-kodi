@@ -63,21 +63,20 @@ def defaultUserAgent():
                      '%s/%s' % (_implementation, _implementation_version),
                      '%s/%s' % (p_system, p_release)])
 
-
 class PlexInterface(plexapp.AppInterface):
     _regs = {
         None: {},
     }
     _globals = {
-        'platform': platform.uname()[0],
+        'platform': 'Kodi',
         'appVersionStr': util.ADDON.getAddonInfo('version'),
         'clientIdentifier': CLIENT_ID,
-        'platformVersion': platform.uname()[2],
+        'platformVersion': xbmc.getInfoLabel('System.BuildVersion'),
         'product': 'Plex for Kodi',
         'provides': 'player',
-        'device': plexapp._platform,
+        'device': util.getPlatform() or plexapp.PLATFORM,
         'model': 'Unknown',
-        'friendlyName': 'Kodi Plex Addon',
+        'friendlyName': 'Kodi Add-on ({0})'.format(platform.node()),
         'supports1080p60': True,
         'vp9Support': True,
         'transcodeVideoQualities': [
@@ -302,21 +301,22 @@ def init():
 
 
 def requirePlexPass():
-    if not plexapp.ACCOUNT.hasPlexPass():
-        from windows import signin, background
-        background.setSplash(False)
-        w = signin.SignInPlexPass.open()
-        retry = w.retry
-        del w
-        util.DEBUG_LOG('PlexPass required. Signing out...')
-        plexapp.ACCOUNT.signOut()
-        plexapp.SERVERMANAGER.clearState()
-        if retry:
-            return 'RETRY'
-        else:
-            return False
-
     return True
+    # if not plexapp.ACCOUNT.hasPlexPass():
+    #     from windows import signin, background
+    #     background.setSplash(False)
+    #     w = signin.SignInPlexPass.open()
+    #     retry = w.retry
+    #     del w
+    #     util.DEBUG_LOG('PlexPass required. Signing out...')
+    #     plexapp.ACCOUNT.signOut()
+    #     plexapp.SERVERMANAGER.clearState()
+    #     if retry:
+    #         return 'RETRY'
+    #     else:
+    #         return False
+
+    # return True
 
 
 def authorize():

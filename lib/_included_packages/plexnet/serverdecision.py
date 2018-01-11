@@ -19,15 +19,16 @@ class ServerDecision(object):
         self.original = original
         self.response = response
         self.player = player
+        self.item = None
 
         self.init()
 
     def init(self):
         self.isSupported = self.response.server.supportsFeature("streamingBrain")
-        self.item = self.response.items[0]
-
-        if self.item and self.item.media:
-            self.original.transcodeDecision = mediachoice.MediaChoice(self.item.media[0])
+        for item in self.response.items:
+            if item and item.media:
+                self.item = item
+                self.original.transcodeDecision = mediachoice.MediaChoice(self.item.media[0])
 
         # Decision codes and text
         self.decisionsCodes = {}
@@ -35,6 +36,8 @@ class ServerDecision(object):
         for key in ["directPlayDecision", "generalDecision", "mdeDecision", "transcodeDecision", "termination"]:
             self.decisionsCodes[key] = self.response.container.get(key + "Code", "-1").asInt()
             self.decisionsTexts[key] = self.response.container.get(key + "Text")
+
+        util.DEBUG_LOG("Decision codes: {0}".format(self.decisionsCodes))
 
     def __str__(self):
         if self.isSupported:

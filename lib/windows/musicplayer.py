@@ -142,7 +142,11 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
             fanart = self.playlist.get('composite') or self.playlist.defaultArt
         # player.PLAYER.playAudio(self.track, fanart=self.getProperty('background'))
         if self.album:
-            player.PLAYER.playAlbum(self.album, startpos=self.track.index.asInt() - 1, fanart=fanart)
+            index = 0
+            for i, track in enumerate(self.album.tracks()):
+                if track == self.track:
+                    index = i
+            player.PLAYER.playAlbum(self.album, startpos=index, fanart=fanart)
         elif self.playlist:
             player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), fanart=fanart)
         else:

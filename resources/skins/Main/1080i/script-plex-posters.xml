@@ -27,14 +27,14 @@
         </control>
 
         <control type="group" id="50">
-            <animation effect="slide" time="200" end="0,-115" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5)">Conditional</animation>
+            <animation effect="slide" time="200" end="0,-115" tween="quadratic" easing="out" condition="Integer.IsGreater(Container(101).ListItem.Property(index),5)">Conditional</animation>
             <posx>0</posx>
             <posy>135</posy>
             <defaultcontrol>101</defaultcontrol>
 
             <control type="grouplist" id="300">
                 <animation effect="fade" start="0" end="100" time="200" reversible="true">VisibleChange</animation>
-                <visible>!IntegerGreaterThan(Container(101).ListItem.Property(index),5) + IsEmpty(Window.Property(no.content)) + IsEmpty(Window.Property(no.content.filtered))</visible>
+                <visible>!Integer.IsGreater(Container(101).ListItem.Property(index),5) + String.IsEmpty(Window.Property(no.content)) + String.IsEmpty(Window.Property(no.content.filtered))</visible>
                 <defaultcontrol>301</defaultcontrol>
                 <posx>30</posx>
                 <posy>-25</posy>
@@ -74,7 +74,7 @@
                 </control>
                 <control type="button" id="303">
                     <hitrect x="20" y="20" w="86" h="60" />
-                    <visible>IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
+                    <visible>String.IsEmpty(Window.Property(no.options)) | Player.HasAudio</visible>
                     <animation effect="zoom" start="100" end="143" time="100" center="63,50" reversible="false">Focus</animation>
                     <animation effect="zoom" start="143" end="100" time="100" center="63,50" reversible="false">UnFocus</animation>
                     <posx>0</posx>
@@ -102,7 +102,7 @@
             </control>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>0</posx>
                 <posy>-35</posy>
@@ -144,7 +144,7 @@
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="group">
-                                    <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                    <visible>!String.IsEmpty(ListItem.Property(progress))</visible>
                                     <posx>0</posx>
                                     <posy>351</posy>
                                     <control type="image">
@@ -166,7 +166,7 @@
                                 </control>
                                 <control type="group">
                                     <control type="image">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
                                         <posx>199</posx>
                                         <posy>0</posy>
                                         <width>45</width>
@@ -174,7 +174,7 @@
                                         <texture>script.plex/indicators/unwatched.png</texture>
                                     </control>
                                     <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                         <control type="image">
                                             <posx>193</posx>
                                             <posy>0</posy>
@@ -256,7 +256,7 @@
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(progress))</visible>
                                         <posx>0</posx>
                                         <posy>351</posy>
                                         <control type="image">
@@ -278,7 +278,7 @@
                                     </control>
                                     <control type="group">
                                         <control type="image">
-                                            <visible>!IsEmpty(ListItem.Property(unwatched))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
                                             <posx>199</posx>
                                             <posy>0</posy>
                                             <width>45</width>
@@ -286,7 +286,7 @@
                                             <texture>script.plex/indicators/unwatched.png</texture>
                                         </control>
                                         <control type="group">
-                                            <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                             <control type="image">
                                                 <posx>193</posx>
                                                 <posy>0</posy>
@@ -345,7 +345,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>StringCompare(Window.Property(sort),titleSort) + IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window.Property(sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1780</posx>
             <posy>150</posy>
@@ -489,7 +489,7 @@
 
 
         <control type="group" id="200">
-            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="IntegerGreaterThan(Container(101).ListItem.Property(index),5) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
+            <animation effect="slide" end="0,-135" time="200" tween="quadratic" easing="out" condition="Integer.IsGreater(Container(101).ListItem.Property(index),5) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
@@ -497,7 +497,7 @@
             <height>135</height>
             <control type="image">
                 <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                <visible>ControlGroup(200).HasFocus(0) + IntegerGreaterThan(Container(101).ListItem.Property(index),5)</visible>
+                <visible>ControlGroup(200).HasFocus(0) + Integer.IsGreater(Container(101).ListItem.Property(index),5)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
@@ -657,7 +657,7 @@
                 </control>
             </control>
             <control type="grouplist">
-                <visible>IsEmpty(Window.Property(hide.filteroptions))</visible>
+                <visible>String.IsEmpty(Window.Property(hide.filteroptions))</visible>
                 <right>340</right>
                 <posy>35</posy>
                 <width>870</width>
@@ -699,18 +699,35 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="310">
+                    <visible>!StringCompare(Window.Property(media),show)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
-                    <font>font10</font>
-                    <textcolor>A0FFFFFF</textcolor>
-                    <focusedcolor>A0FFFFFF</focusedcolor>
-                    <disabledcolor>A0FFFFFF</disabledcolor>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FFFFFFFF</focusedcolor>
+                    <disabledcolor>FFFFFFFF</disabledcolor>
                     <align>center</align>
                     <aligny>center</aligny>
-                    <texturefocus>-</texturefocus>
                     <texturenofocus>-</texturenofocus>
-                    <textoffsetx>0</textoffsetx>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
+                </control>
+                <control type="button" id="312">
+                    <visible>StringCompare(Window.Property(media),show)</visible>
+                    <width max="300">auto</width>
+                    <height>65</height>
+                    <font>font12</font>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <disabledcolor>FFFFFFFF</disabledcolor>
+                    <align>center</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>20</textoffsetx>
                     <textoffsety>0</textoffsety>
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>
@@ -750,7 +767,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(no.content))</visible>
+            <visible>!String.IsEmpty(Window.Property(no.content))</visible>
             <posx>0</posx>
             <posy>465</posy>
             <control type="label">
@@ -778,7 +795,7 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(no.content.filtered))</visible>
+            <visible>!String.IsEmpty(Window.Property(no.content.filtered))</visible>
             <posx>0</posx>
             <posy>465</posy>
             <control type="label">
@@ -806,9 +823,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

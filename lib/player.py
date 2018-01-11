@@ -9,8 +9,8 @@ from windows import seekdialog
 import util
 from plexnet import plexplayer
 from plexnet import plexapp
-
 from plexnet import signalsmixin
+from plexnet import util as plexnetUtil
 
 FIVE_MINUTES_MILLIS = 300000
 
@@ -126,7 +126,6 @@ class BasePlayerHandler(object):
 
 class SeekPlayerHandler(BasePlayerHandler):
     NO_SEEK = 0
-    SEEK_INIT = 1
     SEEK_IN_PROGRESS = 2
     SEEK_PLAYLIST = 3
     SEEK_REWIND = 4
@@ -178,7 +177,10 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.mode == self.MODE_RELATIVE:
             return self.baseOffset + self.player.currentTime
         else:
-            return self.player.currentTime
+            if self.seekOnStart:
+                return self.player.playerObject.startOffset + (self.seekOnStart / 1000)
+            else:
+                return self.player.currentTime + self.player.playerObject.startOffset
 
     def shouldShowPostPlay(self):
         if self.playlist and self.playlist.TYPE == 'playlist':
@@ -256,14 +258,19 @@ class SeekPlayerHandler(BasePlayerHandler):
                 util.garbageCollect()
 
     def seek(self, offset, settings_changed=False, seeking=SEEK_IN_PROGRESS):
+        self.offset = offset
+
         if self.mode == self.MODE_ABSOLUTE and not settings_changed:
-            self.offset = offset
             util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
-            return self.seekAbsolute(offset)
+
+            if self.player.playerObject.offsetIsValid(offset / 1000):
+                if self.seekAbsolute(offset):
+                    return
+
+        self.updateNowPlaying(state=self.player.STATE_PAUSED)  # To for update after seek
 
         self.seeking = self.SEEK_IN_PROGRESS
-        self.offset = offset
-        # self.player.control('play')
+
         util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
         self.player._playVideo(offset, seeking=self.seeking, force_update=settings_changed)
 
@@ -280,17 +287,20 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.seekOnStart = seek or self.seekOnStart
         if self.seekOnStart:
             self.player.control('play')
+            seekSeconds = self.seekOnStart / 1000.0
+            try:
+                if seekSeconds >= self.player.getTotalTime():
+                    return False
+            except RuntimeError:  # Not playing a file
+                return False
+            self.updateNowPlaying(state=self.player.STATE_PAUSED)  # To for update after seek
             self.player.seekTime(self.seekOnStart / 1000.0)
+        return True
 
     def onPlayBackStarted(self):
-        self.updateNowPlaying(refreshQueue=True)
-        if self.mode == self.MODE_ABSOLUTE:
-            self.seekAbsolute()
+        util.DEBUG_LOG('SeekHandler: onPlayBackStarted - mode={0}'.format(self.mode))
 
-        self.setSubtitles()
-        self.setAudioTrack()
-
-        self.seeking = self.NO_SEEK
+        self.updateNowPlaying(force=True, refreshQueue=True)
 
     def onPlayBackResumed(self):
         self.updateNowPlaying()
@@ -298,16 +308,25 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackStopped(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackStopped - Seeking={0}'.format(self.seeking))
-        self.updateNowPlaying()
-        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
-            self.hideOSD(delete=True)
+
+        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_REWIND):
+            self.updateNowPlaying()
 
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
+            self.hideOSD(delete=True)
             self.sessionEnded()
 
     def onPlayBackEnded(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackEnded - Seeking={0}'.format(self.seeking))
+
+        if self.player.playerObject.hasMoreParts():
+            self.updateNowPlaying(state=self.player.STATE_PAUSED)  # To for update after seek
+            self.seeking = self.SEEK_IN_PROGRESS
+            self.player._playVideo(self.player.playerObject.getNextPartOffset(), seeking=self.seeking)
+            return
+
         self.updateNowPlaying()
+
         if self.next(on_end=True):
             return
 
@@ -327,7 +346,6 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.seekOnStart = 0
             return
 
-        self.seeking = self.SEEK_INIT
         self.updateOffset()
         # self.showOSD(from_seek=True)
 
@@ -345,8 +363,8 @@ class SeekPlayerHandler(BasePlayerHandler):
                 else:
                     util.DEBUG_LOG('Transcoded. Skipping subtitle path: {0}'.format(path))
             else:
-                # util.TEST(subs.__dict__)
-                # util.TEST(self.player.video.mediaChoice.__dict__)
+                # u_til.TEST(subs.__dict__)
+                # u_til.TEST(self.player.video.mediaChoice.__dict__)
                 if self.mode == self.MODE_ABSOLUTE:
                     util.DEBUG_LOG('Enabling embedded subtitles at: {0}'.format(subs.typeIndex))
                     util.DEBUG_LOG('Kodi reported subtitles: {0}'.format(self.player.getAvailableSubtitleStreams()))
@@ -374,6 +392,15 @@ class SeekPlayerHandler(BasePlayerHandler):
     def updateOffset(self):
         self.offset = int(self.player.getTime() * 1000)
 
+    def initPlayback(self):
+        self.seeking = self.NO_SEEK
+
+        if self.mode == self.MODE_ABSOLUTE:
+            self.seekAbsolute()
+
+        self.setSubtitles()
+        self.setAudioTrack()
+
     def onPlayBackFailed(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackFailed - Seeking={0}'.format(self.seeking))
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
@@ -392,6 +419,8 @@ class SeekPlayerHandler(BasePlayerHandler):
     def onVideoWindowOpened(self):
         self.getDialog().show()
 
+        self.initPlayback()
+
     def onVideoWindowClosed(self):
         self.hideOSD()
         util.DEBUG_LOG('SeekHandler: onVideoWindowClosed - Seeking={0}'.format(self.seeking))
@@ -406,7 +435,9 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.showOSD()
 
     def tick(self):
-        self.updateNowPlaying(force=True)
+        if self.seeking != self.SEEK_IN_PROGRESS:
+            self.updateNowPlaying(force=True)
+
         if self.dialog:
             self.dialog.tick()
 
@@ -667,16 +698,17 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.open()
         self._playVideo(resume and video.viewOffset.asInt() or 0, force_update=force_update)
 
-    def _playVideo(self, offset=0, seeking=0, force_update=False):
+    def _playVideo(self, offset=0, seeking=0, force_update=False, playerObject=None):
         self.trigger('new.video', video=self.video)
         self.trigger(
             'change.background',
             url=self.video.defaultArt.asTranscodedImageURL(1920, 1080, opacity=60, background=colors.noAlpha.Background)
         )
         try:
-            self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
-            self.playerObject.build()
-            self.playerObject = self.playerObject.getServerDecision() or self.playerObject
+            if not playerObject:
+                self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
+                self.playerObject.build()
+            self.playerObject = self.playerObject.getServerDecision()
         except plexplayer.DecisionFailure, e:
             util.showNotification(e.reason, header=util.T(32448, 'Playback Failed!'))
             return
@@ -688,7 +720,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         url = meta.streamUrls[0]
         bifURL = self.playerObject.getBifUrl()
-        util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(url, offset, bifURL and ' - indexed' or ''))
+        util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(plexnetUtil.cleanToken(url), offset, bifURL and ' - indexed' or ''))
 
         self.stopAndWait()  # Stop before setting up the handler to prevent player events from causing havoc
 
@@ -800,15 +832,11 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.play(plist, startpos=startpos)
 
     def createTrackListItem(self, track, fanart=None, index=0):
-        # pobj = plexplayer.PlexAudioPlayer(track)
-        # url = pobj.build()['url']  # .streams[0]['url']
-        # util.DEBUG_LOG('Playing URL: {0}'.format(url))
-        # url += '&X-Plex-Platform=Chrome'
         data = base64.urlsafe_b64encode(track.serialize())
         url = 'plugin://script.plex/play?{0}'.format(data)
         li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(800, 800))
         li.setInfo('music', {
-            'artist': unicode(track.grandparentTitle),
+            'artist': unicode(track.originalTitle or track.grandparentTitle),
             'title': unicode(track.title),
             'album': unicode(track.parentTitle),
             'discnumber': track.parentIndex.asInt(),

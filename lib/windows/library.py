@@ -2,6 +2,7 @@ import os
 import random
 import urllib
 import json
+import time
 import threading
 
 import xbmc
@@ -25,6 +26,8 @@ from plexnet import playqueue
 
 from lib.util import T
 
+CHUNK_SIZE = 200
+# CHUNK_SIZE = 30
 
 KEYS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -92,9 +95,11 @@ TYPE_KEYS = {
 
 TYPE_PLURAL = {
     'artist': T(32347, 'artists'),
+    'album': T(32461, 'albums'),
     'movie': T(32348, 'movies'),
     'photo': T(32349, 'photos'),
-    'show': T(32350, 'shows')
+    'show': T(32350, 'Shows'),
+    'episode': T(32458, 'Episodes')
 }
 
 SORT_KEYS = {
@@ -111,16 +116,27 @@ SORT_KEYS = {
     },
     'show': {
         'originallyAvailableAt': {'title': T(32365, 'By First Aired'), 'display': T(32366, 'First Aired')},
-        'unviewedLeafCount': {'title': T(32367, 'By Unwatched'), 'display': T(32368, 'Unwatched')}
+        'unviewedLeafCount': {'title': T(32367, 'By Unwatched'), 'display': T(32368, 'Unwatched')},
+        'show.titleSort': {'title': T(32457, 'By Show'), 'display': T(32456, 'Show')},
     },
     'artist': {
-        'lastViewedAt': {'title': T(32369, 'By Date Played'), 'display': T(32370, 'Date Played')}
+        'lastViewedAt': {'title': T(32369, 'By Date Played'), 'display': T(32370, 'Date Played')},
+        'artist.titleSort': {'title': T(32463, 'By Artist'), 'display': T(32462, 'Artist')},
     },
     'photo': {
         'originallyAvailableAt': {'title': T(32373, 'By Date Taken'), 'display': T(32374, 'Date Taken')}
     },
     'photodirectory': {}
 }
+
+ITEM_TYPE = None
+
+
+def setItemType(type_=None):
+    assert type_ is not None, "Invalid type: None"
+    global ITEM_TYPE
+    ITEM_TYPE = type_
+    util.setGlobalProperty('item.type', str(ITEM_TYPE))
 
 
 class ChunkRequestTask(backgroundthread.Task):
@@ -142,7 +158,12 @@ class ChunkRequestTask(backgroundthread.Task):
             return
 
         try:
-            items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched)
+            type_ = None
+            if ITEM_TYPE == 'episode':
+                type_ = 4
+            elif ITEM_TYPE == 'album':
+                type_ = 9
+            items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched, type_=type_)
             if self.isCanceled():
                 return
             self.callback(items, self.start)
@@ -179,6 +200,9 @@ class LibrarySettings(object):
         self._loadSettings()
 
     def _loadSettings(self):
+        if not self.sectionID:
+            return
+
         jsonString = util.getSetting('library.settings.{0}'.format(self.serverID), '')
         self._settings = {}
         try:
@@ -187,6 +211,24 @@ class LibrarySettings(object):
             pass
         except:
             util.ERROR()
+
+        setItemType(self.getItemType() or ITEM_TYPE)
+
+    def getItemType(self):
+        if not self._settings or self.sectionID not in self._settings:
+            return None
+
+        return self._settings[self.sectionID].get('ITEM_TYPE')
+
+    def setItemType(self, item_type):
+        setItemType(item_type)
+
+        if self.sectionID not in self._settings:
+            self._settings[self.sectionID] = {}
+
+        self._settings[self.sectionID]['ITEM_TYPE'] = item_type
+
+        self._saveSettings()
 
     def _saveSettings(self):
         jsonString = json.dumps(self._settings)
@@ -199,14 +241,145 @@ class LibrarySettings(object):
         if not self._settings or self.sectionID not in self._settings:
             return default
 
-        return self._settings[self.sectionID].get(setting, default)
+        if ITEM_TYPE not in self._settings[self.sectionID]:
+            return default
+
+        return self._settings[self.sectionID][ITEM_TYPE].get(setting, default)
 
     def setSetting(self, setting, value):
         if self.sectionID not in self._settings:
             self._settings[self.sectionID] = {}
-        self._settings[self.sectionID][setting] = value
+
+        if ITEM_TYPE not in self._settings[self.sectionID]:
+            self._settings[self.sectionID][ITEM_TYPE] = {}
+
+        self._settings[self.sectionID][ITEM_TYPE][setting] = value
 
         self._saveSettings()
+
+
+class ChunkedWrapList(kodigui.ManagedControlList):
+    LIST_MAX = CHUNK_SIZE * 3
+
+    def __getitem__(self, idx):
+        # if isinstance(idx, slice):
+        #     return self.items[idx]
+        # else:
+        idx = idx % self.LIST_MAX
+        return self.items[idx]
+        # return self.getListItem(idx)
+
+
+class ChunkModeWrapped(object):
+    ALL_MAX = CHUNK_SIZE * 2
+
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.midStart = 0
+        self.itemCount = 0
+        self.keys = {}
+
+    def addKeyRange(self, key, krange):
+        self.keys[key] = krange
+
+    def getKey(self, pos):
+        for k, krange in self.keys.items():
+            if krange[0] <= pos <= krange[1]:
+                return k
+
+    def isAtBeginning(self):
+        return self.midStart == 0
+
+    def posIsForward(self, pos):
+        if self.itemCount <= self.ALL_MAX:
+            return False
+        return pos >= self.midStart + CHUNK_SIZE
+
+    def posIsBackward(self, pos):
+        if self.itemCount <= self.ALL_MAX:
+            return False
+        return pos < self.midStart
+
+    def posIsValid(self, pos):
+        return self.midStart - CHUNK_SIZE <= pos < self.midStart + (CHUNK_SIZE * 2)
+
+    def shift(self, mod):
+        if mod < 0 and self.midStart == 0:
+            return None
+        elif mod > 0 and self.midStart + CHUNK_SIZE >= self.itemCount:
+            return None
+
+        offset = CHUNK_SIZE * mod
+        self.midStart += offset
+        start = self.midStart + offset
+
+        return start
+
+    def shiftToKey(self, key, keyStart=None):
+        if keyStart is None:
+            if key not in self.keys:
+                util.DEBUG_LOG('CHUNK MODE: NO ITEMS FOR KEY')
+                return
+
+            keyStart = self.keys[key][0]
+        self.midStart = keyStart - keyStart % CHUNK_SIZE
+        return keyStart, max(self.midStart - CHUNK_SIZE, 0)
+
+    def addObjects(self, pos, objects):
+        if not self.posIsValid(pos):
+            return
+
+        if pos == self.midStart - CHUNK_SIZE:
+            self.objects = objects + self.objects[CHUNK_SIZE:]
+        elif pos == self.midStart:
+            self.objects = self.objects[:CHUNK_SIZE] + objects + self.objects[CHUNK_SIZE * 2:]
+        elif pos == self.midStart + CHUNK_SIZE:
+            self.objects = self.objects[:CHUNK_SIZE * 2] + objects
+
+
+class CustomScrollBar(object):
+    def __init__(self, window, bar_group_id, bar_image_id, bar_image_focus_id, button_id, min_bar_height=20):
+        self._barGroup = window.getControl(bar_group_id)
+        self._barImage = window.getControl(bar_image_id)
+        self._barImageFocus = window.getControl(bar_image_focus_id)
+        self._button = window.getControl(button_id)
+        self.height = self._button.getHeight()
+        self.x, self.y = self._barGroup.getPosition()
+        self._minBarHeight = min_bar_height
+        self._barHeight = min_bar_height
+        self.reset()
+
+    def reset(self):
+        self.size = 0
+        self.count = 0
+        self.pos = 0
+
+    def setSizeAndCount(self, size, count):
+        self.size = size
+        self.count = count
+        self._barHeight = min(self.height, max(self._minBarHeight, int(self.height * (count / float(size)))))
+        self._moveHeight = self.height - self._barHeight
+        self._barImage.setHeight(self._barHeight)
+        self._barImageFocus.setHeight(self._barHeight)
+        self.setPosition(0)
+
+    def setPosition(self, pos):
+        self.pos = pos
+        offset = int((pos / float(max(self.size, 2) - 1)) * self._moveHeight)
+        self._barGroup.setPosition(self.x, self.y + offset)
+
+    def getPosFromY(self, y):
+        y -= int(self._barHeight / 2) + 150
+        y = min(max(y, 0), self._moveHeight)
+        return int((self.size - 1) * (y / float(self._moveHeight)))
+
+    def onMouseDrag(self, window, action):
+        y = window.mouseXTrans(action.getAmount2())
+        y -= int(self._barHeight / 2) + 150
+        y = min(max(y, 0), self._moveHeight)
+        self._barGroup.setPosition(self.x, self.y)
 
 
 class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
@@ -222,36 +395,84 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.filter = kwargs.get('filter_')
         self.keyItems = {}
         self.firstOfKeyItems = {}
-        self.tasks = []
+        self.tasks = backgroundthread.Tasks()
         self.backgroundSet = False
         self.showPanelControl = None
         self.keyListControl = None
         self.lastItem = None
+
+        self.dcpjPos = 0
+        self.dcpjThread = None
+        self.dcpjTimeout = 0
+
+        self.dragging = False
+
+        self.cleared = True
         self.librarySettings = LibrarySettings(self.section)
-        self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
-        self.sort = self.librarySettings.getSetting('sort', 'titleSort')
-        self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
+        self.reset()
+
         self.lock = threading.Lock()
 
+    def reset(self):
+        self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
+        if ITEM_TYPE == 'episode':
+            self.sort = self.librarySettings.getSetting('sort', 'show.titleSort')
+        elif ITEM_TYPE == 'album':
+            self.sort = self.librarySettings.getSetting('sort', 'artist.titleSort')
+        else:
+            self.sort = self.librarySettings.getSetting('sort', 'titleSort')
+        self.sortDesc = self.librarySettings.getSetting('sort.desc', False)
+
+        self.chunkMode = None
+        if ITEM_TYPE in ('episode', 'album'):
+            self.chunkMode = ChunkModeWrapped()
+
+        key = self.section.key
+        if not key.isdigit():
+            key = self.section.getLibrarySectionId()
+        viewtype = util.getSetting('viewtype.{0}.{1}'.format(self.section.server.uuid, key))
+
+        if self.chunkMode:
+            if self.section.TYPE in ('artist', 'photo', 'photodirectory'):
+                self.setWindows(VIEWS_SQUARE_CHUNKED.get('all'))
+                self.setDefault(VIEWS_SQUARE_CHUNKED.get(viewtype))
+            else:
+                self.setWindows(VIEWS_POSTER_CHUNKED.get('all'))
+                self.setDefault(VIEWS_POSTER_CHUNKED.get(viewtype))
+        else:
+            if self.section.TYPE in ('artist', 'photo', 'photodirectory'):
+                self.setWindows(VIEWS_SQUARE.get('all'))
+                self.setDefault(VIEWS_SQUARE.get(viewtype))
+            else:
+                self.setWindows(VIEWS_POSTER.get('all'))
+                self.setDefault(VIEWS_POSTER.get(viewtype))
+
     def doClose(self):
-        for task in self.tasks:
-            task.cancel()
+        self.tasks.cancel()
         kodigui.MultiWindow.doClose(self)
 
     def onFirstInit(self):
+        self.scrollBar = None
+        if ITEM_TYPE in ('episode', 'album'):
+            self.scrollBar = CustomScrollBar(self, 950, 952, 953, 951)
+
         if self.showPanelControl:
             self.showPanelControl.newControl(self)
             self.keyListControl.newControl(self)
+            self.showPanelControl.selectItem(0)
             self.setFocusId(self.VIEWTYPE_BUTTON_ID)
         else:
-            self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
+            if self.chunkMode:
+                self.showPanelControl = ChunkedWrapList(self, self.POSTERS_PANEL_ID, 5)
+            else:
+                self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
             self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
             self.setProperty('sort', self.sort)
             self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'UNWATCHED') or T(32345, 'All'))
             self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
-            self.setProperty('media.type', TYPE_PLURAL.get(self.section.TYPE, self.section.TYPE))
+            self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
             self.setProperty('media', self.section.TYPE)
             self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
 
@@ -264,17 +485,34 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
     def onAction(self, action):
         try:
+            if self.dragging:
+                if not action == xbmcgui.ACTION_MOUSE_DRAG:
+                    self.dragging = False
+                    self.setBoolProperty('dragging', self.dragging)
+
             if action.getId() in MOVE_SET:
                 controlID = self.getFocusId()
                 if controlID == self.POSTERS_PANEL_ID or controlID == self.SCROLLBAR_ID:
                     self.updateKey()
+                    self.checkChunkedNav(action)
+                elif controlID == self.CUSTOM_SCOLLBAR_BUTTON_ID:
+                    if action == xbmcgui.ACTION_MOVE_UP:
+                        self.shiftSelection(-12)
+                    elif action == xbmcgui.ACTION_MOVE_DOWN:
+                        self.shiftSelection(12)
+            # elif action == xbmcgui.KEY_MOUSE_DRAG_START:
+            #     self.onMouseDragStart(action)
+            # elif action == xbmcgui.KEY_MOUSE_DRAG_END:
+            #     self.onMouseDragEnd(action)
+            elif action == xbmcgui.ACTION_MOUSE_DRAG:
+                self.onMouseDrag(action)
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
-                    if xbmc.getCondVisibility('IntegerGreaterThan(Container(101).ListItem.Property(index),5)'):
+                    if xbmc.getCondVisibility('Integer.IsGreater(Container(101).ListItem.Property(index),5)'):
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
 
@@ -306,6 +544,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.sortButtonClicked()
         elif controlID == self.FILTER1_BUTTON_ID:
             self.filter1ButtonClicked()
+        elif controlID == self.ITEM_TYPE_BUTTON_ID:
+            self.itemTypeButtonClicked()
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
 
@@ -322,8 +562,85 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPhotoItemProperties(mli.dataSource)
 
-    def updateKey(self):
-        mli = self.showPanelControl.getSelectedItem()
+    def onMouseDragStart(self, action):
+        if not self.scrollBar:
+            return
+
+        controlID = self.getFocusId()
+        if controlID != self.CUSTOM_SCOLLBAR_BUTTON_ID:
+            return
+
+        self.dragging = True
+        self.setBoolProperty('dragging', self.dragging)
+
+    def onMouseDragEnd(self, action):
+        if not self.scrollBar:
+            return
+
+        if not self.dragging:
+            return
+
+        self.dragging = False
+        self.setBoolProperty('dragging', self.dragging)
+
+        y = self.mouseXTrans(action.getAmount2())
+
+        pos = self.scrollBar.getPosFromY(y)
+        self.shiftSelection(pos=pos)
+
+    def onMouseDrag(self, action):
+        if not self.scrollBar:
+            return
+
+        if not self.dragging:
+            controlID = self.getFocusId()
+            if controlID != self.CUSTOM_SCOLLBAR_BUTTON_ID:
+                return
+
+            self.onMouseDragStart(action)
+            if not self.dragging:
+                return
+
+        # self.scrollBar.onMouseDrag(self, action)
+
+        y = self.mouseXTrans(action.getAmount2())
+
+        pos = self.scrollBar.getPosFromY(y)
+        if self.chunkMode.posIsForward(pos) or self.chunkMode.posIsBackward(pos):
+            self.shiftSelection(pos=pos)
+        else:
+            self.showPanelControl.selectItem(pos)
+            self.checkChunkedNav()
+
+    def shiftSelection(self, offset=0, pos=None):
+        if pos is not None:
+            self.scrollBar.setPosition(pos)
+            return self.delayedChunkedPosJump(pos)
+        else:
+            mli = self.showPanelControl.getSelectedItem()
+
+            try:
+                idx = int(mli.getProperty('index'))
+            except ValueError:
+                return
+
+            target = idx + offset
+            if target >= self.chunkMode.itemCount:
+                pos = self.chunkMode.itemCount - 1
+            elif target < 0:
+                pos = 0
+            else:
+                pos = self.showPanelControl.getSelectedPosition()
+                pos += offset
+
+            if pos < 0 or pos >= self.showPanelControl.size():
+                pos = pos % self.showPanelControl.size()
+
+        self.showPanelControl.selectItem(pos)
+        self.checkChunkedNav(idx=pos)
+
+    def updateKey(self, mli=None):
+        mli = mli or self.showPanelControl.getSelectedItem()
         if not mli:
             return
 
@@ -334,6 +651,78 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.setProperty('key', mli.getProperty('key'))
 
         self.selectKey(mli)
+
+    def checkChunkedNav(self, action=None, idx=None):
+        if not self.chunkMode:
+            return
+
+        # if action == xbmcgui.ACTION_PAGE_DOWN:
+        #     idx = self.showPanelControl.getSelectedPosition() - 5
+        #     if idx < 0:
+        #         idx += self.showPanelControl.size()
+        #     mli = self.showPanelControl.getListItem(idx)
+        #     self.showPanelControl.selectItem(idx)
+        # elif action == xbmcgui.ACTION_PAGE_UP:
+        #     idx = self.showPanelControl.getSelectedPosition() + 5
+        #     if idx >= self.showPanelControl.size():
+        #         idx %= self.showPanelControl.size()
+        #     mli = self.showPanelControl.getListItem(idx)
+        #     self.showPanelControl.selectItem(idx)
+        # else:
+        mli = self.showPanelControl.getSelectedItem()
+
+        try:
+            if idx is not None:
+                pos = int(self.showPanelControl[idx].getProperty('index'))
+            else:
+                pos = int(mli.getProperty('index'))
+
+            if pos >= self.chunkMode.itemCount:
+                raise ValueError
+        except ValueError:
+            if self.chunkMode.isAtBeginning() and action not in (xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_PAGE_DOWN):
+                idx = 0
+            else:
+                idx = ((self.chunkMode.itemCount - 1) % self.showPanelControl.LIST_MAX)
+
+            self.showPanelControl.selectItem(idx)
+            mli = self.showPanelControl[idx]
+            self.updateKey(mli)
+            if self.scrollBar:
+                try:
+                    pos = int(mli.getProperty('index'))
+                    self.scrollBar.setPosition(pos)
+                except ValueError:
+                    pass
+
+            if idx == 0 and action == xbmcgui.ACTION_MOVE_UP:
+                self.setFocusId(600)
+
+            return
+
+        if self.scrollBar:
+            self.scrollBar.setPosition(pos)
+
+        if self.chunkMode.posIsForward(pos):
+            self.shiftChunks()
+        elif self.chunkMode.posIsBackward(pos):
+            self.shiftChunks(-1)
+
+    def shiftChunks(self, mod=1):
+        start = self.chunkMode.shift(mod)
+        if start is None:
+            return
+
+        if start < 0:
+            self.chunkCallback([None] * CHUNK_SIZE, -CHUNK_SIZE)
+        else:
+            self.chunkCallback([False] * CHUNK_SIZE, start)
+            task = ChunkRequestTask().setup(
+                self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+            )
+
+            self.tasks.add(task)
+            backgroundthread.BGThreader.addTasksToFront([task])
 
     def selectKey(self, mli=None):
         if not mli:
@@ -349,16 +738,77 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.section.key))
 
+    def delayedChunkedPosJump(self, pos):
+        if not self.cleared:
+            self.chunkCallback(None, None, clear=True)
+        self.dcpjTimeout = time.time() + 0.5
+        self.dcpjPos = pos
+        if not self.dcpjThread or not self.dcpjThread.isAlive():
+            self.dcpjThread = threading.Thread(target=self._chunkedPosJump)
+            self.dcpjThread.start()
+
+    def _chunkedPosJump(self):
+        while not util.MONITOR.waitForAbort(0.1):
+            if time.time() >= self.dcpjTimeout:
+                break
+        else:
+            return
+
+        keyStart_start = self.chunkMode.shiftToKey(None, keyStart=self.dcpjPos)
+        if not keyStart_start:
+            return
+
+        keyStart, start = keyStart_start
+        pos = keyStart % self.showPanelControl.LIST_MAX
+        self.chunkedPosJump(pos, start)
+        self.showPanelControl.selectItem(pos)
+
+    def chunkedPosJump(self, pos, start=None):
+        if start is None:
+            start = max(pos - CHUNK_SIZE, 0)
+
+        mul = 3
+        if not start:
+            mul = 2
+
+        tasks = []
+        for x in range(mul):
+            task = ChunkRequestTask().setup(
+                self.section,
+                start + (CHUNK_SIZE * x),
+                CHUNK_SIZE,
+                self.chunkCallback,
+                filter_=self.getFilterOpts(),
+                sort=self.getSortOpts(),
+                unwatched=self.filterUnwatched
+            )
+
+            self.tasks.add(task)
+            tasks.append(task)
+
+        mid = tasks.pop(1)
+        backgroundthread.BGThreader.addTasksToFront([mid] + tasks)
+
     def keyClicked(self):
         li = self.keyListControl.getSelectedItem()
         if not li:
             return
 
-        mli = self.firstOfKeyItems.get(li.dataSource)
-        if not mli:
-            return
+        if self.chunkMode:
+            keyStart_start = self.chunkMode.shiftToKey(li.dataSource)
+            if not keyStart_start:
+                return
+            keyStart, start = keyStart_start
 
-        self.showPanelControl.selectItem(mli.pos())
+            pos = keyStart % self.showPanelControl.LIST_MAX
+            self.chunkedPosJump(pos, start)
+        else:
+            mli = self.firstOfKeyItems.get(li.dataSource)
+            if not mli:
+                return
+            pos = mli.pos()
+
+        self.showPanelControl.selectItem(pos)
         self.setFocusId(self.POSTERS_PANEL_ID)
         self.setProperty('key', li.dataSource)
 
@@ -414,6 +864,43 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         elif choice['key'] == 'to_section':
             self.goHome(self.section.getLibrarySectionId())
 
+    def itemTypeButtonClicked(self):
+        options = []
+
+        if self.section.TYPE == 'show':
+            for t in ('show', 'episode'):
+                options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
+        elif self.section.TYPE == 'artist':
+            for t in ('artist', 'album'):
+                options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
+        else:
+            return
+
+        result = dropdown.showDropdown(options, (1280, 106), with_indicator=True)
+        if not result:
+            return
+
+        choice = result['type']
+
+        if choice == ITEM_TYPE:
+            return
+
+        self.tasks.cancel()
+
+        self.showPanelControl = None  # TODO: Need to do some check here I think
+
+        self.librarySettings.setItemType(choice)
+
+        self.reset()
+
+        self.clearFilters()
+        self.resetSort()
+
+        if not self.nextWindow(False):
+            self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
+            self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
+            self.fill()
+
     def sortButtonClicked(self):
         desc = 'script.plex/indicators/arrow-down.png'
         asc = 'script.plex/indicators/arrow-up.png'
@@ -428,17 +915,31 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 option['indicator'] = self.sort == stype and ind or ''
                 options.append(option)
         elif self.section.TYPE == 'show':
-            for stype in ('addedAt', 'lastViewedAt', 'originallyAvailableAt', 'titleSort', 'rating', 'unviewedLeafCount'):
-                option = SORT_KEYS['show'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
-                option['type'] = stype
-                option['indicator'] = self.sort == stype and ind or ''
-                options.append(option)
+            if ITEM_TYPE == 'episode':
+                for stype in ('addedAt', 'originallyAvailableAt', 'lastViewedAt', 'show.titleSort', 'rating'):
+                    option = SORT_KEYS['show'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
+                    option['type'] = stype
+                    option['indicator'] = self.sort == stype and ind or ''
+                    options.append(option)
+            else:
+                for stype in ('addedAt', 'lastViewedAt', 'originallyAvailableAt', 'titleSort', 'rating', 'unviewedLeafCount'):
+                    option = SORT_KEYS['show'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
+                    option['type'] = stype
+                    option['indicator'] = self.sort == stype and ind or ''
+                    options.append(option)
         elif self.section.TYPE == 'artist':
-            for stype in ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort'):
-                option = SORT_KEYS['artist'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
-                option['type'] = stype
-                option['indicator'] = self.sort == stype and ind or ''
-                options.append(option)
+            if ITEM_TYPE == 'album':
+                for stype in ('addedAt', 'lastViewedAt', 'viewCount', 'originallyAvailableAt', 'artist.titleSort', 'titleSort', 'rating'):
+                    option = SORT_KEYS['artist'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
+                    option['type'] = stype
+                    option['indicator'] = self.sort == stype and ind or ''
+                    options.append(option)
+            else:
+                for stype in ('addedAt', 'lastViewedAt', 'viewCount', 'titleSort'):
+                    option = SORT_KEYS['artist'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
+                    option['type'] = stype
+                    option['indicator'] = self.sort == stype and ind or ''
+                    options.append(option)
         elif self.section.TYPE == 'photo':
             for stype in ('addedAt', 'originallyAvailableAt', 'titleSort', 'rating'):
                 option = SORT_KEYS['photo'].get(stype, SORT_KEYS['movie'].get(stype)).copy()
@@ -480,6 +981,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         util.setSetting('viewtype.{0}.{1}'.format(self.section.server.uuid, key), win.VIEWTYPE)
 
     def sortShowPanel(self, choice):
+        if self.chunkMode:
+            self.fillShows()
+            return
+
         if choice == 'addedAt':
             self.showPanelControl.sort(lambda i: i.dataSource.addedAt, reverse=self.sortDesc)
         elif choice == 'originallyAvailableAt':
@@ -569,8 +1074,15 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             for k in ('year', 'decade', 'genre', 'contentRating', 'collection', 'director', 'actor', 'country', 'studio', 'resolution', 'labels'):
                 options.append(optionsMap[k])
         elif self.section.TYPE == 'show':
-            for k in ('year', 'genre', 'contentRating', 'network', 'collection', 'actor', 'labels'):
-                options.append(optionsMap[k])
+            if ITEM_TYPE == 'episode':
+                for k in ('year', 'collection', 'resolution'):
+                    options.append(optionsMap[k])
+            elif ITEM_TYPE == 'album':
+                for k in ('genre', 'year', 'decade', 'collection', 'labels'):
+                    options.append(optionsMap[k])
+            else:
+                for k in ('year', 'genre', 'contentRating', 'network', 'collection', 'actor', 'labels'):
+                    options.append(optionsMap[k])
         elif self.section.TYPE == 'artist':
             for k in ('genre', 'country', 'collection'):
                 options.append(optionsMap[k])
@@ -597,6 +1109,27 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.filter or choice in ('clear_filter', 'unwatched'):
             self.fill()
 
+    def clearFilters(self):
+        self.filter = None
+        self.filterUnwatched = False
+        self.librarySettings.setSetting('filter.unwatched', self.filterUnwatched)
+        self.updateFilterDisplay()
+
+    def resetSort(self):
+        if ITEM_TYPE == 'episode':
+            self.sort = 'show.titleSort'
+        elif ITEM_TYPE == 'album':
+            self.sort = 'artist.titleSort'
+        else:
+            self.sort = 'titleSort'
+        self.sortDesc = False
+
+        self.librarySettings.setSetting('sort', self.sort)
+        self.librarySettings.setSetting('sort.desc', self.sortDesc)
+
+        self.setProperty('sort', self.sort)
+        self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
+
     def updateFilterDisplay(self):
         if self.filter:
             disp = self.filter['display']
@@ -615,13 +1148,19 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         updateWatched = False
         if self.section.TYPE == 'show':
-            self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
+            if ITEM_TYPE == 'episode':
+                self.openItem(mli.dataSource)
+            else:
+                self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'movie':
             self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'artist':
-            self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
+            if ITEM_TYPE == 'album':
+                self.openItem(mli.dataSource)
+            else:
+                self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
         elif self.section.TYPE in ('photo', 'photodirectory'):
             self.showPhoto(mli.dataSource)
 
@@ -679,6 +1218,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.setProperty('background', item.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
 
     def fill(self):
+        if self.chunkMode:
+            self.chunkMode.reset()
+
         if self.section.TYPE in ('photo', 'photodirectory'):
             self.fillPhotos()
         else:
@@ -710,34 +1252,68 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.firstOfKeyItems = {}
         totalSize = 0
 
-        jumpList = self.section.jumpList(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched)
+        type_ = None
+        if ITEM_TYPE == 'episode':
+            type_ = 4
+        elif ITEM_TYPE == 'album':
+            type_ = 9
+
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        if not jumpList:
-            if self.filter or self.filterUnwatched:
-                self.setBoolProperty('no.content.filtered', True)
-            else:
-                self.setBoolProperty('no.content', True)
-            return
+        if self.filter:
+            sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
+            totalSize = sectionAll.totalSize.asInt()
+            if not self.chunkMode:
+                for x in range(totalSize):
+                    mli = kodigui.ManagedListItem('')
+                    mli.setProperty('thumb.fallback', fallback)
+                    mli.setProperty('index', str(x))
+                    items.append(mli)
+        else:
+            jumpList = self.section.jumpList(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
 
-        for kidx, ji in enumerate(jumpList):
-            mli = kodigui.ManagedListItem(ji.title, data_source=ji.key)
-            mli.setProperty('key', ji.key)
-            mli.setProperty('original', '{0:02d}'.format(kidx))
-            self.keyItems[ji.key] = mli
-            jitems.append(mli)
-            totalSize += ji.size.asInt()
+            if not jumpList:
+                if self.filter or self.filterUnwatched:
+                    self.setBoolProperty('no.content.filtered', True)
+                else:
+                    self.setBoolProperty('no.content', True)
+                return
 
-            for x in range(ji.size.asInt()):
-                mli = kodigui.ManagedListItem('')
+            for kidx, ji in enumerate(jumpList):
+                mli = kodigui.ManagedListItem(ji.title, data_source=ji.key)
                 mli.setProperty('key', ji.key)
-                mli.setProperty('thumb.fallback', fallback)
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                if not x:  # i.e. first item
-                    self.firstOfKeyItems[ji.key] = mli
-                idx += 1
+                mli.setProperty('original', '{0:02d}'.format(kidx))
+                self.keyItems[ji.key] = mli
+                jitems.append(mli)
+                totalSize += ji.size.asInt()
+
+                if self.chunkMode:
+                    self.chunkMode.addKeyRange(ji.key, (idx, (idx + ji.size.asInt()) - 1))
+                    idx += ji.size.asInt()
+                else:
+                    for x in range(ji.size.asInt()):
+                        mli = kodigui.ManagedListItem('')
+                        mli.setProperty('key', ji.key)
+                        mli.setProperty('thumb.fallback', fallback)
+                        mli.setProperty('index', str(idx))
+                        items.append(mli)
+                        if not x:  # i.e. first item
+                            self.firstOfKeyItems[ji.key] = mli
+                        idx += 1
+
+            self.setProperty('key', jumpList[0].key)
+
+        if self.scrollBar:
+            self.scrollBar.setSizeAndCount(totalSize, 12)
+
+        if self.chunkMode:
+            self.chunkMode.itemCount = totalSize
+            items = [
+                kodigui.ManagedListItem('', properties={'index': str(i)}) for i in range(CHUNK_SIZE * 2)
+            ] + [
+                kodigui.ManagedListItem('') for i in range(CHUNK_SIZE)
+            ]
 
         self.showPanelControl.reset()
         self.keyListControl.reset()
@@ -745,18 +1321,22 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.showPanelControl.addItems(items)
         self.keyListControl.addItems(jitems)
 
-        if jumpList:
-            self.setProperty('key', jumpList[0].key)
+        self.showPanelControl.selectItem(0)
 
         tasks = []
-        for start in range(0, totalSize, 500):
+        ct = 0
+        for start in range(0, totalSize, CHUNK_SIZE):
             tasks.append(
                 ChunkRequestTask().setup(
-                    self.section, start, 500, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+                    self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
                 )
             )
+            ct += 1
 
-        self.tasks = tasks
+            if self.chunkMode and ct > 1:
+                break
+
+        self.tasks.add(tasks)
         backgroundthread.BGThreader.addTasksToFront(tasks)
 
     def showPhotoItemProperties(self, photo):
@@ -764,6 +1344,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             return
 
         task = PhotoPropertiesTask().setup(photo, self._showPhotoItemProperties)
+        self.tasks.add(task)
         backgroundthread.BGThreader.addTasksToFront([task])
 
     def _showPhotoItemProperties(self, photo):
@@ -874,32 +1455,127 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if keys:
             self.setProperty('key', keys[0])
 
-    def chunkCallback(self, items, start):
+    def chunkCallback(self, items, start, clear=False):
+        if clear:
+            with self.lock:
+                items = [kodigui.ManagedListItem('') for i in range(CHUNK_SIZE * 3)]
+
+                self.showPanelControl.reset()
+                self.showPanelControl.addItems(items)
+
+                self.cleared = True
+            return
+
+        if self.cleared:
+            self.cleared = False
+            busy.widthDialog(self._chunkCallback, self, items, start)
+        else:
+            self._chunkCallback(items, start)
+
+    def _chunkCallback(self, items, start):
+        if self.chunkMode and not self.chunkMode.posIsValid(start):
+            return
+
         with self.lock:
+            if self.chunkMode and not self.chunkMode.posIsValid(start):
+                return
             pos = start
             self.setBackground(items)
             thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
             artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))
 
-            showUnwatched = self.section.TYPE in ('movie', 'show') and True or False
+            showUnwatched = True if self.section.TYPE in ('movie', 'show') else False
 
-            for obj in items:
-                mli = self.showPanelControl[pos]
-                mli.setLabel(obj.defaultTitle or '')
-                mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
-                mli.dataSource = obj
-                mli.setProperty('summary', obj.get('summary'))
+            if self.chunkMode and len(items) < CHUNK_SIZE:
+                items += [None] * (CHUNK_SIZE - len(items))
 
-                if showUnwatched:
-                    mli.setLabel2(util.durationToText(obj.fixedDuration()))
-                    mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
-                    if not obj.isWatched:
-                        if self.section.TYPE == 'show':
-                            mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+            if ITEM_TYPE == 'episode':
+                for offset, obj in enumerate(items):
+                    mli = self.showPanelControl[pos]
+                    if obj:
+                        mli.dataSource = obj
+                        mli.setProperty('index', str(pos))
+                        if obj.index:
+                            subtitle = u' - {0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index)
                         else:
-                            mli.setProperty('unwatched', '1')
+                            subtitle = ' - ' + obj.originallyAvailableAt.asDatetime('%m/%d/%y')
+                        mli.setLabel((obj.defaultTitle or '') + subtitle)
 
-                pos += 1
+                        # mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+
+                        mli.setProperty('summary', obj.summary)
+
+                        # # mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                        mli.setLabel2(util.durationToText(obj.fixedDuration()))
+                        mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
+                        if not obj.isWatched:
+                            mli.setProperty('unwatched', '1')
+                    else:
+                        mli.clear()
+                        if obj is False:
+                            mli.setProperty('index', str(pos))
+                        else:
+                            mli.setProperty('index', '')
+
+                    pos += 1
+
+            elif ITEM_TYPE == 'album':
+                for offset, obj in enumerate(items):
+                    mli = self.showPanelControl[pos]
+                    if obj:
+                        mli.dataSource = obj
+                        mli.setProperty('index', str(pos))
+                        mli.setLabel(u'{0} \u2022 {1}'.format(obj.parentTitle, obj.title))
+
+                        mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+
+                        mli.setProperty('summary', obj.summary)
+
+                        # # mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                        mli.setLabel2(obj.year)
+
+                        if self.chunkMode:
+                            mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                    else:
+                        mli.clear()
+                        if obj is False:
+                            mli.setProperty('index', str(pos))
+                        else:
+                            mli.setProperty('index', '')
+
+                    pos += 1
+            else:
+                for offset, obj in enumerate(items):
+                    mli = self.showPanelControl[pos]
+                    if obj:
+                        mli.setProperty('index', str(pos))
+                        mli.setLabel(obj.defaultTitle or '')
+                        mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
+                        mli.dataSource = obj
+                        mli.setProperty('summary', obj.get('summary'))
+
+                        if self.chunkMode:
+                            mli.setProperty('key', self.chunkMode.getKey(pos))
+
+                        if showUnwatched:
+                            mli.setLabel2(util.durationToText(obj.fixedDuration()))
+                            mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
+                            if not obj.isWatched:
+                                if self.section.TYPE == 'show':
+                                    mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
+                                else:
+                                    mli.setProperty('unwatched', '1')
+                    else:
+                        mli.clear()
+                        if obj is False:
+                            mli.setProperty('index', str(pos))
+                        else:
+                            mli.setProperty('index', '')
+
+                    pos += 1
 
 
 class PostersWindow(kodigui.ControlledWindow):
@@ -923,6 +1599,7 @@ class PostersWindow(kodigui.ControlledWindow):
     SORT_BUTTON_ID = 210
     FILTER1_BUTTON_ID = 211
     FILTER2_BUTTON_ID = 212
+    ITEM_TYPE_BUTTON_ID = 312
 
     PLAY_BUTTON_ID = 301
     SHUFFLE_BUTTON_ID = 302
@@ -930,29 +1607,73 @@ class PostersWindow(kodigui.ControlledWindow):
     VIEWTYPE_BUTTON_ID = 304
 
     VIEWTYPE = 'panel'
+    MULTI_WINDOW_ID = 0
+
+    CUSTOM_SCOLLBAR_BUTTON_ID = 951
+
+
+class PostersChunkedWindow(PostersWindow):
+    xmlFile = 'script-plex-listview-16x9-chunked.xml'
+    VIEWTYPE = 'list'
+    MULTI_WINDOW_ID = 0
 
 
 class ListView16x9Window(PostersWindow):
     xmlFile = 'script-plex-listview-16x9.xml'
     VIEWTYPE = 'list'
+    MULTI_WINDOW_ID = 1
+
+
+class ListView16x9ChunkedWindow(PostersWindow):
+    xmlFile = 'script-plex-listview-16x9-chunked.xml'
+    VIEWTYPE = 'list'
+    MULTI_WINDOW_ID = 1
 
 
 class SquaresWindow(PostersWindow):
     xmlFile = 'script-plex-squares.xml'
     VIEWTYPE = 'panel'
+    MULTI_WINDOW_ID = 0
+
+
+class SquaresChunkedWindow(PostersWindow):
+    xmlFile = 'script-plex-listview-square-chunked.xml'
+    VIEWTYPE = 'list'
+    MULTI_WINDOW_ID = 0
 
 
 class ListViewSquareWindow(PostersWindow):
     xmlFile = 'script-plex-listview-square.xml'
     VIEWTYPE = 'list'
+    MULTI_WINDOW_ID = 1
+
+
+class ListViewSquareChunkedWindow(PostersWindow):
+    xmlFile = 'script-plex-listview-square-chunked.xml'
+    VIEWTYPE = 'list'
+    MULTI_WINDOW_ID = 1
 
 
 VIEWS_POSTER = {
     'panel': PostersWindow,
-    'list': ListView16x9Window
+    'list': ListView16x9Window,
+    'all': (PostersWindow, ListView16x9Window)
+}
+
+VIEWS_POSTER_CHUNKED = {
+    'panel': PostersChunkedWindow,
+    'list': ListView16x9ChunkedWindow,
+    'all': (PostersChunkedWindow, ListView16x9ChunkedWindow)
 }
 
 VIEWS_SQUARE = {
     'panel': SquaresWindow,
-    'list': ListViewSquareWindow
+    'list': ListViewSquareWindow,
+    'all': (SquaresWindow, ListViewSquareWindow)
+}
+
+VIEWS_SQUARE_CHUNKED = {
+    'panel': SquaresChunkedWindow,
+    'list': ListViewSquareChunkedWindow,
+    'all': (SquaresChunkedWindow, ListViewSquareChunkedWindow)
 }

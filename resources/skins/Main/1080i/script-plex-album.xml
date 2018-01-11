@@ -122,7 +122,7 @@
             </control>
 
             <control type="group" id="100">
-                <visible>IntegerGreaterThan(Container(101).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                <visible>Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                 <defaultcontrol>101</defaultcontrol>
                 <posx>750</posx>
                 <posy>0</posy>
@@ -152,7 +152,7 @@
                     <!-- ITEM LAYOUT ########################################## -->
                     <itemlayout height="76">
                         <control type="group">
-                            <visible>IsEmpty(ListItem.Property(is.header))</visible>
+                            <visible>String.IsEmpty(ListItem.Property(is.header))</visible>
                             <posx>120</posx>
                             <posy>24</posy>
                             <control type="label">
@@ -203,7 +203,7 @@
                                 <label>[B]$INFO[ListItem.Property(track.duration)][/B]</label>
                             </control>
                             <control type="image">
-                                <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                <visible>String.IsEmpty(ListItem.Property(is.footer))</visible>
                                 <posx>0</posx>
                                 <posy>73</posy>
                                 <width>930</width>
@@ -214,7 +214,7 @@
                         </control>
 
                         <control type="label">
-                            <visible>!IsEmpty(ListItem.Property(is.header))</visible>
+                            <visible>!String.IsEmpty(ListItem.Property(is.header))</visible>
                             <posx>120</posx>
                             <posy>24</posy>
                             <width>400</width>
@@ -231,7 +231,7 @@
                     <!-- FOCUSED LAYOUT ####################################### -->
                     <focusedlayout height="76">
                         <control type="group">
-                            <visible>IsEmpty(ListItem.Property(is.header))</visible>
+                            <visible>String.IsEmpty(ListItem.Property(is.header))</visible>
                             <control type="group">
                                 <visible>!Control.HasFocus(101)</visible>
                                 <posx>120</posx>
@@ -284,7 +284,7 @@
                                     <label>[B]$INFO[ListItem.Property(track.duration)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>IsEmpty(ListItem.Property(is.footer))</visible>
+                                    <visible>String.IsEmpty(ListItem.Property(is.footer))</visible>
                                     <posx>0</posx>
                                     <posy>73</posy>
                                     <width>930</width>
@@ -364,7 +364,7 @@
                         </control>
 
                         <control type="label">
-                            <visible>!IsEmpty(ListItem.Property(is.header))</visible>
+                            <visible>!String.IsEmpty(ListItem.Property(is.header))</visible>
                             <posx>120</posx>
                             <posy>24</posy>
                             <width>400</width>
@@ -586,9 +586,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

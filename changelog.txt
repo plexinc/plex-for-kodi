@@ -11,6 +11,9 @@ Improve centering over label backgrounds on pre-play screens
 Fix some spots where tokens could still be logged
 Play correct track when playing a multi-disc album (Issue #148)
 Improve headers for better identification in 'Now Playing' and future server profile
+Updated German language strings (thanks to coffinbearer)
+Fix French translations file (thanks to coffinbearer)
+Fix some Hungarian translations (thanks to vampywiz17)
 
 [- 0.1.3 -]
 
@@ -40,7 +43,7 @@ Add ability to view episodes/albums in library view
 Add German translation (thanks to coffinbearer)
 Add Czech translation (thanks to Pavuucek)
 Add Hungarian translation (thanks to vampywiz17)
-Add Frensh translation (thanks to raffoul/rlimbach)
+Add French translation (thanks to raffoul/rlimbach)
 Fix issue #64 (multi part movies won't playback)
 Improve timeline reporting
 Friendly name now includes hostname to differentiate Kodi devices

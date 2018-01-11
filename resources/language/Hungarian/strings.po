@@ -244,7 +244,7 @@ msgstr "Engedélyezze ezt, ha a hardver képes a HEVC/h265 lejátszásra. Kapcso
 
 msgctxt "#32104"
 msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
-msgstr "Mikor kapcsolódhat nem biztonságos kapcsolatokon keresztül a szerverekhez.[CR][CR]* [B]Soha/B]: Soha ne kapcsolódjon[CR]* [B]Azonos hálózat[/B]: Azonos hálózat esetén engedélyezze"[CR]* [B]Mindig[/B]: Engedélyezze azonos hálózat és távoli kapcsolat esetén is"
+msgstr "Mikor kapcsolódhat nem biztonságosan a szerverekhez.[CR][CR]* [B]Soha[/B]: Soha ne kapcsolódjon[CR]* [B]Azonos hálózat[/B]: Azonos hálózat esetén engedélyezze[CR]* [B]Mindig[/B]: Engedélyezze helyi és távoli kapcsolat esetén is"
 
 
 msgctxt "#32201"
@@ -829,7 +829,7 @@ msgstr "Space"
 
 msgctxt "#32433"
 msgid "Clear"
-msgstr "Törlés"
+msgstr "Törlés mind"
 
 msgctxt "#32434"
 msgid "Searching..."

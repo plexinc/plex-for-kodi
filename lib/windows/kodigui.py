@@ -781,6 +781,7 @@ class SafeControlEdit(object):
         self._keyCallback = key_callback
         self.grabFocus = grab_focus
         self._text = ''
+        self._compatibleMode = False
         self.setup()
 
     def setup(self):
@@ -788,6 +789,9 @@ class SafeControlEdit(object):
         self._winOnAction = self._win.onAction
         self._win.onAction = self.onAction
         self.updateLabel()
+
+    def setCompatibleMode(self, on):
+        self._compatibleMode = on
 
     def onAction(self, action):
         try:
@@ -805,6 +809,16 @@ class SafeControlEdit(object):
         self._winOnAction(action)
 
     def processAction(self, action_id):
+        if not self._compatibleMode:
+            self._text = self._win.getControl(self.controlID).getText()
+
+            if self._keyCallback:
+                self._keyCallback()
+
+            self. updateLabel()
+
+            return True
+
         if 61793 <= action_id <= 61818:  # Lowercase
             self.processChar(self.CHARS_LOWER[action_id - 61793])
         elif 61761 <= action_id <= 61786:  # Uppercase
@@ -834,8 +848,6 @@ class SafeControlEdit(object):
             self.processChar(self.CHARS_NUMBERS[action_id - 61552])
         elif action_id == 61472:  # Space
             self.processChar(' ')
-        # elif action_id == 61448:
-        #     self.delete()
         else:
             return False
 
@@ -844,27 +856,36 @@ class SafeControlEdit(object):
 
         return True
 
+    def _setText(self, text):
+        self._text = text
+
+        if not self._compatibleMode:
+            self._win.getControl(self.controlID).setText(text)
+        self.updateLabel()
+
+    def _getText(self):
+        if not self._compatibleMode and self._win.getFocusId() == self.controlID:
+            return self._win.getControl(self.controlID).getText()
+        else:
+            return self._text
+
     def updateLabel(self):
-        self._labelControl.setLabel(self._text + self.CURSOR)
+        self._labelControl.setLabel(self._getText() + self.CURSOR)
 
     def processChar(self, char):
-        self._text += char
-        self.updateLabel()
+        self._setText(self.getText() + char)
 
     def setText(self, text):
-        self._text = text
-        self.updateLabel()
+        self._setText(text)
 
     def getText(self):
-        return self._text
+        return self._getText()
 
     def append(self, text):
-        self._text += text
-        self.updateLabel()
+        self._setText(self.getText() + text)
 
     def delete(self):
-        self._text = self._text[:-1]
-        self.updateLabel()
+        self._setText(self.getText()[:-1])
 
 
 class PropertyTimer():

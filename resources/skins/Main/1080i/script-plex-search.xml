@@ -403,7 +403,6 @@
                     <texture colordiffuse="FF000000">script.plex/white-square.png</texture>
                 </control>
                 <control type="edit" id="650">
-                    <description>My First edit control</description>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>459</width>
@@ -417,7 +416,7 @@
                     <label> </label>
                     <hinttext> </hinttext>
                     <font>font13</font>
-                    <textoffsetx>0</textoffsetx>
+                    <textoffsetx>30</textoffsetx>
                     <texturefocus border="10">script.plex/home/selected.png</texturefocus>
                     <texturenofocus>-</texturenofocus>
                     <pulseonselect>no</pulseonselect>

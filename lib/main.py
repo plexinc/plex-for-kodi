@@ -78,16 +78,24 @@ def _main():
                         util.DEBUG_LOG('Main: User selected')
 
                     try:
-                        done = plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=11)
-                        if not plexapp.SERVERMANAGER.selectedServer:
+                        selectedServer = plexapp.SERVERMANAGER.selectedServer
+
+                        if not selectedServer:
+                            background.setBusy()
                             util.DEBUG_LOG('Main: Waiting for selected server...')
                             try:
-                                background.setBusy()
-                                done.wait()
+                                for timeout, skip_preferred, skip_owned in ((10, True, False), (10, True, True)):
+                                    plex.CallbackEvent(plexapp.APP, 'change:selectedServer', timeout=timeout).wait()
+
+                                    selectedServer = plexapp.SERVERMANAGER.checkSelectedServerSearch(skip_preferred=skip_preferred, skip_owned=skip_owned)
+                                    if selectedServer:
+                                        break
+                                else:
+                                    util.DEBUG_LOG('Main: Finished waiting for selected server...')
                             finally:
                                 background.setBusy(False)
 
-                        util.DEBUG_LOG('Main: STARTING WITH SERVER: {0}'.format(plexapp.SERVERMANAGER.selectedServer))
+                        util.DEBUG_LOG('Main: STARTING WITH SERVER: {0}'.format(selectedServer))
 
                         windowutils.HOME = home.HomeWindow.open()
                         util.CRON.cancelReceiver(windowutils.HOME)

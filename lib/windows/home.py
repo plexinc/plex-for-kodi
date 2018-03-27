@@ -516,7 +516,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         if not control.size():
             idx = self.hubFocusIndexes[hubControlID - 400]
-            while idx > -1:
+            while idx > 0:
                 idx -= 1
                 controlID = 400 + self.hubFocusIndexes.index(idx)
                 control = self.hubControls[self.hubFocusIndexes.index(idx)]

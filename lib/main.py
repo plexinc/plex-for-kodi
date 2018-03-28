@@ -45,10 +45,14 @@ def signout():
 
 def main():
     global BACKGROUND
-    with util.Cron(1):
-        BACKGROUND = background.BackgroundWindow.create(function=_main)
-        BACKGROUND.modal()
-        del BACKGROUND
+    util.setGlobalProperty('running', '1')
+    try:
+        with util.Cron(1):
+            BACKGROUND = background.BackgroundWindow.create(function=_main)
+            BACKGROUND.modal()
+            del BACKGROUND
+    finally:
+        util.setGlobalProperty('running', '')
 
 
 def _main():

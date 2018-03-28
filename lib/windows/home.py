@@ -139,20 +139,39 @@ class ServerListItem(kodigui.ManagedListItem):
         self.dataSource.on('started:reachability', self.onUpdate)
         return self
 
+    def safeSetProperty(self, key, value):
+        # For if we catch the item in the middle of being removed
+        try:
+            self.setProperty(key, value)
+            return True
+        except AttributeError:
+            pass
+
+        return False
+
+    def safeSetLabel(self, value):
+        try:
+            self.setLabel(value)
+            return True
+        except AttributeError:
+            pass
+
+        return False
+
     def onUpdate(self, **kwargs):
         if not self.listItem:  # ex. can happen on Kodi shutdown
             return
 
         if not self.dataSource.isSupported or not self.dataSource.isReachable():
             if self.dataSource.pendingReachabilityRequests > 0:
-                self.setProperty('status', 'refreshing.gif')
+                self.safeSetProperty('status', 'refreshing.gif')
             else:
-                self.setProperty('status', 'unreachable.png')
+                self.safeSetProperty('status', 'unreachable.png')
         else:
-            self.setProperty('status', self.dataSource.isSecure and 'secure.png' or '')
+            self.safeSetProperty('status', self.dataSource.isSecure and 'secure.png' or '')
 
-        self.setProperty('current', plexapp.SERVERMANAGER.selectedServer == self.dataSource and '1' or '')
-        self.setLabel(self.dataSource.name)
+        self.safeSetProperty('current', plexapp.SERVERMANAGER.selectedServer == self.dataSource and '1' or '')
+        self.safeSetLabel(self.dataSource.name)
 
     def onDestroy(self):
         self.dataSource.off('completed:reachability', self.onUpdate)
@@ -455,9 +474,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.checkSectionItem()
 
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(100).HasFocus(0)'):
-            self.setProperty('off.sections', '')
-        elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
-            self.setProperty('off.sections', '1')
+            util.setGlobalBoolProperty('off.sections', '')
+        elif controlID != 250 and xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
+            util.setGlobalBoolProperty('off.sections', '1')
 
     def confirmExit(self):
         button = optionsdialog.show(

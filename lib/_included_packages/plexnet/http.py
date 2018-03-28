@@ -256,7 +256,7 @@ class HttpRequest(object):
 class HttpResponse(object):
     def __init__(self, event):
         self.event = event
-        if self.event:
+        if not self.event is None:
             self.event.content  # force data to be read
             self.event.close()
 
@@ -269,28 +269,28 @@ class HttpResponse(object):
         return not self.isSuccess()
 
     def getStatus(self):
-        if not self.event:
+        if self.event is None:
             return 0
         return self.event.status_code
 
     def getBodyString(self):
-        if not self.event:
+        if self.event is None:
             return ''
         return self.event.text.encode('utf-8')
 
     def getErrorString(self):
-        if not self.event:
+        if self.event is None:
             return ''
         return self.event.reason
 
     def getBodyXml(self):
-        if self.event:
+        if not self.event is None:
             return ElementTree.fromstring(self.getBodyString())
 
         return None
 
     def getResponseHeader(self, name):
-        if not self.event:
+        if self.event is None:
             return None
         return self.event.headers.get(name)
 

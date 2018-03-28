@@ -19,6 +19,8 @@ Fix autostart to work with profiles (thanks to pannal)
 Fix focus loss on home screen due to error (Issue #169)
 Fix "No Servers Found" when preferred server is unavailable (Issue #159)
 Fix system keyboard not working for search (Kodi 17+)(Issue #165)
+Fix issue causing hubs to scroll up when settings were opened
+Fix failure to sign in when signed off externally (Issue #110 & #117)
 
 [- 0.1.3 -]
 

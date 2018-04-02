@@ -235,6 +235,8 @@ class PlexPlayer(object):
             server = self.metadata.transcodeServer or self.item.getServer()
             decisionPath = self.buildTranscode(server, util.AttributeDict(), self.metadata.partIndex, True, False).decisionPath
 
+        util.TEST(decisionPath)
+
         # Modify the decision params based on the transcode url
         if decisionPath:
             if directPlay:
@@ -249,7 +251,7 @@ class PlexPlayer(object):
                 decisionPath = http.addUrlParam(decisionPath, "subtitles=" + subType)
 
             # Global variables for all decisions
-            decisionPath = http.addUrlParam(decisionPath, "mediaBufferSize=50000")
+            decisionPath = http.addUrlParam(decisionPath, "mediaBufferSize=20971") # Kodi default is 20971520 (20MB)
             decisionPath = http.addUrlParam(decisionPath, "hasMDE=1")
             decisionPath = http.addUrlParam(decisionPath, 'X-Plex-Platform=Chrome')
 
@@ -504,6 +506,7 @@ class PlexPlayer(object):
 
         # Build the decision path now that we have build our stream url, and only if the server supports it.
         if server.supportsFeature("streamingBrain"):
+            util.TEST("TEST==========================")
             decisionPath = builder.getRelativeUrl().replace(obj.transcodeEndpoint, self.DECISION_ENDPOINT)
             if decisionPath.startswith(self.DECISION_ENDPOINT):
                 obj.decisionPath = decisionPath

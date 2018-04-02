@@ -281,11 +281,11 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         }
 
         for f, v in features.items():
-            if verlib.suggest_normalized_version(v) <= self.versionNorm:
+            if util.normalizedVersion(v) <= self.versionNorm:
                 self.features[f] = True
 
         appMinVer = plexapp.INTERFACE.getGlobal('minServerVersionArr', '0.0.0.0')
-        self.isSupported = self.isSecondary() or verlib.suggest_normalized_version(appMinVer) <= self.versionNorm
+        self.isSupported = self.isSecondary() or util.normalizedVersion(appMinVer) <= self.versionNorm
 
         util.DEBUG_LOG("Server information updated from reachability check: {0}".format(self))
 

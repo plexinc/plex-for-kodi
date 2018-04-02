@@ -173,9 +173,9 @@ def bitrateToString(bits):
 
 def normalizedVersion(ver):
     try:
-        modv = '.'.join(ver.split('.')[:4]).rsplit('-', 1)[0]  # Clean the version i.e. Turn 1.2.3.4-asdf8 into 1.2.3.4
-        return verlib.suggest_normalized_version(modv)
+        modv = '.'.join(ver.split('.')[:4]).split('-', 1)[0]  # Clean the version i.e. Turn 1.2.3.4-asdf8-ads7f into 1.2.3.4
+        return verlib.NormalizedVersion(verlib.suggest_normalized_version(modv))
     except:
         if ver:
             ERROR()
-        return verlib.suggest_normalized_version('0.0.0')
+        return verlib.NormalizedVersion(verlib.suggest_normalized_version('0.0.0'))

@@ -304,6 +304,10 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackResumed(self):
         self.updateNowPlaying()
+        if self.dialog:
+            self.dialog.onPlaybackResumed()
+
+            util.CRON.forceTick()
         # self.hideOSD()
 
     def onPlayBackStopped(self):
@@ -338,6 +342,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackPaused(self):
         self.updateNowPlaying()
+        if self.dialog:
+            self.dialog.onPlaybackPaused()
 
     def onPlayBackSeek(self, stime, offset):
         if self.seekOnStart:

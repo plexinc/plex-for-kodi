@@ -89,6 +89,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.playlistDialogVisible = False
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
+        self._osd_hide_fast = False
 
     @property
     def player(self):
@@ -564,6 +565,13 @@ class SeekDialog(kodigui.BaseDialog):
 
         self.seekbarControl.setWidth(w)
 
+    def onPlaybackResumed(self):
+        self._osd_hide_fast = True
+        self.tick()
+
+    def onPlaybackPaused(self):
+        self._osd_hide_fast = False
+
     def tick(self, offset=None):
         if not self.initialized:
             return
@@ -572,9 +580,17 @@ class SeekDialog(kodigui.BaseDialog):
             util.DEBUG_LOG('SeekDialog: Possible stuck busy dialog - closing')
             xbmc.executebuiltin('Dialog.Close(busydialog,1)')
 
-        if time.time() > self.timeout and not self.hasDialog:
-            if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding') and not self.playlistDialogVisible:
-                self.hideOSD()
+        if not self.hasDialog and not self.playlistDialogVisible and self.osdVisible():
+            if time.time() > self.timeout:
+                if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding'):
+                    self.hideOSD()
+
+            # try insta-hiding the OSDs when playback was requested
+            elif self._osd_hide_fast:
+                xbmc.executebuiltin('Dialog.Close(videoosd,true)')
+                xbmc.executebuiltin('Dialog.Close(seekbar,true)')
+                if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding'):
+                    self.hideOSD()
 
         try:
             self.offset = offset or int(self.handler.player.getTime() * 1000)
@@ -605,6 +621,7 @@ class SeekDialog(kodigui.BaseDialog):
     def hideOSD(self):
         self.setProperty('show.OSD', '')
         self.setFocusId(self.NO_OSD_BUTTON_ID)
+        self._osd_hide_fast = False
         if self.playlistDialog:
             self.playlistDialog.doClose()
             self.playlistDialogVisible = False

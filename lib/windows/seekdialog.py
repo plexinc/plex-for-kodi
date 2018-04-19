@@ -165,9 +165,9 @@ class SeekDialog(kodigui.BaseDialog):
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
-                    return self.seekForward(10000)
+                    return self.seekForward(30000)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
-                    return self.seekBack(10000)
+                    return self.seekBack(15000)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:

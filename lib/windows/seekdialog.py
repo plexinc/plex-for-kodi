@@ -173,7 +173,7 @@ class SeekDialog(kodigui.BaseDialog):
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
                     return self.seekForward(30000)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
-                    return self.seekBack(15000)
+                    return self.seekBack(10000)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:
@@ -291,7 +291,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.delayedSeek()
 
     def skipBack(self):
-        self.seekBack(15000)
+        self.seekBack(10000)
         self.delayedSeek()
 
     def delayedSeek(self):

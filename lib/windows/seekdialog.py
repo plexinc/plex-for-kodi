@@ -171,7 +171,7 @@ class SeekDialog(kodigui.BaseDialog):
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
-                    return self.seekForward(30000)
+                    return self.seekForward(10000)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
                     return self.seekBack(10000)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
@@ -182,9 +182,15 @@ class SeekDialog(kodigui.BaseDialog):
                 #     self.seekBack(60000)
             elif controlID == self.NO_OSD_BUTTON_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
-                    self.showOSD()
-                    self.setFocusId(self.MAIN_BUTTON_ID)
-                elif action in (
+                    if action == xbmcgui.ACTION_MOVE_RIGHT:
+                        self.seekForward(30000)
+
+                    else:
+                        self.seekBack(10000)
+                    return
+                #     self.showOSD()
+                #     self.setFocusId(self.MAIN_BUTTON_ID)
+                if action in (
                     xbmcgui.ACTION_MOVE_UP,
                     xbmcgui.ACTION_MOVE_DOWN,
                     xbmcgui.ACTION_BIG_STEP_FORWARD,

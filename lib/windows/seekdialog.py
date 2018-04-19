@@ -90,13 +90,21 @@ class SeekDialog(kodigui.BaseDialog):
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
         self._osd_hide_fast = False
+        self._hide_delay = self.HIDE_DELAY
+
+        try:
+            seconds = int(xbmc.getInfoLabel("Skin.String(SkinHelper.AutoCloseVideoOSD)"))
+            if seconds > 0:
+                self._hide_delay = seconds
+        except ValueError:
+            pass
 
     @property
     def player(self):
         return self.handler.player
 
     def resetTimeout(self):
-        self.timeout = time.time() + self.HIDE_DELAY
+        self.timeout = time.time() + self._hide_delay
 
     def trueOffset(self):
         if self.handler.mode == self.handler.MODE_ABSOLUTE:

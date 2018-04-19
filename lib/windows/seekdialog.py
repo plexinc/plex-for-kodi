@@ -63,6 +63,7 @@ class SeekDialog(kodigui.BaseDialog):
     BAR_BOTTOM = 969
 
     HIDE_DELAY = 4  # This uses the Cron tick so is +/- 1 second accurate
+    AUTO_SEEK_DELAY = 2
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
@@ -84,6 +85,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.initialized = False
         self.playlistDialog = None
         self.timeout = None
+        self.auto_seek_timeout = None
         self.hasDialog = False
         self.lastFocusID = None
         self.playlistDialogVisible = False
@@ -91,6 +93,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._delayedSeekTimeout = 0
         self._osd_hide_fast = False
         self._hide_delay = self.HIDE_DELAY
+        self._auto_seek_delay = self.AUTO_SEEK_DELAY
 
         try:
             seconds = int(xbmc.getInfoLabel("Skin.String(SkinHelper.AutoCloseVideoOSD)"))
@@ -105,6 +108,9 @@ class SeekDialog(kodigui.BaseDialog):
 
     def resetTimeout(self):
         self.timeout = time.time() + self._hide_delay
+
+    def resetAutoSeekTimer(self, value="not_set"):
+        self.auto_seek_timeout = value if value != "not_set" else time.time() + self._auto_seek_delay
 
     def trueOffset(self):
         if self.handler.mode == self.handler.MODE_ABSOLUTE:
@@ -239,6 +245,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onClick(self, controlID):
         if controlID == self.MAIN_BUTTON_ID:
+            self.resetAutoSeekTimer(None)
             self.handler.seek(self.selectedOffset)
         elif controlID == self.NO_OSD_BUTTON_ID:
             self.showOSD()
@@ -284,7 +291,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.delayedSeek()
 
     def skipBack(self):
-        self.seekBack(10000)
+        self.seekBack(15000)
         self.delayedSeek()
 
     def delayedSeek(self):
@@ -492,6 +499,7 @@ class SeekDialog(kodigui.BaseDialog):
 
         self.updateProgress()
         self.setBigSeekShift()
+        self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
 
     def seekBack(self, offset):
@@ -501,6 +509,7 @@ class SeekDialog(kodigui.BaseDialog):
 
         self.updateProgress()
         self.setBigSeekShift()
+        self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
 
     def seekMouse(self, action):
@@ -599,6 +608,10 @@ class SeekDialog(kodigui.BaseDialog):
                 xbmc.executebuiltin('Dialog.Close(seekbar,true)')
                 if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding'):
                     self.hideOSD()
+
+        if self.auto_seek_timeout and time.time() > self.auto_seek_timeout:
+            self.resetAutoSeekTimer(None)
+            self.handler.seek(self.selectedOffset)
 
         try:
             self.offset = offset or int(self.handler.player.getTime() * 1000)

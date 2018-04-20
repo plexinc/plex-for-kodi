@@ -64,6 +64,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     HIDE_DELAY = 4  # This uses the Cron tick so is +/- 1 second accurate
     AUTO_SEEK_DELAY = 2
+    SKIP_STEPS = {"negative": [-10000], "positive": [30000]}
 
     def __init__(self, *args, **kwargs):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
@@ -94,6 +95,18 @@ class SeekDialog(kodigui.BaseDialog):
         self._osdHideFast = False
         self._hideDelay = self.HIDE_DELAY
         self._autoSeekDelay = self.AUTO_SEEK_DELAY
+        self._atSkipStep = -1
+        self._lastSkipDirection = None
+        self.skipSteps = self.SKIP_STEPS
+        self.useKodiSkipSteps = False
+
+        if self.useKodiSkipSteps:
+            self.skipSteps = {"negative": [], "positive": []}
+            for step in util.kodiSkipSteps:
+                key = "negative" if step < 0 else "positive"
+                self.skipSteps[key].append(step * 1000)
+
+            self.skipSteps["negative"].reverse()
 
         try:
             seconds = int(xbmc.getInfoLabel("Skin.String(SkinHelper.AutoCloseVideoOSD)"))
@@ -171,9 +184,9 @@ class SeekDialog(kodigui.BaseDialog):
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
-                    return self.seekForward(10000, autoSeek=True)
+                    return self.seekEitherDirection(10000, autoSeek=True)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
-                    return self.seekBack(10000, autoSeek=True)
+                    return self.seekEitherDirection(-10000, autoSeek=True)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:
@@ -292,12 +305,27 @@ class SeekDialog(kodigui.BaseDialog):
         finally:
             kodigui.BaseDialog.doClose(self)
 
+    def determineSkipStep(self, direction, reset=False):
+        if reset:
+            self._atSkipStep = -1
+            self._lastSkipDirection = direction
+
+        stepCount = len(self.skipSteps[direction])
+        if stepCount == 1:
+            return self.skipSteps[direction][0]
+
+        self._atSkipStep = min([self._atSkipStep + 1, stepCount - 1])
+        step = self.skipSteps[direction][self._atSkipStep]
+        return step
+
     def skipForward(self):
-        self.seekForward(30000)
+        step = self.determineSkipStep("positive", reset=self._lastSkipDirection != "positive")
+        self.seekEitherDirection(step)
         self.delayedSeek()
 
     def skipBack(self):
-        self.seekBack(10000)
+        step = self.determineSkipStep("negative", reset=self._lastSkipDirection != "negative")
+        self.seekEitherDirection(step)
         self.delayedSeek()
 
     def delayedSeek(self):
@@ -316,6 +344,7 @@ class SeekDialog(kodigui.BaseDialog):
 
             if not xbmc.abortRequested:
                 self.doSeek()
+                self._lastSkipDirection = None
         finally:
             self.setProperty('button.seek', '')
 
@@ -505,21 +534,10 @@ class SeekDialog(kodigui.BaseDialog):
         if state_before_seek == self.player.STATE_PAUSED:
             self.player.control("pause")
 
-    def seekForward(self, offset, autoSeek=False):
+    def seekEitherDirection(self, offset, autoSeek=False):
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
             self.selectedOffset = self.duration
-
-        self.updateProgress()
-        self.setBigSeekShift()
-        if autoSeek:
-            self.resetAutoSeekTimer()
-        self.bigSeekHideTimer.reset()
-
-    def seekBack(self, offset, autoSeek=False):
-        self.selectedOffset -= offset
-        if self.selectedOffset < 0:
-            self.selectedOffset = 0
 
         self.updateProgress()
         self.setBigSeekShift()

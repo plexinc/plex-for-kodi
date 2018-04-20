@@ -354,6 +354,16 @@ def get24hFormat():
 time_format_twentyfour = get24hFormat()
 
 
+def getKodiSkipSteps():
+    try:
+        return rpc.Settings.GetSettingValue(setting="videoplayer.seeksteps")["value"]
+    except:
+        return
+
+
+kodiSkipSteps = getKodiSkipSteps()
+
+
 CRON = None
 
 

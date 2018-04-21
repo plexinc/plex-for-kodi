@@ -949,3 +949,11 @@ msgstr "Künstler(in)"
 msgctxt "#32463"
 msgid "By Artist"
 msgstr "Nach Künstler(in)"
+
+msgctxt "#32464"
+msgid "Player"
+msgstr "Wiedergabe"
+
+msgctxt "#32465"
+msgid "Use skip step settings from Kodi"
+msgstr "Skip-Schritte-Einstellung von Kodi benutzen"

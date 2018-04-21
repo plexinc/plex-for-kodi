@@ -98,7 +98,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._atSkipStep = -1
         self._lastSkipDirection = None
         self.skipSteps = self.SKIP_STEPS
-        self.useKodiSkipSteps = False
+        self.useKodiSkipSteps = util.getSetting('kodi_skip_stepping', False)
 
         if self.useKodiSkipSteps:
             self.skipSteps = {"negative": [], "positive": []}

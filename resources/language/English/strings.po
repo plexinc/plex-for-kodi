@@ -951,3 +951,10 @@ msgctxt "#32463"
 msgid "By Artist"
 msgstr ""
 
+msgctxt "#32464"
+msgid "Player"
+msgstr ""
+
+msgctxt "#32465"
+msgid "Use skip step settings from Kodi"
+msgstr ""

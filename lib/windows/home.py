@@ -367,6 +367,12 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         util.MONITOR.off('changed.watchstatus', self.updateOnDeckHubs)
 
     def tick(self):
+        winID = xbmcgui.getCurrentWindowId()
+        if winID < 13000 and winID not in (12901, 12005, 12002, 12000):
+            util.setGlobalProperty('silent_shutdown', '1')
+            self.doClose()
+            return
+
         if not self.lastSection:
             return
 

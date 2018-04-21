@@ -46,6 +46,7 @@ def signout():
 def main():
     global BACKGROUND
     util.setGlobalProperty('running', '1')
+    util.setGlobalProperty('silent_shutdown', '')
     try:
         with util.Cron(1):
             BACKGROUND = background.BackgroundWindow.create(function=_main)
@@ -53,12 +54,14 @@ def main():
             del BACKGROUND
     finally:
         util.setGlobalProperty('running', '')
+        util.setGlobalProperty('silent_shutdown', '')
 
 
 def _main():
     util.DEBUG_LOG('[ STARTED: {0} -------------------------------------------------------------------- ]'.format(util.ADDON.getAddonInfo('version')))
     util.DEBUG_LOG('USER-AGENT: {0}'.format(plex.defaultUserAgent()))
     background.setSplash()
+    silent_shutdown = False
 
     try:
         while not xbmc.abortRequested:
@@ -102,6 +105,7 @@ def _main():
                         util.DEBUG_LOG('Main: STARTING WITH SERVER: {0}'.format(selectedServer))
 
                         windowutils.HOME = home.HomeWindow.open()
+                        silent_shutdown = util.getGlobalProperty('silent_shutdown') == "1" or False
                         util.CRON.cancelReceiver(windowutils.HOME)
 
                         if not windowutils.HOME.closeOption:
@@ -118,7 +122,8 @@ def _main():
                             plexapp.ACCOUNT.isAuthenticated = False
                     finally:
                         windowutils.shutdownHome()
-                        BACKGROUND.activate()
+                        if not silent_shutdown:
+                            BACKGROUND.activate()
                         gc.collect(2)
 
             else:
@@ -127,15 +132,20 @@ def _main():
         util.ERROR()
     finally:
         util.DEBUG_LOG('Main: SHUTTING DOWN...')
-        background.setShutdown()
+        if silent_shutdown and BACKGROUND:
+            BACKGROUND.doClose()
+
+        if not silent_shutdown:
+            background.setShutdown()
         player.shutdown()
         plexapp.APP.preShutdown()
         util.CRON.stop()
         backgroundthread.BGThreader.shutdown()
         plexapp.APP.shutdown()
         waitForThreads()
-        background.setBusy(False)
-        background.setSplash(False)
+        if not silent_shutdown:
+            background.setBusy(False)
+            background.setSplash(False)
 
         util.DEBUG_LOG('FINISHED')
 

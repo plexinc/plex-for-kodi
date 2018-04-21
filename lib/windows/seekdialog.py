@@ -184,9 +184,9 @@ class SeekDialog(kodigui.BaseDialog):
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
-                    return self.seekEitherDirection(10000, autoSeek=True)
+                    return self.seekEitherDirection(10000, auto_seek=True)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
-                    return self.seekEitherDirection(-10000, autoSeek=True)
+                    return self.seekEitherDirection(-10000, auto_seek=True)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:
@@ -534,7 +534,7 @@ class SeekDialog(kodigui.BaseDialog):
         if state_before_seek == self.player.STATE_PAUSED:
             self.player.control("pause")
 
-    def seekEitherDirection(self, offset, autoSeek=False):
+    def seekEitherDirection(self, offset, auto_seek=False):
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
             self.selectedOffset = self.duration
@@ -543,7 +543,7 @@ class SeekDialog(kodigui.BaseDialog):
 
         self.updateProgress()
         self.setBigSeekShift()
-        if autoSeek:
+        if auto_seek:
             self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
 

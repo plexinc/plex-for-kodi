@@ -345,7 +345,6 @@ class SeekDialog(kodigui.BaseDialog):
 
             if not xbmc.abortRequested:
                 self._lastSkipDirection = None
-                self._seeking = False
                 self.doSeek()
         finally:
             self.setProperty('button.seek', '')
@@ -530,6 +529,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('time.end', time.strftime(_fmt, time.localtime(time.time() + ((self.duration - to) / 1000))).lstrip('0'))
 
     def doSeek(self, offset=None, settings_changed=False):
+        self._seeking = False
         state_before_seek = self.player.playState
         self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
 

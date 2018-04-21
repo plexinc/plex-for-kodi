@@ -604,6 +604,9 @@ class SeekDialog(kodigui.BaseDialog):
 
         ratio = self.selectedOffset / float(self.duration)
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
+
+        current_w = int(self.offset / float(self.duration) * self.SEEK_IMAGE_WIDTH)
+
         bifx = (w - int(ratio * 324)) + self.BAR_X
         # bifx = w
         self.selectionIndicator.setPosition(w, 896)
@@ -618,19 +621,17 @@ class SeekDialog(kodigui.BaseDialog):
             self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(self.selectedOffset))
             self.bifImageControl.setPosition(bifx, 752)
 
-        self.seekbarControl.setWidth(w)
-
         # current seek position below current offset?
         if self.selectedOffset < self.offset:
             self.positionControl.setWidth(w)
+            self.seekbarControl.setWidth(current_w)
 
         # current seek position ahead of current offset
         # (we may have "shortened" the width before, by seeking negatively)
         elif self.selectedOffset > self.offset:
-            ratio = self.offset / float(self.duration)
-            w = int(ratio * self.SEEK_IMAGE_WIDTH)
-            if self.positionControl.getWidth() < w:
-                self.positionControl.setWidth(w)
+            self.seekbarControl.setWidth(w)
+            if self.positionControl.getWidth() < current_w:
+                self.positionControl.setWidth(current_w)
 
     def onPlaybackResumed(self):
         self._osdHideFast = True

@@ -63,7 +63,7 @@ class SeekDialog(kodigui.BaseDialog):
     BAR_BOTTOM = 969
 
     HIDE_DELAY = 4  # This uses the Cron tick so is +/- 1 second accurate
-    AUTO_SEEK_DELAY = 2
+    AUTO_SEEK_DELAY = 1
     SKIP_STEPS = {"negative": [-10000], "positive": [30000]}
 
     def __init__(self, *args, **kwargs):
@@ -90,6 +90,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.hasDialog = False
         self.lastFocusID = None
         self.playlistDialogVisible = False
+        self._seeking = False
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
         self._osdHideFast = False
@@ -343,8 +344,9 @@ class SeekDialog(kodigui.BaseDialog):
                     break
 
             if not xbmc.abortRequested:
-                self.doSeek()
                 self._lastSkipDirection = None
+                self._seeking = False
+                self.doSeek()
         finally:
             self.setProperty('button.seek', '')
 
@@ -535,6 +537,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.player.control("pause")
 
     def seekByOffset(self, offset, auto_seek=False):
+        self._seeking = True
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
             self.selectedOffset = self.duration
@@ -617,6 +620,18 @@ class SeekDialog(kodigui.BaseDialog):
 
         self.seekbarControl.setWidth(w)
 
+        # current seek position below current offset?
+        if self.selectedOffset < self.offset:
+            self.positionControl.setWidth(w)
+
+        # current seek position ahead of current offset
+        # (we may have "shortened" the width before, by seeking negatively)
+        elif self.selectedOffset > self.offset:
+            ratio = self.offset / float(self.duration)
+            w = int(ratio * self.SEEK_IMAGE_WIDTH)
+            if self.positionControl.getWidth() < w:
+                self.positionControl.setWidth(w)
+
     def onPlaybackResumed(self):
         self._osdHideFast = True
         self.tick()
@@ -649,11 +664,13 @@ class SeekDialog(kodigui.BaseDialog):
         except RuntimeError:  # Playback has stopped
             return
 
-        if self.autoSeekTimeout and time.time() > self.autoSeekTimeout and self.offset != self.selectedOffset:
+        if self.autoSeekTimeout and time.time() >= self.autoSeekTimeout and self.offset != self.selectedOffset:
             self.resetAutoSeekTimer(None)
             self.doSeek()
+            return
 
-        self.updateCurrent()
+        if not self._seeking:
+            self.updateCurrent()
 
     def showPlaylistDialog(self):
         if not self.playlistDialog:

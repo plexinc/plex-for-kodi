@@ -105,7 +105,7 @@ def _main():
                         util.DEBUG_LOG('Main: STARTING WITH SERVER: {0}'.format(selectedServer))
 
                         windowutils.HOME = home.HomeWindow.open()
-                        silent_shutdown = util.getGlobalProperty('silent_shutdown') == "1" or False
+                        silent_shutdown = util.getGlobalProperty('silent_shutdown') == "1"
                         util.CRON.cancelReceiver(windowutils.HOME)
 
                         if not windowutils.HOME.closeOption:

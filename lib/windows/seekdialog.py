@@ -538,6 +538,8 @@ class SeekDialog(kodigui.BaseDialog):
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
             self.selectedOffset = self.duration
+        elif self.selectedOffset < 0:
+            self.selectedOffset = 0
 
         self.updateProgress()
         self.setBigSeekShift()

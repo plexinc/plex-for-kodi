@@ -347,6 +347,7 @@ class SeekDialog(kodigui.BaseDialog):
                 self._lastSkipDirection = None
                 self.doSeek()
         finally:
+            self._seeking = False
             self.setProperty('button.seek', '')
 
     def handleDialog(self, func):

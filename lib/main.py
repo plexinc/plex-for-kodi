@@ -1,8 +1,14 @@
+import xbmc
+
+if xbmc.getInfoLabel('Window(10000).Property(script.plex.running)') == "1":
+    command = 'XBMC.NotifyAll({0},{1},{2})'.format('script.plex', 'RESTORE', None)
+    xbmc.executebuiltin(command)
+    raise SystemExit
+
 import gc
 import atexit
 import threading
 
-import xbmc
 import plex
 
 from plexnet import plexapp

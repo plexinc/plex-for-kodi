@@ -17,6 +17,7 @@ class BaseFunctions:
     height = 720
 
     usesGenerate = False
+    lastWinID = None
 
     def __init__(self):
         self.isOpen = True
@@ -92,6 +93,7 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
 
     def onInit(self):
         self._winID = xbmcgui.getCurrentWindowId()
+        BaseFunctions.lastWinID = self._winID
         if self.started:
             self.onReInit()
         else:
@@ -143,9 +145,9 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
 
     def onInit(self):
         self._winID = xbmcgui.getCurrentWindowDialogId()
+        BaseFunctions.lastWinID = self._winID
         if self.started:
             self.onReInit()
-
         else:
             self.started = True
             self.onFirstInit()

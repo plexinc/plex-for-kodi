@@ -8,9 +8,9 @@ import opener
 import windowutils
 
 from lib import util
+from lib.kodijsonrpc import rpc
 
 from plexnet import plexapp
-
 
 class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
     xmlFile = 'script-plex-search.xml'
@@ -189,6 +189,8 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         )
 
         self.edit = kodigui.SafeControlEdit(650, 651, self, key_callback=self.updateFromEdit, grab_focus=True)
+        self.edit.setCompatibleMode(rpc.Application.GetProperties(properties=["version"])["major"] < 17)
+
         self.setProperty('search.section', 'all')
         self.updateQuery()
 

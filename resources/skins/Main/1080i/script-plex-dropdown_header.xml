@@ -18,7 +18,7 @@
         </control>
         <control type="group" id="100">
             <defaultcontrol>250</defaultcontrol>
-            <visible>!IsEmpty(Window.Property(show))</visible>
+            <visible>!String.IsEmpty(Window.Property(show))</visible>
             <posx>0</posx>
             <posy>0</posy>
             <control type="image" id="110">
@@ -29,7 +29,7 @@
                 <texture border="42">script.plex/drop-shadow.png</texture>
             </control>
             <control type="group">
-                <visible>!IsEmpty(Window.Property(header))</visible>
+                <visible>!String.IsEmpty(Window.Property(header))</visible>
                 <posx>-20</posx>
                 <posy>-66</posy>
                 <control type="image" id="111">
@@ -67,7 +67,7 @@
                 <!-- ITEM LAYOUT ########################################## -->
                 <itemlayout height="66">
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(first))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(first))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -75,7 +75,7 @@
                         <texture colordiffuse="FF323232" border="10">script.plex/white-square-top-rounded.png</texture>
                     </control>
                     <control type="image">
-                        <visible>IsEmpty(ListItem.Property(first)) + IsEmpty(ListItem.Property(last)) + IsEmpty(ListItem.Property(only))</visible>
+                        <visible>String.IsEmpty(ListItem.Property(first)) + String.IsEmpty(ListItem.Property(last)) + String.IsEmpty(ListItem.Property(only))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -83,7 +83,7 @@
                         <texture colordiffuse="FF323232">script.plex/white-square.png</texture>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(last))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(last))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -91,7 +91,7 @@
                         <texture flipy="true" colordiffuse="FF323232" border="10">script.plex/white-square-top-rounded.png</texture>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(only))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(only))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -99,7 +99,7 @@
                         <texture colordiffuse="FF323232" border="10">script.plex/white-square-rounded.png</texture>
                     </control>
                     <control type="label">
-                        <visible>IsEmpty(ListItem.Property(with.indicator))</visible>
+                        <visible>String.IsEmpty(ListItem.Property(with.indicator))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -111,7 +111,7 @@
                         <label>$INFO[ListItem.Label]</label>
                     </control>
                     <control type="group">
-                        <visible>!IsEmpty(ListItem.Property(with.indicator))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(with.indicator))</visible>
                         <control type="label">
                             <posx>60</posx>
                             <posy>0</posy>
@@ -133,7 +133,7 @@
                         </control>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(separator))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(separator))</visible>
                         <posx>0</posx>
                         <posy>64</posy>
                         <width>600</width>
@@ -143,7 +143,7 @@
                 </itemlayout>
                 <focusedlayout height="66">
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(first))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(first))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -151,7 +151,7 @@
                         <texture colordiffuse="FFE5A00D" border="10">script.plex/white-square-top-rounded.png</texture>
                     </control>
                     <control type="image">
-                        <visible>IsEmpty(ListItem.Property(first)) + IsEmpty(ListItem.Property(last)) + IsEmpty(ListItem.Property(only))</visible>
+                        <visible>String.IsEmpty(ListItem.Property(first)) + String.IsEmpty(ListItem.Property(last)) + String.IsEmpty(ListItem.Property(only))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -159,7 +159,7 @@
                         <texture colordiffuse="FFE5A00D">script.plex/white-square.png</texture>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(last))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(last))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -167,7 +167,7 @@
                         <texture flipy="true" colordiffuse="FFE5A00D" border="10">script.plex/white-square-top-rounded.png</texture>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(only))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(only))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -175,7 +175,7 @@
                         <texture colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texture>
                     </control>
                     <control type="label">
-                        <visible>IsEmpty(ListItem.Property(with.indicator))</visible>
+                        <visible>String.IsEmpty(ListItem.Property(with.indicator))</visible>
                         <posx>0</posx>
                         <posy>0</posy>
                         <width>600</width>
@@ -187,7 +187,7 @@
                         <label>$INFO[ListItem.Label]</label>
                     </control>
                     <control type="group">
-                        <visible>!IsEmpty(ListItem.Property(with.indicator))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(with.indicator))</visible>
                         <control type="label">
                             <posx>60</posx>
                             <posy>0</posy>
@@ -209,7 +209,7 @@
                         </control>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(ListItem.Property(separator))</visible>
+                        <visible>!String.IsEmpty(ListItem.Property(separator))</visible>
                         <posx>0</posx>
                         <posy>64</posy>
                         <width>600</width>

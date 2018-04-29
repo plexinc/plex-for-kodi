@@ -50,24 +50,25 @@ class MyPlexManager(object):
             response.parseFakeXMLResponse(data)
             util.DEBUG_LOG("Using cached resources")
 
-        for resource in response.container:
-            util.DEBUG_LOG(
-                "Parsed resource from plex.tv: type:{0} clientIdentifier:{1} name:{2} product:{3} provides:{4}".format(
-                    resource.type,
-                    resource.clientIdentifier,
-                    resource.name.encode('utf-8'),
-                    resource.product.encode('utf-8'),
-                    resource.provides.encode('utf-8')
+        if response.container:
+            for resource in response.container:
+                util.DEBUG_LOG(
+                    "Parsed resource from plex.tv: type:{0} clientIdentifier:{1} name:{2} product:{3} provides:{4}".format(
+                        resource.type,
+                        resource.clientIdentifier,
+                        resource.name.encode('utf-8'),
+                        resource.product.encode('utf-8'),
+                        resource.provides.encode('utf-8')
+                    )
                 )
-            )
 
-            for conn in resource.connections:
-                util.DEBUG_LOG('  {0}'.format(conn))
+                for conn in resource.connections:
+                    util.DEBUG_LOG('  {0}'.format(conn))
 
-            if 'server' in resource.provides:
-                server = plexserver.createPlexServerForResource(resource)
-                util.DEBUG_LOG('  {0}'.format(server))
-                servers.append(server)
+                if 'server' in resource.provides:
+                    server = plexserver.createPlexServerForResource(resource)
+                    util.DEBUG_LOG('  {0}'.format(server))
+                    servers.append(server)
 
         plexapp.SERVERMANAGER.updateFromConnectionType(servers, plexconnection.PlexConnection.SOURCE_MYPLEX)
 

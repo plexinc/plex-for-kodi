@@ -26,17 +26,17 @@
         </control>
 
         <control type="group" id="50">
-            <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras))">Conditional</animation>
+            <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras))">Conditional</animation>
 
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),0) + Control.IsVisible(500)" reversible="true">
                 <effect type="slide" end="0,-500" time="200" tween="quadratic" easing="out"/>
             </animation>
 
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),1) + Control.IsVisible(501)" reversible="true">
                 <effect type="slide" end="0,-360" time="200" tween="quadratic" easing="out"/>
             </animation>
 
-            <animation type="Conditional" condition="IntegerGreaterThan(Window.Property(hub.focus),2) + Control.IsVisible(502)" reversible="true">
+            <animation type="Conditional" condition="Integer.IsGreater(Window.Property(hub.focus),2) + Control.IsVisible(502)" reversible="true">
                 <effect type="slide" end="0,-500" time="200" tween="quadratic" easing="out"/>
             </animation>
 
@@ -157,7 +157,7 @@
                         <label>$INFO[Window.Property(duration)]$INFO[Window.Property(info), &#8226; ]$INFO[Window.Property(date), &#8226; ]$INFO[Window.Property(content.rating), &#8226; ]</label>
                     </control>
                     <control type="label">
-                        <visible>!IsEmpty(Window.Property(rating.stars))</visible>
+                        <visible>!String.IsEmpty(Window.Property(rating.stars))</visible>
                         <width>auto</width>
                         <height>30</height>
                         <font>font12</font>
@@ -166,7 +166,7 @@
                         <label> &#8226; </label>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(Window.Property(rating.stars))</visible>
+                        <visible>!String.IsEmpty(Window.Property(rating.stars))</visible>
                         <posy>4</posy>
                         <width>134</width>
                         <height>22</height>
@@ -175,7 +175,7 @@
                 </control>
 
                 <control type="grouplist">
-                    <visible>!IsEmpty(Window.Property(rating))</visible>
+                    <visible>!String.IsEmpty(Window.Property(rating))</visible>
                     <posx>1660</posx>
                     <posy>70</posy>
                     <width>200</width>
@@ -200,7 +200,7 @@
                         <label>$INFO[Window.Property(rating)]</label>
                     </control>
                     <control type="image">
-                        <visible>!IsEmpty(Window.Property(rating2))</visible>
+                        <visible>!String.IsEmpty(Window.Property(rating2))</visible>
                         <posy>2</posy>
                         <width>63</width>
                         <height>30</height>
@@ -208,7 +208,7 @@
                         <aspectratio align="right">keep</aspectratio>
                     </control>
                     <control type="label">
-                        <visible>!IsEmpty(Window.Property(rating2))</visible>
+                        <visible>!String.IsEmpty(Window.Property(rating2))</visible>
                         <width>auto</width>
                         <height>30</height>
                         <font>font12</font>
@@ -220,7 +220,7 @@
 
 
                 <control type="label">
-                    <visible>!IsEmpty(Window.Property(directors))</visible>
+                    <visible>!String.IsEmpty(Window.Property(directors))</visible>
                     <posx>466</posx>
                     <posy>130</posy>
                     <width>1360</width>
@@ -231,7 +231,7 @@
                     <label>$INFO[Window.Property(directors)]</label>
                 </control>
                 <control type="label">
-                    <visible>!IsEmpty(Window.Property(writers))</visible>
+                    <visible>!String.IsEmpty(Window.Property(writers))</visible>
                     <posx>466</posx>
                     <posy>165</posy>
                     <width>1360</width>
@@ -273,7 +273,7 @@
                         <label>$INFO[Window.Property(audio)]</label>
                     </control>
                     <control type="button">
-                        <visible>!IsEmpty(Window.Property(subtitles))</visible>
+                        <visible>!String.IsEmpty(Window.Property(subtitles))</visible>
                         <left>30</left>
                         <width>auto</width>
                         <height>30</height>
@@ -288,7 +288,7 @@
                         <label>SUBTITLES</label>
                     </control>
                     <control type="label">
-                        <visible>!IsEmpty(Window.Property(subtitles))</visible>
+                        <visible>!String.IsEmpty(Window.Property(subtitles))</visible>
                         <width>auto</width>
                         <height>30</height>
                         <font>font12</font>
@@ -348,7 +348,7 @@
                 <itemgap>0</itemgap>
 
                 <control type="group" id="500">
-                    <visible>IntegerGreaterThan(Container(400).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                    <visible>Integer.IsGreater(Container(400).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                     <height>360</height>
                     <width>1920</width>
                     <control type="image">
@@ -393,7 +393,7 @@
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                         <control type="image">
                                             <posx>113</posx>
                                             <posy>0</posy>
@@ -474,7 +474,7 @@
                                             <aspectratio>scale</aspectratio>
                                         </control>
                                         <control type="group">
-                                            <visible>!IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
                                             <control type="image">
                                                 <posx>113</posx>
                                                 <posy>0</posy>
@@ -530,7 +530,7 @@
                 </control>
 
                 <control type="group" id="501">
-                    <visible>IntegerGreaterThan(Container(401).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                    <visible>Integer.IsGreater(Container(401).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                     <height>360</height>
                     <width>1920</width>
                     <control type="label">
@@ -681,12 +681,12 @@
                 </control>
 
                 <control type="group" id="502">
-                    <visible>IntegerGreaterThan(Container(402).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                    <visible>Integer.IsGreater(Container(402).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                     <defaultcontrol>402</defaultcontrol>
                     <width>1920</width>
                     <height>520</height>
                     <control type="image">
-                        <visible>!IsEmpty(Window.Property(divider.402))</visible>
+                        <visible>!String.IsEmpty(Window.Property(divider.402))</visible>
                         <posx>60</posx>
                         <posy>0</posy>
                         <width>1800</width>
@@ -739,7 +739,7 @@
                                         <aspectratio>scale</aspectratio>
                                     </control>
                                     <control type="group">
-                                        <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                        <visible>!String.IsEmpty(ListItem.Property(progress))</visible>
                                         <posx>0</posx>
                                         <posy>351</posy>
                                         <control type="image">
@@ -811,7 +811,7 @@
                                             <aspectratio>scale</aspectratio>
                                         </control>
                                         <control type="group">
-                                            <visible>!IsEmpty(ListItem.Property(progress))</visible>
+                                            <visible>!String.IsEmpty(ListItem.Property(progress))</visible>
                                             <posx>0</posx>
                                             <posy>351</posy>
                                             <control type="image">
@@ -858,12 +858,12 @@
                 </control>
 
                 <control type="group" id="503">
-                    <visible>IntegerGreaterThan(Container(403).NumItems,0) + IsEmpty(Window.Property(drawing))</visible>
+                    <visible>Integer.IsGreater(Container(403).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
                     <defaultcontrol>403</defaultcontrol>
                     <width>1920</width>
                     <height>410</height>
                     <control type="image">
-                        <visible>!IsEmpty(Window.Property(divider.403))</visible>
+                        <visible>!String.IsEmpty(Window.Property(divider.403))</visible>
                         <posx>60</posx>
                         <posy>20</posy>
                         <width>1800</width>
@@ -993,7 +993,7 @@
         </control>
 
         <control type="group" id="200">
-            <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!IsEmpty(Window.Property(on.extras)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
+            <animation effect="slide" end="0,-300" time="200" tween="quadratic" easing="out" condition="!String.IsEmpty(Window.Property(on.extras)) + !ControlGroup(200).HasFocus(0)">Conditional</animation>
             <defaultcontrol always="true">201</defaultcontrol>
             <posx>0</posx>
             <posy>0</posy>
@@ -1001,7 +1001,7 @@
             <height>135</height>
             <control type="image">
                 <animation effect="fade" start="0" end="100" time="200" tween="quadratic" easing="out" reversible="true">VisibleChange</animation>
-                <visible>ControlGroup(200).HasFocus(0) + !IsEmpty(Window.Property(on.extras))</visible>
+                <visible>ControlGroup(200).HasFocus(0) + !String.IsEmpty(Window.Property(on.extras))</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>1920</width>
@@ -1171,9 +1171,9 @@
         </control>
 
         <control type="group">
-            <visible>!IsEmpty(Window.Property(search.dialog))</visible>
+            <visible>!String.IsEmpty(Window.Property(search.dialog))</visible>
             <control type="group" >
-                <visible>!IsEmpty(Window.Property(search.dialog.hasresults))</visible>
+                <visible>!String.IsEmpty(Window.Property(search.dialog.hasresults))</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>

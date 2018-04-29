@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.plex"
        name="Plex"
-       version="0.1.3"
+       version="0.1.4"
        provider-name="Plex">
     <requires>
-        <import addon="xbmc.python" version="2.24.0"/>
+        <import addon="xbmc.python" version="2.25.0"/>
         <import addon="script.module.requests" version="2.3.0"/>
     </requires>
     <extension point="xbmc.python.script" library="default.py">
@@ -13,19 +13,44 @@
     <extension point="xbmc.python.pluginsource" library="plugin.py">
         <provides>executable</provides>
     </extension>
-    <extension point="xbmc.service" library="service.py" start="startup"></extension>
+    <extension point="xbmc.service" library="service.py" start="login"></extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plex for Kodi</summary>
         <summary lang="de">Plex für Kodi</summary>
         <summary lang="hu">Plex for Kodi</summary>
+        <summary lang="ru">Plex for Kodi</summary>
         <description lang="en">Official Plex for Kodi add-on</description>
         <description lang="de">Offizielles Plex für Kodi Addon</description>
         <description lang="hu">Hivatalos Plex for Kodi add-on</description>
         <description lang="fr">Add-on Officiel Plex pour Kodi</description>
+        <description lang="ru">Официальный аддон Plex for Kodi</description>
         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
         <forum>https://forums.plex.tv/categories/plex-for-kodi</forum>
         <website>https://www.plex.tv</website>
         <source>https://github.com/plexinc/plex-for-kodi</source>
         <platform>all</platform>
+        <news>
+Kodi v18: Fix skin compatability issues
+Kodi v18: Fix incompatibility with requests module update
+Kodi v18: Fix issue with playback not resuming properly when direct playing
+Kodi v18: Fix issue with progress bar not moving on music player/music playlist screens
+Fix album display on artist screen
+Fix bug causing failure to show audio player when clicking the mini player from some screens
+Show original artist when available (Issue #143)
+Improve centering over label backgrounds on pre-play screens
+Fix some spots where tokens could still be logged
+Play correct track when playing a multi-disc album (Issue #148)
+Improve headers for better identification in 'Now Playing' and future server profile
+Updated German language strings (thanks to coffinbearer)
+Fix French translations file (thanks to coffinbearer)
+Fix some Hungarian translations (thanks to vampywiz17)
+Add Russion translations (thanks to shady2k)
+Fix autostart to work with profiles (thanks to pannal)
+Fix focus loss on home screen due to error (Issue #169)
+Fix "No Servers Found" when preferred server is unavailable (Issue #159)
+Fix system keyboard not working for search (Kodi 17+)(Issue #165)
+Fix issue causing hubs to scroll up when settings were opened
+Fix failure to sign in when signed off externally (Issue #110, #117)
+        </news>
     </extension>
 </addon>

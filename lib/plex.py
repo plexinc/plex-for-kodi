@@ -63,19 +63,18 @@ def defaultUserAgent():
                      '%s/%s' % (_implementation, _implementation_version),
                      '%s/%s' % (p_system, p_release)])
 
-
 class PlexInterface(plexapp.AppInterface):
     _regs = {
         None: {},
     }
     _globals = {
-        'platform': platform.uname()[0],
+        'platform': 'Kodi',
         'appVersionStr': util.ADDON.getAddonInfo('version'),
         'clientIdentifier': CLIENT_ID,
-        'platformVersion': platform.uname()[2],
+        'platformVersion': xbmc.getInfoLabel('System.BuildVersion'),
         'product': 'Plex for Kodi',
         'provides': 'player',
-        'device': plexapp._platform,
+        'device': util.getPlatform() or plexapp.PLATFORM,
         'model': 'Unknown',
         'friendlyName': 'Kodi Add-on ({0})'.format(platform.node()),
         'supports1080p60': True,

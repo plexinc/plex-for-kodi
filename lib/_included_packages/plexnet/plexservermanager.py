@@ -238,8 +238,10 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         # See if we should settle for the best we've found so far.
         self.checkSelectedServerSearch()
 
-    def checkSelectedServerSearch(self):
-        if not self.selectedServer and self.searchContext:
+    def checkSelectedServerSearch(self, skip_preferred=False, skip_owned=False):
+        if self.selectedServer:
+            return self.selectedServer
+        elif self.searchContext:
             # If we're still waiting on the resources response then there's no
             # reason to settle, so don't even iterate over our servers.
 
@@ -252,34 +254,42 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             waitingForAnything = False
             waitingToTestAll = bool(self.deferReachabilityTimer)
 
-            # Iterate over all our servers and see if we're waiting on any results
-            servers = self.getServers()
-            pendingCount = 0
-            for server in servers:
-                if server.pendingReachabilityRequests > 0:
-                    pendingCount = pendingCount + server.pendingReachabilityRequests
-                    if server.uuid == self.searchContext.preferredServer:
-                        waitingForPreferred = True
-                    elif server.owned:
-                        waitingForOwned = True
-                    else:
-                        waitingForAnything = True
+            if skip_preferred:
+                self.searchContext.preferredServer = None
+                if self.deferReachabilityTimer:
+                    self.deferReachabilityTimer.cancel()
+                    self.deferReachabilityTimer = None
 
-            pendingString = "{0} pending reachability tests".format(pendingCount)
+            if not skip_owned:
+                # Iterate over all our servers and see if we're waiting on any results
+                servers = self.getServers()
+                pendingCount = 0
+                for server in servers:
+                    if server.pendingReachabilityRequests > 0:
+                        pendingCount += server.pendingReachabilityRequests
+                        if server.uuid == self.searchContext.preferredServer:
+                            waitingForPreferred = True
+                        elif server.owned:
+                            waitingForOwned = True
+                        else:
+                            waitingForAnything = True
+
+                pendingString = "{0} pending reachability tests".format(pendingCount)
 
             if waitingForPreferred:
                 util.LOG("Still waiting for preferred server: " + pendingString)
+            elif waitingToTestAll:
+                util.LOG("Preferred server not reachable, testing all servers now")
+                self.updateReachability(True, False, False)
             elif waitingForOwned and (not self.searchContext.bestServer or not self.searchContext.bestServer.owned):
                 util.LOG("Still waiting for an owned server: " + pendingString)
             elif waitingForAnything and not self.searchContext.bestServer:
                 util.LOG("Still waiting for any server: {0}".format(pendingString))
-            elif waitingToTestAll:
-                util.LOG("Preferred server not reachable, testing all servers now")
-                self.updateReachability(True, False, False)
             else:
                 # No hope for anything better, let's select what we found
                 util.LOG("Settling for the best server we found")
                 self.setSelectedServer(self.searchContext.bestServer or self.searchContext.fallbackServer, True)
+                return self.selectedServer
 
     def compareServers(self, first, second):
         if not first or not first.isSupported:

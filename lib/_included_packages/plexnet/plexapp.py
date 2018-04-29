@@ -18,6 +18,7 @@ MANAGER = None
 SERVERMANAGER = None
 ACCOUNT = None
 
+PLATFORM = util.X_PLEX_DEVICE
 
 def init():
     global MANAGER, SERVERMANAGER, ACCOUNT
@@ -124,15 +125,6 @@ class App(signalsmixin.SignalsMixin):
                 timer.join()
 
             util.DEBUG_LOG('Waiting for App() timers: Finished')
-
-
-try:
-    _platform = platform.platform()
-except:
-    try:
-        _platform = platform.platform(terse=True)
-    except:
-        _platform = sys.platform
 
 
 class DeviceInfo(object):

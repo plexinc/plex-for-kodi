@@ -8,7 +8,7 @@
     <!-- <zorder>101</zorder> -->
     <controls>
         <control type="group">
-            <visible>!IsEmpty(Window.Property(via.OSD))</visible>
+            <visible>!String.IsEmpty(Window.Property(via.OSD))</visible>
             <animation effect="fade" start="100" end="0">Hidden</animation>
             <posx>0</posx>
             <posy>0</posy>

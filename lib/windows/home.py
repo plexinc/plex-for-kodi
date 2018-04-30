@@ -303,6 +303,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.updateHubs = {}
         windowutils.HOME = self
 
+        util.setGlobalBoolProperty('off.sections', '')
+
     def onFirstInit(self):
         self.sectionList = kodigui.ManagedControlList(self, self.SECTION_LIST_ID, 7)
         self.serverList = kodigui.ManagedControlList(self, self.SERVER_LIST_ID, 10)

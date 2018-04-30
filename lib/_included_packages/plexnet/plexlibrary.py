@@ -179,7 +179,11 @@ class LibrarySection(plexobjects.PlexObject):
         if args:
             path += util.joinArgs(args)
 
-        return plexobjects.listItems(self.server, path, bytag=True)
+        try:
+            return plexobjects.listItems(self.server, path, bytag=True)
+        except exceptions.BadRequest:
+            util.ERROR('jumpList() request error for path: {0}'.format(repr(path)))
+            return None
 
     @property
     def onDeck(self):

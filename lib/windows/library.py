@@ -1278,6 +1278,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                     self.setBoolProperty('no.content.filtered', True)
                 else:
                     self.setBoolProperty('no.content', True)
+
+                if jumpList is None:
+                    util.messageDialog("Error", "There was an error.")
+
                 return
 
             for kidx, ji in enumerate(jumpList):

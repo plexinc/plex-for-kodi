@@ -5,6 +5,7 @@ In progress watched items had the 'Mark unwatched' option instead of 'Mark watch
 Fix an issue causing the home window to start slightly scrolled down if it was closed scolled down
 Fix an issue causing an error when sort was sort was "BY UNWATCHED" and the filtering "UNWATCHED" (Issue #187)
 Fix issue with letter shortcuts sometimes being shown/not shown incorrectly
+Fix a bug causing crash and reboot on startup on Raspberry Pi (LibreElec specific?) - Reverts "Fix autostart to work with profiles"
 
 [- 0.1.4 -]
 

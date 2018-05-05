@@ -414,6 +414,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.lock = threading.Lock()
 
     def reset(self):
+        util.setGlobalProperty('sort', '')
         self.filterUnwatched = self.librarySettings.getSetting('filter.unwatched', False)
         if ITEM_TYPE == 'episode':
             self.sort = self.librarySettings.getSetting('sort', 'show.titleSort')
@@ -469,7 +470,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
-            self.setProperty('sort', self.sort)
+            util.setGlobalProperty('sort', self.sort)
             self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'UNWATCHED') or T(32345, 'All'))
             self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
             self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
@@ -648,7 +649,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.lastItem = mli
             self.onItemChanged(mli)
 
-        self.setProperty('key', mli.getProperty('key'))
+        util.setGlobalProperty('key', mli.getProperty('key'))
 
         self.selectKey(mli)
 
@@ -810,7 +811,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         self.showPanelControl.selectItem(pos)
         self.setFocusId(self.POSTERS_PANEL_ID)
-        self.setProperty('key', li.dataSource)
+        util.setGlobalProperty('key', li.dataSource)
 
     def playButtonClicked(self, shuffle=False):
         filter_ = self.getFilterOpts()
@@ -955,20 +956,23 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         choice = result['type']
 
+        forceRefresh = False
         if choice == self.sort:
             self.sortDesc = not self.sortDesc
         else:
             self.sortDesc = False
+            if choice == 'titleSort':
+                forceRefresh = True
 
         self.sort = choice
 
         self.librarySettings.setSetting('sort', self.sort)
         self.librarySettings.setSetting('sort.desc', self.sortDesc)
 
-        self.setProperty('sort', choice)
+        util.setGlobalProperty('sort', choice)
         self.setProperty('sort.display', result['title'])
 
-        self.sortShowPanel(choice)
+        self.sortShowPanel(choice, forceRefresh)
 
     def viewTypeButtonClicked(self):
         with self.lock:
@@ -980,8 +984,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             key = self.section.getLibrarySectionId()
         util.setSetting('viewtype.{0}.{1}'.format(self.section.server.uuid, key), win.VIEWTYPE)
 
-    def sortShowPanel(self, choice):
-        if self.chunkMode:
+    def sortShowPanel(self, choice, force_refresh=False):
+        if force_refresh or self.chunkMode or self.showPanelControl.size() == 0:
             self.fillShows()
             return
 
@@ -1127,7 +1131,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.librarySettings.setSetting('sort', self.sort)
         self.librarySettings.setSetting('sort.desc', self.sortDesc)
 
-        self.setProperty('sort', self.sort)
+        util.setGlobalProperty('sort', self.sort)
         self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
 
     def updateFilterDisplay(self):
@@ -1261,7 +1265,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        if self.filter:
+        if self.sort != 'titleSort':
             sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
             totalSize = sectionAll.totalSize.asInt()
             if not self.chunkMode:
@@ -1274,10 +1278,17 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             jumpList = self.section.jumpList(filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
 
             if not jumpList:
+                self.showPanelControl.reset()
+                self.keyListControl.reset()
+
                 if self.filter or self.filterUnwatched:
                     self.setBoolProperty('no.content.filtered', True)
                 else:
                     self.setBoolProperty('no.content', True)
+
+                if jumpList is None:
+                    util.messageDialog("Error", "There was an error.")
+
                 return
 
             for kidx, ji in enumerate(jumpList):
@@ -1302,7 +1313,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                             self.firstOfKeyItems[ji.key] = mli
                         idx += 1
 
-            self.setProperty('key', jumpList[0].key)
+            util.setGlobalProperty('key', jumpList[0].key)
 
         if self.scrollBar:
             self.scrollBar.setSizeAndCount(totalSize, 12)
@@ -1453,7 +1464,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.keyListControl.addItems(litems)
 
         if keys:
-            self.setProperty('key', keys[0])
+            util.setGlobalProperty('key', keys[0])
 
     def chunkCallback(self, items, start, clear=False):
         if clear:

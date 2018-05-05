@@ -420,7 +420,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>StringCompare(Window.Property(sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window(10000).Property(script.plex.sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1830</posx>
             <posy>150</posy>
@@ -444,7 +444,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="label">
-                                <visible>!StringCompare(Window.Property(key), ListItem.Property(letter))</visible>
+                                <visible>!StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>34</width>
@@ -456,7 +456,7 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                             <control type="group">
-                                <visible>StringCompare(Window.Property(key), ListItem.Property(key))</visible>
+                                <visible>StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -490,7 +490,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="label">
-                                <visible>!StringCompare(Window.Property(key), ListItem.Property(letter))</visible>
+                                <visible>!StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>34</width>
@@ -502,7 +502,7 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                             <control type="group">
-                                <visible>StringCompare(Window.Property(key), ListItem.Property(key))</visible>
+                                <visible>StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>

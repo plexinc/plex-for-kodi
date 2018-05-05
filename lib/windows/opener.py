@@ -4,7 +4,7 @@ from plexnet import playqueue, plexapp, plexlibrary
 from lib import util
 
 
-def open(obj):
+def open(obj, auto_play=False):
     if isinstance(obj, playqueue.PlayQueue):
         if busy.widthDialog(obj.waitForInitialization, None):
             if obj.type == 'audio':
@@ -23,9 +23,11 @@ def open(obj):
             key = '/library/metadata/{0}'.format(obj)
         return open(plexapp.SERVERMANAGER.selectedServer.getObject(key))
     elif obj.TYPE == 'episode':
-        return episodeClicked(obj)
+        if not auto_play:
+            return episodeClicked(obj)
+        return playableClicked(obj, auto_play=auto_play)
     elif obj.TYPE == 'movie':
-        return playableClicked(obj)
+        return playableClicked(obj, auto_play=auto_play)
     elif obj.TYPE in ('show'):
         return showClicked(obj)
     elif obj.TYPE in ('artist'):
@@ -67,9 +69,9 @@ def handleOpen(winclass, **kwargs):
     return ''
 
 
-def playableClicked(playable):
+def playableClicked(playable, auto_play=False):
     import preplay
-    return handleOpen(preplay.PrePlayWindow, video=playable)
+    return handleOpen(preplay.PrePlayWindow, video=playable, auto_play=auto_play)
 
 
 def episodeClicked(episode):

@@ -1,3 +1,12 @@
+[- 0.1.5 -]
+
+Allow direct playback of episodes and movies using the play button on hub screen (thanks to pannal)
+In progress watched items had the 'Mark unwatched' option instead of 'Mark watched'
+Fix an issue causing the home window to start slightly scrolled down if it was closed scolled down
+Fix an issue causing an error when sort was sort was "BY UNWATCHED" and the filtering "UNWATCHED" (Issue #187)
+Fix issue with letter shortcuts sometimes being shown/not shown incorrectly
+Fix a bug causing crash and reboot on startup on Raspberry Pi (LibreElec specific?) - Reverts "Fix autostart to work with profiles"
+
 [- 0.1.4 -]
 
 Kodi v18: Fix skin compatability issues

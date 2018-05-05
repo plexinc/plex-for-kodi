@@ -303,6 +303,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.updateHubs = {}
         windowutils.HOME = self
 
+        util.setGlobalBoolProperty('off.sections', '')
+
     def onFirstInit(self):
         self.sectionList = kodigui.ManagedControlList(self, self.SECTION_LIST_ID, 7)
         self.serverList = kodigui.ManagedControlList(self, self.SERVER_LIST_ID, 10)
@@ -420,8 +422,12 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
-            elif 399 < controlID < 500 and action.getId() in MOVE_SET:
-                self.checkHubItem(controlID)
+            elif 399 < controlID < 500:
+                if action.getId() in MOVE_SET:
+                    self.checkHubItem(controlID)
+                elif action.getId() == xbmcgui.ACTION_PLAYER_PLAY:
+                    self.hubItemClicked(controlID, auto_play=True)
+                    return
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and self.getProperty('off.sections'):
@@ -517,7 +523,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.showHubs(HomeSection)
         return True
 
-    def hubItemClicked(self, hubControlID):
+    def hubItemClicked(self, hubControlID, auto_play=False):
         control = self.hubControls[hubControlID - 400]
         mli = control.getSelectedItem()
         if not mli:
@@ -526,7 +532,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         if mli.dataSource is None:
             return
 
-        command = opener.open(mli.dataSource)
+        command = opener.open(mli.dataSource, auto_play=auto_play)
 
         self.updateListItem(mli)
 

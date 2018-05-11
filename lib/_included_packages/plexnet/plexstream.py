@@ -47,9 +47,9 @@ class PlexStream(plexobjects.PlexObject):
             channels = self.getChannels(translate_func)
 
             if codec != "" and channels != "":
-                title += " ({0} {1})".format(codec, channels)
+                title += u" ({0} {1})".format(codec, channels)
             elif codec != "" or channels != "":
-                title += " ({0}{1})".format(codec, channels)
+                title += u" ({0}{1})".format(codec, channels)
         elif streamType == self.TYPE_SUBTITLE:
             extras = []
 
@@ -64,11 +64,11 @@ class PlexStream(plexobjects.PlexObject):
                 extras.append(translate_func("Forced"))
 
             if len(extras) > 0:
-                title += " ({0})".format('/'.join(extras))
+                title += u" ({0})".format('/'.join(extras))
         elif streamType == self.TYPE_LYRICS:
             title = translate_func("Lyrics")
             if self.format:
-                title += " ({0})".format(self.format)
+                title += u" ({0})".format(self.format)
 
         return title
 

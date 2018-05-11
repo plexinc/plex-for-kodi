@@ -1,3 +1,7 @@
+[- 0.1.6 -]
+
+Fix issues when selecting subtitles for users of certain languages (Issue #188)
+
 [- 0.1.5 -]
 
 Allow direct playback of episodes and movies using the play button on hub screen (thanks to pannal)

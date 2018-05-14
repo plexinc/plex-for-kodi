@@ -1,3 +1,7 @@
+[- 0.1.7 -]
+
+Add Italian translations (thanks to iz8mbw)
+
 [- 0.1.6 -]
 
 Fix issues when selecting subtitles for users of certain languages (Issue #188)
@@ -27,7 +31,7 @@ Improve headers for better identification in 'Now Playing' and future server pro
 Updated German language strings (thanks to coffinbearer)
 Fix French translations file (thanks to coffinbearer)
 Fix some Hungarian translations (thanks to vampywiz17)
-Add Russion translations (thanks to shady2k)
+Add Russian translations (thanks to shady2k)
 Fix autostart to work with profiles (thanks to pannal)
 Fix focus loss on home screen due to error (Issue #169)
 Fix "No Servers Found" when preferred server is unavailable (Issue #159)

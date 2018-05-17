@@ -9,6 +9,7 @@
     <setting id="debug" type="bool" label="32024" default="false" />
   </category>
   <category label="32464">
+    <setting id="auto_seek" type="bool" label="32466" default="false" />
     <setting id="kodi_skip_stepping" type="bool" label="32465" default="false" />
   </category>
 </settings>

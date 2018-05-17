@@ -102,6 +102,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._forcedLastSkipAmount = None
         self.skipSteps = self.SKIP_STEPS
         self.useKodiSkipSteps = util.advancedSettings.kodiSkipStepping
+        self.useAutoSeek = util.getSetting('auto_seek', False)
 
         if self.useKodiSkipSteps:
             self.skipSteps = {"negative": [], "positive": []}
@@ -187,9 +188,9 @@ class SeekDialog(kodigui.BaseDialog):
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
-                    return self.seekByOffset(10000, auto_seek=True)
+                    return self.seekByOffset(10000, auto_seek=self.useAutoSeek)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
-                    return self.seekByOffset(-10000, auto_seek=True)
+                    return self.seekByOffset(-10000, auto_seek=self.useAutoSeek)
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:
@@ -373,14 +374,20 @@ class SeekDialog(kodigui.BaseDialog):
         if step is not None:
             self.seekByOffset(step, without_osd=without_osd)
 
-        self.delayedSeek()
+        if self.useAutoSeek:
+            self.delayedSeek()
+        else:
+            self.setProperty('button.seek', '1')
 
     def skipBack(self, without_osd=False):
         step = self.determineSkipStep("negative")
         if step is not None:
             self.seekByOffset(step, without_osd=without_osd)
 
-        self.delayedSeek()
+        if self.useAutoSeek:
+            self.delayedSeek()
+        else:
+            self.setProperty('button.seek', '1')
 
     def delayedSeek(self):
         self.setProperty('button.seek', '1')
@@ -700,7 +707,7 @@ class SeekDialog(kodigui.BaseDialog):
             # (we may have "shortened" the width before, by seeking negatively)
             elif self.selectedOffset > self.offset:
                 self.seekbarControl.setWidth(w)
-                if not big_seek and self.positionControl.getWidth() < current_w:
+                if self.positionControl.getWidth() < current_w:
                     self.positionControl.setWidth(current_w)
 
             else:

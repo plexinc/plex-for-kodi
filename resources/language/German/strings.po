@@ -957,3 +957,7 @@ msgstr "Wiedergabe"
 msgctxt "#32465"
 msgid "Use skip step settings from Kodi"
 msgstr "Skip-Schritte-Einstellung von Kodi benutzen"
+
+msgctxt "#32466"
+msgid "Automatically seek to the selected timeline position after a second"
+msgstr "Nach einer Sekunde automatisch zur aktuell gewählten Position auf der Zeitachse springen"

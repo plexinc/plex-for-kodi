@@ -256,6 +256,7 @@ class SeekDialog(kodigui.BaseDialog):
             else:
                 self.setBigSeekShift()
             self.updateProgress()
+
         elif controlID == self.BIG_SEEK_LIST_ID:
             self.setBigSeekShift()
             self.updateBigSeek()
@@ -315,6 +316,11 @@ class SeekDialog(kodigui.BaseDialog):
                     util.garbageCollect()
         finally:
             kodigui.BaseDialog.doClose(self)
+
+    def resetSkipSteps(self):
+        self._forcedLastSkipAmount = None
+        self._atSkipStep = -1
+        self._lastSkipDirection = None
 
     def determineSkipStep(self, direction):
         stepCount = len(self.skipSteps[direction])
@@ -397,6 +403,7 @@ class SeekDialog(kodigui.BaseDialog):
         finally:
             self._seeking = False
             self._seekingWithoutOSD = False
+            self.resetSkipSteps()
             self.setProperty('button.seek', '')
 
     def handleDialog(self, func):
@@ -525,7 +532,8 @@ class SeekDialog(kodigui.BaseDialog):
 
     def updateBigSeek(self):
         self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
-        self.updateProgress()
+        self.resetSkipSteps()
+        self.updateProgress(big_seek=True)
 
     def bigSeekSelected(self):
         self.setFocusId(self.MAIN_BUTTON_ID)
@@ -582,6 +590,7 @@ class SeekDialog(kodigui.BaseDialog):
     def doSeek(self, offset=None, settings_changed=False):
         self._seeking = False
         self._seekingWithoutOSD = False
+        self.resetSkipSteps()
         state_before_seek = self.player.playState
         self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
 
@@ -655,7 +664,7 @@ class SeekDialog(kodigui.BaseDialog):
         except RuntimeError:  # Not playing
             return 1
 
-    def updateProgress(self):
+    def updateProgress(self, big_seek=False):
         if not self.initialized:
             return
 
@@ -678,21 +687,25 @@ class SeekDialog(kodigui.BaseDialog):
             self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(self.selectedOffset))
             self.bifImageControl.setPosition(bifx, 752)
 
-        # current seek position below current offset?
-        if self.selectedOffset < self.offset:
-            self.positionControl.setWidth(w)
-            self.seekbarControl.setWidth(current_w)
-
-        # current seek position ahead of current offset
-        # (we may have "shortened" the width before, by seeking negatively)
-        elif self.selectedOffset > self.offset:
+        if big_seek:
             self.seekbarControl.setWidth(w)
-            if self.positionControl.getWidth() < current_w:
-                self.positionControl.setWidth(current_w)
 
         else:
-            self.seekbarControl.setWidth(w)
-            self.positionControl.setWidth(w)
+            # current seek position below current offset?
+            if self.selectedOffset < self.offset:
+                self.positionControl.setWidth(w)
+                self.seekbarControl.setWidth(current_w)
+
+            # current seek position ahead of current offset
+            # (we may have "shortened" the width before, by seeking negatively)
+            elif self.selectedOffset > self.offset:
+                self.seekbarControl.setWidth(w)
+                if not big_seek and self.positionControl.getWidth() < current_w:
+                    self.positionControl.setWidth(current_w)
+
+            else:
+                self.seekbarControl.setWidth(w)
+                self.positionControl.setWidth(w)
 
     def onPlaybackResumed(self):
         self._osdHideFast = True

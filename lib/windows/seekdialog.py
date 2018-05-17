@@ -99,6 +99,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._autoSeekDelay = self.AUTO_SEEK_DELAY
         self._atSkipStep = -1
         self._lastSkipDirection = None
+        self._forcedLastSkipAmount = None
         self.skipSteps = self.SKIP_STEPS
         self.useKodiSkipSteps = util.advancedSettings.kodiSkipStepping
 
@@ -274,6 +275,7 @@ class SeekDialog(kodigui.BaseDialog):
             else:
                 # currently seeking without the OSD, apply the seek
                 self._lastSkipDirection = None
+                self._forcedLastSkipAmount = None
                 self.doSeek()
                 self.setProperty('button.seek', '')
 
@@ -314,27 +316,64 @@ class SeekDialog(kodigui.BaseDialog):
         finally:
             kodigui.BaseDialog.doClose(self)
 
-    def determineSkipStep(self, direction, reset=False):
-        if reset:
-            self._atSkipStep = -1
-            self._lastSkipDirection = direction
-
+    def determineSkipStep(self, direction):
         stepCount = len(self.skipSteps[direction])
+
+        # shortcut for simple skipping
         if stepCount == 1:
             return self.skipSteps[direction][0]
 
-        self._atSkipStep = min([self._atSkipStep + 1, stepCount - 1])
-        step = self.skipSteps[direction][self._atSkipStep]
+        use_direction = direction
+
+        # kodi-style skip steps
+
+        # when the direction changes, we either use the skip steps of the other direction, or walk backwards in the
+        # current skip step list
+        if self._lastSkipDirection != direction:
+            if self._atSkipStep == -1 or self._lastSkipDirection is None:
+                self._atSkipStep = 0
+                self._lastSkipDirection = direction
+                self._forcedLastSkipAmount = None
+                step = self.skipSteps[use_direction][0]
+
+            else:
+                # we're reversing the current direction
+                use_direction = self._lastSkipDirection
+
+                # use the inverse value of the current skip step
+                step = self.skipSteps[use_direction][self._atSkipStep] * -1
+
+                # we've hit a boundary, reverse the difference of the last skip step in relation to the boundary
+                if self._forcedLastSkipAmount:
+                    step = self._forcedLastSkipAmount * -1
+                    self._forcedLastSkipAmount = None
+
+                # walk back one step
+                self._atSkipStep -= 1
+        else:
+            # no reversal of any kind was requested and we've not hit any boundary, use the next skip step
+            if self._forcedLastSkipAmount is None:
+                self._atSkipStep = min([self._atSkipStep + 1, stepCount - 1])
+                step = self.skipSteps[use_direction][self._atSkipStep]
+
+            else:
+                # we've hit a timeline boundary and haven't reversed yet. Don't do any further skipping
+                return
+
         return step
 
     def skipForward(self, without_osd=False):
-        step = self.determineSkipStep("positive", reset=self._lastSkipDirection != "positive")
-        self.seekByOffset(step, without_osd=without_osd)
+        step = self.determineSkipStep("positive")
+        if step is not None:
+            self.seekByOffset(step, without_osd=without_osd)
+
         self.delayedSeek()
 
     def skipBack(self, without_osd=False):
-        step = self.determineSkipStep("negative", reset=self._lastSkipDirection != "negative")
-        self.seekByOffset(step, without_osd=without_osd)
+        step = self.determineSkipStep("negative")
+        if step is not None:
+            self.seekByOffset(step, without_osd=without_osd)
+
         self.delayedSeek()
 
     def delayedSeek(self):
@@ -353,6 +392,7 @@ class SeekDialog(kodigui.BaseDialog):
 
             if not xbmc.abortRequested:
                 self._lastSkipDirection = None
+                self._forcedLastSkipAmount = None
                 self.doSeek()
         finally:
             self._seeking = False
@@ -553,8 +593,12 @@ class SeekDialog(kodigui.BaseDialog):
         self._seekingWithoutOSD = without_osd
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
+            # offset = +100, at = 80000, duration = 80005, realoffset = 5
+            self._forcedLastSkipAmount = self.duration - self.selectedOffset
             self.selectedOffset = self.duration
         elif self.selectedOffset < 0:
+            # offset = -100, at = 5, realat = -95, realoffset = -100 - -95 = -5
+            self._forcedLastSkipAmount = offset - self.selectedOffset
             self.selectedOffset = 0
 
         self.updateProgress()
@@ -645,6 +689,10 @@ class SeekDialog(kodigui.BaseDialog):
             self.seekbarControl.setWidth(w)
             if self.positionControl.getWidth() < current_w:
                 self.positionControl.setWidth(current_w)
+
+        else:
+            self.seekbarControl.setWidth(w)
+            self.positionControl.setWidth(w)
 
     def onPlaybackResumed(self):
         self._osdHideFast = True

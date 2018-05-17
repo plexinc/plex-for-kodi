@@ -91,6 +91,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.lastFocusID = None
         self.playlistDialogVisible = False
         self._seeking = False
+        self._seekingWithoutOSD = False
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
         self._osdHideFast = False
@@ -196,20 +197,20 @@ class SeekDialog(kodigui.BaseDialog):
                 #     self.seekBack(60000)
             elif controlID == self.NO_OSD_BUTTON_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
-                    if not self.selectedOffset:
+                    if not self._seeking:
                         self.selectedOffset = self.trueOffset()
 
                     if action == xbmcgui.ACTION_MOVE_RIGHT:
-                        self.skipForward()
+                        self.skipForward(without_osd=True)
 
                     else:
-                        self.skipBack()
+                        self.skipBack(without_osd=True)
                 if action in (
                     xbmcgui.ACTION_MOVE_UP,
                     xbmcgui.ACTION_MOVE_DOWN,
                     xbmcgui.ACTION_BIG_STEP_FORWARD,
                     xbmcgui.ACTION_BIG_STEP_BACK
-                ):
+                ) and not self._seekingWithoutOSD:
                     self.selectedOffset = self.trueOffset()
                     self.setBigSeekShift()
                     self.updateProgress()
@@ -268,7 +269,14 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetAutoSeekTimer(None)
             self.doSeek()
         elif controlID == self.NO_OSD_BUTTON_ID:
-            self.showOSD()
+            if not self._seeking:
+                self.showOSD()
+            else:
+                # currently seeking without the OSD, apply the seek
+                self._lastSkipDirection = None
+                self.doSeek()
+                self.setProperty('button.seek', '')
+
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.handleDialog(self.showSettings)
         elif controlID == self.REPEAT_BUTTON_ID:
@@ -319,14 +327,14 @@ class SeekDialog(kodigui.BaseDialog):
         step = self.skipSteps[direction][self._atSkipStep]
         return step
 
-    def skipForward(self):
+    def skipForward(self, without_osd=False):
         step = self.determineSkipStep("positive", reset=self._lastSkipDirection != "positive")
-        self.seekByOffset(step)
+        self.seekByOffset(step, without_osd=without_osd)
         self.delayedSeek()
 
-    def skipBack(self):
+    def skipBack(self, without_osd=False):
         step = self.determineSkipStep("negative", reset=self._lastSkipDirection != "negative")
-        self.seekByOffset(step)
+        self.seekByOffset(step, without_osd=without_osd)
         self.delayedSeek()
 
     def delayedSeek(self):
@@ -348,6 +356,7 @@ class SeekDialog(kodigui.BaseDialog):
                 self.doSeek()
         finally:
             self._seeking = False
+            self._seekingWithoutOSD = False
             self.setProperty('button.seek', '')
 
     def handleDialog(self, func):
@@ -471,6 +480,7 @@ class SeekDialog(kodigui.BaseDialog):
         pxOffset = int(self.bigSeekOffset / float(self.duration) * 1920)
         self.bigSeekGroupControl.setPosition(-8 + pxOffset, 917)
         self.bigSeekControl.selectItem(closest.pos())
+        self._seeking = True
         # xbmc.sleep(100)
 
     def updateBigSeek(self):
@@ -531,14 +541,16 @@ class SeekDialog(kodigui.BaseDialog):
 
     def doSeek(self, offset=None, settings_changed=False):
         self._seeking = False
+        self._seekingWithoutOSD = False
         state_before_seek = self.player.playState
         self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
 
         if state_before_seek == self.player.STATE_PAUSED:
             self.player.control("pause")
 
-    def seekByOffset(self, offset, auto_seek=False):
+    def seekByOffset(self, offset, auto_seek=False, without_osd=False):
         self._seeking = True
+        self._seekingWithoutOSD = without_osd
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
             self.selectedOffset = self.duration

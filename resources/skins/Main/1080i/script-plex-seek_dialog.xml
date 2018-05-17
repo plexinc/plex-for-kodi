@@ -17,7 +17,7 @@
             <texturefocus>-</texturefocus>
             <texturenofocus>-</texturenofocus>
             <label> </label>
-            <onclick>SetProperty(show.OSD,1)</onclick>
+            <onclick condition="String.IsEmpty(Window.Property(button.seek))">SetProperty(show.OSD,1)</onclick>
         </control>
         <control type="group" id="802">
             <visible>[!String.IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar) | !String.IsEmpty(Window.Property(button.seek))] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(playerprocessinfo)</visible>

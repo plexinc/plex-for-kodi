@@ -335,6 +335,7 @@ def get24hFormat():
     try:
         use_24h = rpc.Settings.GetSettingValue(setting="locale.use24hourclock")["value"]
     except:
+        ERROR()
         return
 
     if use_24h == "regional":

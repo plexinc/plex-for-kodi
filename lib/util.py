@@ -32,6 +32,11 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
     def watchStatusChanged(self):
         self.trigger('changed.watchstatus')
 
+    def onNotification(self, sender, method, data):
+        if sender == 'script.plex' and method.endswith('RESTORE'):
+            from windows import kodigui
+            xbmc.executebuiltin('ActivateWindow({0})'.format(kodigui.BaseFunctions.lastWinID))
+
 
 MONITOR = UtilityMonitor()
 

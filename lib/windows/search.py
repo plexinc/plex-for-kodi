@@ -221,7 +221,12 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         if 2099 < controlID < 2200:
             self.setProperty('hub.focus', str(controlID - 2099))
 
-    def updateFromEdit(self):
+    def updateFromEdit(self, actionID):
+        if actionID == xbmcgui.ACTION_PREVIOUS_MENU:
+            self.isActive = False
+            self.doClose()
+            return
+
         self.updateQuery()
 
     def updateQuery(self):

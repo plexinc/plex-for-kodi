@@ -189,7 +189,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         )
 
         self.edit = kodigui.SafeControlEdit(650, 651, self, key_callback=self.updateFromEdit, grab_focus=True)
-        self.edit.setCompatibleMode(rpc.Application.GetProperties(properties=["version"])["major"] < 17)
+        self.edit.setCompatibleMode(rpc.Application.GetProperties(properties=["version"])["version"]["major"] < 17)
 
         self.setProperty('search.section', 'all')
         self.updateQuery()

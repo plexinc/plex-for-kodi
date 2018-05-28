@@ -960,5 +960,5 @@ msgid "Use skip step settings from Kodi"
 msgstr ""
 
 msgctxt "#32466"
-msgid "Automatically seek to the selected timeline position after a second"
+msgid "Automatically seek selected position after a delay"
 msgstr ""

@@ -348,7 +348,7 @@ class SeekDialog(kodigui.BaseDialog):
                 use_direction = self._lastSkipDirection
 
                 # use the inverse value of the current skip step
-                step = self.skipSteps[use_direction][self._atSkipStep] * -1
+                step = self.skipSteps[use_direction][min(self._atSkipStep, len(self.skipSteps[use_direction]) - 1)] * -1
 
                 # we've hit a boundary, reverse the difference of the last skip step in relation to the boundary
                 if self._forcedLastSkipAmount:
@@ -360,8 +360,8 @@ class SeekDialog(kodigui.BaseDialog):
         else:
             # no reversal of any kind was requested and we've not hit any boundary, use the next skip step
             if self._forcedLastSkipAmount is None:
-                self._atSkipStep = min([self._atSkipStep + 1, stepCount - 1])
-                step = self.skipSteps[use_direction][self._atSkipStep]
+                self._atSkipStep += 1
+                step = self.skipSteps[use_direction][min(self._atSkipStep, stepCount - 1)]
 
             else:
                 # we've hit a timeline boundary and haven't reversed yet. Don't do any further skipping

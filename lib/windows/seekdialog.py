@@ -581,10 +581,13 @@ class SeekDialog(kodigui.BaseDialog):
         self.bigSeekControl.reset()
         self.bigSeekControl.addItems(items)
 
-    def updateCurrent(self):
+    def updateCurrent(self, update_position_control=True):
         ratio = self.trueOffset() / float(self.duration)
-        w = int(ratio * self.SEEK_IMAGE_WIDTH)
-        self.positionControl.setWidth(w)
+
+        if update_position_control:
+            w = int(ratio * self.SEEK_IMAGE_WIDTH)
+            self.positionControl.setWidth(w)
+
         to = self.trueOffset()
         self.setProperty('time.current', util.timeDisplay(to))
         self.setProperty('time.left', util.timeDisplay(self.duration - to))
@@ -751,8 +754,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.doSeek()
             return
 
-        if not self._seeking:
-            self.updateCurrent()
+        self.updateCurrent(update_position_control=not self._seeking)
 
     def showPlaylistDialog(self):
         if not self.playlistDialog:

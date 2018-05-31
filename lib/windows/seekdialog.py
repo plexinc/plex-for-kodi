@@ -165,7 +165,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def onReInit(self):
         self.resetTimeout()
-
+        self.resetSkipSteps()
         self.updateProperties()
         self.videoSettingsHaveChanged()
         self.updateProgress()
@@ -185,6 +185,7 @@ class SeekDialog(kodigui.BaseDialog):
                 self.setProperty('mouse.mode', '1')
 
             if controlID == self.MAIN_BUTTON_ID:
+                # we're seeking from the timeline with the OSD open - do an actual timeline seek
                 if action == xbmcgui.ACTION_MOUSE_MOVE:
                     return self.seekMouse(action)
                 elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
@@ -199,6 +200,7 @@ class SeekDialog(kodigui.BaseDialog):
                 #     self.seekBack(60000)
             elif controlID == self.NO_OSD_BUTTON_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
+                    # we're seeking from the timeline, with the OSD closed; act as we're skipping
                     if not self._seeking:
                         self.selectedOffset = self.trueOffset()
 
@@ -254,9 +256,10 @@ class SeekDialog(kodigui.BaseDialog):
             if self.lastFocusID == self.BIG_SEEK_LIST_ID:
                 xbmc.sleep(100)
                 self.updateBigSeek()
+                self.updateProgress(set_to_current=False)
             else:
                 self.setBigSeekShift()
-            self.updateProgress()
+                self.updateProgress()
 
         elif controlID == self.BIG_SEEK_LIST_ID:
             self.setBigSeekShift()
@@ -540,7 +543,6 @@ class SeekDialog(kodigui.BaseDialog):
     def updateBigSeek(self):
         self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
         self.resetSkipSteps()
-        self.updateProgress(big_seek=True)
 
     def bigSeekSelected(self):
         self.setFocusId(self.MAIN_BUTTON_ID)
@@ -601,6 +603,8 @@ class SeekDialog(kodigui.BaseDialog):
         self._seeking = False
         self._seekingWithoutOSD = False
         self.resetSkipSteps()
+        self.updateProgress()
+
         state_before_seek = self.player.playState
         self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
 
@@ -608,6 +612,13 @@ class SeekDialog(kodigui.BaseDialog):
             self.player.control("pause")
 
     def seekByOffset(self, offset, auto_seek=False, without_osd=False):
+        """
+        Sets the selected offset and updates the progress bar to visually represent the current seek
+        :param offset: offset to seek to
+        :param auto_seek: whether to automatically seek to :offset: after a certain amount of time
+        :param without_osd: indicates whether this seek was done with or without OSD
+        :return:
+        """
         self._seeking = True
         self._seekingWithoutOSD = without_osd
         self.selectedOffset += offset
@@ -620,7 +631,7 @@ class SeekDialog(kodigui.BaseDialog):
             self._forcedLastSkipAmount = offset - self.selectedOffset
             self.selectedOffset = 0
 
-        self.updateProgress()
+        self.updateProgress(set_to_current=False)
         self.setBigSeekShift()
         if auto_seek:
             self.resetAutoSeekTimer()
@@ -674,7 +685,15 @@ class SeekDialog(kodigui.BaseDialog):
         except RuntimeError:  # Not playing
             return 1
 
-    def updateProgress(self, big_seek=False):
+    def updateProgress(self, set_to_current=True):
+        """
+        Updates the progress bars (seek and position) and the currently-selected-time-label for the current position or
+        seek state on the timeline.
+        :param set_to_current: if True, sets both the position bar and the seek bar to the currently selected position,
+                               otherwise we're in seek mode, whereas one of both bars move relatively to the currently
+                               selected position depending on the direction of the seek
+        :return: None
+        """
         if not self.initialized:
             return
 
@@ -697,19 +716,25 @@ class SeekDialog(kodigui.BaseDialog):
             self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(self.selectedOffset))
             self.bifImageControl.setPosition(bifx, 752)
 
-        if big_seek:
+        if set_to_current:
             self.seekbarControl.setWidth(w)
+            self.positionControl.setWidth(w)
 
         else:
-            # current seek position below current offset?
+            # we're seeking
+
+            # current seek position below current offset? set the position bar's width to the current position of the
+            # seek and the seek bar to the current position of the video, to visually indicate the backwards-seeking
             if self.selectedOffset < self.offset:
                 self.positionControl.setWidth(w)
                 self.seekbarControl.setWidth(current_w)
 
-            # current seek position ahead of current offset
-            # (we may have "shortened" the width before, by seeking negatively)
+            # current seek position ahead of current offset? set the position bar's width to the current position of the
+            # video and the seek bar to the current position of the seek, to visually indicate the forwards-seeking
             elif self.selectedOffset > self.offset:
                 self.seekbarControl.setWidth(w)
+                # we may have "shortened" the width before, by seeking negatively, reset the position bar's width to
+                # the current video's position if that's the case
                 if self.positionControl.getWidth() < current_w:
                     self.positionControl.setWidth(current_w)
 

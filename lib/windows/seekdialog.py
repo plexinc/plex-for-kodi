@@ -257,6 +257,9 @@ class SeekDialog(kodigui.BaseDialog):
                 xbmc.sleep(100)
                 self.updateBigSeek()
                 self.updateProgress(set_to_current=False)
+                if self.useAutoSeek:
+                    self.delayedSeek()
+
             else:
                 self.setBigSeekShift()
                 self.updateProgress()

@@ -91,6 +91,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.lastFocusID = None
         self.playlistDialogVisible = False
         self._seeking = False
+        self._applyingSeek = False
         self._seekingWithoutOSD = False
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
@@ -184,11 +185,18 @@ class SeekDialog(kodigui.BaseDialog):
             elif action == xbmcgui.ACTION_MOUSE_MOVE:
                 self.setProperty('mouse.mode', '1')
 
+            if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
+                if action == xbmcgui.ACTION_MOUSE_LEFT_CLICK:
+                    if self.getProperty('mouse.mode') != '1':
+                        self.setProperty('mouse.mode', '1')
+
+                    self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID)
+                    return
+
             if controlID == self.MAIN_BUTTON_ID:
                 # we're seeking from the timeline with the OSD open - do an actual timeline seek
-                if action == xbmcgui.ACTION_MOUSE_MOVE:
-                    return self.seekMouse(action)
-                elif action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
+
+                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
                     return self.seekByOffset(10000, auto_seek=self.useAutoSeek)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
                     return self.seekByOffset(-10000, auto_seek=self.useAutoSeek)
@@ -274,18 +282,22 @@ class SeekDialog(kodigui.BaseDialog):
         self.lastFocusID = controlID
 
     def onClick(self, controlID):
-        if controlID == self.MAIN_BUTTON_ID:
-            self.resetAutoSeekTimer(None)
-            self.doSeek()
-        elif controlID == self.NO_OSD_BUTTON_ID:
-            if not self._seeking:
-                self.showOSD()
-            else:
-                # currently seeking without the OSD, apply the seek
-                self._lastSkipDirection = None
-                self._forcedLastSkipAmount = None
-                self.doSeek()
-                self.setProperty('button.seek', '')
+        if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
+            # only react to click events on our main areas if we're not in mouse mode, otherwise mouse seeking is
+            # handled by onAction
+            if self.getProperty('mouse.mode') != '1':
+                if controlID == self.MAIN_BUTTON_ID:
+                    self.resetAutoSeekTimer(None)
+                    self.doSeek()
+                elif controlID == self.NO_OSD_BUTTON_ID:
+                    if not self._seeking:
+                        self.showOSD()
+                    else:
+                        # currently seeking without the OSD, apply the seek
+                        self._lastSkipDirection = None
+                        self._forcedLastSkipAmount = None
+                        self.doSeek()
+                        self.setProperty('button.seek', '')
 
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.handleDialog(self.showSettings)
@@ -415,6 +427,7 @@ class SeekDialog(kodigui.BaseDialog):
                 self.doSeek()
         finally:
             self._seeking = False
+            self._applyingSeek = False
             self._seekingWithoutOSD = False
             self.resetSkipSteps()
             self.setProperty('button.seek', '')
@@ -603,16 +616,20 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('time.end', time.strftime(_fmt, time.localtime(time.time() + ((self.duration - to) / 1000))).lstrip('0'))
 
     def doSeek(self, offset=None, settings_changed=False):
-        self._seeking = False
-        self._seekingWithoutOSD = False
+        self._applyingSeek = True
         self.resetSkipSteps()
         self.updateProgress()
-
         state_before_seek = self.player.playState
-        self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
 
-        if state_before_seek == self.player.STATE_PAUSED:
-            self.player.control("pause")
+        try:
+            self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
+
+            if state_before_seek == self.player.STATE_PAUSED:
+                self.player.control("pause")
+        finally:
+            self._seeking = False
+            self._seekingWithoutOSD = False
+            self._applyingSeek = False
 
     def seekByOffset(self, offset, auto_seek=False, without_osd=False):
         """
@@ -640,7 +657,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
 
-    def seekMouse(self, action):
+    def seekMouse(self, action, without_osd=False):
         x = self.mouseXTrans(action.getAmount1())
         y = self.mouseXTrans(action.getAmount2())
         if not (self.BAR_Y <= y <= self.BAR_BOTTOM):
@@ -649,8 +666,11 @@ class SeekDialog(kodigui.BaseDialog):
         if not (self.BAR_X <= x <= self.BAR_RIGHT):
             return
 
+        self._seeking = True
+        self._seekingWithoutOSD = without_osd
+
         self.selectedOffset = int((x - self.BAR_X) / float(self.SEEK_IMAGE_WIDTH) * self.duration)
-        self.updateProgress()
+        self.doSeek()
 
     def setup(self, duration, offset=0, bif_url=None, title='', title2=''):
         self.title = title
@@ -782,7 +802,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.doSeek()
             return
 
-        self.updateCurrent(update_position_control=not self._seeking)
+        self.updateCurrent(update_position_control=not self._seeking and not self._applyingSeek)
 
     def showPlaylistDialog(self):
         if not self.playlistDialog:

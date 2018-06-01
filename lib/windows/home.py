@@ -582,7 +582,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def checkHubItem(self, controlID):
         control = self.hubControls[controlID - 400]
         mli = control.getSelectedItem()
-        if not mli or not mli.getProperty('is.end'):
+        if not mli or not mli.getProperty('is.end') or mli.getProperty('is.updating') == '1':
             return
 
         mli.setBoolProperty('is.updating', True)

@@ -659,7 +659,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def seekMouse(self, action, without_osd=False):
         x = self.mouseXTrans(action.getAmount1())
-        y = self.mouseXTrans(action.getAmount2())
+        y = self.mouseYTrans(action.getAmount2())
         if not (self.BAR_Y <= y <= self.BAR_BOTTOM):
             return
 

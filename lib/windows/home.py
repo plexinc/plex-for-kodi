@@ -98,13 +98,16 @@ class UpdateHubTask(backgroundthread.Task):
 
 
 class ExtendHubTask(backgroundthread.Task):
-    def setup(self, hub, callback):
+    def setup(self, hub, callback, canceled_callback=None):
         self.hub = hub
         self.callback = callback
+        self.canceled_callback = canceled_callback
         return self
 
     def run(self):
         if self.isCanceled():
+            if self.canceled_callback:
+                self.canceled_callback(self.hub)
             return
 
         if not plexapp.SERVERMANAGER.selectedServer:
@@ -115,10 +118,14 @@ class ExtendHubTask(backgroundthread.Task):
             start = self.hub.offset.asInt() + self.hub.size.asInt()
             items = self.hub.extend(start=start, size=HUB_PAGE_SIZE)
             if self.isCanceled():
+                if self.canceled_callback:
+                    self.canceled_callback(self.hub)
                 return
             self.callback(self.hub, items)
         except plexnet.exceptions.BadRequest:
             util.DEBUG_LOG('404 on hub: {0}'.format(repr(self.hub.hubIdentifier)))
+            if self.canceled_callback:
+                self.canceled_callback(self.hub)
 
 
 class HomeSection(object):
@@ -587,7 +594,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         mli.setBoolProperty('is.updating', True)
         self.cleanTasks()
-        task = ExtendHubTask().setup(control.dataSource, self.extendHubCallback)
+        task = ExtendHubTask().setup(control.dataSource, self.extendHubCallback,
+                                     canceled_callback=lambda hub: mli.setBoolProperty('is.updating', False))
         self.tasks.append(task)
         backgroundthread.BGThreader.addTask(task)
 

@@ -607,8 +607,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def checkHubItem(self, controlID):
         control = self.hubControls[controlID - 400]
         mli = control.getSelectedItem()
+        is_valid_mli = mli and mli.getProperty('is.end') != '1'
 
-        if util.aSet.backgroundArtPerItem:
+        if util.aSet.backgroundArtPerItem and is_valid_mli:
             self.setProperty(
                 'background', mli.dataSource.art.asTranscodedImageURL(
                     self.width, self.height,

@@ -469,6 +469,9 @@ class AdvancedSettings(object):
         ("auto_seek", True),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
+        ("background_art_per_item", False),
+        ("background_art_blur_amount", 128),
+        ("background_art_opacity_amount", 60),
     )
 
     def __init__(self):

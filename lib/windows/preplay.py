@@ -20,6 +20,7 @@ from lib import util
 from lib import metadata
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
 
 VIDEO_RELOAD_KW = dict(includeRelated=1, includeRelatedCount=10)
 
@@ -98,6 +99,18 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
             if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
                 self.setFocusId(self.lastFocusID)
+
+            if action.getId() in MOVE_SET:
+                if util.aSet.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
+                    mli = self.relatedListControl.getSelectedItem()
+                    if mli:
+                        self.setProperty(
+                            'background', mli.dataSource.art.asTranscodedImageURL(
+                                self.width, self.height,
+                                blur=util.aSet.backgroundArtBlurAmount,
+                                opacity=util.aSet.backgroundArtOpacityAmount,
+                                background=colors.noAlpha.Background)
+                        )
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
@@ -447,7 +460,9 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.fillRoles(hasPrev)
 
     def setInfo(self):
-        self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('background', self.video.art.asTranscodedImageURL(
+            self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+            opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
         self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))

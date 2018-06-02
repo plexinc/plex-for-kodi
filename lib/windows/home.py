@@ -607,6 +607,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def checkHubItem(self, controlID):
         control = self.hubControls[controlID - 400]
         mli = control.getSelectedItem()
+
+        if util.aSet.backgroundArtPerItem:
+            self.setProperty(
+                'background', mli.dataSource.art.asTranscodedImageURL(
+                    self.width, self.height,
+                    blur=util.aSet.backgroundArtBlurAmount,
+                    opacity=util.aSet.backgroundArtOpacityAmount,
+                    background=colors.noAlpha.Background)
+            )
+
         if not mli or not mli.getProperty('is.end') or mli.getProperty('is.updating') == '1':
             return
 
@@ -973,7 +983,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             if not self.backgroundSet:
                 self.backgroundSet = True
                 self.setProperty(
-                    'background', obj.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+                    'background', obj.art.asTranscodedImageURL(self.width, self.height,
+                                                               blur=util.aSet.backgroundArtBlurAmount,
+                                                               opacity=util.aSet.backgroundArtOpacityAmount,
+                                                               background=colors.noAlpha.Background)
                 )
             mli = self.createListItem(obj, wide=with_art)
             if mli:

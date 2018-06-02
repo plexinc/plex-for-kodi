@@ -364,7 +364,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self.next:
             self.setProperty(
                 'post.play.background',
-                self.next.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+                self.next.art.asTranscodedImageURL(self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+                                                   opacity=util.aSet.backgroundArtOpacityAmount,
+                                                   background=colors.noAlpha.Background)
             )
             self.setProperty('info.title', self.next.title)
             self.setProperty('info.duration', util.durationToText(self.next.duration.asInt()))
@@ -373,7 +375,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if self.prev:
             self.setProperty(
                 'post.play.background',
-                self.prev.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+                self.prev.art.asTranscodedImageURL(self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+                                                   opacity=util.aSet.backgroundArtOpacityAmount,
+                                                   background=colors.noAlpha.Background)
             )
             self.setProperty('prev.info.title', self.prev.title)
             self.setProperty('prev.info.duration', util.durationToText(self.prev.duration.asInt()))

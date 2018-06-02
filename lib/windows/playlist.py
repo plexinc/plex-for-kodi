@@ -225,7 +225,9 @@ class PlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def setProperties(self):
         self.setProperty(
             'background',
-            self.playlist.composite.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            self.playlist.composite.asTranscodedImageURL(
+                self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+                opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background)
         )
         self.setProperty('playlist.thumb', self.playlist.composite.asTranscodedImageURL(*self.ALBUM_THUMB_DIM))
         self.setProperty('playlist.title', self.playlist.title)

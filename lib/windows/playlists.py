@@ -119,7 +119,9 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setProperty(
             'background',
-            playlists[0].composite.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            playlists[0].composite.asTranscodedImageURL(self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+                                                        opacity=util.aSet.backgroundArtOpacityAmount,
+                                                        background=colors.noAlpha.Background)
         )
 
         for pl in playlists:

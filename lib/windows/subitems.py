@@ -105,7 +105,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
-            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+                                                    opacity=util.aSet.backgroundArtOpacityAmount,
+                                                    background=colors.noAlpha.Background)
         )
         self.setProperty('duration', util.durationToText(self.mediaItem.fixedDuration()))
         self.setProperty('info', '')
@@ -607,7 +609,9 @@ class ArtistWindow(ShowWindow):
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
-            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+                                                    opacity=util.aSet.backgroundArtOpacityAmount,
+                                                    background=colors.noAlpha.Background)
         )
 
     @busy.dialog()

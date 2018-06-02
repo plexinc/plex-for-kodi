@@ -1235,7 +1235,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.backgroundSet = True
 
         item = random.choice(items)
-        self.setProperty('background', item.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('background', item.art.asTranscodedImageURL(
+            self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+            opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background))
 
     def fill(self):
         if self.chunkMode:
@@ -1429,7 +1431,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             return
 
         photo = random.choice(photos)
-        self.setProperty('background', photo.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('background', photo.art.asTranscodedImageURL(
+            self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
+            opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background))
         thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 

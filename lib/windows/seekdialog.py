@@ -394,7 +394,7 @@ class SeekDialog(kodigui.BaseDialog):
                 step = self.skipSteps[use_direction][min(self._atSkipStep, len(self.skipSteps[use_direction]) - 1)] * -1
 
                 # we've hit a boundary, reverse the difference of the last skip step in relation to the boundary
-                if self._forcedLastSkipAmount:
+                if self._forcedLastSkipAmount is not None:
                     step = self._forcedLastSkipAmount * -1
                     self._forcedLastSkipAmount = None
 
@@ -662,10 +662,11 @@ class SeekDialog(kodigui.BaseDialog):
         """
         self._seeking = True
         self._seekingWithoutOSD = without_osd
+        lastSelectedOffset = self.selectedOffset
         self.selectedOffset += offset
         if self.selectedOffset > self.duration:
             # offset = +100, at = 80000, duration = 80005, realoffset = 5
-            self._forcedLastSkipAmount = self.duration - self.selectedOffset
+            self._forcedLastSkipAmount = self.duration - lastSelectedOffset
             self.selectedOffset = self.duration
         elif self.selectedOffset < 0:
             # offset = -100, at = 5, realat = -95, realoffset = -100 - -95 = -5

@@ -806,6 +806,8 @@ class SeekDialog(kodigui.BaseDialog):
                 if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding'):
                     self.hideOSD()
 
+        self._osdHideFast = False
+
         try:
             self.offset = offset or int(self.handler.player.getTime() * 1000)
         except RuntimeError:  # Playback has stopped

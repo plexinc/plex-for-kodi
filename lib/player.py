@@ -285,7 +285,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def seekAbsolute(self, seek=None):
         self.seekOnStart = seek or self.seekOnStart
-        if self.seekOnStart:
+        if self.seekOnStart is not None:
             self.player.control('play')
             seekSeconds = self.seekOnStart / 1000.0
             try:

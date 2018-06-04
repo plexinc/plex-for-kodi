@@ -961,3 +961,7 @@ msgstr "Skip-Schritte-Einstellung von Kodi benutzen"
 msgctxt "#32466"
 msgid "Automatically seek to the selected timeline position after a second"
 msgstr "Nach Verzögerung automatisch zur aktuell gewählten Position springen"
+
+msgctxt "#32471"
+msgid "Plex/Kodi-Skip-Schritte auch für die Zeitachse verwenden"
+msgstr ""

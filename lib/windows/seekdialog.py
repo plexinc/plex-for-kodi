@@ -104,6 +104,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.skipSteps = self.SKIP_STEPS
         self.useKodiSkipSteps = util.advancedSettings.kodiSkipStepping
         self.useAutoSeek = util.getSetting('auto_seek', False)
+        self.useDynamicStepsForTimeline = util.getSetting('dynamic_timeline_seek', False)
 
         if self.useKodiSkipSteps:
             self.skipSteps = {"negative": [], "positive": []}
@@ -206,9 +207,15 @@ class SeekDialog(kodigui.BaseDialog):
                 # we're seeking from the timeline with the OSD open - do an actual timeline seek
 
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
+                    if self.useDynamicStepsForTimeline:
+                        return self.skipForward()
                     return self.seekByOffset(10000, auto_seek=self.useAutoSeek)
+
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
+                    if self.useDynamicStepsForTimeline:
+                        return self.skipBack()
                     return self.seekByOffset(-10000, auto_seek=self.useAutoSeek)
+
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.updateBigSeek()
                 # elif action == xbmcgui.ACTION_MOVE_UP:

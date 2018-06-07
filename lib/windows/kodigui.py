@@ -815,9 +815,9 @@ class SafeControlEdit(object):
             self._text = self._win.getControl(self.controlID).getText()
 
             if self._keyCallback:
-                self._keyCallback()
+                self._keyCallback(action_id)
 
-            self. updateLabel()
+            self.updateLabel()
 
             return True
 
@@ -835,7 +835,7 @@ class SafeControlEdit(object):
             return False
 
         if self._keyCallback:
-            self._keyCallback()
+            self._keyCallback(action_id)
 
         return True
 

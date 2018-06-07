@@ -185,15 +185,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.prev()
 
             elif action.getId() in MOVE_SET:
-                if util.aSet.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
+                if util.addonSettings.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
                     mli = self.relatedListControl.getSelectedItem()
                     if mli:
                         self.setProperty(
-                            'background', mli.dataSource.art.asTranscodedImageURL(
-                                self.width, self.height,
-                                blur=util.aSet.backgroundArtBlurAmount,
-                                opacity=util.aSet.backgroundArtOpacityAmount,
-                                background=colors.noAlpha.Background)
+                            'background', util.backgroundFromArt(mli.dataSource.art, width=self.width,
+                                                                 height=self.height)
                         )
 
             if controlID == self.EPISODE_LIST_ID:
@@ -659,9 +656,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setProperty(
             'background',
-            (self.show_ or self.season.show()).art.asTranscodedImageURL(
-                self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
-                opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background)
+            util.backgroundFromArt((self.show_ or self.season.show()).art, width=self.width, height=self.height)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', showTitle)
@@ -685,9 +680,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setItemInfo(self, video, mli):
         # video.reload(checkFiles=1)
-        mli.setProperty('background', video.art.asTranscodedImageURL(
-            self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
-            opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background))
+        mli.setProperty('background', util.backgroundFromArt(video.art, width=self.width, height=self.height))
         mli.setProperty('title', video.title)
         mli.setProperty('show.title', video.grandparentTitle or (self.show_.title if self.show_ else ''))
         mli.setProperty('duration', util.durationToText(video.duration.asInt()))

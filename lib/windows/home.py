@@ -609,13 +609,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         mli = control.getSelectedItem()
         is_valid_mli = mli and mli.getProperty('is.end') != '1'
 
-        if util.aSet.backgroundArtPerItem and is_valid_mli:
+        if util.addonSettings.backgroundArtPerItem and is_valid_mli:
             self.setProperty(
-                'background', mli.dataSource.art.asTranscodedImageURL(
-                    self.width, self.height,
-                    blur=util.aSet.backgroundArtBlurAmount,
-                    opacity=util.aSet.backgroundArtOpacityAmount,
-                    background=colors.noAlpha.Background)
+                'background', util.backgroundFromArt(mli.dataSource.art, width=self.width, height=self.height)
             )
 
         if not mli or not mli.getProperty('is.end') or mli.getProperty('is.updating') == '1':
@@ -984,10 +980,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             if not self.backgroundSet:
                 self.backgroundSet = True
                 self.setProperty(
-                    'background', obj.art.asTranscodedImageURL(self.width, self.height,
-                                                               blur=util.aSet.backgroundArtBlurAmount,
-                                                               opacity=util.aSet.backgroundArtOpacityAmount,
-                                                               background=colors.noAlpha.Background)
+                    'background', util.backgroundFromArt(obj.art, width=self.width, height=self.height)
                 )
             mli = self.createListItem(obj, wide=with_art)
             if mli:

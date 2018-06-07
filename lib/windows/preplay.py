@@ -101,15 +101,12 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.setFocusId(self.lastFocusID)
 
             if action.getId() in MOVE_SET:
-                if util.aSet.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
+                if util.addonSettings.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
                     mli = self.relatedListControl.getSelectedItem()
                     if mli:
                         self.setProperty(
-                            'background', mli.dataSource.art.asTranscodedImageURL(
-                                self.width, self.height,
-                                blur=util.aSet.backgroundArtBlurAmount,
-                                opacity=util.aSet.backgroundArtOpacityAmount,
-                                background=colors.noAlpha.Background)
+                            'background', util.backgroundFromArt(mli.dataSource.art, width=self.width,
+                                                                 height=self.height)
                         )
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
@@ -460,9 +457,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.fillRoles(hasPrev)
 
     def setInfo(self):
-        self.setProperty('background', self.video.art.asTranscodedImageURL(
-            self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
-            opacity=util.aSet.backgroundArtOpacityAmount, background=colors.noAlpha.Background))
+        self.setProperty('background', util.backgroundFromArt(self.video.art, width=self.width, height=self.height))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
         self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))

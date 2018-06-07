@@ -298,9 +298,7 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def updateProperties(self):
         self.setProperty(
             'background',
-            self.album.art.asTranscodedImageURL(self.width, self.height, blur=util.aSet.backgroundArtBlurAmount,
-                                                opacity=util.aSet.backgroundArtOpacityAmount,
-                                                background=colors.noAlpha.Background)
+            util.backgroundFromArt(self.album.art, width=self.width, height=self.height)
         )
         self.setProperty('album.thumb', self.album.thumb.asTranscodedImageURL(*self.THUMB_SQUARE_DIM))
         self.setProperty('artist.title', self.album.parentTitle or '')

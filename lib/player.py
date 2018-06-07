@@ -864,9 +864,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         art = fanart or track.defaultArt
         li.setArt({
             'fanart': art.asTranscodedImageURL(1920, 1080),
-            'landscape': art.asTranscodedImageURL(1920, 1080, blur=util.aSet.backgroundArtBlurAmount,
-                                                  opacity=util.aSet.backgroundArtOpacityAmount,
-                                                  background=colors.noAlpha.Background)
+            'landscape': util.backgroundFromArt(art)
         })
         if fanart:
             li.setArt({'fanart': fanart})

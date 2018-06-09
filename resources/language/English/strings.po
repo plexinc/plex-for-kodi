@@ -971,6 +971,14 @@ msgctxt "#32471"
 msgid "Use Plex/Kodi steps for timeline"
 msgstr ""
 
+msgctxt "#32472"
+msgid "Play theme music for shows"
+msgstr ""
+
+msgctxt "#32473"
+msgid "Theme music volume"
+msgstr ""
+
 msgctxt "#32485"
 msgid "Go back instantly with the previous menu action in scrolled views"
 msgstr ""

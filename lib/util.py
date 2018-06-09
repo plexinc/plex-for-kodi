@@ -485,6 +485,7 @@ class AdvancedSettings(object):
 
     _proxiedSettings = (
         ("debug", False),
+        ("kodi_skip_stepping", False),
     )
 
     def __init__(self):

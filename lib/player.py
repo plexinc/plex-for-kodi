@@ -1074,7 +1074,9 @@ class BGMusicPlayer(xbmc.Player):
         self.hasPlayed = False
 
     def play(self, *args, **kwargs):
-        self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
+        if not self._playing:
+            self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
+
         xbmc.executebuiltin("SetVolume(%s)" % util.advancedSettings.themeMusicVolume)
         self._playing = True
         self.hasPlayed = True

@@ -374,7 +374,7 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.player.showSubtitles(False)
 
     def setAudioTrack(self):
-        if self.mode == self.MODE_ABSOLUTE:
+        if self.mode == self.MODE_ABSOLUTE and not BGMUSICPLAYER.playing:
             track = self.player.video.selectedAudioStream()
             if track:
                 try:
@@ -567,26 +567,44 @@ class AudioPlayerHandler(BasePlayerHandler):
             pass
 
     def onMonitorInit(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
     def onPlayBackStarted(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updatePlayQueue(delay=True)
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
     def onPlayBackResumed(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updateNowPlaying(state='playing')
 
     def onPlayBackPaused(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updateNowPlaying(state='paused')
 
     def onPlayBackStopped(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.finish()
 
     def onPlayBackEnded(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.finish()
@@ -1041,6 +1059,33 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
                 self.handler.tick()
 
 
+class BGMusicPlayer(xbmc.Player):
+    """
+    based on: https://github.com/bstrdsmkr/service.bgmusic/blob/master/service.py
+    """
+    def __init__(self, *args, **kwargs):
+        xbmc.Player.__init__(self, *args, **kwargs)
+        self.volume = 20
+        self.old_volume = 50
+        self._playing = False
+
+    def play(self, *args, **kwargs):
+        self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
+        xbmc.executebuiltin("SetVolume(%s)" % self.volume)
+        self._playing = True
+        return super(BGMusicPlayer, self).play(*args, **kwargs)
+
+    def onPlayBackStopped(self):
+        if self._playing:
+            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
+
+        self._playing = False
+
+    @property
+    def playing(self):
+        return self._playing
+
+
 def shutdown():
     global PLAYER
     PLAYER.close(shutdown=True)
@@ -1048,3 +1093,4 @@ def shutdown():
 
 
 PLAYER = PlexPlayer().init()
+BGMUSICPLAYER = BGMusicPlayer()

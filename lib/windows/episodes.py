@@ -86,7 +86,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
         self.reset(kwargs.get('episode'), kwargs.get('season'), kwargs.get('show'))
+        self.initialEpisode = kwargs.get('episode')
         self.parentList = kwargs.get('parentList')
+        self.autoPlay = kwargs.get('auto_play')
         self.lastItem = None
         self.lastFocusID = None
         self.tasks = backgroundthread.Tasks()
@@ -107,7 +109,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         player.PLAYER.off('new.video', self.onNewVideo)
 
     @busy.dialog()
-    def onFirstInit(self):
+    def _onFirstInit(self):
         self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
@@ -117,6 +119,13 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self._setup()
         self.postSetup()
+
+    def onFirstInit(self):
+        self._onFirstInit()
+
+        if self.autoPlay:
+            self.autoPlay = False
+            self.playButtonClicked(force_episode=self.initialEpisode)
 
     def onReInit(self):
         self.selectEpisode()
@@ -404,7 +413,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.season.getLibrarySectionId() or None))
 
-    def playButtonClicked(self, shuffle=False):
+    def playButtonClicked(self, shuffle=False, force_episode=None):
         if shuffle:
             items = self.season.all()
             pl = playlist.LocalPlaylist(items, self.season.getServer())
@@ -412,7 +421,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             pl.shuffle(shuffle, first=True)
             videoplayer.play(play_queue=pl)
         else:
-            self.episodeListClicked()
+            self.episodeListClicked(force_episode=force_episode)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)
@@ -453,12 +462,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             is_16x9=True
         )
 
-    def episodeListClicked(self, play_version=False):
-        mli = self.episodeListControl.getSelectedItem()
-        if not mli:
-            return
+    def episodeListClicked(self, play_version=False, force_episode=None):
+        if not force_episode:
+            mli = self.episodeListControl.getSelectedItem()
+            if not mli:
+                return
 
-        episode = mli.dataSource
+            episode = mli.dataSource
+        else:
+            episode = force_episode
 
         if not episode.available():
             util.messageDialog(T(32312, 'unavailable'), T(32332, 'This item is currently unavailable.'))

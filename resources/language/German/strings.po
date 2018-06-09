@@ -949,3 +949,15 @@ msgstr "Künstler(in)"
 msgctxt "#32463"
 msgid "By Artist"
 msgstr "Nach Künstler(in)"
+
+msgctxt "#32467"
+msgid "Darstellung"
+msgstr ""
+
+msgctxt "#32472"
+msgid "Titelmusik für Serien abspielen"
+msgstr ""
+
+msgctxt "#32473"
+msgid "Titelmusik-Lautstärke"
+msgstr ""

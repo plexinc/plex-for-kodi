@@ -951,3 +951,14 @@ msgctxt "#32463"
 msgid "By Artist"
 msgstr ""
 
+msgctxt "#32467"
+msgid "Appearance"
+msgstr ""
+
+msgctxt "#32472"
+msgid "Play theme music for shows"
+msgstr ""
+
+msgctxt "#32473"
+msgid "Theme music volume"
+msgstr ""

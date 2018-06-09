@@ -475,6 +475,8 @@ class AdvancedSettings(object):
 
     _proxiedSettings = (
         ("debug", False),
+        ("theme_music_shows", False),
+        ("theme_music_volume", 80),
     )
 
     def __init__(self):

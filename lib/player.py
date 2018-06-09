@@ -474,7 +474,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.extractTrackInfo()
 
     def extractTrackInfo(self):
-        if not self.player.isPlayingAudio():
+        if not self.player.isPlayingAudio() or BGMUSICPLAYER.playing:
             return
 
         plexID = None
@@ -580,26 +580,44 @@ class AudioPlayerHandler(BasePlayerHandler):
             pass
 
     def onMonitorInit(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
     def onPlayBackStarted(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updatePlayQueue(delay=True)
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
     def onPlayBackResumed(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updateNowPlaying(state='playing')
 
     def onPlayBackPaused(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updateNowPlaying(state='paused')
 
     def onPlayBackStopped(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.finish()
 
     def onPlayBackEnded(self):
+        if BGMUSICPLAYER.isPlaying():
+            return
+
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.finish()
@@ -612,6 +630,9 @@ class AudioPlayerHandler(BasePlayerHandler):
         util.setGlobalProperty('track.ID', '')
 
     def tick(self):
+        if BGMUSICPLAYER.playing:
+            return
+
         self.stampCurrentTime()
         self.updateNowPlaying(force=True)
 

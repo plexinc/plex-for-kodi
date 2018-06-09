@@ -9,4 +9,8 @@
     <setting id="debug" type="bool" label="32024" default="false" />
   </category>
 
+  <category label="32467">
+    <setting id="theme_music_shows" type="bool" label="32472" default="false" />
+    <setting id="theme_music_volume" type="slider" label="32473" default="80" range="0,5,100" option="percent" />
+  </category>
 </settings>

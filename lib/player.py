@@ -374,16 +374,20 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.player.showSubtitles(False)
 
     def setAudioTrack(self):
-        if self.mode == self.MODE_ABSOLUTE and not BGMUSICPLAYER.playing:
+        if self.mode == self.MODE_ABSOLUTE:
             track = self.player.video.selectedAudioStream()
             if track:
-                try:
-                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=1, properties=['currentaudiostream'])['currentaudiostream']['index']
-                    if currIdx == track.typeIndex:
-                        util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
-                        return
-                except:
-                    util.ERROR()
+                # only try finding the current audio stream when the BG music player isn't playing and wasn't the last
+                # player, because currentaudiostream doesn't populate for audio-only items; in that case, always select
+                # the proper audio stream
+                if not BGMUSICPLAYER.hasPlayed and not BGMUSICPLAYER.isPlaying():
+                    try:
+                        currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=1, properties=['currentaudiostream'])['currentaudiostream']['index']
+                        if currIdx == track.typeIndex:
+                            util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
+                            return
+                    except:
+                        util.ERROR()
 
                 xbmc.sleep(100)
                 util.DEBUG_LOG('Switching audio track - index: {0}'.format(track.typeIndex))
@@ -1065,17 +1069,29 @@ class BGMusicPlayer(xbmc.Player):
     """
     def __init__(self, *args, **kwargs):
         xbmc.Player.__init__(self, *args, **kwargs)
-        self.volume = 20
         self.old_volume = 50
         self._playing = False
+        self.hasPlayed = False
 
     def play(self, *args, **kwargs):
         self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
-        xbmc.executebuiltin("SetVolume(%s)" % self.volume)
+        xbmc.executebuiltin("SetVolume(%s)" % util.advancedSettings.themeMusicVolume)
         self._playing = True
+        self.hasPlayed = True
         return super(BGMusicPlayer, self).play(*args, **kwargs)
 
+    def onPlayBackStarted(self):
+        if not self._playing:
+            self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
+            self.hasPlayed = False
+
     def onPlayBackStopped(self):
+        if self._playing:
+            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
+
+        self._playing = False
+
+    def onPlayBackEnded(self):
         if self._playing:
             xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
 

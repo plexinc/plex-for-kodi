@@ -301,7 +301,6 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackStarted(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackStarted - mode={0}'.format(self.mode))
-
         self.updateNowPlaying(force=True, refreshQueue=True)
 
     def onPlayBackResumed(self):
@@ -389,14 +388,20 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.mode == self.MODE_ABSOLUTE:
             track = self.player.video.selectedAudioStream()
             if track:
-                try:
-                    playerID = kodijsonrpc.rpc.Player.GetActivePlayers()[0]["playerid"]
-                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=playerID, properties=['currentaudiostream'])['currentaudiostream']['index']
-                    if currIdx == track.typeIndex:
-                        util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
-                        return
-                except:
-                    util.ERROR()
+                # only try finding the current audio stream when the BG music isn't playing and wasn't the last
+                # thing played, because currentaudiostream doesn't populate for audio-only items; in that case,
+                # always select the proper audio stream
+                if not self.player.lastPlayWasBGM:
+                    try:
+                        playerID = kodijsonrpc.rpc.Player.GetActivePlayers()[0]["playerid"]
+                        currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=playerID, properties=['currentaudiostream'])['currentaudiostream']['index']
+                        if currIdx == track.typeIndex:
+                            util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
+                            return
+                    except:
+                        util.ERROR()
+
+                self.player.lastPlayWasBGM = False
 
                 xbmc.sleep(100)
                 util.DEBUG_LOG('Switching audio track - index: {0}'.format(track.typeIndex))
@@ -584,6 +589,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.updateNowPlaying(state='playing')
 
     def onPlayBackStarted(self):
+        self.player.lastPlayWasBGM = False
         self.updatePlayQueue(delay=True)
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
@@ -626,21 +632,31 @@ class BGMPlayerHandler(BasePlayerHandler):
 
     def onPlayBackStarted(self):
         util.setGlobalProperty('theme_playing', '1')
-        self.player.bgm_playing = True
+        self.player.bgmPlaying = True
+
+    def setVolume(self, volume=None, reset=False):
+        vlm = self.old_volume if reset else volume
+        util.DEBUG_LOG("BGM: %ssetting volume to: %s" % ("re-" if reset else "", vlm))
+        xbmc.executebuiltin("SetVolume(%s)" % vlm)
 
     def resetVolume(self):
-        if self.old_volume is not None:
-            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
+        self.setVolume(reset=True)
 
     def onPlayBackStopped(self):
         util.setGlobalProperty('theme_playing', '')
-        self.player.bgm_playing = False
+        self.player.bgmPlaying = False
         self.resetVolume()
 
     def onPlayBackEnded(self):
-        util.setGlobalProperty('theme_playing', '')
-        self.player.bgm_playing = False
-        self.resetVolume()
+        self.onPlayBackStopped()
+
+    def onPlayBackFailed(self):
+        self.onPlayBackStopped()
+        return True
+
+    def close(self):
+        self.player.stopAndWait()
+        self.onPlayBackStopped()
 
 
 class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
@@ -653,7 +669,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self._closed = False
         self._nextItem = None
         self.started = False
-        self.bgm_playing = False
+        self.bgmPlaying = False
+        self.lastPlayWasBGM = False
         self.old_volume = None
         self.pauseAfterPlaybackStarted = False
         self.video = None
@@ -679,7 +696,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     def reset(self):
         self.video = None
         self.started = False
-        self.bgm_playing = False
+        self.bgmPlaying = False
         self.playerObject = None
         self.pauseAfterPlaybackStarted = False
         self.handler = AudioPlayerHandler(self)
@@ -739,14 +756,22 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         xbmc.Player.play(self, *args, **kwargs)
 
     def playBackgroundMusic(self, *args, **kwargs):
-        self.started = False
+        if self.isPlaying() and not self.lastPlayWasBGM:
+            return
+
         self.stopAndWait()
+        self.started = False
         self.handler = BGMPlayerHandler(self)
 
-        xbmc.executebuiltin("SetVolume(%s)" % util.advancedSettings.themeMusicVolume)
+        self.lastPlayWasBGM = True
+
+        self.handler.setVolume(util.advancedSettings.themeMusicVolume)
         xbmc.Player.play(self, *args, **kwargs)
 
     def playVideo(self, video, resume=False, force_update=False, session_id=None, handler=None):
+        if self.bgmPlaying:
+            self.stopAndWait()
+
         self.handler = handler or SeekPlayerHandler(self, session_id)
         self.video = video
         self.open()
@@ -811,6 +836,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.play(url, li)
 
     def playVideoPlaylist(self, playlist, resume=True, handler=None, session_id=None):
+        if self.bgmPlaying:
+            self.stopAndWait()
+
         if handler:
             self.handler = handler
         else:
@@ -846,12 +874,18 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     #     return url, li
 
     def playAudio(self, track, fanart=None):
+        if self.bgmPlaying:
+            self.stopAndWait()
+
         self.handler = AudioPlayerHandler(self)
         url, li = self.createTrackListItem(track, fanart)
         self.stopAndWait()
         self.play(url, li)
 
     def playAlbum(self, album, startpos=-1, fanart=None):
+        if self.bgmPlaying:
+            self.stopAndWait()
+
         self.handler = AudioPlayerHandler(self)
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         plist.clear()
@@ -865,6 +899,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.play(plist, startpos=startpos)
 
     def playAudioPlaylist(self, playlist, startpos=-1, fanart=None):
+        if self.bgmPlaying:
+            self.stopAndWait()
+
         self.handler = AudioPlayerHandler(self)
         plist = xbmc.PlayList(xbmc.PLAYLIST_MUSIC)
         plist.clear()

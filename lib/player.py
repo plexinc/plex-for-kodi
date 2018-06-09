@@ -907,6 +907,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.handler.onPlayBackResumed()
 
     def onPlayBackStopped(self):
+        if BGMUSICPLAYER.playing:
+            return
+
         if not self.started:
             self.onPlayBackFailed()
 
@@ -916,6 +919,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.handler.onPlayBackStopped()
 
     def onPlayBackEnded(self):
+        if BGMUSICPLAYER.playing:
+            return
+
         if not self.started:
             self.onPlayBackFailed()
 
@@ -931,6 +937,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.handler.onPlayBackSeek(time, offset)
 
     def onPlayBackFailed(self):
+        if BGMUSICPLAYER.playing:
+            return
+
         util.DEBUG_LOG('Player - FAILED')
         if not self.handler:
             return
@@ -994,10 +1003,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
                 if self.isPlayingVideo():
                     util.DEBUG_LOG('Monitoring video...')
                     self._videoMonitor()
-                elif self.isPlayingAudio():
+                elif self.isPlayingAudio() and not BGMUSICPLAYER.playing:
                     util.DEBUG_LOG('Monitoring audio...')
                     self._audioMonitor()
-                elif self.isPlaying():
+                elif self.isPlaying() and not BGMUSICPLAYER.playing:
                     util.DEBUG_LOG('Monitoring pre-play...')
                     self._preplayMonitor()
 
@@ -1084,6 +1093,10 @@ class BGMusicPlayer(xbmc.Player):
         if not self._playing:
             self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
 
+        if self.isPlaying() or self._playing:
+            self.stop()
+            xbmc.sleep(100)
+
         xbmc.executebuiltin("SetVolume(%s)" % util.advancedSettings.themeMusicVolume)
         self._playing = True
         self.hasPlayed = True
@@ -1112,7 +1125,7 @@ class BGMusicPlayer(xbmc.Player):
 
     @property
     def playing(self):
-        return self._playing
+        return self._playing or self.isPlaying()
 
 
 def shutdown():

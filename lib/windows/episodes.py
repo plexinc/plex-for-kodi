@@ -109,7 +109,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         player.PLAYER.off('new.video', self.onNewVideo)
 
     @busy.dialog()
-    def onFirstInit(self):
+    def _onFirstInit(self):
         self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
@@ -122,6 +122,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def doAutoPlay(self):
         return self.playButtonClicked(force_episode=self.initialEpisode)
+
+    def onFirstInit(self):
+        self._onFirstInit()
+
+        # we've come from a home hub view, play the current item's show's theme song
+        if self.initialEpisode and util.advancedSettings.themeMusicShows:
+            theme = self.initialEpisode.show().theme
+            if theme:
+                player.PLAYER.playBackgroundMusic(theme.asURL(True))
 
     def onReInit(self):
         self.selectEpisode()

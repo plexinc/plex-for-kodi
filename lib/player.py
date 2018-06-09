@@ -474,7 +474,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.extractTrackInfo()
 
     def extractTrackInfo(self):
-        if not self.player.isPlayingAudio() or BGMUSICPLAYER.playing:
+        if not self.player.isPlayingAudio():
             return
 
         plexID = None
@@ -580,44 +580,26 @@ class AudioPlayerHandler(BasePlayerHandler):
             pass
 
     def onMonitorInit(self):
-        if BGMUSICPLAYER.isPlaying():
-            return
-
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
     def onPlayBackStarted(self):
-        if BGMUSICPLAYER.isPlaying():
-            return
-
         self.updatePlayQueue(delay=True)
         self.extractTrackInfo()
         self.updateNowPlaying(state='playing')
 
     def onPlayBackResumed(self):
-        if BGMUSICPLAYER.isPlaying():
-            return
-
         self.updateNowPlaying(state='playing')
 
     def onPlayBackPaused(self):
-        if BGMUSICPLAYER.isPlaying():
-            return
-
         self.updateNowPlaying(state='paused')
 
     def onPlayBackStopped(self):
-        if BGMUSICPLAYER.isPlaying():
-            return
-
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.finish()
 
     def onPlayBackEnded(self):
-        if BGMUSICPLAYER.isPlaying():
-            return
-
         self.updatePlayQueue()
         self.updateNowPlaying(state='stopped')
         self.finish()
@@ -630,11 +612,35 @@ class AudioPlayerHandler(BasePlayerHandler):
         util.setGlobalProperty('track.ID', '')
 
     def tick(self):
-        if BGMUSICPLAYER.playing:
-            return
-
         self.stampCurrentTime()
         self.updateNowPlaying(force=True)
+
+
+class BGMPlayerHandler(BasePlayerHandler):
+    def __init__(self, player):
+        BasePlayerHandler.__init__(self, player)
+        self.timelineType = 'music'
+        util.setGlobalProperty('track.ID', '')
+
+        self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
+
+    def onPlayBackStarted(self):
+        util.setGlobalProperty('theme_playing', '1')
+        self.player.bgm_playing = True
+
+    def resetVolume(self):
+        if self.old_volume is not None:
+            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
+
+    def onPlayBackStopped(self):
+        util.setGlobalProperty('theme_playing', '')
+        self.player.bgm_playing = False
+        self.resetVolume()
+
+    def onPlayBackEnded(self):
+        util.setGlobalProperty('theme_playing', '')
+        self.player.bgm_playing = False
+        self.resetVolume()
 
 
 class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
@@ -647,6 +653,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self._closed = False
         self._nextItem = None
         self.started = False
+        self.bgm_playing = False
+        self.old_volume = None
         self.pauseAfterPlaybackStarted = False
         self.video = None
         self.hasOSD = False
@@ -671,6 +679,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     def reset(self):
         self.video = None
         self.started = False
+        self.bgm_playing = False
         self.playerObject = None
         self.pauseAfterPlaybackStarted = False
         self.handler = AudioPlayerHandler(self)
@@ -727,6 +736,14 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def play(self, *args, **kwargs):
         self.started = False
+        xbmc.Player.play(self, *args, **kwargs)
+
+    def playBackgroundMusic(self, *args, **kwargs):
+        self.started = False
+        self.stopAndWait()
+        self.handler = BGMPlayerHandler(self)
+
+        xbmc.executebuiltin("SetVolume(%s)" % util.advancedSettings.themeMusicVolume)
         xbmc.Player.play(self, *args, **kwargs)
 
     def playVideo(self, video, resume=False, force_update=False, session_id=None, handler=None):

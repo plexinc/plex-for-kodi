@@ -102,11 +102,10 @@ class SeekDialog(kodigui.BaseDialog):
         self._lastSkipDirection = None
         self._forcedLastSkipAmount = None
         self.skipSteps = self.SKIP_STEPS
-        self.useKodiSkipSteps = util.advancedSettings.kodiSkipStepping
         self.useAutoSeek = util.advancedSettings.autoSeek
         self.useDynamicStepsForTimeline = util.advancedSettings.dynamicTimelineSeek
 
-        if self.useKodiSkipSteps:
+        if util.kodiSkipSteps and util.advancedSettings.kodiSkipStepping:
             self.skipSteps = {"negative": [], "positive": []}
             for step in util.kodiSkipSteps:
                 key = "negative" if step < 0 else "positive"

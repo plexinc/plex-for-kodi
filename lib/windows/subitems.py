@@ -91,7 +91,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setFocusId(self.PLAY_BUTTON_ID)
 
         if self.mediaItem.theme and util.advancedSettings.themeMusicShows:
-            player.BGMUSICPLAYER.play(self.mediaItem.theme.asURL())
+            player.BGMUSICPLAYER.play(self.mediaItem.theme.asURL(True))
 
     def setup(self):
         self.mediaItem.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)

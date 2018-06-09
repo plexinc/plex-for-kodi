@@ -131,7 +131,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if self.initialEpisode and util.advancedSettings.themeMusicShows:
                 theme = self.initialEpisode.show().theme
                 if theme:
-                    player.BGMUSICPLAYER.play(theme.asURL())
+                    player.BGMUSICPLAYER.play(theme.asURL(True))
 
     def onReInit(self):
         self.selectEpisode()

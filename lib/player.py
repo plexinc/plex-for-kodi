@@ -1072,7 +1072,7 @@ class BGMusicPlayer(xbmc.Player):
     """
     def __init__(self, *args, **kwargs):
         xbmc.Player.__init__(self, *args, **kwargs)
-        self.old_volume = 50
+        self.old_volume = None
         self._playing = False
         self.hasPlayed = False
 
@@ -1090,24 +1090,25 @@ class BGMusicPlayer(xbmc.Player):
         util.setGlobalProperty('theme_playing', '1')
         return super(BGMusicPlayer, self).play(*args, **kwargs)
 
+    def resetVolume(self):
+        if self.old_volume is not None:
+            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
+
     def onPlayBackStarted(self):
         if not self._playing:
-            self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
             self.hasPlayed = False
 
     def onPlayBackStopped(self):
         if self._playing:
-            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
-
-        self._playing = False
-        util.setGlobalProperty('theme_playing', '')
+            self.resetVolume()
+            self._playing = False
+            util.setGlobalProperty('theme_playing', '')
 
     def onPlayBackEnded(self):
         if self._playing:
-            xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
-
-        self._playing = False
-        util.setGlobalProperty('theme_playing', '')
+            self.resetVolume()
+            self._playing = False
+            util.setGlobalProperty('theme_playing', '')
 
     @property
     def playing(self):
@@ -1115,9 +1116,14 @@ class BGMusicPlayer(xbmc.Player):
 
 
 def shutdown():
-    global PLAYER
+    global PLAYER, BGMUSICPLAYER
     PLAYER.close(shutdown=True)
     del PLAYER
+
+    if BGMUSICPLAYER.playing:
+        BGMUSICPLAYER.stop()
+        BGMUSICPLAYER.resetVolume()
+    del BGMUSICPLAYER
 
 
 PLAYER = PlexPlayer().init()

@@ -465,7 +465,7 @@ class AudioPlayerHandler(BasePlayerHandler):
         self.extractTrackInfo()
 
     def extractTrackInfo(self):
-        if not self.player.isPlayingAudio():
+        if not self.player.isPlayingAudio() or BGMUSICPLAYER.playing:
             return
 
         plexID = None
@@ -621,6 +621,9 @@ class AudioPlayerHandler(BasePlayerHandler):
         util.setGlobalProperty('track.ID', '')
 
     def tick(self):
+        if BGMUSICPLAYER.playing:
+            return
+
         self.stampCurrentTime()
         self.updateNowPlaying(force=True)
 
@@ -1080,6 +1083,7 @@ class BGMusicPlayer(xbmc.Player):
         xbmc.executebuiltin("SetVolume(%s)" % util.advancedSettings.themeMusicVolume)
         self._playing = True
         self.hasPlayed = True
+        util.setGlobalProperty('theme_playing', '1')
         return super(BGMusicPlayer, self).play(*args, **kwargs)
 
     def onPlayBackStarted(self):
@@ -1092,12 +1096,14 @@ class BGMusicPlayer(xbmc.Player):
             xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
 
         self._playing = False
+        util.setGlobalProperty('theme_playing', '')
 
     def onPlayBackEnded(self):
         if self._playing:
             xbmc.executebuiltin("SetVolume(%s)" % self.old_volume)
 
         self._playing = False
+        util.setGlobalProperty('theme_playing', '')
 
     @property
     def playing(self):

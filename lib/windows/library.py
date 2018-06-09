@@ -494,6 +494,14 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                     self.setBoolProperty('dragging', self.dragging)
 
             if action.getId() in MOVE_SET:
+                if util.advancedSettings.dynamicBackgrounds:
+                    mli = self.showPanelControl.getSelectedItem()
+                    if mli and mli.dataSource:
+                        self.setProperty(
+                            'background', util.backgroundFromArt(mli.dataSource.art, width=self.width,
+                                                                 height=self.height)
+                        )
+
                 controlID = self.getFocusId()
                 if controlID == self.POSTERS_PANEL_ID or controlID == self.SCROLLBAR_ID:
                     self.updateKey()
@@ -1229,13 +1237,18 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 backgroundthread.BGThreader.moveToFront(task)
                 break
 
-    def setBackground(self, items):
-        if self.backgroundSet:
-            return
-        self.backgroundSet = True
+    def setBackground(self, items, randomize=True):
+        if randomize:
+            if self.backgroundSet:
+                return
+            self.backgroundSet = True
 
-        item = random.choice(items)
-        self.setProperty('background', util.backgroundFromArt(item.art, width=self.width, height=self.height))
+            item = random.choice(items)
+            self.setProperty('background', util.backgroundFromArt(item.art, width=self.width, height=self.height))
+        else:
+            if items:
+                self.setProperty('background', util.backgroundFromArt(items[0].art,
+                                                                      width=self.width, height=self.height))
 
     def fill(self):
         if self.chunkMode:
@@ -1507,7 +1520,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             if self.chunkMode and not self.chunkMode.posIsValid(start):
                 return
             pos = start
-            self.setBackground(items)
+            self.setBackground(items, randomize=not util.advancedSettings.dynamicBackgrounds)
+
             thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
             artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))
 

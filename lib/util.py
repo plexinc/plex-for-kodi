@@ -486,6 +486,8 @@ class AdvancedSettings(object):
     _proxiedSettings = (
         ("debug", False),
         ("kodi_skip_stepping", False),
+        ("auto_seek", False),
+        ("dynamic_timeline_seek", False),
     )
 
     def __init__(self):

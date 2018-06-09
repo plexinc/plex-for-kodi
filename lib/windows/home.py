@@ -980,7 +980,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         items = []
 
         for obj in hubitems or hub.items:
-            if not self.backgroundSet and util.advancedSettings.dynamicBackgrounds:
+            if not self.backgroundSet:
                 self.backgroundSet = True
                 self.setProperty(
                     'background', util.backgroundFromArt(obj.art, width=self.width, height=self.height)

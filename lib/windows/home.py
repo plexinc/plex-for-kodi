@@ -609,7 +609,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         mli = control.getSelectedItem()
         is_valid_mli = mli and mli.getProperty('is.end') != '1'
 
-        if util.addonSettings.backgroundArtPerItem and is_valid_mli:
+        if util.advancedSettings.backgroundArtPerItem and is_valid_mli:
             self.setProperty(
                 'background', util.backgroundFromArt(mli.dataSource.art, width=self.width, height=self.height)
             )

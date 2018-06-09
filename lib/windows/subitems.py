@@ -186,15 +186,6 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
 
-            elif action.getId() in MOVE_SET:
-                if util.addonSettings.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
-                    mli = self.relatedListControl.getSelectedItem()
-                    if mli:
-                        self.setProperty(
-                            'background', util.backgroundFromArt(mli.dataSource.art, width=self.width,
-                                                                 height=self.height)
-                        )
-
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()
             elif action == xbmcgui.ACTION_NEXT_ITEM:

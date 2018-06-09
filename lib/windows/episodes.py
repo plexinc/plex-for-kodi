@@ -184,15 +184,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             elif action == xbmcgui.ACTION_PREV_ITEM:
                 self.prev()
 
-            elif action.getId() in MOVE_SET:
-                if util.addonSettings.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
-                    mli = self.relatedListControl.getSelectedItem()
-                    if mli:
-                        self.setProperty(
-                            'background', util.backgroundFromArt(mli.dataSource.art, width=self.width,
-                                                                 height=self.height)
-                        )
-
             if controlID == self.EPISODE_LIST_ID:
                 self.checkForHeaderFocus(action)
             if controlID == self.LIST_OPTIONS_BUTTON_ID and self.checkOptionsAction(action):

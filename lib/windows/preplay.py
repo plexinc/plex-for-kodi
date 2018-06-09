@@ -100,15 +100,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if not controlID and self.lastFocusID and not action == xbmcgui.ACTION_MOUSE_MOVE:
                 self.setFocusId(self.lastFocusID)
 
-            if action.getId() in MOVE_SET:
-                if util.addonSettings.backgroundArtPerItem and self.lastFocusID == self.RELATED_LIST_ID:
-                    mli = self.relatedListControl.getSelectedItem()
-                    if mli:
-                        self.setProperty(
-                            'background', util.backgroundFromArt(mli.dataSource.art, width=self.width,
-                                                                 height=self.height)
-                        )
-
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
                         self.OPTIONS_GROUP_ID)) and \

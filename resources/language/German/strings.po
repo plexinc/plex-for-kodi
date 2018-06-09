@@ -968,7 +968,7 @@ msgstr "Benutzeroberfläche"
 
 msgctxt "#32468"
 msgid "Show dynamic background art"
-msgstr "Hintergrundbild pro Element anzeigen"
+msgstr "Dynamische Hintergrundbilder aktivieren"
 
 msgctxt "#32469"
 msgid "Background art blur amount"

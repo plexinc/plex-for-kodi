@@ -609,7 +609,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         mli = control.getSelectedItem()
         is_valid_mli = mli and mli.getProperty('is.end') != '1'
 
-        if util.advancedSettings.backgroundArtPerItem and is_valid_mli:
+        if util.advancedSettings.dynamicBackgrounds and is_valid_mli:
             self.setProperty(
                 'background', util.backgroundFromArt(mli.dataSource.art, width=self.width, height=self.height)
             )
@@ -658,7 +658,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def _sectionReallyChanged(self):
         section = self.lastSection
         self.setProperty('hub.focus', '')
-        if util.advancedSettings.backgroundArtPerItem:
+        if util.advancedSettings.dynamicBackgrounds:
             self.backgroundSet = False
 
         util.DEBUG_LOG('Section changed ({0}): {1}'.format(section.key, repr(section.title)))
@@ -980,7 +980,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         items = []
 
         for obj in hubitems or hub.items:
-            if not self.backgroundSet and util.advancedSettings.backgroundArtPerItem:
+            if not self.backgroundSet and util.advancedSettings.dynamicBackgrounds:
                 self.backgroundSet = True
                 self.setProperty(
                     'background', util.backgroundFromArt(obj.art, width=self.width, height=self.height)

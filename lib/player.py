@@ -1077,6 +1077,10 @@ class BGMusicPlayer(xbmc.Player):
         self.hasPlayed = False
 
     def play(self, *args, **kwargs):
+        # someone else is playing but not us, ignore
+        if self.isPlaying() and not self._playing:
+            return
+
         if not self._playing:
             self.old_volume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
 

@@ -1237,18 +1237,21 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 backgroundthread.BGThreader.moveToFront(task)
                 break
 
-    def setBackground(self, items, randomize=True):
-        if randomize:
-            if self.backgroundSet:
-                return
-            self.backgroundSet = True
+    def setBackground(self, items, position, randomize=True):
+        if self.backgroundSet:
+            return
 
+        if randomize:
             item = random.choice(items)
             self.setProperty('background', util.backgroundFromArt(item.art, width=self.width, height=self.height))
         else:
-            if items:
-                self.setProperty('background', util.backgroundFromArt(items[0].art,
-                                                                      width=self.width, height=self.height))
+            # we want the first item of the first chunk
+            if position is not 0:
+                return
+
+            self.setProperty('background', util.backgroundFromArt(items[0].art,
+                                                                  width=self.width, height=self.height))
+        self.backgroundSet = True
 
     def fill(self):
         if self.chunkMode:
@@ -1520,7 +1523,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             if self.chunkMode and not self.chunkMode.posIsValid(start):
                 return
             pos = start
-            self.setBackground(items, randomize=not util.advancedSettings.dynamicBackgrounds)
+            self.setBackground(items, pos, randomize=not util.advancedSettings.dynamicBackgrounds)
 
             thumbDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['thumb_dim']
             artDim = TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie']).get('art_dim', (256, 256))

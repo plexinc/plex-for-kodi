@@ -830,6 +830,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         else:
             args['sourceType'] = '8'
 
+        # When the list is filtered by unwatched, play and shuffle button should only play unwatched videos
+        if self.filterUnwatched:
+            args['unwatched'] = '1'
+
         pq = playqueue.createPlayQueueForItem(self.section, options={'shuffle': shuffle}, args=args)
         opener.open(pq)
 

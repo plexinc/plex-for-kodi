@@ -65,7 +65,7 @@ class PlexValue(unicode):
         return dt.strftime(format_)
 
     def asURL(self):
-        return self.parent.server.url(self)
+        return self.parent.server.buildUrl(self, True)
 
     def asTranscodedImageURL(self, w, h, **extras):
         return self.parent.server.getImageTranscodeURL(self, w, h, **extras)

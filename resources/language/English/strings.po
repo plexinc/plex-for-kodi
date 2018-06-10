@@ -971,12 +971,52 @@ msgctxt "#32471"
 msgid "Use Plex/Kodi steps for timeline"
 msgstr ""
 
-msgctxt "#32472"
-msgid "Play theme music for shows"
+msgctxt "#32480"
+msgid "Theme music"
 msgstr ""
 
-msgctxt "#32473"
-msgid "Theme music volume"
+msgctxt "#32481"
+msgid "Off"
+msgstr ""
+
+msgctxt "#32482"
+msgid "10%"
+msgstr ""
+
+msgctxt "#32483"
+msgid "20%"
+msgstr ""
+
+msgctxt "#32484"
+msgid "30%"
+msgstr ""
+
+msgctxt "#32485"
+msgid "40%"
+msgstr ""
+
+msgctxt "#32486"
+msgid "50%"
+msgstr ""
+
+msgctxt "#32487"
+msgid "60%"
+msgstr ""
+
+msgctxt "#32488"
+msgid "70%"
+msgstr ""
+
+msgctxt "#32489"
+msgid "80%"
+msgstr ""
+
+msgctxt "#32490"
+msgid "90%"
+msgstr ""
+
+msgctxt "#32491"
+msgid "100%"
 msgstr ""
 
 msgctxt "#32485"

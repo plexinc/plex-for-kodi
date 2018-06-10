@@ -974,8 +974,48 @@ msgctxt "#32472"
 msgid "Titelmusik für Serien abspielen"
 msgstr ""
 
-msgctxt "#32473"
-msgid "Titelmusik-Lautstärke"
+msgctxt "#32480"
+msgid "Titelmusik"
+msgstr ""
+
+msgctxt "#32481"
+msgid "10%"
+msgstr ""
+
+msgctxt "#32482"
+msgid "20%"
+msgstr ""
+
+msgctxt "#32483"
+msgid "30%"
+msgstr ""
+
+msgctxt "#32484"
+msgid "40%"
+msgstr ""
+
+msgctxt "#32485"
+msgid "50%"
+msgstr ""
+
+msgctxt "#32486"
+msgid "60%"
+msgstr ""
+
+msgctxt "#32487"
+msgid "70%"
+msgstr ""
+
+msgctxt "#32488"
+msgid "80%"
+msgstr ""
+
+msgctxt "#32489"
+msgid "90%"
+msgstr ""
+
+msgctxt "#32490"
+msgid "100%"
 msgstr ""
 
 msgctxt "#32485"

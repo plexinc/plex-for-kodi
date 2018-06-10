@@ -628,11 +628,11 @@ class BGMPlayerHandler(BasePlayerHandler):
         self.timelineType = 'music'
         self.currentlyPlaying = rating_key
         util.setGlobalProperty('track.ID', '')
+        util.setGlobalProperty('theme_playing', '1')
 
         self.oldVolume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
 
     def onPlayBackStarted(self):
-        util.setGlobalProperty('theme_playing', '1')
         self.player.bgmPlaying = True
 
     def setVolume(self, volume=None, reset=False):

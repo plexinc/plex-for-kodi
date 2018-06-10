@@ -951,3 +951,18 @@ msgctxt "#32463"
 msgid "By Artist"
 msgstr ""
 
+msgctxt "#32464"
+msgid "Player"
+msgstr ""
+
+msgctxt "#32465"
+msgid "Use skip step settings from Kodi"
+msgstr ""
+
+msgctxt "#32466"
+msgid "Automatically seek selected position after a delay"
+msgstr ""
+
+msgctxt "#32471"
+msgid "Use Plex/Kodi steps for timeline"
+msgstr ""

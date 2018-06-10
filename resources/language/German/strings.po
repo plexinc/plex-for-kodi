@@ -949,3 +949,19 @@ msgstr "Künstler(in)"
 msgctxt "#32463"
 msgid "By Artist"
 msgstr "Nach Künstler(in)"
+
+msgctxt "#32464"
+msgid "Player"
+msgstr "Wiedergabe"
+
+msgctxt "#32465"
+msgid "Use skip step settings from Kodi"
+msgstr "Skip-Schritte-Einstellung von Kodi benutzen"
+
+msgctxt "#32466"
+msgid "Automatically seek to the selected timeline position after a second"
+msgstr "Nach Verzögerung automatisch zur aktuell gewählten Position springen"
+
+msgctxt "#32471"
+msgid "Use Plex/Kodi steps for timeline"
+msgstr "Plex/Kodi-Skip-Schritte für die Zeitachse verwenden"

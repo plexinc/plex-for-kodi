@@ -285,7 +285,7 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def seekAbsolute(self, seek=None):
         self.seekOnStart = seek or self.seekOnStart
-        if self.seekOnStart:
+        if self.seekOnStart is not None:
             self.player.control('play')
             seekSeconds = self.seekOnStart / 1000.0
             try:
@@ -304,6 +304,10 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackResumed(self):
         self.updateNowPlaying()
+        if self.dialog:
+            self.dialog.onPlaybackResumed()
+
+            util.CRON.forceTick()
         # self.hideOSD()
 
     def onPlayBackStopped(self):
@@ -338,6 +342,8 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackPaused(self):
         self.updateNowPlaying()
+        if self.dialog:
+            self.dialog.onPlaybackPaused()
 
     def onPlayBackSeek(self, stime, offset):
         if self.seekOnStart:

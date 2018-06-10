@@ -964,5 +964,5 @@ msgid "Automatically seek selected position after a delay"
 msgstr ""
 
 msgctxt "#32471"
-msgid "Use Plex/Kodi steps for timeline as well"
+msgid "Use Plex/Kodi steps for timeline"
 msgstr ""

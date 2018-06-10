@@ -486,7 +486,7 @@ class AdvancedSettings(object):
     _proxiedSettings = (
         ("debug", False),
         ("kodi_skip_stepping", False),
-        ("auto_seek", False),
+        ("auto_seek", True),
         ("dynamic_timeline_seek", False),
     )
 

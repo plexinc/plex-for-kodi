@@ -763,7 +763,6 @@ class SeekDialog(kodigui.BaseDialog):
         if set_to_current:
             self.seekbarControl.setWidth(w)
             self.positionControl.setWidth(w)
-
         else:
             # we're seeking
 

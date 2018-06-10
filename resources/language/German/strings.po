@@ -963,5 +963,5 @@ msgid "Automatically seek to the selected timeline position after a second"
 msgstr "Nach Verzögerung automatisch zur aktuell gewählten Position springen"
 
 msgctxt "#32471"
-msgid "Plex/Kodi-Skip-Schritte auch für die Zeitachse verwenden"
-msgstr ""
+msgid "Use Plex/Kodi steps for timeline"
+msgstr "Plex/Kodi-Skip-Schritte für die Zeitachse verwenden"

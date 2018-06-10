@@ -623,9 +623,10 @@ class AudioPlayerHandler(BasePlayerHandler):
 
 
 class BGMPlayerHandler(BasePlayerHandler):
-    def __init__(self, player):
+    def __init__(self, player, rating_key):
         BasePlayerHandler.__init__(self, player)
         self.timelineType = 'music'
+        self.currentlyPlaying = rating_key
         util.setGlobalProperty('track.ID', '')
 
         self.oldVolume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
@@ -755,18 +756,21 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.started = False
         xbmc.Player.play(self, *args, **kwargs)
 
-    def playBackgroundMusic(self, *args, **kwargs):
+    def playBackgroundMusic(self, source, volume, rating_key, *args, **kwargs):
         if self.isPlaying() and not self.lastPlayWasBGM:
+            return
+
+        elif self.isPlaying() and self.lastPlayWasBGM and self.handler.currentlyPlaying == rating_key:
             return
 
         self.stopAndWait()
         self.started = False
-        self.handler = BGMPlayerHandler(self)
+        self.handler = BGMPlayerHandler(self, rating_key)
 
         self.lastPlayWasBGM = True
 
-        self.handler.setVolume(util.advancedSettings.themeMusicVolume)
-        xbmc.Player.play(self, *args, **kwargs)
+        self.handler.setVolume(volume)
+        xbmc.Player.play(self, source, *args, **kwargs)
 
     def playVideo(self, video, resume=False, force_update=False, session_id=None, handler=None):
         if self.bgmPlaying:

@@ -50,23 +50,23 @@ class BasicSetting(Setting):
 
 class ListSetting(BasicSetting):
     type = 'LIST'
-    label_list = ()
+    options = ()
 
     def translate(self, val):
-        return self.label_list[len(self.label_list) - val]
+        return self.options[len(self.options) - val]
 
     def optionLabels(self):
-        return self.label_list
+        return self.options
 
     def optionIndex(self):
-        return len(self.label_list) - self.get()
+        return len(self.options) - self.get()
 
     def set(self, val):
-        BasicSetting.set(self, len(self.label_list) - val)
+        BasicSetting.set(self, len(self.options) - val)
 
 
 class QualitySetting(ListSetting):
-    label_list = (
+    options = (
         T(32001),
         T(32002),
         T(32003),
@@ -85,19 +85,9 @@ class QualitySetting(ListSetting):
 
 
 class ThemeMusicSetting(ListSetting):
-    label_list = (
+    options = [
         T(32481),
-        T(32482),
-        T(32483),
-        T(32484),
-        T(32485),
-        T(32486),
-        T(32487),
-        T(32488),
-        T(32489),
-        T(32490),
-        T(32491),
-    )
+    ] + [T(32482) % {"percentage": 10+i} for i in range(0, 100, 10)]
 
 
 class BoolSetting(BasicSetting):

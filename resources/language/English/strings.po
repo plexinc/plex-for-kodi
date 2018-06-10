@@ -980,43 +980,7 @@ msgid "Off"
 msgstr ""
 
 msgctxt "#32482"
-msgid "10%"
-msgstr ""
-
-msgctxt "#32483"
-msgid "20%"
-msgstr ""
-
-msgctxt "#32484"
-msgid "30%"
-msgstr ""
-
-msgctxt "#32485"
-msgid "40%"
-msgstr ""
-
-msgctxt "#32486"
-msgid "50%"
-msgstr ""
-
-msgctxt "#32487"
-msgid "60%"
-msgstr ""
-
-msgctxt "#32488"
-msgid "70%"
-msgstr ""
-
-msgctxt "#32489"
-msgid "80%"
-msgstr ""
-
-msgctxt "#32490"
-msgid "90%"
-msgstr ""
-
-msgctxt "#32491"
-msgid "100%"
+msgid "%(percentage)s %%"
 msgstr ""
 
 msgctxt "#32485"

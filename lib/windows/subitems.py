@@ -91,8 +91,11 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setFocusId(self.PLAY_BUTTON_ID)
 
-        if self.mediaItem.theme and util.advancedSettings.themeMusicShows:
-            player.PLAYER.playBackgroundMusic(self.mediaItem.theme.asURL(True))
+        if self.mediaItem.theme:
+            volume = self.mediaItem.settings.getThemeMusicValue()
+            if volume > 0:
+                player.PLAYER.playBackgroundMusic(self.mediaItem.theme.asURL(True), volume,
+                                                  self.mediaItem.ratingKey)
 
     def setup(self):
         self.mediaItem.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)

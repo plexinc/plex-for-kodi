@@ -92,6 +92,8 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setFocusId(self.PLAY_BUTTON_ID)
 
+    def onInit(self):
+        super(ShowWindow, self).onInit()
         if self.mediaItem.theme and not self.cameFrom or self.cameFrom != self.mediaItem.ratingKey:
             volume = self.mediaItem.settings.getThemeMusicValue()
             if volume > 0:

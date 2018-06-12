@@ -286,7 +286,7 @@ class CurrentPlaylistWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def seekMouse(self, action):
         x = self.mouseXTrans(action.getAmount1())
-        y = self.mouseXTrans(action.getAmount2())
+        y = self.mouseYTrans(action.getAmount2())
         if not (self.BAR_Y <= y <= self.BAR_BOTTOM):
             return
 

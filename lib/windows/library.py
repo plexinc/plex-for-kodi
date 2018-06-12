@@ -376,7 +376,7 @@ class CustomScrollBar(object):
         return int((self.size - 1) * (y / float(self._moveHeight)))
 
     def onMouseDrag(self, window, action):
-        y = window.mouseXTrans(action.getAmount2())
+        y = window.mouseYTrans(action.getAmount2())
         y -= int(self._barHeight / 2) + 150
         y = min(max(y, 0), self._moveHeight)
         self._barGroup.setPosition(self.x, self.y)
@@ -584,7 +584,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.dragging = False
         self.setBoolProperty('dragging', self.dragging)
 
-        y = self.mouseXTrans(action.getAmount2())
+        y = self.mouseYTrans(action.getAmount2())
 
         pos = self.scrollBar.getPosFromY(y)
         self.shiftSelection(pos=pos)
@@ -604,7 +604,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         # self.scrollBar.onMouseDrag(self, action)
 
-        y = self.mouseXTrans(action.getAmount2())
+        y = self.mouseYTrans(action.getAmount2())
 
         pos = self.scrollBar.getPosFromY(y)
         if self.chunkMode.posIsForward(pos) or self.chunkMode.posIsBackward(pos):

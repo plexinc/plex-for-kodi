@@ -201,6 +201,9 @@ class SeekDialog(kodigui.BaseDialog):
 
                     self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID)
                     return
+                elif action == xbmcgui.ACTION_MOUSE_MOVE:
+                    self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID, preview=True)
+                    return
 
             if controlID == self.MAIN_BUTTON_ID:
                 # we're seeking from the timeline with the OSD open - do an actual timeline seek
@@ -678,7 +681,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
 
-    def seekMouse(self, action, without_osd=False):
+    def seekMouse(self, action, without_osd=False, preview=False):
         x = self.mouseXTrans(action.getAmount1())
         y = self.mouseYTrans(action.getAmount2())
         if not (self.BAR_Y <= y <= self.BAR_BOTTOM):
@@ -691,7 +694,14 @@ class SeekDialog(kodigui.BaseDialog):
         self._seekingWithoutOSD = without_osd
 
         self.selectedOffset = int((x - self.BAR_X) / float(self.SEEK_IMAGE_WIDTH) * self.duration)
-        self.doSeek()
+        if not preview:
+            self.doSeek()
+            if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding'):
+                self.hideOSD()
+            self.setProperty('button.seek', '')
+        else:
+            self.updateProgress(set_to_current=False)
+            self.setProperty('button.seek', '1')
 
     def setup(self, duration, offset=0, bif_url=None, title='', title2=''):
         self.title = title

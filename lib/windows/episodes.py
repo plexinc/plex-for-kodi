@@ -296,6 +296,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
 
+        if player.PLAYER.bgmPlaying and player.PLAYER.handler.currentlyPlaying != self.season.show().ratingKey:
+            player.PLAYER.stopAndWait()
+
     def openItem(self, control=None, item=None):
         if not item:
             mli = control.getSelectedItem()

@@ -196,7 +196,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         focus = int(xbmc.getInfoLabel('Container(403).Position'))
 
-        x = min(1920 - 304, ((focus + 1) * 304) - 100)
+        x = min(self.width - 304, ((focus + 1) * 304) - 100)
         return x, y
 
     def setBackground(self):

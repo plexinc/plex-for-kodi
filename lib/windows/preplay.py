@@ -373,7 +373,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         focus = int(xbmc.getInfoLabel('Container(403).Position'))
 
-        x = ((focus + 1) * 304) - 100
+        x = min(1920 - 304, ((focus + 1) * 304) - 100)
         return x, y
 
     def playVideo(self, play_version=False):

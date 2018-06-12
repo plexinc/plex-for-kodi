@@ -31,7 +31,7 @@ class DropdownDialog(kodigui.BaseDialog):
 
     @property
     def x(self):
-        return self.pos[0]
+        return min(self.width - 360, self.pos[0])
 
     @property
     def y(self):

@@ -599,7 +599,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.updateItems()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_show':
-            self.processCommand(opener.open(self.season.parentRatingKey))
+            self.processCommand(opener.open(
+                self.season.parentRatingKey,
+                came_from=self.season.parentRatingKey)
+            )
         elif choice['key'] == 'to_section':
             self.goHome(self.season.getLibrarySectionId())
         elif choice['key'] == 'delete':

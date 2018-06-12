@@ -75,6 +75,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.mediaItem = kwargs.get('media_item')
         self.parentList = kwargs.get('parent_list')
+        self.cameFrom = kwargs.get('came_from')
         self.mediaItems = None
         self.exitCommand = None
         self.lastFocusID = None
@@ -91,7 +92,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setFocusId(self.PLAY_BUTTON_ID)
 
-        if self.mediaItem.theme:
+        if self.mediaItem.theme and not self.cameFrom or self.cameFrom != self.mediaItem.ratingKey:
             volume = self.mediaItem.settings.getThemeMusicValue()
             if volume > 0:
                 player.PLAYER.playBackgroundMusic(self.mediaItem.theme.asURL(True), volume,

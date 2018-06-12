@@ -456,7 +456,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         focus = int(xbmc.getInfoLabel('Container(403).Position'))
 
-        x = min(self.width - 304, ((focus + 1) * 304) - 100)
+        x = ((focus + 1) * 304) - 100
         return x, y
 
     def updateItems(self):

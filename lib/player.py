@@ -5,6 +5,7 @@ import xbmc
 import xbmcgui
 import kodijsonrpc
 import colors
+from lib import backgroundthread
 from windows import seekdialog
 import util
 from plexnet import plexplayer
@@ -661,6 +662,26 @@ class BGMPlayerHandler(BasePlayerHandler):
         self.onPlayBackStopped()
 
 
+class BGMPlayerTask(backgroundthread.Task):
+    def setup(self, player, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+        self.player = player
+        return self
+
+    def cancel(self):
+        self.player.stopAndWait()
+        self.player = None
+        backgroundthread.Task.cancel(self)
+
+    def run(self):
+        if self.isCanceled():
+            return
+
+        xbmc.Player.play(self.player, *self.args, **self.kwargs)
+        self.player = None
+
+
 class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     STATE_STOPPED = "stopped"
     STATE_PLAYING = "playing"
@@ -673,7 +694,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.started = False
         self.bgmPlaying = False
         self.lastPlayWasBGM = False
-        self.old_volume = None
+        self.BGMTask = None
         self.pauseAfterPlaybackStarted = False
         self.video = None
         self.hasOSD = False
@@ -764,14 +785,18 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         elif self.isPlaying() and self.lastPlayWasBGM and self.handler.currentlyPlaying == rating_key:
             return
 
-        self.stopAndWait()
+        if self.BGMTask and self.BGMTask.isValid():
+            self.BGMTask.cancel()
+
         self.started = False
         self.handler = BGMPlayerHandler(self, rating_key)
 
         self.lastPlayWasBGM = True
 
         self.handler.setVolume(volume)
-        xbmc.Player.play(self, source, *args, **kwargs)
+
+        self.BGMTask = BGMPlayerTask().setup(self, source, *args, **kwargs)
+        backgroundthread.BGThreader.addTask(self.BGMTask)
 
     def playVideo(self, video, resume=False, force_update=False, session_id=None, handler=None):
         if self.bgmPlaying:

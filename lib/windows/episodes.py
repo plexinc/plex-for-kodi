@@ -514,9 +514,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 options.append({'key': 'play_version', 'display': T(32451, 'Play Version...')})
 
             if mli.dataSource.isWatched and not mli.dataSource.viewOffset.asInt():
-                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
+                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unplayed')})
             else:
-                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
+                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Played')})
 
             # if True:
             #     options.append({'key': 'add_to_playlist', 'display': '[COLOR FF808080]Add To Playlist[/COLOR]'})
@@ -525,9 +525,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             options.append({'key': 'play_next', 'display': T(32325, 'Play Next')})
 
         if self.season.isWatched:
-            options.append({'key': 'mark_season_unwatched', 'display': T(32320, 'Mark Season Unwatched')})
+            options.append({'key': 'mark_season_unwatched', 'display': T(32320, 'Mark Season Unplayed')})
         else:
-            options.append({'key': 'mark_season_watched', 'display': T(32321, 'Mark Season Watched')})
+            options.append({'key': 'mark_season_watched', 'display': T(32321, 'Mark Season Played')})
 
         if mli.dataSource.server.allowsMediaDeletion:
             options.append({'key': 'delete', 'display': T(32322, 'Delete')})

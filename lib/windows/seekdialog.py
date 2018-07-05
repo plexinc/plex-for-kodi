@@ -634,9 +634,16 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('time.left', util.timeDisplay(self.duration - to))
 
         _fmt = '%I:%M %p'
+        stripLeadingZero = True
         if util.time_format_twentyfour:
             _fmt = '%H:%M'
-        self.setProperty('time.end', time.strftime(_fmt, time.localtime(time.time() + ((self.duration - to) / 1000))).lstrip('0'))
+            stripLeadingZero = False
+
+        val = time.strftime(_fmt, time.localtime(time.time() + ((self.duration - to) / 1000)))
+        if stripLeadingZero and val[0] == "0":
+            val = val[1:]
+
+        self.setProperty('time.end', val)
 
     def doSeek(self, offset=None, settings_changed=False):
         self._applyingSeek = True

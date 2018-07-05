@@ -244,7 +244,7 @@ msgstr "Abilita se il tuo hardware supporta HEVC/h265. Disabilita per forzare la
 
 msgctxt "#32104"
 msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
-msgstr ""Quando connettersi a Server con connessioni non sicure.[CR][CR]* [B]Mai[/B]: Mai connettersi a Server non sicuri[CR]* [B]Sulla stessa Rete[/B]: Permetti se nella stessa Rete[CR]* [B]Sempre[/B]: Permetti sulla stessa Rete e su Reti remote""
+msgstr "Quando connettersi a Server con connessioni non sicure.[CR][CR]* [B]Mai[/B]: Mai connettersi a Server non sicuri[CR]* [B]Sulla stessa Rete[/B]: Permetti se nella stessa Rete[CR]* [B]Sempre[/B]: Permetti sulla stessa Rete e su Reti remote"
 
 msgctxt "#32201"
 msgid "Trailer"
@@ -367,19 +367,19 @@ msgid "Play from beginning"
 msgstr "Riproduci dall'inizio"
 
 msgctxt "#32318"
-msgid "Mark Unwatched"
+msgid "Mark Unplayed"
 msgstr "Marca come non visto"
 
 msgctxt "#32319"
-msgid "Mark Watched"
+msgid "Mark Played"
 msgstr "Marca come visto"
 
 msgctxt "#32320"
-msgid "Mark Season Unwatched"
+msgid "Mark Season Unplayed"
 msgstr "Marca la Stagione come non vista"
 
 msgctxt "#32321"
-msgid "Mark Season Watched"
+msgid "Mark Season Played"
 msgstr "Marca la Stagione come vista"
 
 msgctxt "#32322"
@@ -563,11 +563,11 @@ msgid "First Aired"
 msgstr "Prima trasmissione"
 
 msgctxt "#32367"
-msgid "By Unwatched"
+msgid "By Unplayed"
 msgstr "Per Non visto"
 
 msgctxt "#32368"
-msgid "Unwatched"
+msgid "Unplayed"
 msgstr "Non visto"
 
 msgctxt "#32369"

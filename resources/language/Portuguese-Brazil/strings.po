@@ -366,19 +366,19 @@ msgid "Play from beginning"
 msgstr "Reproduzir do começo"
 
 msgctxt "#32318"
-msgid "Mark Unwatched"
+msgid "Mark Unplayed"
 msgstr "Marcar como Não-Visto"
 
 msgctxt "#32319"
-msgid "Mark Watched"
+msgid "Mark Played"
 msgstr "Marcar como Visto"
 
 msgctxt "#32320"
-msgid "Mark Season Unwatched"
+msgid "Mark Season Unplayed"
 msgstr "Marcar Temporada como Não-Vista"
 
 msgctxt "#32321"
-msgid "Mark Season Watched"
+msgid "Mark Season Played"
 msgstr "Marcar Temporada como Vista"
 
 msgctxt "#32322"
@@ -562,11 +562,11 @@ msgid "First Aired"
 msgstr "Data de Estreia"
 
 msgctxt "#32367"
-msgid "By Unwatched"
+msgid "By Unplayed"
 msgstr "Por Não-Vistos"
 
 msgctxt "#32368"
-msgid "Unwatched"
+msgid "Unplayed"
 msgstr "Não-Vistos"
 
 msgctxt "#32369"

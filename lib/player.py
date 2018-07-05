@@ -316,6 +316,10 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_REWIND):
             self.updateNowPlaying()
 
+            # show post play if possible, if an item has been watched (90% by Plex standards)
+            if self.trueTime * 1000 / float(self.duration) >= 0.90 and self.next(on_end=True):
+                return
+
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.hideOSD(delete=True)
             self.sessionEnded()

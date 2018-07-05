@@ -1144,10 +1144,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             if self.filter.get('sub'):
                 disp = u'{0}: {1}'.format(disp, self.filter['sub']['display'])
             self.setProperty('filter1.display', disp)
-            self.setProperty('filter2.display', self.filterUnwatched and 'unplayed' or '')
+            self.setProperty('filter2.display', self.filterUnwatched and T(32368, 'Unplayed') or '')
         else:
             self.setProperty('filter2.display', '')
-            self.setProperty('filter1.display', self.filterUnwatched and 'unplayed' or 'all')
+            self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'Unplayed') or T(32345, 'All'))
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()

@@ -966,3 +966,7 @@ msgstr ""
 msgctxt "#32471"
 msgid "Use Plex/Kodi steps for timeline"
 msgstr ""
+
+msgctxt "#32483"
+msgid "Stream Info"
+msgstr ""

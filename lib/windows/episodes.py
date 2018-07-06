@@ -553,7 +553,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 pos = (1490, 167 + (viewPos * 100))
                 bottom = False
             setDropdownProp = True
-        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='top', set_dropdown_prop=setDropdownProp)
+        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='left', set_dropdown_prop=setDropdownProp)
         if not choice:
             return
 

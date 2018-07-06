@@ -180,7 +180,7 @@
             </control>
         </control>
         <control type="group" id="801">
-            <visible>!String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings)</visible>
+            <visible>!String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(playerprocessinfo)</visible>
             <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group" id="300">
                 <visible>!String.IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))]</visible>

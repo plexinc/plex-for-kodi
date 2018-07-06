@@ -22,7 +22,7 @@
             </control>
         </control>
         <control type="group">
-            <visible>!Window.IsVisible(sliderdialog) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings)</visible>
+            <visible>!Window.IsVisible(sliderdialog) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(playerprocessinfo)</visible>
             <posx>460</posx>
             <posy>200</posy>
             <control type="image">

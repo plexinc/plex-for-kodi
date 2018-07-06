@@ -965,3 +965,7 @@ msgstr "Nach Verzögerung automatisch zur aktuell gewählten Position springen"
 msgctxt "#32471"
 msgid "Use Plex/Kodi steps for timeline"
 msgstr "Plex/Kodi-Skip-Schritte für die Zeitachse verwenden"
+
+msgctxt "#32483"
+msgid "Stream Info"
+msgstr "Stream Info"

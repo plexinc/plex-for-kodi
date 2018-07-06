@@ -144,7 +144,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         elif result == 'kodi_audio':
             xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
         elif result == "stream_info":
-            xbmc.executebuiltin('ActivateWindow(PlayerProcessInfo)')
+            xbmc.executebuiltin('Action(PlayerProcessInfo)')
 
         self.showSettings()
 

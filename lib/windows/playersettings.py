@@ -178,6 +178,7 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.selectedIdx = kwargs.get('selected_idx')
         self.choice = None
         self.nonPlayback = kwargs.get('non_playback')
+        self.lastSelectedItem = self.selectedIdx if self.selectedIdx is not None else 0
 
     def onFirstInit(self):
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
@@ -192,6 +193,25 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
                 return
         except:
             util.ERROR()
+
+        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and self.getFocusId() == self.OPTIONS_LIST_ID:
+            to_pos = None
+            last_index = self.optionsList.size() - 1
+
+            if last_index > 0:
+                if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.optionsList.topHasFocus():
+                    to_pos = last_index
+
+                elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                        and self.optionsList.bottomHasFocus():
+                    to_pos = 0
+
+                if to_pos is not None:
+                    self.optionsList.setSelectedItemByPos(to_pos)
+                    self.lastSelectedItem = to_pos
+                    return
+
+                self.lastSelectedItem = self.optionsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 

@@ -1,5 +1,5 @@
 import kodigui
-
+import xbmcgui
 from lib import util
 
 SEPARATOR = None
@@ -20,6 +20,7 @@ class DropdownDialog(kodigui.BaseDialog):
         kodigui.BaseDialog.__init__(self, *args, **kwargs)
         self.options = kwargs.get('options')
         self.pos = kwargs.get('pos')
+        self.lastSelectedItem = 0
         self.posIsBottom = kwargs.get('pos_is_bottom')
         self.closeDirection = kwargs.get('close_direction')
         self.setDropdownProp = kwargs.get('set_dropdown_prop', False)
@@ -66,6 +67,25 @@ class DropdownDialog(kodigui.BaseDialog):
             pass
         except:
             util.ERROR()
+
+        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and self.getFocusId() == self.OPTIONS_LIST_ID:
+            to_pos = None
+            last_index = self.optionsList.size() - 1
+
+            if last_index > 0:
+                if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.optionsList.topHasFocus():
+                    to_pos = last_index
+
+                elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                        and self.optionsList.bottomHasFocus():
+                    to_pos = 0
+
+                if to_pos is not None:
+                    self.optionsList.setSelectedItemByPos(to_pos)
+                    self.lastSelectedItem = to_pos
+                    return
+
+                self.lastSelectedItem = self.optionsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 

@@ -87,6 +87,11 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
                 ('kodi_audio', T(32399, 'Kodi Audio Settings'), '')
             ]
 
+        if self.viaOSD:
+            options += [
+                ('stream_info', T(32483, 'Stream Info'), ''),
+            ]
+
         items = []
         for o in options:
             item = kodigui.ManagedListItem(o[1], o[2], data_source=o[0])
@@ -138,6 +143,8 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
             xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
         elif result == 'kodi_audio':
             xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
+        elif result == "stream_info":
+            xbmc.executebuiltin('ActivateWindow(PlayerProcessInfo)')
 
         self.showSettings()
 

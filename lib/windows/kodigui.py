@@ -500,6 +500,10 @@ class ManagedControlList(object):
             return None
         return self.getListItem(pos)
 
+    def setSelectedItemByPos(self, pos):
+        if self.positionIsValid(pos):
+            self.control.selectItem(pos)
+
     def removeItem(self, index):
         old = self.items.pop(index)
         old.onDestroy()

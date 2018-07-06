@@ -1,4 +1,5 @@
 import xbmc
+import xbmcgui
 import kodigui
 
 from lib import util
@@ -23,6 +24,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         self.video = kwargs.get('video')
         self.viaOSD = kwargs.get('via_osd')
         self.nonPlayback = kwargs.get('non_playback')
+        self.lastSelectedItem = 0
 
         if not self.video.mediaChoice:
             playerObject = plexnet.plexplayer.PlexPlayer(self.video)
@@ -43,6 +45,23 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
                 return
         except:
             util.ERROR()
+
+        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and self.getFocusId() == self.SETTINGS_LIST_ID:
+            to_pos = None
+            last_index = self.settingsList.size() - 1
+            if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.settingsList.topHasFocus():
+                to_pos = last_index
+
+            elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                    and self.settingsList.bottomHasFocus():
+                to_pos = 0
+
+            if to_pos is not None:
+                self.settingsList.setSelectedItemByPos(to_pos)
+                self.lastSelectedItem = to_pos
+                return
+
+            self.lastSelectedItem = self.settingsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 

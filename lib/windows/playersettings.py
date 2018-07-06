@@ -24,6 +24,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         self.video = kwargs.get('video')
         self.viaOSD = kwargs.get('via_osd')
         self.nonPlayback = kwargs.get('non_playback')
+        self.roundRobin = kwargs.get('round_robin', True)
         self.lastSelectedItem = 0
 
         if not self.video.mediaChoice:
@@ -46,7 +47,8 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         except:
             util.ERROR()
 
-        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and self.getFocusId() == self.SETTINGS_LIST_ID:
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.SETTINGS_LIST_ID:
             to_pos = None
             last_index = self.settingsList.size() - 1
             if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.settingsList.topHasFocus():
@@ -179,6 +181,7 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.choice = None
         self.nonPlayback = kwargs.get('non_playback')
         self.lastSelectedItem = self.selectedIdx if self.selectedIdx is not None else 0
+        self.roundRobin = kwargs.get('round_robin', True)
 
     def onFirstInit(self):
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
@@ -194,7 +197,8 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         except:
             util.ERROR()
 
-        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and self.getFocusId() == self.OPTIONS_LIST_ID:
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.OPTIONS_LIST_ID:
             to_pos = None
             last_index = self.optionsList.size() - 1
 

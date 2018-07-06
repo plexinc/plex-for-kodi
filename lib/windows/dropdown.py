@@ -21,6 +21,7 @@ class DropdownDialog(kodigui.BaseDialog):
         self.options = kwargs.get('options')
         self.pos = kwargs.get('pos')
         self.lastSelectedItem = 0
+        self.roundRobin = kwargs.get('round_robin', True)
         self.posIsBottom = kwargs.get('pos_is_bottom')
         self.closeDirection = kwargs.get('close_direction')
         self.setDropdownProp = kwargs.get('set_dropdown_prop', False)
@@ -68,7 +69,8 @@ class DropdownDialog(kodigui.BaseDialog):
         except:
             util.ERROR()
 
-        if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and self.getFocusId() == self.OPTIONS_LIST_ID:
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.OPTIONS_LIST_ID:
             to_pos = None
             last_index = self.optionsList.size() - 1
 

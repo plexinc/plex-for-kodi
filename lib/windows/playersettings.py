@@ -23,6 +23,7 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         self.video = kwargs.get('video')
         self.viaOSD = kwargs.get('via_osd')
         self.nonPlayback = kwargs.get('non_playback')
+        self.parent = kwargs.get('parent')
 
         if not self.video.mediaChoice:
             playerObject = plexnet.plexplayer.PlexPlayer(self.video)
@@ -88,9 +89,14 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
             ]
 
         if self.viaOSD:
-            options += [
-                ('stream_info', T(32483, 'Stream Info'), ''),
-            ]
+            if self.parent.getProperty("show.PPI"):
+                options += [
+                    ('stream_info', T(32483, 'Hide Stream Info'), ''),
+                ]
+            else:
+                options += [
+                    ('stream_info', T(32484, 'Show Stream Info'), ''),
+                ]
 
         items = []
         for o in options:
@@ -144,7 +150,14 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         elif result == 'kodi_audio':
             xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
         elif result == "stream_info":
-            xbmc.executebuiltin('Action(PlayerProcessInfo)')
+            if self.parent:
+                if self.parent.getProperty("show.PPI"):
+                    self.parent.hidePPIDialog()
+                else:
+                    #xbmc.executebuiltin('Action(PlayerProcessInfo)')
+                    self.parent.showPPIDialog()
+            self.doClose()
+            return
 
         self.showSettings()
 
@@ -270,7 +283,7 @@ def showQualityDialog(video, non_playback=False, selected_idx=None):
     video.settings.setPrefOverride('online_quality', choice)
 
 
-def showDialog(video, non_playback=False, via_osd=False):
-    w = VideoSettingsDialog.open(video=video, non_playback=non_playback, via_osd=via_osd)
+def showDialog(video, non_playback=False, via_osd=False, parent=None):
+    w = VideoSettingsDialog.open(video=video, non_playback=non_playback, via_osd=via_osd, parent=parent)
     del w
     util.garbageCollect()

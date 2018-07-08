@@ -972,7 +972,11 @@ msgid "Use Plex/Kodi steps for timeline"
 msgstr ""
 
 msgctxt "#32483"
-msgid "Stream Info"
+msgid "Hide Stream Info"
+msgstr ""
+
+msgctxt "#32484"
+msgid "Show Stream Info"
 msgstr ""
 
 msgctxt "#32485"

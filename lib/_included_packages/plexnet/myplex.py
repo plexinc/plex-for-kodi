@@ -10,6 +10,7 @@ import exceptions
 import video
 import audio
 import photo
+import plexobjects
 
 video, audio, photo  # Hides warning message
 
@@ -88,3 +89,15 @@ class PinLogin(object):
 
     def abort(self):
         self._abort = True
+
+
+class MyPlexUser(plexobjects.PlexObject):
+    pass
+
+
+class MyPlexClient(plexobjects.PlexObject):
+    pass
+
+
+class MyPlexSession(plexobjects.PlexObject):
+    pass

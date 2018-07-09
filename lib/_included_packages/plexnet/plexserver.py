@@ -158,6 +158,15 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         else:
             return plexlibrary.Library(self.query('/library/'), server=self)
 
+    @property
+    def sessions(self):
+        return plexobjects.listItems(self, '/status/sessions')
+
+    def findVideoSession(self, client_id, rating_key):
+        for item in self.sessions:
+            if item.session and item.session.id == client_id and item.ratingKey == rating_key:
+                return item
+
     def buildUrl(self, path, includeToken=False):
         if self.activeConnection:
             return self.activeConnection.buildUrl(self, path, includeToken)

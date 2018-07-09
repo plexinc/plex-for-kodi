@@ -10,6 +10,7 @@ import playersettings
 import dropdown
 
 from lib import util
+from plexnet.videosession import VideoSessionInfo
 from lib.kodijsonrpc import builtin
 
 from lib.util import T
@@ -393,6 +394,19 @@ class SeekDialog(kodigui.BaseDialog):
             kodigui.BaseDialog.doClose(self)
 
     def showPPIDialog(self):
+        try:
+            currentVideo = self.player.video
+            videoSession = currentVideo.server.findVideoSession(currentVideo.settings.getGlobal("clientIdentifier"),
+                                                                currentVideo.ratingKey)
+
+            if videoSession:
+                # fill attributes
+                info = VideoSessionInfo(videoSession, currentVideo)
+                for attrib in info.attributes.values():
+                    self.setProperty('ppi.%s' % attrib.label, attrib.value)
+        except:
+            util.ERROR()
+
         self.setProperty('show.PPI', '1')
 
     def hidePPIDialog(self):

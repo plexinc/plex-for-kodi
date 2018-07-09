@@ -160,6 +160,9 @@ class PlexObject(object, Checks):
 
         self.name = data.tag
         for k, v in data.attrib.items():
+            if k in ("container",):
+                k = "attrib_%s" % k
+
             setattr(self, k, PlexValue(v, self))
 
     def __getattr__(self, attr):
@@ -295,22 +298,29 @@ class PlexObject(object, Checks):
     def _findPlayer(self, data):
         elem = data.find('Player')
         if elem is not None:
-            from plexapi.client import Client
-            return Client(self.server, elem)
+            from myplex import MyPlexClient
+            return MyPlexClient(elem, server=self.server)
         return None
 
     def _findTranscodeSession(self, data):
         elem = data.find('TranscodeSession')
         if elem is not None:
-            from plexapi import media
-            return media.TranscodeSession(self.server, elem)
+            import media
+            return media.TranscodeSession(elem, server=self.server)
         return None
 
     def _findUser(self, data):
         elem = data.find('User')
         if elem is not None:
-            from plexapi.myplex import MyPlexUser
+            from myplex import MyPlexUser
             return MyPlexUser(elem, self.initpath)
+        return None
+
+    def _findSession(self, data):
+        elem = data.find('Session')
+        if elem is not None:
+            from myplex import MyPlexSession
+            return MyPlexSession(elem, self.initpath, server=self.server)
         return None
 
     def getAbsolutePath(self, attr):

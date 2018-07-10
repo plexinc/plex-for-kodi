@@ -160,7 +160,9 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
     @property
     def sessions(self):
-        return plexobjects.listItems(self, '/status/sessions')
+        if self.owned:
+            return plexobjects.listItems(self, '/status/sessions')
+        raise exceptions.ServerNotOwned
 
     def findVideoSession(self, client_id, rating_key):
         for item in self.sessions:

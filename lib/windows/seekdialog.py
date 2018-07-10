@@ -11,6 +11,7 @@ import dropdown
 
 from lib import util
 from plexnet.videosession import VideoSessionInfo
+from plexnet.exceptions import ServerNotOwned
 from lib.kodijsonrpc import builtin
 
 from lib.util import T
@@ -397,6 +398,7 @@ class SeekDialog(kodigui.BaseDialog):
             kodigui.BaseDialog.doClose(self)
 
     def showPPIDialog(self):
+        self.setProperty('ppi.Status', 'Loading ...')
         try:
             currentVideo = self.player.video
             videoSession = currentVideo.server.findVideoSession(currentVideo.settings.getGlobal("clientIdentifier"),
@@ -407,8 +409,12 @@ class SeekDialog(kodigui.BaseDialog):
                 info = VideoSessionInfo(videoSession, currentVideo)
                 for attrib in info.attributes.values():
                     self.setProperty('ppi.%s' % attrib.label, attrib.value)
+        except ServerNotOwned:
+            self.setProperty('ppi.Status', 'Info not available (server not owned)')
         except:
             util.ERROR()
+        else:
+            self.setProperty('ppi.Status', '')
 
         self.setProperty('show.PPI', '1')
 

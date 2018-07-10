@@ -254,8 +254,11 @@ class SeekDialog(kodigui.BaseDialog):
                     self.showOSD()
                     self.setFocusId(self.BIG_SEEK_LIST_ID)
                 elif action.getButtonCode() == 61519:
-                    # xbmc.executebuiltin('Action(PlayerProcessInfo)')
-                    xbmc.executebuiltin('Action(CodecInfo)')
+                    if self.getProperty('show.PPI'):
+                        self.hidePPIDialog()
+                    else:
+                        self.showPPIDialog()
+
             elif controlID == self.BIG_SEEK_LIST_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_BIG_STEP_FORWARD):
                     return self.updateBigSeek()

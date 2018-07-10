@@ -104,6 +104,15 @@
                         <width>893</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
+                        <label>$INFO[Window.Property(ppi.Status)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Status))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
                         <label>[COLOR FFE5A00D]Mode:[/COLOR] $INFO[Window.Property(ppi.Mode)]</label>
                         <font>font14</font>
                         <shadowcolor>black</shadowcolor>

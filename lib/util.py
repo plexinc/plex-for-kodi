@@ -35,6 +35,7 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
     def onNotification(self, sender, method, data):
         if sender == 'script.plex' and method.endswith('RESTORE'):
             from windows import kodigui
+            getAdvancedSettings()
             xbmc.executebuiltin('ActivateWindow({0})'.format(kodigui.BaseFunctions.lastWinID))
 
 
@@ -53,7 +54,7 @@ def DEBUG_LOG(msg):
     if _SHUTDOWN:
         return
 
-    if not getSetting('debug', False) and not xbmc.getCondVisibility('System.GetBool(debug.showloginfo)'):
+    if not advancedSettings.debug and not xbmc.getCondVisibility('System.GetBool(debug.showloginfo)'):
         return
 
     LOG(msg)
@@ -332,6 +333,37 @@ def timeInDayLocalSeconds():
     return int(time.time() - sod)
 
 
+def get24hFormat():
+    """
+    This takes the 24h setting from Kodi and tries to determine whether the user wants the 24h or 12h time format.
+    :return:
+    """
+    try:
+        use_24h = rpc.Settings.GetSettingValue(setting="locale.use24hourclock")["value"]
+    except:
+        ERROR()
+        return
+
+    if use_24h == "regional":
+        return "M" not in unicode(xbmc.getInfoLabel('System.Time')).upper()
+    elif use_24h == "24hours":
+        return True
+    return False
+
+
+time_format_twentyfour = get24hFormat()
+
+
+def getKodiSkipSteps():
+    try:
+        return rpc.Settings.GetSettingValue(setting="videoplayer.seeksteps")["value"]
+    except:
+        return
+
+
+kodiSkipSteps = getKodiSkipSteps()
+
+
 CRON = None
 
 
@@ -446,6 +478,35 @@ class Cron(threading.Thread):
             self._receivers.pop(self._receivers.index(receiver))
 
 
+class AdvancedSettings(object):
+    """
+    @DynamicAttrs
+    """
+
+    _proxiedSettings = (
+        ("debug", False),
+        ("kodi_skip_stepping", False),
+        ("auto_seek", True),
+        ("dynamic_timeline_seek", False),
+    )
+
+    def __init__(self):
+        # register every known setting camelCased as an attribute to this instance
+        for setting, default in self._proxiedSettings:
+            name_split = setting.split("_")
+            setattr(self, name_split[0] + ''.join(x.capitalize() or '_' for x in name_split[1:]),
+                    getSetting(setting, default))
+
+
+advancedSettings = AdvancedSettings()
+
+
+def getAdvancedSettings():
+    # yes, global, hang me!
+    global advancedSettings
+    advancedSettings = AdvancedSettings()
+
+
 def getPlatform():
     for key in [
         'System.Platform.Android',
@@ -459,6 +520,7 @@ def getPlatform():
     ]:
         if xbmc.getCondVisibility(key):
             return key.rsplit('.', 1)[-1]
+
 
 def getProgressImage(obj):
     if not obj.get('viewOffset'):

@@ -23,9 +23,7 @@ def open(obj, auto_play=False):
             key = '/library/metadata/{0}'.format(obj)
         return open(plexapp.SERVERMANAGER.selectedServer.getObject(key))
     elif obj.TYPE == 'episode':
-        if not auto_play:
-            return episodeClicked(obj)
-        return playableClicked(obj, auto_play=auto_play)
+        return episodeClicked(obj, auto_play=auto_play)
     elif obj.TYPE == 'movie':
         return playableClicked(obj, auto_play=auto_play)
     elif obj.TYPE in ('show'):
@@ -74,9 +72,9 @@ def playableClicked(playable, auto_play=False):
     return handleOpen(preplay.PrePlayWindow, video=playable, auto_play=auto_play)
 
 
-def episodeClicked(episode):
+def episodeClicked(episode, auto_play=False):
     import episodes
-    return handleOpen(episodes.EpisodesWindow, episode=episode)
+    return handleOpen(episodes.EpisodesWindow, episode=episode, auto_play=auto_play)
 
 
 def showClicked(show):

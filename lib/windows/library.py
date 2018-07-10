@@ -111,12 +111,12 @@ SORT_KEYS = {
         'rating': {'title': T(32359, 'By Rating'), 'display': T(32360, 'Rating')},
         'resolution': {'title': T(32361, 'By Resolution'), 'display': T(32362, 'Resolution')},
         'duration': {'title': T(32363, 'By Duration'), 'display': T(32364, 'Duration')},
-        'unwatched': {'title': T(32367, 'By Unwatched'), 'display': T(32368, 'Unwatched')},
+        'unwatched': {'title': T(32367, 'By Unplayed'), 'display': T(32368, 'Unplayed')},
         'viewCount': {'title': T(32371, 'By Play Count'), 'display': T(32372, 'Play Count')}
     },
     'show': {
         'originallyAvailableAt': {'title': T(32365, 'By First Aired'), 'display': T(32366, 'First Aired')},
-        'unviewedLeafCount': {'title': T(32367, 'By Unwatched'), 'display': T(32368, 'Unwatched')},
+        'unviewedLeafCount': {'title': T(32367, 'By Unplayed'), 'display': T(32368, 'Unplayed')},
         'show.titleSort': {'title': T(32457, 'By Show'), 'display': T(32456, 'Show')},
     },
     'artist': {
@@ -376,7 +376,7 @@ class CustomScrollBar(object):
         return int((self.size - 1) * (y / float(self._moveHeight)))
 
     def onMouseDrag(self, window, action):
-        y = window.mouseXTrans(action.getAmount2())
+        y = window.mouseYTrans(action.getAmount2())
         y -= int(self._barHeight / 2) + 150
         y = min(max(y, 0), self._moveHeight)
         self._barGroup.setPosition(self.x, self.y)
@@ -471,7 +471,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
             util.setGlobalProperty('sort', self.sort)
-            self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'UNWATCHED') or T(32345, 'All'))
+            self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'UNPLAYED') or T(32345, 'All'))
             self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
             self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
             self.setProperty('media', self.section.TYPE)
@@ -584,7 +584,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.dragging = False
         self.setBoolProperty('dragging', self.dragging)
 
-        y = self.mouseXTrans(action.getAmount2())
+        y = self.mouseYTrans(action.getAmount2())
 
         pos = self.scrollBar.getPosFromY(y)
         self.shiftSelection(pos=pos)
@@ -604,7 +604,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
 
         # self.scrollBar.onMouseDrag(self, action)
 
-        y = self.mouseXTrans(action.getAmount2())
+        y = self.mouseYTrans(action.getAmount2())
 
         pos = self.scrollBar.getPosFromY(y)
         if self.chunkMode.posIsForward(pos) or self.chunkMode.posIsBackward(pos):
@@ -830,6 +830,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         else:
             args['sourceType'] = '8'
 
+        # When the list is filtered by unwatched, play and shuffle button should only play unwatched videos
+        if self.filterUnwatched:
+            args['unwatched'] = '1'
+
         pq = playqueue.createPlayQueueForItem(self.section, options={'shuffle': shuffle}, args=args)
         opener.open(pq)
 
@@ -1044,7 +1048,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         options = []
 
         if self.section.TYPE in ('movie', 'show'):
-            options.append({'type': 'unwatched', 'display': T(32368, 'UNWATCHED').upper(), 'indicator': self.filterUnwatched and check or ''})
+            options.append({'type': 'unwatched', 'display': T(32368, 'UNPLAYED').upper(), 'indicator': self.filterUnwatched and check or ''})
 
         if self.filter:
             options.append({'type': 'clear_filter', 'display': T(32376, 'CLEAR FILTER').upper(), 'indicator': 'script.plex/indicators/remove.png'})
@@ -1140,10 +1144,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             if self.filter.get('sub'):
                 disp = u'{0}: {1}'.format(disp, self.filter['sub']['display'])
             self.setProperty('filter1.display', disp)
-            self.setProperty('filter2.display', self.filterUnwatched and 'unwatched' or '')
+            self.setProperty('filter2.display', self.filterUnwatched and T(32368, 'Unplayed') or '')
         else:
             self.setProperty('filter2.display', '')
-            self.setProperty('filter1.display', self.filterUnwatched and 'unwatched' or 'all')
+            self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'Unplayed') or T(32345, 'All'))
 
     def showPanelClicked(self):
         mli = self.showPanelControl.getSelectedItem()

@@ -232,7 +232,7 @@ msgstr "Felhasználó kiválasztás és a PIN kód megadás átugrása indítás
 
 msgctxt "#32101"
 msgid "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
-msgstr "Ha engedélyezi, akkor a lejátszás befejezése után, amennyiben rendelkezésre áll egy "következő" elem, az 15 másodperces késleltetés után automatikusan lejátszásra kerül."
+msgstr "Ha engedélyezi, akkor a lejátszás befejezése után, amennyiben rendelkezésre áll egy \"következő\" elem, az 15 másodperces késleltetés után automatikusan lejátszásra kerül."
 
 msgctxt "#32102"
 msgid "Enable this if your hardware can handle 4K playback. Disable it to force transcoding."
@@ -368,19 +368,19 @@ msgid "Play from beginning"
 msgstr "Lejátszás az elejétől"
 
 msgctxt "#32318"
-msgid "Mark Unwatched"
+msgid "Mark Unplayed"
 msgstr "Nem nézettnek jelölés"
 
 msgctxt "#32319"
-msgid "Mark Watched"
+msgid "Mark Played"
 msgstr "Nézettnek jelölés"
 
 msgctxt "#32320"
-msgid "Mark Season Unwatched"
+msgid "Mark Season Unplayed"
 msgstr "Az évad nem nézettnek jelölése"
 
 msgctxt "#32321"
-msgid "Mark Season Watched"
+msgid "Mark Season Played"
 msgstr "Az évad nézettnek jelölése"
 
 msgctxt "#32322"
@@ -564,11 +564,11 @@ msgid "First Aired"
 msgstr "Első sugárzás dátuma"
 
 msgctxt "#32367"
-msgid "By Unwatched"
+msgid "By Unplayed"
 msgstr "Nem megtekintettek szerint"
 
 msgctxt "#32368"
-msgid "Unwatched"
+msgid "Unplayed"
 msgstr "Nem megtekintettek"
 
 msgctxt "#32369"

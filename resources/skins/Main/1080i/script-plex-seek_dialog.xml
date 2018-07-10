@@ -21,7 +21,7 @@
         </control>
         <control type="group" id="803">
             <bottom>0</bottom>
-            <height>300</height>
+            <height>350</height>
             <visible>!String.IsEmpty(Window.Property(show.PPI)) + String.IsEmpty(Window.Property(settings.visible)) + String.IsEmpty(Window.Property(playlist.visible))</visible>
             <animation effect="fade" start="0" end="100" time="300">Visible</animation>
 	        <animation effect="fade" start="100" end="0" time="200">Hidden</animation>
@@ -36,6 +36,7 @@
                 <left>52</left>
                 <top>-204</top>
                 <width>1786</width>
+                <height>350</height>
                 <orientation>horizontal</orientation>
                 <itemgap>10</itemgap>
                 <control type="grouplist">
@@ -91,14 +92,6 @@
                         <height>50</height>
                         <aligny>bottom</aligny>
                         <label>$INFO[System.Memory(used.percent),[COLOR FFE5A00D]$LOCALIZE[31030]:[/COLOR] ,]</label>
-                        <font>font14</font>
-                        <shadowcolor>black</shadowcolor>
-                    </control>
-                    <control type="label">
-                        <width>893</width>
-                        <height>50</height>
-                        <aligny>bottom</aligny>
-                        <label>$INFO[System.CpuUsage,[COLOR FFE5A00D]$LOCALIZE[13271][/COLOR] ]</label>
                         <font>font14</font>
                         <shadowcolor>black</shadowcolor>
                     </control>
@@ -162,6 +155,16 @@
                         <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.User))</visible>
                     </control>
                 </control>
+            </control>
+            <control type="label">
+                <left>52</left>
+                <top>100</top>
+                <width>1786</width>
+                <height>50</height>
+                <aligny>bottom</aligny>
+                <label>$INFO[System.CpuUsage,[COLOR FFE5A00D]$LOCALIZE[13271][/COLOR] ]</label>
+                <font>font14</font>
+                <shadowcolor>black</shadowcolor>
             </control>
 		</control>
         <control type="group" id="802">

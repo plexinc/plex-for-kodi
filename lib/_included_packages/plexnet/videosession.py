@@ -85,15 +85,15 @@ def registerAttributeType(cls):
     return cls
 
 
-def dpBool(condition, result):
+def dpConditionMet(condition, resultTrue, resultFalse=None):
     """
 
     :rtype: list
     """
-    return [result] if condition and result else []
+    return [resultTrue] if condition and resultTrue else [resultFalse] if resultFalse else []
 
 
-def dpAttributeBool(ref, attrib, returnValue=None):
+def dpAttributeIfExists(ref, attrib, returnValue=None):
     """
 
     :rtype: list
@@ -148,7 +148,7 @@ class ModeAttribute(SessionAttribute):
         lambda i: [
             i.details.session.part.decision,
         ],
-        lambda i: dpAttributeBool(i.session.player, "local", returnValue="local")
+        lambda i: dpAttributeIfExists(i.session.player, "local", returnValue="local")
     ]
 
 
@@ -194,7 +194,7 @@ class AudioAttribute(SessionAttribute):
             dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "channels",
                                          u"%(val1)s->%(val2)sch", u"%(val1)sch"),
         ],
-        lambda i: dpAttributeBool(i.details.session.audio_stream, "decision")
+        lambda i: dpAttributeIfExists(i.details.session.audio_stream, "decision")
     ]
 
 
@@ -208,9 +208,9 @@ class SubtitlesAttribute(SessionAttribute):
                                          valueFormatter=lambda v1, v2: [v1,
                                                                         "burn" if i.details.session.subtitle_stream.burn else v2]),
         ],
-        lambda i: dpBool(i.details.session.subtitle_stream.decision != "burn",
-                         i.details.session.subtitle_stream.decision),
-        lambda i: dpAttributeBool(i.details.session.subtitle_stream, "location")
+        lambda i: dpConditionMet(i.details.session.subtitle_stream.decision != "burn",
+                                 i.details.session.subtitle_stream.decision),
+        lambda i: dpAttributeIfExists(i.details.session.subtitle_stream, "location")
     ]
 
 

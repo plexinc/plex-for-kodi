@@ -5,44 +5,16 @@ from collections import OrderedDict
 import util
 
 
-class SessionAttribute:
-    name = None
-    data = None
-
-    def __init__(self, name, *data):
-        self.name = name
-        self.data = data
-
-    @property
-    def label(self):
-        return self.name
-
-    @property
-    def value(self):
-        return ", ".join(self.data)
-
-    def __str__(self):
-        return "%s: %s" % (self.label, self.value)
-
-    def __repr__(self):
-        return str(self)
-
-
-class SessionAttributes(OrderedDict):
-    def add(self, name, *data):
-        self[name] = SessionAttribute(name, *data)
-
-
 class MediaDetails:
     details = None
 
-    def __init__(self, mediaContainer, by_ref=None):
-        self.details = self.findMediaDetails(mediaContainer, by_ref=by_ref)
+    def __init__(self, mediaContainer, byRef=None):
+        self.details = self.findMediaDetails(mediaContainer, byRef=byRef)
 
-    def findMediaDetails(self, mediaList, by_ref=None):
+    def findMediaDetails(self, mediaList, byRef=None):
         """
 
-        :type by_ref: reference MediaDetails object
+        :type byRef: reference MediaDetails object
         """
         data = {
             "media": None,
@@ -54,7 +26,7 @@ class MediaDetails:
 
         for media in mediaList:
             for part in media.parts:
-                if not by_ref:
+                if not byRef:
                     if part.selected:
                         data["part"] = part
                         data["media"] = media
@@ -73,18 +45,18 @@ class MediaDetails:
 
                         break
                 else:
-                    if part.id == by_ref.part.id:
+                    if part.id == byRef.part.id:
                         data["part"] = part
                         data["media"] = media
 
                         for stream in part.streams:
-                            if stream.id == by_ref.video_stream.id:
+                            if stream.id == byRef.video_stream.id:
                                 data["video_stream"] = stream
 
-                            elif stream.id == by_ref.audio_stream.id:
+                            elif stream.id == byRef.audio_stream.id:
                                 data["audio_stream"] = stream
 
-                            elif stream.id == by_ref.subtitle_stream.id:
+                            elif stream.id == byRef.subtitle_stream.id:
                                 data["subtitle_stream"] = stream
                         break
 
@@ -102,7 +74,170 @@ class MediaDetailsHolder:
 
     def __init__(self, originalMedia, sessionMedia):
         self.session = MediaDetails(sessionMedia)
-        self.original = MediaDetails(originalMedia, by_ref=self.session)
+        self.original = MediaDetails(originalMedia, byRef=self.session)
+
+
+ATTRIBUTE_TYPES = OrderedDict()
+
+
+def registerAttributeType(cls):
+    ATTRIBUTE_TYPES[cls.name] = cls
+    return cls
+
+
+def dpBool(condition, result):
+    """
+
+    :rtype: list
+    """
+    return [result] if condition and result else []
+
+
+def dpAttributeBool(ref, attrib, returnValue=None):
+    """
+
+    :rtype: list
+    """
+    result = getattr(ref, attrib, None)
+    if returnValue and result:
+        return [returnValue]
+
+    return [result] if result else []
+
+
+def dpAttributeDifferenceDefault(ref1, ref2, attribute, formatTrue=u"%(val1)s->%(val2)s", formatFalse=u"%(val1)s",
+                                 valueFormatter=lambda v1, v2: [v1, v2]):
+    """
+
+    :rtype: string
+    """
+    val1 = getattr(ref1, attribute, None)
+    val2 = getattr(ref2, attribute, None)
+    formatted_val1, formatted_val2 = valueFormatter(val1, val2)
+
+    if val1 != val2:
+        return formatTrue % {"val1": formatted_val1, "val2": formatted_val2}
+    return (formatFalse % {"val1": formatted_val1, "val2": formatted_val2}) if formatFalse else formatted_val1
+
+
+class SessionAttribute:
+    name = None
+    data = None
+    displayCondition = None
+    dataPoints = []
+
+    @property
+    def label(self):
+        return self.name
+
+    @property
+    def value(self):
+        return ", ".join(self.data)
+
+    def __str__(self):
+        return "%s: %s" % (self.label, self.value)
+
+    def __repr__(self):
+        return str(self)
+
+
+@registerAttributeType
+class ModeAttribute(SessionAttribute):
+    name = "Mode"
+    dataPoints = [
+        lambda i: [
+            i.details.session.part.decision,
+        ],
+        lambda i: dpAttributeBool(i.session.player, "local", returnValue="local")
+    ]
+
+
+@registerAttributeType
+class ContainerAttribute(SessionAttribute):
+    name = "Container"
+    dataPoints = [
+        lambda i: [
+            dpAttributeDifferenceDefault(i.details.original.part, i.details.session.part, "attrib_container"),
+        ]
+    ]
+
+
+@registerAttributeType
+class VideoAttribute(SessionAttribute):
+    name = "Video"
+    displayCondition = staticmethod(lambda i: bool(i.details.original.video_stream))
+    dataPoints = [
+        lambda i: [
+            dpAttributeDifferenceDefault(i.details.original.media, i.details.session.media, "videoResolution",
+                                         valueFormatter=lambda v1, v2: [i.normRes(v1), i.normRes(v2)]),
+            dpAttributeDifferenceDefault(i.details.original.video_stream, i.details.session.video_stream, "bitrate",
+                                         u"%(val1)s->%(val2)skbit", u"%(val1)skbit"),
+
+        ],
+        lambda i: [
+            (i.details.session.video_stream.decision + " HW")
+            if i.session.transcodeSession.videoDecision == "transcode" and i.session.transcodeSession.transcodeHwEncoding
+            else i.details.session.video_stream.decision
+        ]
+    ]
+
+
+@registerAttributeType
+class AudioAttribute(SessionAttribute):
+    name = "Audio"
+    displayCondition = staticmethod(lambda i: bool(i.details.original.audio_stream))
+    dataPoints = [
+        lambda i: [
+            dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "codec"),
+            dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "bitrate",
+                                         u"%(val1)s->%(val2)skbit", u"%(val1)skbit"),
+            dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "channels",
+                                         u"%(val1)s->%(val2)sch", u"%(val1)sch"),
+        ],
+        lambda i: dpAttributeBool(i.details.session.audio_stream, "decision")
+    ]
+
+
+@registerAttributeType
+class SubtitlesAttribute(SessionAttribute):
+    name = "Subtitles"
+    displayCondition = staticmethod(lambda i: bool(i.details.original.subtitle_stream))
+    dataPoints = [
+        lambda i: [
+            dpAttributeDifferenceDefault(i.details.original.subtitle_stream, i.details.session.subtitle_stream, "codec",
+                                         valueFormatter=lambda v1, v2: [v1,
+                                                                        "burn" if i.details.session.subtitle_stream.burn else v2]),
+        ],
+        lambda i: dpBool(i.details.session.subtitle_stream.decision != "burn",
+                         i.details.session.subtitle_stream.decision),
+        lambda i: dpAttributeBool(i.details.session.subtitle_stream, "location")
+    ]
+
+
+@registerAttributeType
+class UserAttribute(SessionAttribute):
+    name = "User"
+    dataPoints = [
+        lambda i: [u"%s @ %s" % (i.session.user.title, i.mediaItem.server.name)]
+    ]
+
+
+class SessionAttributes(OrderedDict):
+    def __init__(self, ref, *args, **kwargs):
+        self.ref = ref
+        OrderedDict.__init__(self, *args, **kwargs)
+
+        for name, cls in ATTRIBUTE_TYPES.iteritems():
+            self[name] = instance = cls()
+            instance.data = []
+            if not instance.displayCondition or instance.displayCondition(self.ref):
+                for dp in instance.dataPoints:
+                    try:
+                        result = dp(self.ref)
+                        if result is not None:
+                            instance.data += result
+                    except:
+                        util.ERROR()
 
 
 class VideoSessionInfo:
@@ -110,18 +245,7 @@ class VideoSessionInfo:
         self.mediaItem = mediaContainer
         self.session = sessionMediaContainer
         self.details = MediaDetailsHolder(self.mediaItem.media, self.session.media)
-        self.attributes = SessionAttributes()
-
-        self.fillData()
-
-    def fillData(self):
-        # fill info
-        self.fillModeInfo()
-        self.fillContainerInfo()
-        self.fillVideoInfo()
-        self.fillAudioInfo()
-        self.fillSubtitleInfo()
-        self.fillServerInfo()
+        self.attributes = SessionAttributes(self)
 
     def normRes(self, res):
         try:
@@ -131,113 +255,3 @@ class VideoSessionInfo:
         else:
             res += "p"
         return res
-
-    def fillModeInfo(self):
-        data = [self.details.session.part.decision]
-        # if self.session.transcodeSession:
-        #     if self.session.transcodeSession.context:
-        #         data.append(self.session.transcodeSession.context)
-
-        if self.session.player.local:
-            data.append("local")
-
-        self.attributes.add("Mode", *data)
-
-    def fillContainerInfo(self):
-        data = []
-        if self.details.original.part.attrib_container != self.details.session.part.attrib_container:
-            data.append("%s->%s" % (self.details.original.part.attrib_container, self.details.session.part.attrib_container))
-        else:
-            data.append(self.details.original.part.attrib_container)
-
-        self.attributes.add("Container", *data)
-
-    def fillVideoInfo(self):
-        data = []
-
-        if not self.details.original.video_stream:
-            return
-
-        currentMedia = self.details.original.media
-        currentSessionMedia = self.details.session.media
-        currentStream = self.details.original.video_stream
-        currentSessionStream = self.details.session.video_stream
-
-        if currentMedia.videoResolution != currentSessionMedia.videoResolution:
-            data.append("%s->%s" % (self.normRes(currentMedia.videoResolution), self.normRes(currentSessionMedia.videoResolution)))
-        else:
-            data.append(self.normRes(currentMedia.videoResolution))
-
-        if currentStream.bitrate != currentSessionStream.bitrate:
-            data.append("%s->%s" % (currentStream.bitrate, currentSessionStream.bitrate + "kbit"))
-        else:
-            data.append(currentStream.bitrate + "kbit")
-
-        if currentSessionStream.decision:
-            decision = currentSessionStream.decision
-            if self.session.transcodeSession.videoDecision == "transcode" and self.session.transcodeSession.transcodeHwEncoding:
-                decision += " HW"
-
-            data.append(decision)
-
-        # if currentSessionVideoStream.location:
-        #     data.append(currentSessionVideoStream.location)
-
-        self.attributes.add("Video", *data)
-
-    def fillAudioInfo(self):
-        data = []
-
-        if not self.details.original.audio_stream:
-            return
-
-        currentStream = self.details.original.audio_stream
-        currentSessionStream = self.details.session.audio_stream
-
-        if currentStream.codec != currentSessionStream.codec:
-            data.append("%s->%s" % (currentStream.codec, currentSessionStream.codec))
-        else:
-            data.append(currentStream.codec)
-
-        if currentStream.bitrate != currentSessionStream.bitrate:
-            data.append("%s->%s" % (currentStream.bitrate, currentSessionStream.bitrate + "kbit"))
-        else:
-            data.append(currentStream.bitrate + "kbit")
-
-        if currentStream.channels != currentSessionStream.channels:
-            data.append("%s->%s" % (currentStream.channels, currentSessionStream.channels + "ch"))
-        else:
-            data.append(currentStream.channels + "ch")
-
-        if currentSessionStream.decision:
-            data.append(currentSessionStream.decision)
-
-        # if currentSessionStream.location:
-        #     data.append(currentSessionStream.location)
-
-        self.attributes.add("Audio", *data)
-
-    def fillSubtitleInfo(self):
-        data = []
-        if not self.details.original.audio_stream:
-            return
-
-        currentStream = self.details.original.subtitle_stream
-        currentSessionStream = self.details.session.subtitle_stream
-
-        if currentStream.codec != currentSessionStream.codec:
-            codec = "burn" if currentSessionStream.burn else currentSessionStream.codec
-            data.append("%s->%s" % (currentStream.codec, codec))
-        else:
-            data.append(currentStream.codec)
-
-        if currentSessionStream.decision and currentSessionStream.decision != "burn":
-            data.append(currentSessionStream.decision)
-
-        if currentSessionStream.location:
-            data.append(currentSessionStream.location)
-
-        self.attributes.add("Subtitles", *data)
-
-    def fillServerInfo(self):
-        self.attributes.add("User", *[u"%s @ %s" % (self.session.user.title, self.mediaItem.server.name)])

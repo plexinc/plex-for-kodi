@@ -866,6 +866,7 @@ class SeekDialog(kodigui.BaseDialog):
     def hideOSD(self):
         self.setProperty('show.OSD', '')
         self.setFocusId(self.NO_OSD_BUTTON_ID)
+        self.resetSeeking()
         self._osdHideFast = False
         if self.playlistDialog:
             self.playlistDialog.doClose()

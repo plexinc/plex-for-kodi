@@ -226,3 +226,7 @@ class Similar(MediaTag):
 class Writer(MediaTag):
     TYPE = 'Writer'
     FILTER = 'writer'
+
+
+class Bandwidth(plexobjects.PlexObject):
+    TYPE = 'Bandwidth'

@@ -108,7 +108,6 @@ class TimelineData(util.AttributeDict):
 
 class NowPlayingManager(object):
     def __init__(self):
-
         # Constants
         self.NAVIGATION = "navigation"
         self.FULLSCREEN_VIDEO = "fullScreenVideo"
@@ -206,6 +205,8 @@ class NowPlayingManager(object):
         self.timelines[timelineType].setControllable(name, isControllable)
 
     def onTimelineResponse(self, request, response, context):
+        context.request.server.trigger("np:timelineResponse", response=response)
+
         if not context.playQueue or not context.playQueue.refreshOnTimeline:
             return
         context.playQueue.refreshOnTimeline = False

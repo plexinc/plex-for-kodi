@@ -1,17 +1,18 @@
 # coding=utf-8
-
 from collections import OrderedDict
 
 import util
+from plexnet.plexobjects import listItems
+from plexnet import plexapp
 
 
 class MediaDetails:
     details = None
 
-    def __init__(self, mediaContainer, byRef=None):
-        self.details = self.findMediaDetails(mediaContainer, byRef=byRef)
+    def __init__(self, mediaContainer, mediaChoice):
+        self.details = self.findMediaDetails(mediaContainer, mediaChoice)
 
-    def findMediaDetails(self, mediaList, byRef=None):
+    def findMediaDetails(self, mediaList, mediaChoice):
         """
 
         :type byRef: reference MediaDetails object
@@ -24,42 +25,23 @@ class MediaDetails:
             "subtitle_stream": None
         }
 
-        for media in mediaList:
-            for part in media.parts:
-                if not byRef:
-                    if part.selected:
+        # we can't use mediaChoice here, directly, because it's the original mediaItems' mediaChoice in case of
+        # incomplete data
+        for media in mediaList.media:
+            if media.id == mediaChoice.media.id:
+                data["media"] = media
+
+                for part in media.parts:
+                    if part.id == mediaChoice.part.id:
                         data["part"] = part
-                        data["media"] = media
 
                         for stream in part.streams:
-                            if stream.streamType == "1" and (
-                                    stream.selected == "1" or (
-                                    stream.default == "1" and not data["video_stream"])):
+                            if stream.id == mediaChoice.videoStream.id:
                                 data["video_stream"] = stream
-
-                            elif stream.streamType == "2" and stream.selected == "1":
+                            elif stream.id == mediaChoice.audioStream.id:
                                 data["audio_stream"] = stream
-
-                            elif stream.streamType == "3" and stream.selected == "1":
+                            elif stream.id == mediaChoice.subtitleStream.id:
                                 data["subtitle_stream"] = stream
-
-                        break
-                else:
-                    if part.id == byRef.part.id:
-                        data["part"] = part
-                        data["media"] = media
-
-                        for stream in part.streams:
-                            if stream.id == byRef.video_stream.id:
-                                data["video_stream"] = stream
-
-                            elif stream.id == byRef.audio_stream.id:
-                                data["audio_stream"] = stream
-
-                            elif stream.id == byRef.subtitle_stream.id:
-                                data["subtitle_stream"] = stream
-                        break
-
         return data
 
     def __getattr__(self, item):
@@ -67,14 +49,57 @@ class MediaDetails:
             return self.details[item]
         raise AttributeError("%r object has no attribute %r" % (self.__class__, item))
 
+    def incompleteSessionDataToMedia(self, data, media):
+        """
+        updates mediaItem with timeline response bandwidth/transcodeSession data
+        :param data:
+        :param media:
+        :return:
+        """
+        decision = "directplay"
+
+        media.bandwidths = media._findBandwidths(data)
+        media.transcodeSession = media._findTranscodeSession(data)
+
+        if media.transcodeSession:
+            decision = "transcode"
+
+            # fill remaining data
+            self.part.attrib_container = media.transcodeSession.attrib_container
+
+            for bw in media.bandwidths:
+                if bw.resolution:
+                    self.media.videoResolution = bw.resolution
+                    break
+
+            if self.video_stream:
+                # sadly we don't know the final bitrate for the video/audio streams with incomplete data
+                self.video_stream.bitrate = "?"
+                self.video_stream.decision = media.transcodeSession.videoDecision
+                self.video_stream.codec = media.transcodeSession.videoCodec
+
+            if self.audio_stream:
+                self.audio_stream.decision = media.transcodeSession.audioDecision
+                self.audio_stream.codec = media.transcodeSession.audioCodec
+                self.audio_stream.channels = media.transcodeSession.audioChannels
+                self.audio_stream.bitrate = "?"
+
+            if self.subtitle_stream:
+                self.subtitle_stream.decision = media.transcodeSession.subtitleDecision
+                if self.subtitle_stream.decision == "burn":
+                    self.subtitle_stream.burn = True
+                    self.subtitle_stream.codec = "burn"
+
+        self.part.decision = decision
+
 
 class MediaDetailsHolder:
     session = None
     original = None
 
-    def __init__(self, originalMedia, sessionMedia):
-        self.session = MediaDetails(sessionMedia)
-        self.original = MediaDetails(originalMedia, byRef=self.session)
+    def __init__(self, originalMedia, sessionMedia, mediaChoice):
+        self.session = MediaDetails(sessionMedia, mediaChoice)
+        self.original = MediaDetails(originalMedia, mediaChoice)
 
 
 ATTRIBUTE_TYPES = OrderedDict()
@@ -218,7 +243,7 @@ class SubtitlesAttribute(SessionAttribute):
 class UserAttribute(SessionAttribute):
     name = "User"
     dataPoints = [
-        lambda i: [u"%s @ %s" % (i.session.user.title, i.mediaItem.server.name)]
+        lambda i: [u"%s @ %s" % (plexapp.ACCOUNT.title or plexapp.ACCOUNT.username or ' ', i.mediaItem.server.name)]
     ]
 
 
@@ -237,14 +262,23 @@ class SessionAttributes(OrderedDict):
                         if result is not None:
                             instance.data += result
                     except:
-                        util.ERROR()
+                        pass
 
 
 class VideoSessionInfo:
-    def __init__(self, sessionMediaContainer, mediaContainer):
+    def __init__(self, sessionMediaContainer, mediaContainer, incompleteSessionData=False):
         self.mediaItem = mediaContainer
         self.session = sessionMediaContainer
-        self.details = MediaDetailsHolder(self.mediaItem.media, self.session.media)
+
+        if incompleteSessionData:
+            #mediaContainerClone = buildItem(mediaContainer.server, mediaContainer._fulldata, initpath=mediaContainer.initpath, container=mediaContainer.container)#buildItem(mediaContainer._server, mediaContainer._data, mediaContainer._initPath)
+            mediaContainerClone = listItems(mediaContainer.server, '/library/metadata/{0}'.format(mediaContainer.ratingKey))[0]
+            self.session = mediaContainerClone
+
+        self.details = MediaDetailsHolder(self.mediaItem, self.session, mediaContainer.mediaChoice)
+        if incompleteSessionData:
+            self.details.session.incompleteSessionDataToMedia(incompleteSessionData, self.session)
+
         self.attributes = SessionAttributes(self)
 
     def normRes(self, res):

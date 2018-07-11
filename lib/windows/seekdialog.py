@@ -581,6 +581,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def updateBigSeek(self):
         self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
+        self.updateProgress(set_to_current=False)
         self.resetSkipSteps()
 
     def bigSeekSelected(self):

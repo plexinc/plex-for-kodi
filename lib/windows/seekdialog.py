@@ -11,7 +11,8 @@ import dropdown
 
 from lib import util
 from plexnet.videosession import VideoSessionInfo
-from plexnet.exceptions import ServerNotOwned
+from plexnet.exceptions import ServerNotOwned, NotFound
+
 from lib.kodijsonrpc import builtin
 
 from lib.util import T
@@ -398,25 +399,45 @@ class SeekDialog(kodigui.BaseDialog):
             kodigui.BaseDialog.doClose(self)
 
     def showPPIDialog(self):
+        self.setProperty('show.PPI', '1')
         self.setProperty('ppi.Status', 'Loading ...')
+
+        def getVideoSession(currentVideo):
+            return currentVideo.server.findVideoSession(currentVideo.settings.getGlobal("clientIdentifier"),
+                                                        currentVideo.ratingKey)
+
         try:
             currentVideo = self.player.video
-            videoSession = currentVideo.server.findVideoSession(currentVideo.settings.getGlobal("clientIdentifier"),
-                                                                currentVideo.ratingKey)
+            videoSession = None
+            elapsed = 0
+            while not videoSession:
+                if elapsed > 5:
+                    raise NotFound
 
-            if videoSession:
-                # fill attributes
-                info = VideoSessionInfo(videoSession, currentVideo)
-                for attrib in info.attributes.values():
-                    self.setProperty('ppi.%s' % attrib.label, attrib.value)
+                videoSession = getVideoSession(currentVideo)
+                if videoSession:
+                    break
+
+                util.MONITOR.waitForAbort(1)
+                elapsed += 1
+
+            if not videoSession:
+                raise NotFound
+
+            # fill attributes
+            info = VideoSessionInfo(videoSession, currentVideo)
+            for attrib in info.attributes.values():
+                self.setProperty('ppi.%s' % attrib.label, attrib.value)
         except ServerNotOwned:
             self.setProperty('ppi.Status', 'Info not available (server not owned)')
+
+        except NotFound:
+            self.setProperty('ppi.Status', 'Info not available (session not found)')
+
         except:
             util.ERROR()
         else:
             self.setProperty('ppi.Status', '')
-
-        self.setProperty('show.PPI', '1')
 
     def hidePPIDialog(self):
         self.setProperty('show.PPI', '')

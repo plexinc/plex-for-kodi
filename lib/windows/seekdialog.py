@@ -418,13 +418,16 @@ class SeekDialog(kodigui.BaseDialog):
             return currentVideo.server.findVideoSession(currentVideo.settings.getGlobal("clientIdentifier"),
                                                         currentVideo.ratingKey)
 
+        while not self.player.started:
+            util.MONITOR.waitForAbort(0.1)
+
         info = None
         currentVideo = self.player.video
         try:
             videoSession = None
             elapsed = 0
             while not videoSession:
-                if elapsed > 5:
+                if elapsed > 10:
                     raise NotFound
 
                 videoSession = getVideoSession(currentVideo)
@@ -442,7 +445,7 @@ class SeekDialog(kodigui.BaseDialog):
             elapsed = 0
             try:
                 while not self.lastTimelineResponse:
-                    if elapsed > 5:
+                    if elapsed > 10:
                         raise NotFound
 
                     util.MONITOR.waitForAbort(0.1)

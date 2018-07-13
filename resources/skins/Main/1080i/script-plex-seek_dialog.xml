@@ -202,7 +202,7 @@
                 <control type="grouplist">
                     <left>0</left>
                     <top>0</top>
-                    <width>893</width>
+                    <width>793</width>
                     <control type="label">
                         <width>893</width>
                         <height>50</height>
@@ -259,7 +259,7 @@
                 <control type="grouplist">
                     <left>0</left>
                     <top>0</top>
-                    <width>893</width>
+                    <width>993</width>
                     <control type="label">
                         <width>893</width>
                         <height>50</height>

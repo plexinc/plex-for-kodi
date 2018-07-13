@@ -2,103 +2,164 @@
 from collections import OrderedDict
 
 import util
-from plexnet.plexobjects import listItems
 from plexnet import plexapp
 
 
 class MediaDetails:
+    """
+    Gathers attributes from a MediaContainer
+    """
     details = None
+    attribute_map = {
+        "container": "part.attrib_container",
+        "partDecision": "part.decision",
+        "videoResolution": "media.videoResolution",
+        "videoBitrate": "video_stream.bitrate",
+        "videoCodec": "video_stream.codec",
+        "videoStreamDecision": "video_stream.decision",
+        "transcodeVideoDecision": "transcode_session.videoDecision",
+        "transcodeHWEncoding": "transcode_session.transcodeHwEncoding",
+        "audioCodec": "audio_stream.codec",
+        "audioBitrate": "audio_stream.bitrate",
+        "audioChannels": "audio_stream.channels",
+        "audioStreamDecision": "audio_stream.decision",
+        "subtitleCodec": "subtitle_stream.codec",
+        "subtitleStreamDecision": "subtitle_stream.decision",
+        "subtitleLocation": "subtitle_stream.location",
+        "subtitleBurn": "subtitle_stream.burn",
+    }
 
-    def __init__(self, mediaContainer, mediaChoice):
-        self.details = self.findMediaDetails(mediaContainer, mediaChoice)
+    def __init__(self, *args, **kwargs):
+        self.details = self.findMediaDetails(*args, **kwargs)
 
-    def findMediaDetails(self, mediaList, mediaChoice):
+    def attributesFromInstance(self, map, reference_data):
+        # gather attribute values
+        final_data = {}
+        for attribute, dataPath in map.iteritems():
+            objName, attribName = dataPath.split(".")
+            if objName in reference_data:
+                obj = reference_data[objName]
+                final_data[attribute] = getattr(obj, attribName, None) or None
+        return final_data
+
+    def findMediaDetails(self, mediaContainer, mediaChoice, transcodeSession=None):
         """
 
-        :type byRef: reference MediaDetails object
         """
-        data = {
+        reference_data = {
             "media": None,
             "part": None,
             "video_stream": None,
             "audio_stream": None,
-            "subtitle_stream": None
+            "subtitle_stream": None,
+            "transcode_session": transcodeSession or mediaContainer.transcodeSession
         }
 
-        # we can't use mediaChoice here, directly, because it's the original mediaItems' mediaChoice in case of
-        # incomplete data
-        for media in mediaList.media:
+        # We can't use mediaChoice here directly, because it doesn't necessarily hold the newest data (in case of
+        # an actual MediaContainer from the Session endpoint that data is king)
+        # Instead find the media/part/streams which were selected and are held in MediaChoice inside the current
+        # mediaContainer
+        for media in mediaContainer.media:
             if media.id == mediaChoice.media.id:
-                data["media"] = media
+                reference_data["media"] = media
 
                 for part in media.parts:
                     if part.id == mediaChoice.part.id:
-                        data["part"] = part
+                        reference_data["part"] = part
 
                         for stream in part.streams:
                             if stream.id == mediaChoice.videoStream.id:
-                                data["video_stream"] = stream
+                                reference_data["video_stream"] = stream
                             elif stream.id == mediaChoice.audioStream.id:
-                                data["audio_stream"] = stream
+                                reference_data["audio_stream"] = stream
                             elif stream.id == mediaChoice.subtitleStream.id:
-                                data["subtitle_stream"] = stream
-        return data
+                                reference_data["subtitle_stream"] = stream
+
+        final_data = {
+            "hasVideoStream": bool(reference_data["video_stream"]),
+            "hasAudioStream": bool(reference_data["audio_stream"]),
+            "hasSubtitleStream": bool(reference_data["subtitle_stream"]),
+        }
+        final_data.update(self.attributesFromInstance(self.attribute_map, reference_data))
+
+        del reference_data
+
+        return final_data
 
     def __getattr__(self, item):
         if self.details and item in self.details:
             return self.details[item]
         raise AttributeError("%r object has no attribute %r" % (self.__class__, item))
 
-    def incompleteSessionDataToMedia(self, data, media):
-        """
-        updates mediaItem with timeline response bandwidth/transcodeSession data
-        :param data:
-        :param media:
-        :return:
-        """
+
+class MediaDetailsIncomplete(MediaDetails):
+    """
+    Gathers attributes from a TranscodeSession
+    """
+
+    incompleteAttribMap = {
+        "container": "transcode_session.attrib_container",
+        "videoCodec": "transcode_session.videoCodec",
+        "videoStreamDecision": "transcode_session.videoDecision",
+        "transcodeVideoDecision": "transcode_session.videoDecision",
+        "audioCodec": "transcode_session.audioCodec",
+        "audioChannels": "transcode_session.audioChannels",
+        "audioStreamDecision": "transcode_session.audioDecision",
+        "subtitleStreamDecision": "transcode_session.subtitleDecision",
+    }
+
+    def findMediaDetails(self, mediaContainer, mediaChoice, incompleteSessionData=None):
+        transcodeSession = mediaContainer._findTranscodeSession(incompleteSessionData)
+
+        # get base data from original mediaChoice media instance
+        data = MediaDetails.findMediaDetails(self, mediaContainer, mediaChoice, transcodeSession=transcodeSession)
+
         decision = "directplay"
+        bandwidths = mediaContainer._findBandwidths(incompleteSessionData)
 
-        media.bandwidths = media._findBandwidths(data)
-        media.transcodeSession = media._findTranscodeSession(data)
-
-        if media.transcodeSession:
+        if transcodeSession:
             decision = "transcode"
 
-            # fill remaining data
-            self.part.attrib_container = media.transcodeSession.attrib_container
+            data.update(self.attributesFromInstance(self.incompleteAttribMap, {"transcode_session": transcodeSession}))
 
-            for bw in media.bandwidths:
+            # fill remaining data
+
+            for bw in bandwidths:
                 if bw.resolution:
-                    self.media.videoResolution = bw.resolution
+                    data["videoResolution"] = bw.resolution
                     break
 
-            if self.video_stream:
+            if data["hasVideoStream"]:
                 # sadly we don't know the final bitrate for the video/audio streams with incomplete data
-                self.video_stream.bitrate = "?"
-                self.video_stream.decision = media.transcodeSession.videoDecision
-                self.video_stream.codec = media.transcodeSession.videoCodec
+                data["videoBitrate"] = "?"
 
-            if self.audio_stream:
-                self.audio_stream.decision = media.transcodeSession.audioDecision
-                self.audio_stream.codec = media.transcodeSession.audioCodec
-                self.audio_stream.channels = media.transcodeSession.audioChannels
-                self.audio_stream.bitrate = "?"
+            if data["hasAudioStream"]:
+                data["audioBitrate"] = "?"
 
-            if self.subtitle_stream:
-                self.subtitle_stream.decision = media.transcodeSession.subtitleDecision
-                if self.subtitle_stream.decision == "burn":
-                    self.subtitle_stream.burn = True
-                    self.subtitle_stream.codec = "burn"
+            if data["hasSubtitleStream"]:
+                if data["subtitleStreamDecision"] == "burn":
+                    data["subtitleBurn"] = True
+                    data["subtitleCodec"] = "burn"
 
-        self.part.decision = decision
+        data["partDecision"] = decision
+
+        return data
 
 
 class MediaDetailsHolder:
+    """
+    Holds information about the currently selected MediaContainer (self.original) and the currently playing
+    MediaContainer (self.session)
+    """
     session = None
     original = None
 
-    def __init__(self, originalMedia, sessionMedia, mediaChoice):
-        self.session = MediaDetails(sessionMedia, mediaChoice)
+    def __init__(self, originalMedia, sessionMedia, mediaChoice, incompleteSessionData=None):
+        if incompleteSessionData:
+            self.session = MediaDetailsIncomplete(originalMedia, mediaChoice,
+                                                  incompleteSessionData=incompleteSessionData)
+        else:
+            self.session = MediaDetails(sessionMedia, mediaChoice)
         self.original = MediaDetails(originalMedia, mediaChoice)
 
 
@@ -110,42 +171,127 @@ def registerAttributeType(cls):
     return cls
 
 
-def dpConditionMet(condition, resultTrue, resultFalse=None):
+def normRes(res):
+    try:
+        int(res)
+    except:
+        pass
+    else:
+        res += "p"
+    return res
+
+
+class DPAttribute:
     """
-
-    :rtype: list
+    An attribute reference to source.attr
     """
-    return [resultTrue] if condition and resultTrue else [resultFalse] if resultFalse else []
+    def __init__(self, attr, source="details.original"):
+        self.attr = attr
+        self.attrWithPath = "%s.%s" % (source, attr) if source else attr
+
+    def __call__(self, *args, **kwargs):
+        return self.value(*args, **kwargs)
+
+    def resolve(self, instance_or_value, obj):
+        """
+        Resolve attribute to value based on the given type.
+        Returns value or Attribute.value()
+
+        :param instance_or_value: Attribute instance or value
+        :param obj: VideoSessionInfo instance
+        :return:
+        """
+        return instance_or_value.value(obj) if isinstance(instance_or_value, DPAttribute) else instance_or_value
+
+    def value(self, obj):
+        """
+        Returns value of the given path based on obj
+
+        :param obj: VideoSessionInfo instance
+        :return:
+        """
+        o = obj
+        for p in self.attrWithPath.split("."):
+            o = getattr(o, p, None)
+
+        return o
 
 
-def dpAttributeIfExists(ref, attrib, returnValue=None):
+class DPAttributeOriginal(DPAttribute):
+    pass
+
+
+class DPAttributeSession(DPAttribute):
+    def __init__(self, attr):
+        DPAttribute.__init__(self, attr, source="details.session")
+
+
+class DPAttributesDiffer(DPAttribute):
+    def __init__(self, attr, formatTrue=u"%(val1)s->%(val2)s", formatFalse=u"%(val1)s",
+                 valueFormatter=lambda i, v1, v2: [v1, v2]):
+        DPAttribute.__init__(self, attr)
+        self.formatTrue = formatTrue
+        self.formatFalse = formatFalse
+        self.valueFormatter = valueFormatter
+
+    def value(self, obj):
+        """
+        Returns formatted value if values differ, otherwise the original value based on attr
+
+        :param obj: VideoSessionInfo instance
+        :return:
+        """
+        val1 = getattr(obj.details.original, self.attr, None)
+        val2 = getattr(obj.details.session, self.attr, None)
+        formatted_val1, formatted_val2 = self.valueFormatter(obj, val1, val2)
+
+        if formatted_val2 and formatted_val1 != formatted_val2:
+            return self.formatTrue % {"val1": formatted_val1, "val2": formatted_val2}
+        return (self.formatFalse % {"val1": formatted_val1, "val2": formatted_val2}) if self.formatFalse else formatted_val1
+
+
+class DPAttributeExists(DPAttribute):
+    def __init__(self, attr, source="details.session", returnValue=None):
+        DPAttribute.__init__(self, attr, source=source)
+        self.returnValue = returnValue
+
+    def value(self, obj):
+        """
+        Returns returnValue, which may also be an Attribute instance, in case attr exists on obj
+
+        :param obj:  VideoSessionInfo instance
+        :return:
+        """
+        result = DPAttribute.value(self, obj)
+        if self.returnValue and result:
+            return self.resolve(self.returnValue, obj)
+
+        return result
+
+
+class DPAttributeEqualsValue(DPAttribute):
+    def __init__(self, attr, compareTo, retVal, source="details.session"):
+        DPAttribute.__init__(self, attr, source=source)
+        self.compareTo = compareTo
+        self.retVal = retVal
+
+    def value(self, obj):
+        """
+        Returns retVal, which may also be an Attribute, if attr's value equals compareTo's value. compareTo may also
+        be an Attribute.
+
+        :param obj: VideoSessionInfo instance
+        :return:
+        """
+        result = DPAttribute.value(self, obj)
+        if result == self.resolve(self.compareTo, obj):
+            return self.resolve(self.retVal, obj)
+
+
+class ComputedPPIValue:
     """
-
-    :rtype: list
+    Holds the final computed attribute data for display
     """
-    result = getattr(ref, attrib, None)
-    if returnValue and result:
-        return [returnValue]
-
-    return [result] if result else []
-
-
-def dpAttributeDifferenceDefault(ref1, ref2, attribute, formatTrue=u"%(val1)s->%(val2)s", formatFalse=u"%(val1)s",
-                                 valueFormatter=lambda v1, v2: [v1, v2]):
-    """
-
-    :rtype: string
-    """
-    val1 = getattr(ref1, attribute, None)
-    val2 = getattr(ref2, attribute, None)
-    formatted_val1, formatted_val2 = valueFormatter(val1, val2)
-
-    if val1 != val2:
-        return formatTrue % {"val1": formatted_val1, "val2": formatted_val2}
-    return (formatFalse % {"val1": formatted_val1, "val2": formatted_val2}) if formatFalse else formatted_val1
-
-
-class SessionAttribute:
     name = None
     data = None
     displayCondition = None
@@ -157,7 +303,7 @@ class SessionAttribute:
 
     @property
     def value(self):
-        return ", ".join(self.data)
+        return ", ".join([x for x in self.data if x is not None])
 
     def __str__(self):
         return "%s: %s" % (self.label, self.value)
@@ -167,80 +313,64 @@ class SessionAttribute:
 
 
 @registerAttributeType
-class ModeAttribute(SessionAttribute):
+class ModePPI(ComputedPPIValue):
     name = "Mode"
     dataPoints = [
-        lambda i: [
-            i.details.session.part.decision,
-        ],
-        lambda i: dpAttributeIfExists(i.session.player, "local", returnValue="local")
+        DPAttributeSession("partDecision"),
+        DPAttributeExists("local", source="session.player", returnValue="local")
     ]
 
 
 @registerAttributeType
-class ContainerAttribute(SessionAttribute):
+class ContainerPPI(ComputedPPIValue):
     name = "Container"
     dataPoints = [
-        lambda i: [
-            dpAttributeDifferenceDefault(i.details.original.part, i.details.session.part, "attrib_container"),
-        ]
+        DPAttributesDiffer("container"),
     ]
 
 
 @registerAttributeType
-class VideoAttribute(SessionAttribute):
+class VideoPPI(ComputedPPIValue):
     name = "Video"
-    displayCondition = staticmethod(lambda i: bool(i.details.original.video_stream))
+    displayCondition = DPAttributeExists("hasVideoStream", source="details.original")
     dataPoints = [
+        DPAttributesDiffer("videoCodec"),
+        DPAttributesDiffer("videoResolution", valueFormatter=lambda i, v1, v2: [normRes(v1), normRes(v2)]),
+        DPAttributesDiffer("videoBitrate", formatTrue=u"%(val1)s->%(val2)skbit", formatFalse=u"%(val1)skbit"),
         lambda i: [
-            dpAttributeDifferenceDefault(i.details.original.media, i.details.session.media, "videoResolution",
-                                         valueFormatter=lambda v1, v2: [i.normRes(v1), i.normRes(v2)]),
-            dpAttributeDifferenceDefault(i.details.original.video_stream, i.details.session.video_stream, "bitrate",
-                                         u"%(val1)s->%(val2)skbit", u"%(val1)skbit"),
-
-        ],
-        lambda i: [
-            (i.details.session.video_stream.decision + " HW")
-            if i.session.transcodeSession.videoDecision == "transcode" and i.session.transcodeSession.transcodeHwEncoding
-            else i.details.session.video_stream.decision
+            (i.details.session.videoStreamDecision + " HW")
+            if i.session.transcodeVideoDecision == "transcode" and i.details.session.transcodeHWEncoding
+            else i.details.session.videoStreamDecision
         ]
     ]
 
 
 @registerAttributeType
-class AudioAttribute(SessionAttribute):
+class AudioPPI(ComputedPPIValue):
     name = "Audio"
-    displayCondition = staticmethod(lambda i: bool(i.details.original.audio_stream))
+    displayCondition = DPAttributeExists("hasAudioStream", source="details.original")
     dataPoints = [
-        lambda i: [
-            dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "codec"),
-            dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "bitrate",
-                                         u"%(val1)s->%(val2)skbit", u"%(val1)skbit"),
-            dpAttributeDifferenceDefault(i.details.original.audio_stream, i.details.session.audio_stream, "channels",
-                                         u"%(val1)s->%(val2)sch", u"%(val1)sch"),
-        ],
-        lambda i: dpAttributeIfExists(i.details.session.audio_stream, "decision")
+        DPAttributesDiffer("audioCodec"),
+        DPAttributesDiffer("audioBitrate", formatTrue=u"%(val1)s->%(val2)skbit", formatFalse=u"%(val1)skbit"),
+        DPAttributesDiffer("audioChannels", formatTrue=u"%(val1)s->%(val2)sch", formatFalse=u"%(val1)sch"),
+        DPAttributeExists("audioStreamDecision")
     ]
 
 
 @registerAttributeType
-class SubtitlesAttribute(SessionAttribute):
+class SubtitlesPPI(ComputedPPIValue):
     name = "Subtitles"
-    displayCondition = staticmethod(lambda i: bool(i.details.original.subtitle_stream))
+    displayCondition = DPAttributeExists("hasSubtitleStream", source="details.original")
     dataPoints = [
-        lambda i: [
-            dpAttributeDifferenceDefault(i.details.original.subtitle_stream, i.details.session.subtitle_stream, "codec",
-                                         valueFormatter=lambda v1, v2: [v1,
-                                                                        "burn" if i.details.session.subtitle_stream.burn else v2]),
-        ],
-        lambda i: dpConditionMet(i.details.session.subtitle_stream.decision != "burn",
-                                 i.details.session.subtitle_stream.decision),
-        lambda i: dpAttributeIfExists(i.details.session.subtitle_stream, "location")
+        DPAttributesDiffer("subtitleCodec", valueFormatter=lambda i, v1, v2: [v1,
+                                                                        "burn" if i.details.session.subtitleBurn else v2]),
+        DPAttributeEqualsValue("subtitleStreamDecision", "burn", DPAttribute("subtitleStreamDecision")),
+        DPAttributeExists("subtitleLocation")
     ]
 
 
 @registerAttributeType
-class UserAttribute(SessionAttribute):
+class UserPPI(ComputedPPIValue):
     name = "User"
     dataPoints = [
         lambda i: [u"%s @ %s" % (plexapp.ACCOUNT.title or plexapp.ACCOUNT.username or ' ', i.mediaItem.server.name)]
@@ -248,6 +378,9 @@ class UserAttribute(SessionAttribute):
 
 
 class SessionAttributes(OrderedDict):
+    """
+    Computes all the PPI instances' values
+    """
     def __init__(self, ref, *args, **kwargs):
         self.ref = ref
         OrderedDict.__init__(self, *args, **kwargs)
@@ -255,12 +388,19 @@ class SessionAttributes(OrderedDict):
         for name, cls in ATTRIBUTE_TYPES.iteritems():
             self[name] = instance = cls()
             instance.data = []
+            util.DEBUG_LOG("AX: %r %r" % (instance, instance.displayCondition))
             if not instance.displayCondition or instance.displayCondition(self.ref):
                 for dp in instance.dataPoints:
                     try:
+                        # dataPoint may be a lambda or a DataPoint instance
                         result = dp(self.ref)
+
+                        # result may be list or value
                         if result is not None:
-                            instance.data += result
+                            if isinstance(result, list):
+                                instance.data += result
+                            else:
+                                instance.data.append(result)
                     except:
                         pass
 
@@ -269,23 +409,8 @@ class VideoSessionInfo:
     def __init__(self, sessionMediaContainer, mediaContainer, incompleteSessionData=False):
         self.mediaItem = mediaContainer
         self.session = sessionMediaContainer
-
-        if incompleteSessionData:
-            #mediaContainerClone = buildItem(mediaContainer.server, mediaContainer._fulldata, initpath=mediaContainer.initpath, container=mediaContainer.container)#buildItem(mediaContainer._server, mediaContainer._data, mediaContainer._initPath)
-            mediaContainerClone = listItems(mediaContainer.server, '/library/metadata/{0}'.format(mediaContainer.ratingKey))[0]
-            self.session = mediaContainerClone
-
-        self.details = MediaDetailsHolder(self.mediaItem, self.session, mediaContainer.mediaChoice)
-        if incompleteSessionData:
-            self.details.session.incompleteSessionDataToMedia(incompleteSessionData, self.session)
+        self.details = MediaDetailsHolder(self.mediaItem, self.session, mediaContainer.mediaChoice,
+                                          incompleteSessionData=incompleteSessionData)
 
         self.attributes = SessionAttributes(self)
 
-    def normRes(self, res):
-        try:
-            int(res)
-        except:
-            pass
-        else:
-            res += "p"
-        return res

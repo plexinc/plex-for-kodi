@@ -53,16 +53,16 @@ class ListSetting(BasicSetting):
     options = ()
 
     def translate(self, val):
-        return self.options[len(self.options) - val]
+        return self.options[len(self.options) - 1 - val]
 
     def optionLabels(self):
         return self.options
 
     def optionIndex(self):
-        return len(self.options) - self.get()
+        return len(self.options) - 1 - self.get()
 
     def set(self, val):
-        BasicSetting.set(self, len(self.options) - val)
+        BasicSetting.set(self, len(self.options) - 1 - val)
 
 
 class QualitySetting(ListSetting):

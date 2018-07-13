@@ -388,7 +388,6 @@ class SessionAttributes(OrderedDict):
         for name, cls in ATTRIBUTE_TYPES.iteritems():
             self[name] = instance = cls()
             instance.data = []
-            util.DEBUG_LOG("AX: %r %r" % (instance, instance.displayCondition))
             if not instance.displayCondition or instance.displayCondition(self.ref):
                 for dp in instance.dataPoints:
                     try:

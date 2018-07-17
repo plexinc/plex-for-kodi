@@ -63,6 +63,7 @@ class SeekDialog(kodigui.BaseDialog):
     BAR_BOTTOM = 969
 
     HIDE_DELAY = 4  # This uses the Cron tick so is +/- 1 second accurate
+    OSD_HIDE_ANIMATION_DURATION = 0.2
     AUTO_SEEK_DELAY = 1
     SKIP_STEPS = {"negative": [-10000], "positive": [30000]}
 
@@ -95,6 +96,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._seekingWithoutOSD = False
         self._delayedSeekThread = None
         self._delayedSeekTimeout = 0
+        self._osdHideAnimationTimeout = 0
         self._osdHideFast = False
         self._hideDelay = self.HIDE_DELAY
         self._autoSeekDelay = self.AUTO_SEEK_DELAY
@@ -273,6 +275,12 @@ class SeekDialog(kodigui.BaseDialog):
                     return
 
                 if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK):
+                    if self._osdHideAnimationTimeout:
+                        if self._osdHideAnimationTimeout >= time.time():
+                            return
+                        else:
+                            self._osdHideAnimationTimeout = None
+
                     if self.osdVisible():
                         self.hideOSD()
                     else:
@@ -868,6 +876,8 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('show.OSD', '')
         self.setFocusId(self.NO_OSD_BUTTON_ID)
         self.resetSeeking()
+        self._osdHideAnimationTimeout = time.time() + self.OSD_HIDE_ANIMATION_DURATION
+
         self._osdHideFast = False
         if self.playlistDialog:
             self.playlistDialog.doClose()

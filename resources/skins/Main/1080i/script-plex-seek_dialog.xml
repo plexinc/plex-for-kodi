@@ -204,7 +204,7 @@
                     <top>0</top>
                     <width>793</width>
                     <control type="label">
-                        <width>893</width>
+                        <width>793</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
                         <label>$INFO[Player.Process(videodecoder),[COLOR FFE5A00D]$LOCALIZE[31139]:[/COLOR] ]$VAR[VideoHWDecoder, (,)]</label>
@@ -213,7 +213,7 @@
                         <visible>Player.HasVideo</visible>
                     </control>
                     <control type="label">
-                        <width>893</width>
+                        <width>793</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
                         <label>$INFO[Player.Process(pixformat),[COLOR FFE5A00D]$LOCALIZE[31140]:[/COLOR] ]</label>
@@ -222,7 +222,7 @@
                         <visible>Player.HasVideo</visible>
                     </control>
                     <control type="label">
-                        <width>893</width>
+                        <width>793</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
                         <label>$INFO[Player.Process(deintmethod),[COLOR FFE5A00D]$LOCALIZE[16038]:[/COLOR] ]</label>
@@ -231,7 +231,7 @@
                         <visible>Player.HasVideo</visible>
                     </control>
                     <control type="label">
-                        <width>893</width>
+                        <width>793</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
                         <label>$INFO[Player.Process(videowidth),[COLOR FFE5A00D]$LOCALIZE[38031]:[/COLOR] ,x]$INFO[Player.Process(videoheight),, px]$INFO[Player.Process(videodar),$COMMA , AR]$INFO[Player.Process(videofps),$COMMA , FPS]</label>
@@ -239,16 +239,17 @@
                         <shadowcolor>black</shadowcolor>
                         <visible>Player.HasVideo</visible>
                     </control>
-                    <control type="label">
-                        <width>893</width>
+                    <control type="textbox">
+                        <width>793</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
+                        <autoscroll delay="1000" time="1000" repeat="2000"></autoscroll>
                         <label>[COLOR FFE5A00D]$LOCALIZE[460]:[/COLOR] $INFO[Player.Process(audiochannels),,$COMMA ]$INFO[Player.Process(audiodecoder)]$INFO[Player.Process(audiobitspersample),$COMMA , bits]$INFO[Player.Process(audiosamplerate),$COMMA , Hz]</label>
                         <font>font14</font>
                         <shadowcolor>black</shadowcolor>
                     </control>
                     <control type="label">
-                        <width>893</width>
+                        <width>793</width>
                         <height>50</height>
                         <aligny>bottom</aligny>
                         <label>$INFO[System.Memory(used.percent),[COLOR FFE5A00D]$LOCALIZE[31030]:[/COLOR] ,]</label>

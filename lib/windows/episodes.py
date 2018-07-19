@@ -88,7 +88,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.reset(kwargs.get('episode'), kwargs.get('season'), kwargs.get('show'))
         self.initialEpisode = kwargs.get('episode')
         self.parentList = kwargs.get('parentList')
-        self.autoPlay = kwargs.get('auto_play')
         self.lastItem = None
         self.lastFocusID = None
         self.tasks = backgroundthread.Tasks()
@@ -109,7 +108,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         player.PLAYER.off('new.video', self.onNewVideo)
 
     @busy.dialog()
-    def _onFirstInit(self):
+    def onFirstInit(self):
         self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
@@ -120,12 +119,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self._setup()
         self.postSetup()
 
-    def onFirstInit(self):
-        self._onFirstInit()
-
-        if self.autoPlay:
-            self.autoPlay = False
-            self.playButtonClicked(force_episode=self.initialEpisode)
+    def doAutoPlay(self):
+        return self.playButtonClicked(force_episode=self.initialEpisode)
 
     def onReInit(self):
         self.selectEpisode()
@@ -420,8 +415,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
             pl.shuffle(shuffle, first=True)
             videoplayer.play(play_queue=pl)
+            return True
+
         else:
-            self.episodeListClicked(force_episode=force_episode)
+            return self.episodeListClicked(force_episode=force_episode)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)
@@ -500,9 +497,10 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if len(pl):  # Don't use playlist if it's only this video
             pl.setCurrent(episode)
             self.processCommand(videoplayer.play(play_queue=pl, resume=resume))
-            return
+            return True
 
         self.processCommand(videoplayer.play(video=episode, resume=resume))
+        return True
 
     def optionsButtonClicked(self, from_item=False):
         options = []

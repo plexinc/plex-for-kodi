@@ -176,8 +176,8 @@ class MediaDecisionEngine(object):
             util.LOG("MDE: Need to burn in subtitles")
         elif choice.protocol != "http":
             util.LOG("MDE: " + choice.protocol + " not supported")
-        elif numVideoStreams > 1:
-            util.LOG("MDE: Multiple video streams, won't try to direct play")
+        # elif numVideoStreams > 1:
+        #     util.LOG("MDE: Multiple video streams, won't try to direct play")
         elif problematicAudioStream:
             util.LOG("MDE: Problematic AAC stream with more than 2 channels prevents direct play")
         elif self.canDirectPlay(item, choice):

@@ -21,6 +21,8 @@ from lib import metadata
 
 from lib.util import T
 
+VIDEO_RELOAD_KW = dict(includeRelated=1, includeRelatedCount=10)
+
 
 class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'
@@ -77,7 +79,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.playVideo()
 
     def onReInit(self):
-        self.video.reload()
+        self.video.reload(**VIDEO_RELOAD_KW)
         self.refreshInfo()
 
     def refreshInfo(self):
@@ -85,6 +87,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
         self.setInfo()
+        self.fillRelated()
         xbmc.sleep(100)
 
         if oldFocusId == self.PLAY_BUTTON_ID:
@@ -218,11 +221,11 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice['key'] == 'mark_watched':
-            self.video.markWatched()
+            self.video.markWatched(**VIDEO_RELOAD_KW)
             self.refreshInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
-            self.video.markUnwatched()
+            self.video.markUnwatched(**VIDEO_RELOAD_KW)
             self.refreshInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_season':
@@ -429,7 +432,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif self.video.type == 'movie':
             self.setProperty('preview.no', '1')
 
-        self.video.reload(checkFiles=1, includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.video.reload(checkFiles=1, includeExtras=1, includeExtrasCount=10, **VIDEO_RELOAD_KW)
         self.setInfo()
         self.fillExtras()
         hasPrev = self.fillRelated()
@@ -572,6 +575,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if mli:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))
+                mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
                 items.append(mli)
                 idx += 1
 

@@ -135,6 +135,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             return
 
         self.reloadItems(items=[mli])
+        self.fillRelated()
 
     def postSetup(self, from_select_episode=False):
         self.selectEpisode(from_select_episode=from_select_episode)
@@ -851,6 +852,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if mli:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))
+                if not mli.dataSource.isWatched:
+                    mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
                 items.append(mli)
                 idx += 1
 

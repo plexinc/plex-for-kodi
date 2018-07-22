@@ -590,6 +590,10 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return True
 
     def updateRelated(self):
+        """
+        Update item watched/progress states dynamically
+        :return:
+        """
         if not self.video.related:
             return False
 
@@ -603,11 +607,9 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         for mli in self.relatedListControl:
             stateInfo = states.get(mli.dataSource.ratingKey)
             if stateInfo:
-                if mli.getProperty('unwatched') != stateInfo['unwatched']:
-                    mli.setProperty('unwatched', stateInfo['unwatched'])
-
-                if mli.getProperty('progress') != stateInfo['progress']:
-                    mli.setProperty('progress', stateInfo['progress'])
+                for fillProperty in ("unwatched", "progress"):
+                    if mli.getProperty(fillProperty) != stateInfo[fillProperty]:
+                        mli.setProperty(fillProperty, stateInfo[fillProperty])
 
     def fillRoles(self, has_prev=False):
         items = []

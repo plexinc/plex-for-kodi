@@ -873,7 +873,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         states = {}
         for rel in self.show_.related()[0].items:
             states[rel.ratingKey] = {
-                "unwatched.count": str(rel.unViewedLeafCount),
+                "unwatched.count": str(rel.unViewedLeafCount) if not rel.isWatched else '',
                 "progress": util.getProgressImage(rel)
             }
 

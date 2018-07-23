@@ -369,9 +369,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.setProperty('prev.info.summary', self.prev.summary)
 
         if self.prev.type == 'episode':
+            self.setProperty('related.header', T(32306, 'Related Shows'))
             if self.next:
                 self.setProperty('next.thumb', self.next.thumb.asTranscodedImageURL(*self.NEXT_DIM))
-                self.setProperty('related.header', T(32306, 'Related Shows'))
                 self.setProperty('info.date', util.cleanLeadingZeros(self.next.originallyAvailableAt.asDatetime('%B %d, %Y')))
 
                 self.setProperty('next.title', self.next.grandparentTitle)
@@ -386,9 +386,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 )
                 self.setProperty('prev.info.date', util.cleanLeadingZeros(self.prev.originallyAvailableAt.asDatetime('%B %d, %Y')))
         elif self.prev.type == 'movie':
+            self.setProperty('related.header', T(32404, 'Related Movies'))
             if self.next:
                 self.setProperty('next.thumb', self.next.defaultArt.asTranscodedImageURL(*self.NEXT_DIM))
-                self.setProperty('related.header', T(32404, 'Related Movies'))
                 self.setProperty('info.date', self.next.year)
 
                 self.setProperty('next.title', self.next.title)

@@ -418,6 +418,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             mli = kodigui.ManagedListItem(title or '', thumbnailImage=thumb, data_source=ondeck)
             if mli:
                 mli.setProperty('index', str(idx))
+                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
                 mli.setProperty(
                     'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(ondeck.type in ('show', 'season', 'episode') and 'show' or 'movie')
                 )
@@ -451,6 +452,12 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if mli:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))
+                if self.prev and self.prev.type == 'episode':
+                    if not mli.dataSource.isWatched:
+                        mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+                else:
+                    mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
                 items.append(mli)
                 idx += 1
 

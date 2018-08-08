@@ -6,7 +6,7 @@ import plexobjects
 import plexconnection
 import util
 
-RESOURCES = 'https://plex.tv/api/resources?includeHttps=1'
+RESOURCES = 'https://plex.tv/api/resources?includeHttps=1&includeRelay=1'
 
 
 class PlexResource(object):

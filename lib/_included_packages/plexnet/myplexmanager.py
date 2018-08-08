@@ -32,6 +32,7 @@ class MyPlexManager(object):
 
         if plexapp.ACCOUNT.isSecure:
             request.addParam("includeHttps", "1")
+            request.addParam("includeRelay", "1")
 
         plexapp.APP.startRequest(request, context)
 

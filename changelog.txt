@@ -4,6 +4,18 @@ Add Italian translations (thanks to iz8mbw)
 Use Kodi time format setting (Issue #90) (thanks to pannal)
 Restore last window when starting the add-on while it is running (Issue #126)
 Add Portuguese (Brazil) translations (thanks to DiogoAbu)
+Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal
+Only play unwatched media when pressing play or shuffle and filtering for unwatched (thanks to tlt21)
+Fix issue with duplicated icons whe fast-scrolling a hub (Issue #177) (thanks to pannal)
+Fixed GUI not responding after public IP renewal (thanks to pannal and mkliche)
+Advanced setting: Automatically seek selected position after a delay (Issue #172) (thanks to pannal)
+Advanced setting: Use skip step settings from Kodi (Issue #133) (thanks to pannal)
+Advanced setting: Use Plex/Kodi steps for timeline (Issue #133) (thanks to pannal)
+OSD-Autohide improvements (thanks to pannal)
+Show post play on user stop when item is considered played (thanks to pannal)
+Use Unplayed/Played instead of Unwatched/Watched (thanks to pannal)
+Fix issue with cast popup displaying partially offscreen (thanks to pannal)
+Various fixes for incorrectly transcoded playback (Issue #201) (thanks to pannal)
 
 [- 0.1.6 -]
 

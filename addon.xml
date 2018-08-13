@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.plex"
        name="Plex"
-       version="0.1.7a1"
+       version="0.1.7a2"
        provider-name="Plex">
     <requires>
         <import addon="xbmc.python" version="2.25.0"/>
@@ -32,27 +32,22 @@
         <source>https://github.com/plexinc/plex-for-kodi</source>
         <platform>all</platform>
         <news>
-Kodi v18: Fix skin compatability issues
-Kodi v18: Fix incompatibility with requests module update
-Kodi v18: Fix issue with playback not resuming properly when direct playing
-Kodi v18: Fix issue with progress bar not moving on music player/music playlist screens
-Fix album display on artist screen
-Fix bug causing failure to show audio player when clicking the mini player from some screens
-Show original artist when available (Issue #143)
-Improve centering over label backgrounds on pre-play screens
-Fix some spots where tokens could still be logged
-Play correct track when playing a multi-disc album (Issue #148)
-Improve headers for better identification in 'Now Playing' and future server profile
-Updated German language strings (thanks to coffinbearer)
-Fix French translations file (thanks to coffinbearer)
-Fix some Hungarian translations (thanks to vampywiz17)
-Add Russion translations (thanks to shady2k)
-Fix autostart to work with profiles (thanks to pannal)
-Fix focus loss on home screen due to error (Issue #169)
-Fix "No Servers Found" when preferred server is unavailable (Issue #159)
-Fix system keyboard not working for search (Kodi 17+)(Issue #165)
-Fix issue causing hubs to scroll up when settings were opened
-Fix failure to sign in when signed off externally (Issue #110, #117)
+Add Italian translations (thanks to iz8mbw)
+Use Kodi time format setting (Issue #90) (thanks to pannal)
+Restore last window when starting the add-on while it is running (Issue #126)
+Add Portuguese (Brazil) translations (thanks to DiogoAbu)
+Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal
+Only play unwatched media when pressing play or shuffle and filtering for unwatched (thanks to tlt21)
+Fix issue with duplicated icons whe fast-scrolling a hub (Issue #177) (thanks to pannal)
+Fixed GUI not responding after public IP renewal (thanks to pannal and mkliche)
+Advanced setting: Automatically seek selected position after a delay (Issue #172) (thanks to pannal)
+Advanced setting: Use skip step settings from Kodi (Issue #133) (thanks to pannal)
+Advanced setting: Use Plex/Kodi steps for timeline (Issue #133) (thanks to pannal)
+OSD-Autohide improvements (thanks to pannal)
+Show post play on user stop when item is considered played (thanks to pannal)
+Use Unplayed/Played instead of Unwatched/Watched (thanks to pannal)
+Fix issue with cast popup displaying partially offscreen (thanks to pannal)
+Various fixes for incorrectly transcoded playback (Issue #201) (thanks to pannal)
         </news>
     </extension>
 </addon>

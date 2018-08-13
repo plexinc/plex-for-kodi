@@ -13,4 +13,7 @@
     <setting id="kodi_skip_stepping" type="bool" label="32465" default="false" />
     <setting id="dynamic_timeline_seek" type="bool" label="32471" default="false" />
   </category>
+  <category label="32467">
+    <setting id="fast_back" type="bool" label="32485" default="false" />
+  </category>
 </settings>

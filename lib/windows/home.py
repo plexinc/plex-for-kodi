@@ -458,6 +458,14 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.setFocusId(self.SERVER_BUTTON_ID)
                     return
 
+                if util.advancedSettings.fastBack and action != xbmcgui.ACTION_CONTEXT_MENU and \
+                        self.lastSection != HomeSection and self.lastFocusID != self.SECTION_LIST_ID:
+                    self.sectionList.selectItem(0)
+                    self.lastSection = HomeSection
+                    self.sectionChanged(True)
+                    self.setFocusId(self.SECTION_LIST_ID)
+                    return
+
                 if not self.confirmExit():
                     return
         except:

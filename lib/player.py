@@ -388,7 +388,8 @@ class SeekPlayerHandler(BasePlayerHandler):
             track = self.player.video.selectedAudioStream()
             if track:
                 try:
-                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=1, properties=['currentaudiostream'])['currentaudiostream']['index']
+                    playerID = kodijsonrpc.rpc.Player.GetActivePlayers()[0]["playerid"]
+                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=playerID, properties=['currentaudiostream'])['currentaudiostream']['index']
                     if currIdx == track.typeIndex:
                         util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
                         return

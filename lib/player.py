@@ -406,11 +406,11 @@ class SeekPlayerHandler(BasePlayerHandler):
     def initPlayback(self):
         self.seeking = self.NO_SEEK
 
-        if self.mode == self.MODE_ABSOLUTE:
-            self.seekAbsolute()
-
         self.setSubtitles()
         self.setAudioTrack()
+
+        if self.mode == self.MODE_ABSOLUTE:
+            self.seekAbsolute()
 
     def onPlayBackFailed(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackFailed - Seeking={0}'.format(self.seeking))

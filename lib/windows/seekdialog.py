@@ -670,6 +670,9 @@ class SeekDialog(kodigui.BaseDialog):
         if changed == 'SUBTITLE':
             self.handler.setSubtitles()
         elif changed:
+            if self.getProperty("show.PPI"):
+                self.hidePPIDialog()
+
             self.doSeek(self.trueOffset(), settings_changed=True)
 
     def setBigSeekShift(self):

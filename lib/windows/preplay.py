@@ -64,6 +64,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.exitCommand = None
         self.trailer = None
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
 
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
@@ -101,8 +102,14 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     if self.getProperty('on.extras'):
+                        self.lastNonOptionsFocusID = self.lastFocusID
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
+                elif xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) \
+                        and self.getProperty('on.extras') and self.lastNonOptionsFocusID:
+                    self.setFocusId(self.lastNonOptionsFocusID)
+                    self.lastNonOptionsFocusID = None
+                    return
 
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()

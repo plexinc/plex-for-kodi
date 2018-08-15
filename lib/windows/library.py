@@ -400,6 +400,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         self.showPanelControl = None
         self.keyListControl = None
         self.lastItem = None
+        self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
 
         self.dcpjPos = 0
         self.dcpjThread = None
@@ -509,8 +511,15 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 self.onMouseDrag(action)
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.lastNonOptionsFocusID = self.lastFocusID
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+                else:
+                    if self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     if xbmc.getCondVisibility('Integer.IsGreater(Container(101).ListItem.Property(index),5)'):
@@ -551,6 +560,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.searchButtonClicked()
 
     def onFocus(self, controlID):
+        self.lastFocusID = controlID
+
         if controlID == self.KEY_LIST_ID:
             self.selectKey()
 

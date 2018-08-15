@@ -77,6 +77,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.mediaItems = None
         self.exitCommand = None
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
 
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
@@ -167,8 +168,15 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
             if action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.lastNonOptionsFocusID = self.lastFocusID
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+                else:
+                    if self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
                     if self.getProperty('on.extras'):

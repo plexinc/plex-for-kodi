@@ -31,11 +31,11 @@ def waitForThreads():
                     util.DEBUG_LOG('Main: Waiting on: {0}...'.format(t.name))
                     if isinstance(t, threading._Timer):
                         t.cancel()
+
+                    try:
                         t.join()
-                    elif isinstance(t, threadutils.KillableThread):
-                        t.kill(force_and_wait=True)
-                    else:
-                        t.join()
+                    except RuntimeError:
+                        pass
 
 
 @atexit.register

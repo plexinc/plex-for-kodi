@@ -114,6 +114,7 @@ class AsyncVerifiedHTTPSConnection(VerifiedHTTPSConnection):
             except socket.error as _:
                 err = _
                 if sock is not None:
+                    sock.shutdown(socket.SHUT_RDWR)
                     sock.close()
 
         if err is not None:

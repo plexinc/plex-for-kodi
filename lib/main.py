@@ -34,8 +34,8 @@ def waitForThreads():
 
                     try:
                         t.join()
-                    except RuntimeError:
-                        pass
+                    except:
+                        util.ERROR()
 
 
 @atexit.register

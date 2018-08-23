@@ -879,7 +879,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             thumbnailImage=episode.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM),
             data_source=episode
         )
-        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
         mli.setProperty('episode.number', str(episode.index) or '')
         mli.setProperty('episode.duration', util.durationToText(episode.duration.asInt()))
         mli.setProperty('unwatched', not episode.isWatched and '1' or '')

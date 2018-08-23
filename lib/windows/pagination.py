@@ -108,18 +108,8 @@ class MLCPaginator(object):
         moreLeft = self.offset > 0
         moreRight = self.offset + self._currentAmount < self.leafCount
 
-        thumbFallback = self.thumbFallback
-        if callable(thumbFallback):
-            mlis = [kodigui.ManagedListItem(properties={'thumb.fallback': thumbFallback(item)})
-                    for item in items]
-        else:
-            mlis = [
-                kodigui.ManagedListItem(properties={'thumb.fallback': thumbFallback} if thumbFallback else {})
-                for x in range(len(items))]
-
-        self.control.replaceItems(mlis)
-
         finalItems = []
+        thumbFallback = self.thumbFallback
 
         for item in items:
             mli = self.createListItem(item)
@@ -127,6 +117,12 @@ class MLCPaginator(object):
             if mli:
                 mli.setProperty('index', str(idx))
                 self.prepareListItem(item, mli)
+                if thumbFallback:
+                    if callable(thumbFallback):
+                        mli.setProperty('thumb.fallback', thumbFallback(item))
+                    else:
+                        mli.setProperty('thumb.fallback', thumbFallback)
+
                 finalItems.append(mli)
                 idx += 1
 

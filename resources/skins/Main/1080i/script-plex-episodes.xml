@@ -448,40 +448,6 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
-                                    <control type="group">
-                                        <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
-                                        <control type="image">
-                                            <posx>0</posx>
-                                            <posy>0</posy>
-                                            <width>299</width>
-                                            <height>168</height>
-                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
-                                        </control>
-                                        <control type="image">
-                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
-                                            <posx>119</posx>
-                                            <posy>34</posy>
-                                            <width>61</width>
-                                            <height>100</height>
-                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
-                                        </control>
-                                        <control type="image">
-                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
-                                            <posx>119</posx>
-                                            <posy>34</posy>
-                                            <width>61</width>
-                                            <height>100</height>
-                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
-                                        </control>
-                                        <control type="image">
-                                            <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
-                                            <posx>85.5</posx>
-                                            <posy>20</posy>
-                                            <width>128</width>
-                                            <height>128</height>
-                                            <texture>script.plex/home/busy.gif</texture>
-                                        </control>
-                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -549,6 +515,40 @@
                                         <textcolor>AAFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label2]</label>
                                     </control>
+                                    <control type="group">
+                                        <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>299</width>
+                                            <height>168</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
+                                            <posx>119</posx>
+                                            <posy>34</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
+                                            <posx>119</posx>
+                                            <posy>34</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>85.5</posx>
+                                            <posy>20</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                 </control>
                             </control>
                         </itemlayout>
@@ -574,40 +574,6 @@
                                     <control type="group">
                                         <posx>5</posx>
                                         <posy>5</posy>
-                                        <control type="group">
-                                            <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
-                                            <control type="image">
-                                                <posx>0</posx>
-                                                <posy>0</posy>
-                                                <width>299</width>
-                                                <height>168</height>
-                                                <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
-                                            </control>
-                                            <control type="image">
-                                                <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
-                                                <posx>119</posx>
-                                                <posy>34</posy>
-                                                <width>61</width>
-                                                <height>100</height>
-                                                <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
-                                            </control>
-                                            <control type="image">
-                                                <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
-                                                <posx>119</posx>
-                                                <posy>34</posy>
-                                                <width>61</width>
-                                                <height>100</height>
-                                                <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
-                                            </control>
-                                            <control type="image">
-                                                <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
-                                                <posx>85.5</posx>
-                                                <posy>20</posy>
-                                                <width>128</width>
-                                                <height>128</height>
-                                                <texture>script.plex/home/busy.gif</texture>
-                                            </control>
-                                        </control>
                                         <control type="image">
                                             <posx>0</posx>
                                             <posy>0</posy>
@@ -701,6 +667,40 @@
                                                 <align>center</align>
                                                 <textcolor>FFCC7B19</textcolor>
                                                 <label>$INFO[ListItem.Label2]</label>
+                                            </control>
+                                        </control>
+                                        <control type="group">
+                                            <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
+                                            <control type="image">
+                                                <posx>0</posx>
+                                                <posy>0</posy>
+                                                <width>299</width>
+                                                <height>168</height>
+                                                <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                            </control>
+                                            <control type="image">
+                                                <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
+                                                <posx>119</posx>
+                                                <posy>34</posy>
+                                                <width>61</width>
+                                                <height>100</height>
+                                                <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
+                                            </control>
+                                            <control type="image">
+                                                <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
+                                                <posx>119</posx>
+                                                <posy>34</posy>
+                                                <width>61</width>
+                                                <height>100</height>
+                                                <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
+                                            </control>
+                                            <control type="image">
+                                                <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
+                                                <posx>85.5</posx>
+                                                <posy>20</posy>
+                                                <width>128</width>
+                                                <height>128</height>
+                                                <texture>script.plex/home/busy.gif</texture>
                                             </control>
                                         </control>
                                     </control>

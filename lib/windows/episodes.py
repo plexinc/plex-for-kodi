@@ -20,6 +20,7 @@ import playersettings
 import info
 import optionsdialog
 import preplayutils
+import pagination
 
 from lib.util import T
 
@@ -45,6 +46,104 @@ class EpisodeReloadTask(backgroundthread.Task):
             self.callback(self.episode)
         except:
             util.ERROR()
+
+
+class EpisodesPaginator(pagination.MLCPaginator):
+    thumbFallback = 'script.plex/thumb_fallbacks/show.png'
+    _currentEpisode = None
+
+    def reset(self):
+        super(EpisodesPaginator, self).reset()
+        self._currentEpisode = None
+
+    def getData(self, offset, amount):
+        return self.parentWindow.season.episodes(offset=offset, limit=amount)
+
+    def createListItem(self, data):
+        mli = super(EpisodesPaginator, self).createListItem(data)
+        self.parentWindow.setItemInfo(data, mli)
+        return mli
+
+    def prepareListItem(self, data, mli):
+        if not mli.dataSource.isWatched:
+            mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+        mli.setProperty('progress', util.getProgressImage(mli.dataSource))
+
+    @property
+    def initialPage(self):
+        episode = self.parentWindow.episode
+        offset = 0
+        amount = self.pageSize
+        if episode:
+            self._currentEpisode = episode
+            # try cutting the query short while not querying all episodes, to find the slice with the currently
+            # selected episode in it
+            episodes = []
+            _amount = self.pageSize + self.orphans
+            epSeasonIndex = int(episode.index) - 1  # .index is 1-based
+            if _amount < self.leafCount:
+                while episode not in episodes:
+                    offset = int(max(0, epSeasonIndex - _amount / 2))
+                    episodes = self.getData(offset, int(_amount))
+
+                    if _amount >= self.leafCount:
+                        # ep not found?
+                        break
+
+                    # in case the episode wasn't found inside the slice, increase the slice's size
+                    _amount *= 2
+            else:
+                # shortcut for short seasons
+                episodes = self.getData(offset, int(_amount))
+
+        else:
+            return super(EpisodesPaginator, self).initialPage
+
+        episodeFound = episode and episode in episodes
+        if episodeFound:
+            if self.pageSize + self.orphans < self.leafCount:
+                # slice around the episode
+                # Clamp the left side dynamically based on the item index and how many items are left in the season.
+                # The episodes list might be longer than our limit, because the season doesn't necessarily have all the
+                # episodes in it and we're basing the initial load on the current episode's index, which is the actual
+                # index of the episode in the season, not what's physically there. To find the episode, we're
+                # dynaamically increasing the window size above. Re-clamp to :amount:, adding slack to both sides if
+                # the remaining episodes would fit inside half of :amount:.
+                tmpEpIdx = episodes.index(episode)
+                leftBoundary = self.pageSize - len(episodes[tmpEpIdx:tmpEpIdx + self.orphans])
+
+                left = max(tmpEpIdx - leftBoundary, 0)
+                #util.DEBUG_LOG("%s, %s, %s, %s" % (tmpEpIdx, leftBoundary, left, offset))
+                offset += left
+
+                epsLeft = self.leafCount - offset
+                # avoid short pages on the right end
+                if epsLeft <= self.pageSize + self.orphans:
+                    left = 0
+                    amount = self.pageSize + self.orphans
+
+                # avoid short pages on the left end
+                if offset < self.orphans:
+                    amount += offset
+                    left = 0
+                    offset = 0
+
+                episodes = episodes[left:left + amount]
+
+        self.offset = offset
+        self._currentAmount = len(episodes)
+
+        return episodes
+
+    def selectItem(self, amount, more_left=False, more_right=False, items=None):
+        if not super(EpisodesPaginator, self).selectItem(amount, more_left):
+            if (self._currentEpisode and items) and self._currentEpisode in items:
+                self.control.selectItem(items.index(self._currentEpisode) + (1 if more_left else 0))
+
+
+class RelatedPaginator(pagination.BaseRelatedPaginator):
+    def getData(self, offset, amount):
+        return self.parentWindow.show_.getRelated(offset=offset, limit=amount)
 
 
 class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
@@ -92,13 +191,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.lastFocusID = None
         self.lastNonOptionsFocusID = None
         self.tasks = backgroundthread.Tasks()
+        self.initialized = False
 
     def reset(self, episode, season=None, show=None):
         self.episode = episode
         self.season = season or self.episode.season()
-        self.show_ = show or self.season.show().reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.show_ = show or self.season.show().reload(includeExtras=1, includeExtrasCount=10)
         self.parentList = None
         self.seasons = None
+        self.initialized = False
 
     def doClose(self):
         kodigui.ControlledWindow.doClose(self)
@@ -137,6 +238,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.selectEpisode(from_select_episode=from_select_episode)
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
         self.setFocusId(self.PLAY_BUTTON_ID)
+        self.initialized = True
 
     @busy.dialog()
     def setup(self):
@@ -145,6 +247,12 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def _setup(self):
         player.PLAYER.on('new.video', self.onNewVideo)
         self.season.reload(includeExtras=1, includeExtrasCount=10)
+        self.episodesPaginator = EpisodesPaginator(self.episodeListControl, leaf_count=int(self.season.leafCount),
+                                                   parent_window=self)
+
+        self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.show_.relatedCount),
+                                                 parent_window=self)
+
         self.updateProperties()
         self.fillEpisodes()
         hasPrev = self.fillExtras()
@@ -184,7 +292,14 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.prev()
 
             if controlID == self.EPISODE_LIST_ID:
-                self.checkForHeaderFocus(action)
+                if self.checkForHeaderFocus(action):
+                    return
+
+            elif controlID == self.RELATED_LIST_ID:
+                if self.relatedPaginator.boundaryHit:
+                    self.relatedPaginator.paginate()
+                    return
+
             if controlID == self.LIST_OPTIONS_BUTTON_ID and self.checkOptionsAction(action):
                 return
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
@@ -228,7 +343,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def checkOptionsAction(self, action):
         if action == xbmcgui.ACTION_MOVE_UP:
             mli = self.episodeListControl.getSelectedItem()
-            if not mli:
+            if not mli or mli.getProperty("is.boundary"):
                 return False
             pos = mli.pos() - 1
             if self.episodeListControl.positionIsValid(pos):
@@ -237,7 +352,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             return True
         elif action == xbmcgui.ACTION_MOVE_DOWN:
             mli = self.episodeListControl.getSelectedItem()
-            if not mli:
+            if not mli or mli.getProperty("is.boundary"):
                 return False
             pos = mli.pos() + 1
             if self.episodeListControl.positionIsValid(pos):
@@ -278,7 +393,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
-
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
@@ -436,7 +550,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def settingsButtonClicked(self):
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         episode = mli.dataSource
@@ -449,7 +563,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def infoButtonClicked(self):
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         episode = mli.dataSource
@@ -473,7 +587,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def episodeListClicked(self, play_version=False, force_episode=None):
         if not force_episode:
             mli = self.episodeListControl.getSelectedItem()
-            if not mli:
+            if not mli or mli.getProperty("is.boundary"):
                 return
 
             episode = mli.dataSource
@@ -518,7 +632,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         mli = self.episodeListControl.getSelectedItem()
 
-        if mli:
+        if mli and not mli.getProperty("is.boundary"):
             if len(mli.dataSource.media) > 1:
                 options.append({'key': 'play_version', 'display': T(32451, 'Play Version...')})
 
@@ -610,7 +724,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     @busy.dialog()
     def _delete(self):
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         video = mli.dataSource
@@ -626,8 +740,13 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return success
 
     def checkForHeaderFocus(self, action):
+        if self.episodesPaginator.boundaryHit:
+            items = self.episodesPaginator.paginate()
+            self.reloadItems(items)
+            return True
+
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         if mli != self.lastItem:
@@ -768,32 +887,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return mli
 
     def fillEpisodes(self, update=False):
-        items = []
-        idx = 0
-
-        episodes = self.season.episodes()
-        self.episodeListControl.addItems(
-            [kodigui.ManagedListItem(properties={'thumb.fallback': 'script.plex/thumb_fallbacks/show.png'}) for x in range(len(episodes))]
-        )
-
-        if self.episode and self.episode in episodes:
-            self.episodeListControl.selectItem(episodes.index(self.episode))
-
-        for episode in episodes:
-            mli = self.createListItem(episode)
-            self.setItemInfo(episode, mli)
-            if mli:
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                idx += 1
-
-        self.episodeListControl.replaceItems(items)
-
+        items = self.episodesPaginator.paginate()
         self.reloadItems(items)
 
     def reloadItems(self, items):
         tasks = []
         for mli in items:
+            if not mli.dataSource:
+                continue
+
             task = EpisodeReloadTask().setup(mli.dataSource, self.reloadItemCallback)
             self.tasks.add(task)
             tasks.append(task)
@@ -842,32 +944,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return True
 
     def fillRelated(self, has_prev=False):
-        items = []
-        idx = 0
-
-        if not self.show_.related:
+        if not self.relatedPaginator.leafCount:
             self.relatedListControl.reset()
             return has_prev
 
+        items = self.relatedPaginator.paginate()
+        if not items:
+            return False
+
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
-        for rel in self.show_.related()[0].items:
-            mli = kodigui.ManagedListItem(
-                rel.title or '',
-                thumbnailImage=rel.defaultThumb.asTranscodedImageURL(*self.RELATED_DIM),
-                data_source=rel
-            )
-            if mli:
-                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
-                mli.setProperty('index', str(idx))
-                if not mli.dataSource.isWatched:
-                    mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
-                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
-                items.append(mli)
-                idx += 1
-
-        self.relatedListControl.reset()
-        self.relatedListControl.addItems(items)
         return True
 
     def updateRelated(self):

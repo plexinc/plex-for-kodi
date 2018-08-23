@@ -599,6 +599,8 @@
                         <height>520</height>
                         <onup>400</onup>
                         <ondown>403</ondown>
+                        <onleft>false</onleft>
+                        <onright>false</onright>
                         <scrolltime>200</scrolltime>
                         <orientation>horizontal</orientation>
                         <preloaditems>4</preloaditems>
@@ -610,6 +612,40 @@
                                 <control type="group">
                                     <posx>5</posx>
                                     <posy>5</posy>
+                                    <control type="group">
+                                        <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <posx>0</posx>
                                         <posy>0</posy>
@@ -709,6 +745,40 @@
                                     <animation effect="zoom" start="110" end="100" time="100" center="127,180.5" reversible="false">UnFocus</animation>
                                     <posx>0</posx>
                                     <posy>0</posy>
+                                    <control type="group">
+                                        <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
+                                    </control>
                                     <control type="image">
                                         <visible>Control.HasFocus(401)</visible>
                                         <posx>-40</posx>

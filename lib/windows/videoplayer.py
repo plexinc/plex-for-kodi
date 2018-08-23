@@ -10,6 +10,7 @@ import opener
 import busy
 import search
 import dropdown
+import pagination
 
 from lib import util
 from lib import player
@@ -20,6 +21,52 @@ from lib.util import T
 
 PASSOUT_PROTECTION_DURATION_SECONDS = 7200
 PASSOUT_LAST_VIDEO_DURATION_MILLIS = 1200000
+
+
+class RelatedPaginator(pagination.BaseRelatedPaginator):
+    def readyForPaging(self):
+        return self.parentWindow.postPlayInitialized
+
+    def getData(self, offset, amount):
+        return (self.parentWindow.prev or self.parentWindow.next).getRelated(offset=offset, limit=amount)
+
+    def prepareListItem(self, data, mli):
+        if self.parentWindow.prev and self.parentWindow.prev.type == 'episode':
+            if not mli.dataSource.isWatched:
+                mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+        else:
+            mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+        mli.setProperty('progress', util.getProgressImage(mli.dataSource))
+
+
+class OnDeckPaginator(pagination.MLCPaginator):
+    def readyForPaging(self):
+        return self.parentWindow.postPlayInitialized
+
+    thumbFallback = lambda self, rel: 'script.plex/thumb_fallbacks/{0}.png'.format(
+                    rel.type in ('show', 'season', 'episode') and 'show' or 'movie')
+
+    def prepareListItem(self, data, mli):
+        mli.setProperty('progress', util.getProgressImage(mli.dataSource))
+        if data.type in 'episode':
+            mli.setLabel2(
+                u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), data.parentIndex, T(32311, 'E'), data.index))
+        else:
+            mli.setLabel2(data.year)
+
+    def createListItem(self, ondeck):
+        title = ondeck.grandparentTitle or ondeck.title
+        if ondeck.type == 'episode':
+            thumb = ondeck.thumb.asTranscodedImageURL(*self.parentWindow.ONDECK_DIM)
+        else:
+            thumb = ondeck.defaultArt.asTranscodedImageURL(*self.parentWindow.ONDECK_DIM)
+
+        mli = kodigui.ManagedListItem(title or '', thumbnailImage=thumb, data_source=ondeck)
+        if mli:
+            return mli
+
+    def getData(self, offset, amount):
+        return (self.parentWindow.prev or self.parentWindow.next).sectionOnDeck(offset=offset, limit=amount)
 
 
 class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
@@ -67,6 +114,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.aborted = True
         self.timeout = None
         self.passoutProtection = 0
+        self.postPlayInitialized = False
+        self.relatedPaginator = None
+        self.onDeckPaginator = None
         self.lastFocusID = None
         self.lastNonOptionsFocusID = None
 
@@ -95,6 +145,8 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def onAction(self, action):
         try:
             if self.postPlayMode:
+                controlID = self.getFocusId()
+
                 self.cancelTimer()
                 self.resetPassoutProtection()
                 if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
@@ -119,6 +171,16 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                     self.playVideo(prev=True)
                 elif action == xbmcgui.ACTION_STOP:
                     self.doClose()
+
+                if controlID == self.RELATED_LIST_ID:
+                    if self.relatedPaginator.boundaryHit:
+                        self.relatedPaginator.paginate()
+                        return
+
+                elif controlID == self.ONDECK_LIST_ID:
+                    if self.onDeckPaginator.boundaryHit:
+                        self.onDeckPaginator.paginate()
+                        return
         except:
             util.ERROR()
 
@@ -286,7 +348,18 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         util.DEBUG_LOG('PostPlay: Showing video info')
         if self.next:
-            self.next.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+            self.next.reload(includeExtras=1, includeExtrasCount=10)
+
+        self.relatedPaginator = RelatedPaginator(self.relatedListControl,
+                                                 leaf_count=int((self.prev or self.next).relatedCount),
+                                                 parent_window=self)
+
+        vid = self.prev or self.next
+        if vid.sectionOnDeckCount:
+            self.onDeckPaginator = OnDeckPaginator(self.onDeckListControl,
+                                                   leaf_count=int(vid.sectionOnDeckCount),
+                                                   parent_window=self)
+
         self.setInfo()
         self.fillOnDeck()
         hasPrev = self.fillRelated()
@@ -296,6 +369,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.setFocusId(self.NEXT_BUTTON_ID)
         else:
             self.setFocusId(self.PREV_BUTTON_ID)
+        self.postPlayInitialized = True
 
     def resetPassoutProtection(self):
         self.passoutProtection = time.time() + PASSOUT_PROTECTION_DURATION_SECONDS
@@ -411,74 +485,28 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.setProperty('prev.info.date', self.prev.year)
 
     def fillOnDeck(self):
-        items = []
-        idx = 0
-
-        onDeckHub = self.hubs.get('tv.ondeck', self.hubs.get('movie.similar'))
-        if not onDeckHub:
-            self.onDeckListControl.reset()
+        if not self.onDeckPaginator.leafCount:
+            self.onDeckPaginator.reset()
             return False
 
-        for ondeck in onDeckHub.items:
-            title = ondeck.grandparentTitle or ondeck.title
-            if ondeck.type == 'episode':
-                thumb = ondeck.thumb.asTranscodedImageURL(*self.ONDECK_DIM)
-            else:
-                thumb = ondeck.defaultArt.asTranscodedImageURL(*self.ONDECK_DIM)
-
-            mli = kodigui.ManagedListItem(title or '', thumbnailImage=thumb, data_source=ondeck)
-            if mli:
-                mli.setProperty('index', str(idx))
-                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
-                mli.setProperty(
-                    'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(ondeck.type in ('show', 'season', 'episode') and 'show' or 'movie')
-                )
-                if ondeck.type in 'episode':
-                    mli.setLabel2(u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), ondeck.parentIndex, T(32311, 'E'), ondeck.index))
-                else:
-                    mli.setLabel2(ondeck.year)
-
-                items.append(mli)
-                idx += 1
+        items = self.onDeckPaginator.paginate()
 
         if not items:
             return False
 
-        self.onDeckListControl.reset()
-        self.onDeckListControl.addItems(items)
         return True
 
     def fillRelated(self, has_prev=False):
-        items = []
-        idx = 0
-
-        video = self.next if self.next else self.prev
-
-        if not video.related:
+        if not self.relatedPaginator.leafCount:
             self.relatedListControl.reset()
             return False
 
-        for rel in video.related()[0].items:
-            mli = kodigui.ManagedListItem(rel.title or '', thumbnailImage=rel.thumb.asTranscodedImageURL(*self.RELATED_DIM), data_source=rel)
-            if mli:
-                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
-                mli.setProperty('index', str(idx))
-                if self.prev and self.prev.type == 'episode':
-                    if not mli.dataSource.isWatched:
-                        mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
-                else:
-                    mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
-                mli.setProperty('progress', util.getProgressImage(mli.dataSource))
-                items.append(mli)
-                idx += 1
+        items = self.relatedPaginator.paginate()
 
         if not items:
             return False
 
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
-
-        self.relatedListControl.reset()
-        self.relatedListControl.addItems(items)
         return True
 
     def fillRoles(self, has_prev=False):

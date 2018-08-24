@@ -388,7 +388,8 @@ class SeekPlayerHandler(BasePlayerHandler):
             track = self.player.video.selectedAudioStream()
             if track:
                 try:
-                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=1, properties=['currentaudiostream'])['currentaudiostream']['index']
+                    playerID = kodijsonrpc.rpc.Player.GetActivePlayers()[0]["playerid"]
+                    currIdx = kodijsonrpc.rpc.Player.GetProperties(playerid=playerID, properties=['currentaudiostream'])['currentaudiostream']['index']
                     if currIdx == track.typeIndex:
                         util.DEBUG_LOG('Audio track is correct index: {0}'.format(track.typeIndex))
                         return
@@ -405,11 +406,11 @@ class SeekPlayerHandler(BasePlayerHandler):
     def initPlayback(self):
         self.seeking = self.NO_SEEK
 
-        if self.mode == self.MODE_ABSOLUTE:
-            self.seekAbsolute()
-
         self.setSubtitles()
         self.setAudioTrack()
+
+        if self.mode == self.MODE_ABSOLUTE:
+            self.seekAbsolute()
 
     def onPlayBackFailed(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackFailed - Seeking={0}'.format(self.seeking))

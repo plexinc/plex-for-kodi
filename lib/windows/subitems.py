@@ -538,6 +538,11 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             if mli:
                 mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
                 mli.setProperty('index', str(idx))
+                if rel.type in ('show', 'season'):
+                    if not mli.dataSource.isWatched:
+                        mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+                else:
+                    mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
                 items.append(mli)
                 idx += 1
 

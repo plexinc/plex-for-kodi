@@ -91,15 +91,15 @@ class Video(media.MediaItem):
         """
         self.server.query('/%s/analyze' % self.key)
 
-    def markWatched(self):
+    def markWatched(self, **kwargs):
         path = '/:/scrobble?key=%s&identifier=com.plexapp.plugins.library' % self.ratingKey
         self.server.query(path)
-        self.reload()
+        self.reload(**kwargs)
 
-    def markUnwatched(self):
+    def markUnwatched(self, **kwargs):
         path = '/:/unscrobble?key=%s&identifier=com.plexapp.plugins.library' % self.ratingKey
         self.server.query(path)
-        self.reload()
+        self.reload(**kwargs)
 
     # def play(self, client):
     #     client.playMedia(self)

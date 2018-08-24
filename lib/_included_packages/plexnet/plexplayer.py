@@ -235,8 +235,6 @@ class PlexPlayer(object):
             server = self.metadata.transcodeServer or self.item.getServer()
             decisionPath = self.buildTranscode(server, util.AttributeDict(), self.metadata.partIndex, True, False).decisionPath
 
-        util.TEST(decisionPath)
-
         # Modify the decision params based on the transcode url
         if decisionPath:
             if directPlay:
@@ -506,7 +504,6 @@ class PlexPlayer(object):
 
         # Build the decision path now that we have build our stream url, and only if the server supports it.
         if server.supportsFeature("streamingBrain"):
-            util.TEST("TEST==========================")
             decisionPath = builder.getRelativeUrl().replace(obj.transcodeEndpoint, self.DECISION_ENDPOINT)
             if decisionPath.startswith(self.DECISION_ENDPOINT):
                 obj.decisionPath = decisionPath

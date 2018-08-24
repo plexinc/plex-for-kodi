@@ -437,11 +437,18 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     return
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and self.getProperty('off.sections'):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and \
+                        self.getProperty('off.sections'):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
 
-            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
+                # highlight the home hub if a section is currently focused
+                if self.lastSection != HomeSection and self.lastFocusID == self.SECTION_LIST_ID:
+                    self.sectionList.selectItem(0)
+                    self.lastSection = HomeSection
+                    self.sectionChanged(True)
+                    return
+
                 if self.getFocusId() == self.USER_LIST_ID:
                     self.setFocusId(self.USER_BUTTON_ID)
                     return

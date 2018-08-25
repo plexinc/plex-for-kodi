@@ -59,7 +59,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
-        self.autoPlay = kwargs.get('auto_play')
         self.parentList = kwargs.get('parent_list')
         self.videos = None
         self.exitCommand = None
@@ -74,9 +73,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
         self.setup()
 
-        if self.autoPlay:
-            self.autoPlay = False
-            self.playVideo()
+    def doAutoPlay(self):
+        return self.playVideo()
 
     def onReInit(self):
         self.video.reload(**VIDEO_RELOAD_KW)
@@ -405,6 +403,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             resume = (button == 0)
 
         self.processCommand(videoplayer.play(video=self.video, resume=resume))
+        return True
 
     def openItem(self, control=None, item=None):
         if not item:

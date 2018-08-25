@@ -56,7 +56,13 @@ def open(obj, auto_play=False):
 def handleOpen(winclass, **kwargs):
     w = None
     try:
-        w = winclass.open(**kwargs)
+        autoPlay = kwargs.pop("auto_play", False)
+        if autoPlay and hasattr(winclass, "doAutoPlay"):
+            w = winclass.create(show=False, **kwargs)
+            if w.doAutoPlay():
+                w.modal()
+        else:
+            w = winclass.open(**kwargs)
         return w.exitCommand or ''
     except AttributeError:
         pass

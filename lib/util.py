@@ -494,16 +494,16 @@ def getTimeFormat():
     %H%H is being returned for manually set zero-padded values, in case of a regional zero-padded hour component,
     only %H is returned.
 
-    For now, circumvent that by testing the current time.
+    For now, sail around that by testing the current time for padded hour values.
 
     Tests of the values returned by xbmc.getRegion("time"):
     %I:%M:%S %p = h:mm:ss, non-zero-padded, 12h PM
     %I:%M:%S = 12h, h:mm:ss, non-zero-padded, regional
     %I%I:%M:%S = 12h, zero padded, hh:mm:ss
     %H%H:%M:%S = 24h, zero padded, hh:mm:ss
-    %H:%M:%S = 24h, zero padded, regional, regional (germany)
+    %H:%M:%S = 24h, zero padded, regional, regional (central europe)
 
-    :return: list
+    :return: tuple of strftime-compatible format, boolean padHour
     """
     origFmt = xbmc.getRegion('time')
     fmt = origFmt.replace("%H%H", "%H").replace("%I%I", "%I")

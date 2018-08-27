@@ -271,6 +271,9 @@ class SeekPlayerHandler(BasePlayerHandler):
 
         self.seeking = self.SEEK_IN_PROGRESS
 
+        if self.player.playState == self.player.STATE_PAUSED:
+            self.player.pauseAfterPlaybackStarted = True
+
         util.DEBUG_LOG('New player offset: {0}'.format(self.offset))
         self.player._playVideo(offset, seeking=self.seeking, force_update=settings_changed)
 
@@ -286,7 +289,6 @@ class SeekPlayerHandler(BasePlayerHandler):
     def seekAbsolute(self, seek=None):
         self.seekOnStart = seek or self.seekOnStart
         if self.seekOnStart is not None:
-            self.player.control('play')
             seekSeconds = self.seekOnStart / 1000.0
             try:
                 if seekSeconds >= self.player.getTotalTime():
@@ -624,6 +626,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self._closed = False
         self._nextItem = None
         self.started = False
+        self.pauseAfterPlaybackStarted = False
         self.video = None
         self.hasOSD = False
         self.hasSeekOSD = False
@@ -648,11 +651,13 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.video = None
         self.started = False
         self.playerObject = None
+        self.pauseAfterPlaybackStarted = False
         self.handler = AudioPlayerHandler(self)
         self.currentTime = 0
 
     def control(self, cmd):
         if cmd == 'play':
+            self.pauseAfterPlaybackStarted = False
             util.DEBUG_LOG('Player - Control:  Command=Play')
             if xbmc.getCondVisibility('Player.Paused | !Player.Playing'):
                 util.DEBUG_LOG('Player - Control:  Playing')
@@ -874,6 +879,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def onPlayBackStarted(self):
         self.started = True
+        if self.pauseAfterPlaybackStarted:
+            self.control('pause')
+            self.pauseAfterPlaybackStarted = False
+
         util.DEBUG_LOG('Player - STARTED')
         self.trigger('playback.started')
         if not self.handler:
@@ -890,6 +899,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         util.DEBUG_LOG('Player - RESUMED')
         if not self.handler:
             return
+
         self.handler.onPlayBackResumed()
 
     def onPlayBackStopped(self):

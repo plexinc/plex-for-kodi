@@ -658,16 +658,9 @@ class SeekDialog(kodigui.BaseDialog):
         self._applyingSeek = True
         self.resetSkipSteps()
         self.updateProgress()
-        state_before_seek = self.player.playState
 
         try:
             self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
-
-            if state_before_seek == self.player.STATE_PAUSED:
-                if not settings_changed:
-                    self.player.control("pause")
-                else:
-                    self.player.pauseAfterPlaybackStarted = True
         finally:
             self._seeking = False
             self._seekingWithoutOSD = False

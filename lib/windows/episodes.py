@@ -90,6 +90,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.parentList = kwargs.get('parentList')
         self.lastItem = None
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
         self.tasks = backgroundthread.Tasks()
 
     def reset(self, episode, season=None, show=None):
@@ -188,9 +189,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 return
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.lastNonOptionsFocusID = self.lastFocusID
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
-            elif action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+                else:
+                    if self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
+            elif action == xbmcgui.ACTION_NAV_BACK:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) or not controlID:
                     if self.getProperty('on.extras'):
                         self.setFocusId(self.OPTIONS_GROUP_ID)

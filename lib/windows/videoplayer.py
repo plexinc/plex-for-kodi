@@ -67,6 +67,8 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.aborted = True
         self.timeout = None
         self.passoutProtection = 0
+        self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
 
     def doClose(self):
         util.DEBUG_LOG('VideoPlayerWindow: Closing')
@@ -97,8 +99,14 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.resetPassoutProtection()
                 if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                     if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                        self.lastNonOptionsFocusID = self.lastFocusID
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
+                    else:
+                        if self.lastNonOptionsFocusID:
+                            self.setFocusId(self.lastNonOptionsFocusID)
+                            self.lastNonOptionsFocusID = None
+                            return
 
                 if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                     self.doClose()
@@ -141,6 +149,8 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def onFocus(self, controlID):
         if not self.postPlayMode:
             return
+
+        self.lastFocusID = controlID
 
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))

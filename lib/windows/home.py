@@ -306,6 +306,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.sectionChangeThread = None
         self.sectionChangeTimeout = 0
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
         self.sectionHubs = {}
         self.updateHubs = {}
         windowutils.HOME = self
@@ -437,8 +438,16 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     return
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and self.getProperty('off.sections'):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) \
+                        and util.getGlobalProperty('off.sections'):
+                    self.lastNonOptionsFocusID = self.lastFocusID
                     self.setFocusId(self.OPTIONS_GROUP_ID)
+                    return
+                elif not action == xbmcgui.ACTION_NAV_BACK \
+                        and xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) \
+                        and util.getGlobalProperty('off.sections') and self.lastNonOptionsFocusID:
+                    self.setFocusId(self.lastNonOptionsFocusID)
+                    self.lastNonOptionsFocusID = None
                     return
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):

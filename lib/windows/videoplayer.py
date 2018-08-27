@@ -104,7 +104,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                             self.setFocusId(self.OPTIONS_GROUP_ID)
                             return
                     else:
-                        if self.lastNonOptionsFocusID:
+                        if self.lastNonOptionsFocusID and action == xbmcgui.ACTION_CONTEXT_MENU:
                             self.setFocusId(self.lastNonOptionsFocusID)
                             self.lastNonOptionsFocusID = None
                             return

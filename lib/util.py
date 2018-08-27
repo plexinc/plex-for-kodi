@@ -36,6 +36,7 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
         if sender == 'script.plex' and method.endswith('RESTORE'):
             from windows import kodigui
             getAdvancedSettings()
+            populateTimeFormat()
             xbmc.executebuiltin('ActivateWindow({0})'.format(kodigui.BaseFunctions.lastWinID))
 
 
@@ -333,27 +334,6 @@ def timeInDayLocalSeconds():
     return int(time.time() - sod)
 
 
-def get24hFormat():
-    """
-    This takes the 24h setting from Kodi and tries to determine whether the user wants the 24h or 12h time format.
-    :return:
-    """
-    try:
-        use_24h = rpc.Settings.GetSettingValue(setting="locale.use24hourclock")["value"]
-    except:
-        ERROR()
-        return
-
-    if use_24h == "regional":
-        return "M" not in unicode(xbmc.getInfoLabel('System.Time')).upper()
-    elif use_24h == "24hours":
-        return True
-    return False
-
-
-time_format_twentyfour = get24hFormat()
-
-
 def getKodiSkipSteps():
     try:
         return rpc.Settings.GetSettingValue(setting="videoplayer.seeksteps")["value"]
@@ -505,6 +485,43 @@ def getAdvancedSettings():
     # yes, global, hang me!
     global advancedSettings
     advancedSettings = AdvancedSettings()
+
+
+def getTimeFormat():
+    """
+    Get global time format.
+    Kodi's time format handling is broken right now, as they return incompatible formats for strftime.
+    %H%H is being returned for manually set zero-padded values, in case of a regional zero-padded hour component,
+    only %H is returned.
+
+    For now, sail around that by testing the current time for padded hour values.
+
+    Tests of the values returned by xbmc.getRegion("time"):
+    %I:%M:%S %p = h:mm:ss, non-zero-padded, 12h PM
+    %I:%M:%S = 12h, h:mm:ss, non-zero-padded, regional
+    %I%I:%M:%S = 12h, zero padded, hh:mm:ss
+    %H%H:%M:%S = 24h, zero padded, hh:mm:ss
+    %H:%M:%S = 24h, zero padded, regional, regional (central europe)
+
+    :return: tuple of strftime-compatible format, boolean padHour
+    """
+    origFmt = xbmc.getRegion('time')
+    fmt = origFmt.replace("%H%H", "%H").replace("%I%I", "%I")
+
+    # Checking for %H%H or %I%I only would be the obvious way here to determine whether the hour should be padded,
+    # but the formats returned for regional settings with padding only have %H in them. This seems like a Kodi bug.
+    # Use a fallback.
+    currentTime = unicode(xbmc.getInfoLabel('System.Time'))
+    padHour = "%H%H" in origFmt or "%I%I" in origFmt or (currentTime[0] == "0" and currentTime[1] != ":")
+    return fmt, padHour
+
+
+timeFormat, padHour = getTimeFormat()
+
+
+def populateTimeFormat():
+    global timeFormat, padHour
+    timeFormat, padHour = getTimeFormat()
 
 
 def getPlatform():

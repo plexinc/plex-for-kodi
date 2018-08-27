@@ -645,7 +645,7 @@ class SeekDialog(kodigui.BaseDialog):
         _fmt = util.timeFormat.replace(":%S", "")
 
         val = time.strftime(_fmt, time.localtime(time.time() + ((self.duration - to) / 1000)))
-        if not util.padHour and val[0] == "0":
+        if not util.padHour and val[0] == "0" and val[1] != ":":
             val = val[1:]
 
         self.setProperty('time.end', val)

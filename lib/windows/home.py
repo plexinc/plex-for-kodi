@@ -438,6 +438,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     return
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_CONTEXT_MENU):
+                optionsFocused = xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID))
+                offSections = util.getGlobalProperty('off.sections')
                 if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                     if self.getFocusId() == self.USER_LIST_ID:
                         self.setFocusId(self.USER_BUTTON_ID)
@@ -446,25 +448,21 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                         self.setFocusId(self.SERVER_BUTTON_ID)
                         return
 
-                    if util.advancedSettings.fastBack and self.lastSection != HomeSection and \
-                            self.lastFocusID != self.SECTION_LIST_ID:
+                    if util.advancedSettings.fastBack and not optionsFocused and offSections \
+                            and self.lastFocusID not in (self.USER_BUTTON_ID, self.SERVER_BUTTON_ID,
+                                                         self.SEARCH_BUTTON_ID, self.SECTION_LIST_ID):
                         self.setProperty('hub.focus', '0')
-                        self.sectionList.selectItem(0)
-                        self.lastSection = HomeSection
                         self.setFocusId(self.SECTION_LIST_ID)
-                        self._sectionReallyChanged()
                         return
 
                 if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                    if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) \
-                            and util.getGlobalProperty('off.sections')\
+                    if not optionsFocused and offSections \
                             and (not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU):
                         self.lastNonOptionsFocusID = self.lastFocusID
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
-                    elif action == xbmcgui.ACTION_CONTEXT_MENU \
-                            and xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) \
-                            and util.getGlobalProperty('off.sections') and self.lastNonOptionsFocusID:
+                    elif action == xbmcgui.ACTION_CONTEXT_MENU and optionsFocused and offSections \
+                            and self.lastNonOptionsFocusID:
                         self.setFocusId(self.lastNonOptionsFocusID)
                         self.lastNonOptionsFocusID = None
                         return

@@ -28,6 +28,7 @@ class MLCPaginator(object):
         self.reset()
 
     def reset(self):
+        self.offset = 0
         self._currentAmount = None
         self._boundaryHit = False
         self._direction = None

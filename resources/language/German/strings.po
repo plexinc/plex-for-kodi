@@ -962,6 +962,14 @@ msgctxt "#32466"
 msgid "Automatically seek to the selected timeline position after a second"
 msgstr "Nach Verzögerung automatisch zur aktuell gewählten Position springen"
 
+msgctxt "#32467"
+msgid "User Interface"
+msgstr "Benutzeroberfläche"
+
 msgctxt "#32471"
 msgid "Use Plex/Kodi steps for timeline"
 msgstr "Plex/Kodi-Skip-Schritte für die Zeitachse verwenden"
+
+msgctxt "#32485"
+msgid "Go back instantly with the previous menu action in scrolled views"
+msgstr "Mit der Previous-Menu-Aktion In gescrollten Ansichten sofort zurückgehen"

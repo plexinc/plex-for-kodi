@@ -199,7 +199,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                         return
 
             elif action == xbmcgui.ACTION_NAV_BACK:
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) or not controlID:
+                if (not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
+                        self.OPTIONS_GROUP_ID)) or not controlID) and \
+                        not util.advancedSettings.fastBack:
                     if self.getProperty('on.extras'):
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return

@@ -8,6 +8,8 @@ class MLCPaginator(object):
     """
     control = None
     pageSize = 8
+
+    # the amount of overhang allowed for both sides; don't show pagination when the overhang fits the current item count
     orphans = pageSize / 2
     offset = 0
     leafCount = None
@@ -105,6 +107,12 @@ class MLCPaginator(object):
         return data
 
     def populate(self, items):
+        """
+        Populates the current page to the bound Control List. Adds prev/next MLIs and selects the correct control
+        after doing so.
+        :param items:
+        :return:
+        """
         idx = 0
         moreLeft = self.offset > 0
         moreRight = self.offset + self._currentAmount < self.leafCount
@@ -158,6 +166,11 @@ class MLCPaginator(object):
                 return True
 
     def paginate(self):
+        """
+        Triggers the pagination for the currently selected view. In case of a hit boundary, show the next or previous
+        page, otherwise show the initial page.
+        :return:
+        """
         if self._boundaryHit:
             items = self.nextPage
 

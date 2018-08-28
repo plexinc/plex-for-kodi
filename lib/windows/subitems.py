@@ -35,6 +35,7 @@ class RelatedPaginator(pagination.BaseRelatedPaginator):
                 mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
         else:
             mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+            mli.setProperty('progress', util.getProgressImage(mli.dataSource))
 
 
 class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):

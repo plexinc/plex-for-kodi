@@ -151,17 +151,17 @@
                                 <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
-                                <width>50</width>
+                                <width>70</width>
                                 <height>100</height>
                                 <font>font10</font>
-                                <align>left</align>
+                                <align>center</align>
                                 <aligny>center</aligny>
                                 <textcolor>D8FFFFFF</textcolor>
                                 <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                             </control>
                             <control type="image">
                                 <visible>StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                <posx>0</posx>
+                                <posx>18</posx>
                                 <posy>32.5</posy>
                                 <width>35</width>
                                 <height>35</height>
@@ -169,7 +169,7 @@
                                 <colordiffuse>FFE5A00D</colordiffuse>
                             </control>
                             <control type="image">
-                                <posx>63</posx>
+                                <posx>83</posx>
                                 <posy>11</posy>
                                 <width>74</width>
                                 <height>74</height>
@@ -177,12 +177,12 @@
                                 <aspectratio>scale</aspectratio>
                             </control>
                             <control type="group">
-                                <posx>168</posx>
+                                <posx>188</posx>
                                 <posy>0</posy>
                                 <control type="label">
                                     <posx>0</posx>
                                     <posy>15</posy>
-                                    <width>723</width>
+                                    <width>683</width>
                                     <height>30</height>
                                     <font>font10</font>
                                     <align>left</align>
@@ -193,7 +193,7 @@
                                 <control type="label">
                                     <posx>0</posx>
                                     <posy>50</posy>
-                                    <width>723</width>
+                                    <width>683</width>
                                     <height>30</height>
                                     <font>font10</font>
                                     <align>left</align>
@@ -236,10 +236,10 @@
                                     <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
                                     <posx>0</posx>
                                     <posy>0</posy>
-                                    <width>50</width>
+                                    <width>70</width>
                                     <height>100</height>
                                     <font>font10</font>
-                                    <align>left</align>
+                                    <align>center</align>
                                     <aligny>center</aligny>
                                     <textcolor>D8FFFFFF</textcolor>
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
@@ -254,7 +254,7 @@
                                     <colordiffuse>FFE5A00D</colordiffuse>
                                 </control>
                                 <control type="image">
-                                    <posx>63</posx>
+                                    <posx>83</posx>
                                     <posy>11</posy>
                                     <width>74</width>
                                     <height>74</height>
@@ -262,12 +262,12 @@
                                     <aspectratio>scale</aspectratio>
                                 </control>
                                 <control type="group">
-                                    <posx>168</posx>
+                                    <posx>188</posx>
                                     <posy>0</posy>
                                     <control type="label">
                                         <posx>0</posx>
                                         <posy>15</posy>
-                                        <width>723</width>
+                                        <width>683</width>
                                         <height>30</height>
                                         <font>font10</font>
                                         <align>left</align>
@@ -278,7 +278,7 @@
                                     <control type="label">
                                         <posx>0</posx>
                                         <posy>50</posy>
-                                        <width>723</width>
+                                        <width>683</width>
                                         <height>30</height>
                                         <font>font10</font>
                                         <align>left</align>

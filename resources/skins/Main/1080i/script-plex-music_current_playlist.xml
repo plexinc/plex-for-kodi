@@ -149,19 +149,19 @@
                             <posy>24</posy>
                             <control type="label">
                                 <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                <posx>0</posx>
+                                <posx>-10</posx>
                                 <posy>0</posy>
-                                <width>50</width>
+                                <width>60</width>
                                 <height>100</height>
                                 <font>font10</font>
-                                <align>left</align>
+                                <align>center</align>
                                 <aligny>center</aligny>
                                 <textcolor>D8FFFFFF</textcolor>
                                 <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                             </control>
                             <control type="image">
                                 <visible>StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                <posx>0</posx>
+                                <posx>2</posx>
                                 <posy>32.5</posy>
                                 <width>35</width>
                                 <height>35</height>
@@ -234,12 +234,12 @@
                                 <posy>24</posy>
                                 <control type="label">
                                     <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                    <posx>0</posx>
+                                    <posx>-10</posx>
                                     <posy>0</posy>
-                                    <width>50</width>
+                                    <width>60</width>
                                     <height>100</height>
                                     <font>font10</font>
-                                    <align>left</align>
+                                    <align>center</align>
                                     <aligny>center</aligny>
                                     <textcolor>D8FFFFFF</textcolor>
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
@@ -330,19 +330,19 @@
                                 </control>
                                 <control type="label">
                                     <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                    <posx>48</posx>
+                                    <posx>24</posx>
                                     <posy>0</posy>
-                                    <width>50</width>
+                                    <width>60</width>
                                     <height>100</height>
                                     <font>font12</font>
-                                    <align>left</align>
+                                    <align>center</align>
                                     <aligny>center</aligny>
                                     <textcolor>B8000000</textcolor>
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
                                     <visible>StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                    <posx>48</posx>
+                                    <posx>36</posx>
                                     <posy>32.5</posy>
                                     <width>35</width>
                                     <height>35</height>

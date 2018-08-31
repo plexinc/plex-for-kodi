@@ -82,6 +82,7 @@ class EpisodesPaginator(pagination.MLCPaginator):
             _amount = self.pageSize + self.orphans
             epSeasonIndex = int(episode.index) - 1  # .index is 1-based
             if _amount < self.leafCount:
+                _amount = self.pageSize * 2
                 while episode not in episodes:
                     offset = int(max(0, epSeasonIndex - _amount / 2))
                     episodes = self.getData(offset, int(_amount))
@@ -107,27 +108,28 @@ class EpisodesPaginator(pagination.MLCPaginator):
                 # The episodes list might be longer than our limit, because the season doesn't necessarily have all the
                 # episodes in it and we're basing the initial load on the current episode's index, which is the actual
                 # index of the episode in the season, not what's physically there. To find the episode, we're
-                # dynaamically increasing the window size above. Re-clamp to :amount:, adding slack to both sides if
+                # dynamically increasing the window size above. Re-clamp to :amount:, adding slack to both sides if
                 # the remaining episodes would fit inside half of :amount:.
                 tmpEpIdx = episodes.index(episode)
                 leftBoundary = self.pageSize - len(episodes[tmpEpIdx:tmpEpIdx + self.orphans])
 
                 left = max(tmpEpIdx - leftBoundary, 0)
-                #util.DEBUG_LOG("%s, %s, %s, %s" % (tmpEpIdx, leftBoundary, left, offset))
                 offset += left
-
                 epsLeft = self.leafCount - offset
+                #util.DEBUG_LOG("%s, %s, %s, %s, %s, %s" % (tmpEpIdx, leftBoundary, left, offset, self.leafCount, epsLeft))
                 # avoid short pages on the right end
                 if epsLeft <= self.pageSize + self.orphans:
-                    left = 0
-                    amount = self.pageSize + self.orphans
+                    amount = epsLeft
+                    #util.DEBUG_LOG("PADDING RIGHT")
 
                 # avoid short pages on the left end
-                if offset < self.orphans:
+                if offset < self.orphans and amount + offset < self.pageSize + self.orphans:
                     amount += offset
                     left = 0
                     offset = 0
+                    #util.DEBUG_LOG("PADDING LEFT")
 
+                #util.DEBUG_LOG("AMOUNT: %s OFFSET: %s" % (amount, offset))
                 episodes = episodes[left:left + amount]
 
         self.offset = offset

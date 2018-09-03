@@ -295,6 +295,16 @@ class PlayerSettingsInterface(object):
         else:
             return 360
 
+    def getMaxBitrate(self, qualityType):
+        qualityIndex = self.getQualityIndex(qualityType)
+
+        qualities = self.getGlobal("qualities", [])
+        for quality in qualities:
+            if quality.index == qualityIndex:
+                return util.validInt(quality.maxBitrate)
+
+        return 0
+
 
 class DumbInterface(AppInterface):
     _prefs = {}

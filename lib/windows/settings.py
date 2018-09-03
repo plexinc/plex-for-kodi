@@ -535,7 +535,8 @@ def showSubtitlesDialog(video):
 
 
 def showQualityDialog(video):
-    options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014))]
+    options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009,
+                                                       32010, 32011))]
 
     choice = showOptionsDialog(T(32397, 'Quality'), options)
     if choice is None:

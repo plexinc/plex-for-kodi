@@ -304,6 +304,9 @@ class SeekPlayerHandler(BasePlayerHandler):
 
         self.updateNowPlaying(force=True, refreshQueue=True)
 
+        if self.dialog:
+            self.dialog.onPlaybackStarted()
+
     def onPlayBackResumed(self):
         self.updateNowPlaying()
         if self.dialog:

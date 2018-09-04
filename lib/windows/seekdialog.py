@@ -103,6 +103,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._atSkipStep = -1
         self._lastSkipDirection = None
         self._forcedLastSkipAmount = None
+        self._ignoreInput = False
         self.skipSteps = self.SKIP_STEPS
         self.useAutoSeek = util.advancedSettings.autoSeek
         self.useDynamicStepsForTimeline = util.advancedSettings.dynamicTimelineSeek
@@ -183,6 +184,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.updateProgress()
 
     def onAction(self, action):
+        if self._ignoreInput:
+            return
+
         if xbmc.getCondVisibility('Window.IsActive(selectdialog)'):
             if self.doKodiSelectDialogHack(action):
                 return
@@ -338,6 +342,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.lastFocusID = controlID
 
     def onClick(self, controlID):
+        if self._ignoreInput:
+            return
+
         if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
             # only react to click events on our main areas if we're not in mouse mode, otherwise mouse seeking is
             # handled by onAction
@@ -673,6 +680,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def doSeek(self, offset=None, settings_changed=False):
         self._applyingSeek = True
+        self._ignoreInput = settings_changed
         self.resetSkipSteps()
         self.updateProgress()
 
@@ -827,6 +835,10 @@ class SeekDialog(kodigui.BaseDialog):
     def onPlaybackResumed(self):
         self._osdHideFast = True
         self.tick()
+
+    def onPlaybackStarted(self):
+        if self._ignoreInput:
+            self._ignoreInput = False
 
     def onPlaybackPaused(self):
         self._osdHideFast = False

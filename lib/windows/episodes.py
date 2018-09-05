@@ -48,7 +48,7 @@ class EpisodeReloadTask(backgroundthread.Task):
             util.ERROR()
 
 
-class EpisodesPaginator(pagination.MLCPaginator):
+class EpisodesPaginator(pagination.MCLPaginator):
     thumbFallback = 'script.plex/thumb_fallbacks/show.png'
     _currentEpisode = None
 

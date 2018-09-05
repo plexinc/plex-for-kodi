@@ -1,10 +1,11 @@
 # coding=utf-8
 import kodigui
+from lib import util
 
 
-class MLCPaginator(object):
+class MCLPaginator(object):
     """
-    A paginator for ManagedListControl instances
+    A paginator for ManagedControlList instances
     """
     control = None
     pageSize = 8
@@ -180,7 +181,7 @@ class MLCPaginator(object):
         return self.populate(items)
 
 
-class BaseRelatedPaginator(MLCPaginator):
+class BaseRelatedPaginator(MCLPaginator):
     thumbFallback = lambda self, rel: 'script.plex/thumb_fallbacks/{0}.png'.format(
         rel.type in ('show', 'season', 'episode') and 'show' or 'movie')
 
@@ -190,3 +191,11 @@ class BaseRelatedPaginator(MLCPaginator):
             thumbnailImage=rel.defaultThumb.asTranscodedImageURL(*self.parentWindow.RELATED_DIM),
             data_source=rel
         )
+
+    def prepareListItem(self, data, mli):
+        if data.type in ('season', 'show'):
+            if not mli.dataSource.isWatched:
+                mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+        else:
+            mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+            mli.setProperty('progress', util.getProgressImage(mli.dataSource))

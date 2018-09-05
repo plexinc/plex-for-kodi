@@ -29,14 +29,6 @@ class RelatedPaginator(pagination.BaseRelatedPaginator):
     def getData(self, offset, amount):
         return self.parentWindow.mediaItem.getRelated(offset=offset, limit=amount)
 
-    def prepareListItem(self, data, mli):
-        if data.type in ('show', 'season'):
-            if not mli.dataSource.isWatched:
-                mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
-        else:
-            mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
-            mli.setProperty('progress', util.getProgressImage(mli.dataSource))
-
 
 class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-seasons.xml'

@@ -27,10 +27,6 @@ class RelatedPaginator(pagination.BaseRelatedPaginator):
     def getData(self, offset, amount):
         return self.parentWindow.video.getRelated(offset=offset, limit=amount)
 
-    def prepareListItem(self, data, mli):
-        mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
-        mli.setProperty('progress', util.getProgressImage(mli.dataSource))
-
 
 class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'

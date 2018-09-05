@@ -30,16 +30,8 @@ class RelatedPaginator(pagination.BaseRelatedPaginator):
     def getData(self, offset, amount):
         return (self.parentWindow.prev or self.parentWindow.next).getRelated(offset=offset, limit=amount)
 
-    def prepareListItem(self, data, mli):
-        if self.parentWindow.prev and self.parentWindow.prev.type == 'episode':
-            if not mli.dataSource.isWatched:
-                mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
-        else:
-            mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
-        mli.setProperty('progress', util.getProgressImage(mli.dataSource))
 
-
-class OnDeckPaginator(pagination.MLCPaginator):
+class OnDeckPaginator(pagination.MCLPaginator):
     def readyForPaging(self):
         return self.parentWindow.postPlayInitialized
 

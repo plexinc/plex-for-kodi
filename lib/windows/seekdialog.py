@@ -90,6 +90,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.autoSeekTimeout = None
         self.hasDialog = False
         self.lastFocusID = None
+        self.previousFocusID = None
         self.playlistDialogVisible = False
         self._seeking = False
         self._applyingSeek = False
@@ -137,6 +138,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._seekingWithoutOSD = False
         self._delayedSeekTimeout = None
         self._applyingSeek = False
+        self.selectedOffset = None
         self.setProperty('button.seek', '')
         self.resetAutoSeekTimer(None)
         self.resetSkipSteps()
@@ -193,10 +195,7 @@ class SeekDialog(kodigui.BaseDialog):
             controlID = self.getFocusId()
             if action.getId() in KEY_MOVE_SET:
                 self.setProperty('mouse.mode', '')
-                if not controlID:
-                    self.setBigSeekShift()
-                    self.setFocusId(400)
-                    return
+
             elif action == xbmcgui.ACTION_MOUSE_MOVE:
                 self.setProperty('mouse.mode', '1')
 
@@ -213,6 +212,8 @@ class SeekDialog(kodigui.BaseDialog):
 
             if controlID == self.MAIN_BUTTON_ID:
                 # we're seeking from the timeline with the OSD open - do an actual timeline seek
+                if not self._seeking:
+                    self.selectedOffset = self.trueOffset()
 
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
                     if self.useDynamicStepsForTimeline:
@@ -230,6 +231,12 @@ class SeekDialog(kodigui.BaseDialog):
                 #     self.seekForward(60000)
                 # elif action == xbmcgui.ACTION_MOVE_DOWN:
                 #     self.seekBack(60000)
+
+            # don't auto-apply the currently selected seek when pressing down
+            elif controlID == self.PLAY_PAUSE_BUTTON_ID and self.previousFocusID == self.MAIN_BUTTON_ID \
+                    and action == xbmcgui.ACTION_MOVE_DOWN:
+                self.resetSeeking()
+
             elif controlID == self.NO_OSD_BUTTON_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
                     # we're seeking from the timeline, with the OSD closed; act as we're skipping
@@ -315,9 +322,12 @@ class SeekDialog(kodigui.BaseDialog):
         return False
 
     def onFocus(self, controlID):
+        lastFocusID = self.lastFocusID
+        self.previousFocusID = self.lastFocusID
+        self.lastFocusID = controlID
         if controlID == self.MAIN_BUTTON_ID:
             self.selectedOffset = self.trueOffset()
-            if self.lastFocusID == self.BIG_SEEK_LIST_ID:
+            if lastFocusID == self.BIG_SEEK_LIST_ID:
                 xbmc.sleep(100)
                 self.updateBigSeek()
                 self.updateProgress(set_to_current=False)
@@ -335,8 +345,6 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectedOffset = self.trueOffset()
             self.updateProgress()
 
-        self.lastFocusID = controlID
-
     def onClick(self, controlID):
         if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
             # only react to click events on our main areas if we're not in mouse mode, otherwise mouse seeking is
@@ -350,10 +358,7 @@ class SeekDialog(kodigui.BaseDialog):
                         self.showOSD()
                     else:
                         # currently seeking without the OSD, apply the seek
-                        self._lastSkipDirection = None
-                        self._forcedLastSkipAmount = None
                         self.doSeek()
-                        self.setProperty('button.seek', '')
 
         elif controlID == self.SETTINGS_BUTTON_ID:
             self.handleDialog(self.showSettings)
@@ -481,8 +486,8 @@ class SeekDialog(kodigui.BaseDialog):
                 self._lastSkipDirection = None
                 self._forcedLastSkipAmount = None
                 self.doSeek()
-        finally:
-            self.resetSeeking()
+        except:
+            util.ERROR()
 
     def handleDialog(self, func):
         self.hasDialog = True
@@ -673,15 +678,14 @@ class SeekDialog(kodigui.BaseDialog):
 
     def doSeek(self, offset=None, settings_changed=False):
         self._applyingSeek = True
+        offset = self.selectedOffset if offset is None else offset
         self.resetSkipSteps()
-        self.updateProgress()
+        self.updateProgress(offset=offset)
 
         try:
-            self.handler.seek(self.selectedOffset if offset is None else offset, settings_changed=settings_changed)
+            self.handler.seek(offset, settings_changed=settings_changed)
         finally:
-            self._seeking = False
-            self._seekingWithoutOSD = False
-            self._applyingSeek = False
+            self.resetSeeking()
 
     def seekByOffset(self, offset, auto_seek=False, without_osd=False):
         """
@@ -727,7 +731,6 @@ class SeekDialog(kodigui.BaseDialog):
             self.doSeek()
             if not xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.Rewinding | Player.Forwarding'):
                 self.hideOSD()
-            self.setProperty('button.seek', '')
         else:
             self.updateProgress(set_to_current=False)
             self.setProperty('button.seek', '1')
@@ -768,7 +771,7 @@ class SeekDialog(kodigui.BaseDialog):
         except RuntimeError:  # Not playing
             return 1
 
-    def updateProgress(self, set_to_current=True):
+    def updateProgress(self, set_to_current=True, offset=None):
         """
         Updates the progress bars (seek and position) and the currently-selected-time-label for the current position or
         seek state on the timeline.
@@ -780,7 +783,9 @@ class SeekDialog(kodigui.BaseDialog):
         if not self.initialized:
             return
 
-        ratio = self.selectedOffset / float(self.duration)
+        offset = offset if offset is not None else \
+            self.selectedOffset if self.selectedOffset is not None else self.trueOffset()
+        ratio = offset / float(self.duration)
         w = int(ratio * self.SEEK_IMAGE_WIDTH)
 
         current_w = int(self.offset / float(self.duration) * self.SEEK_IMAGE_WIDTH)
@@ -794,9 +799,9 @@ class SeekDialog(kodigui.BaseDialog):
             self.selectionBox.setPosition(-100 + (1920 - w), 0)
         else:
             self.selectionBox.setPosition(-50, 0)
-        self.setProperty('time.selection', util.simplifiedTimeDisplay(self.selectedOffset))
+        self.setProperty('time.selection', util.simplifiedTimeDisplay(offset))
         if self.hasBif:
-            self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(self.selectedOffset))
+            self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(offset))
             self.bifImageControl.setPosition(bifx, 752)
 
         if set_to_current:

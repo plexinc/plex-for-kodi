@@ -233,8 +233,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if not mli:
             return
 
-        self.reloadItems(items=[mli])
-        self.updateRelated()
+        self.fillEpisodes()
+        self.fillRelated()
 
     def postSetup(self, from_select_episode=False):
         self.selectEpisode(from_select_episode=from_select_episode)
@@ -956,28 +956,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
         return True
-
-    def updateRelated(self):
-        """
-        Update item watched/progress states dynamically
-        :return:
-        """
-        if not self.show_.related:
-            return False
-
-        states = {}
-        for rel in self.show_.related()[0].items:
-            states[rel.ratingKey] = {
-                "unwatched.count": str(rel.unViewedLeafCount) if not rel.isWatched else '',
-                "progress": util.getProgressImage(rel)
-            }
-
-        for mli in self.relatedListControl:
-            stateInfo = states.get(mli.dataSource.ratingKey)
-            if stateInfo:
-                for fillProperty in ("unwatched.count", "progress"):
-                    if mli.getProperty(fillProperty) != stateInfo[fillProperty]:
-                        mli.setProperty(fillProperty, stateInfo[fillProperty])
 
     def fillRoles(self, has_prev=False):
         items = []

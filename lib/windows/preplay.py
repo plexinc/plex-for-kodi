@@ -99,7 +99,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
         self.setInfo()
-        self.updateRelated()
+        self.fillRelated()
         xbmc.sleep(100)
 
         if oldFocusId == self.PLAY_BUTTON_ID:
@@ -604,28 +604,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
         return True
-
-    def updateRelated(self):
-        """
-        Update item watched/progress states dynamically
-        :return:
-        """
-        if not self.video.related:
-            return False
-
-        states = {}
-        for rel in self.video.related()[0].items:
-            states[rel.ratingKey] = {
-                "unwatched": not rel.isWatched and '1' or '',
-                "progress": util.getProgressImage(rel)
-            }
-
-        for mli in self.relatedListControl:
-            stateInfo = states.get(mli.dataSource.ratingKey)
-            if stateInfo:
-                for fillProperty in ("unwatched", "progress"):
-                    if mli.getProperty(fillProperty) != stateInfo[fillProperty]:
-                        mli.setProperty(fillProperty, stateInfo[fillProperty])
 
     def fillRoles(self, has_prev=False):
         items = []

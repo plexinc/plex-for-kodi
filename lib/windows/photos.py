@@ -2,10 +2,14 @@ import threading
 import time
 import os
 
+import xbmc
 import xbmcgui
-
 import kodigui
 import busy
+import tempfile
+import shutil
+import hashlib
+import requests
 
 from lib import util, colors
 from plexnet import plexapp, plexplayer, playqueue
@@ -37,6 +41,9 @@ class PhotoWindow(kodigui.BaseWindow):
 
     SLIDESHOW_INTERVAL = 3
 
+    PHOTO_STACK_SIZE = 10
+    tempSubFolder = ("p4k", "photos")
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.photo = kwargs.get('photo')
@@ -54,8 +61,19 @@ class PhotoWindow(kodigui.BaseWindow):
         self.showPhotoThread = None
         self.showPhotoTimeout = 0
         self.rotate = 0
+        self.tempFolder = None
+        self.photoStack = []
 
     def onFirstInit(self):
+        self.tempFolder = os.path.join(tempfile.gettempdir(), *self.tempSubFolder)
+        #self.tempFolder = os.path.join(xbmc.translatePath("special://temp/"), *self.tempSubFolder)
+        if not os.path.exists(self.tempFolder):
+            try:
+                os.makedirs(self.tempFolder)
+            except OSError:
+                if not os.path.isdir(self.tempFolder):
+                    util.ERROR()
+
         self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 14)
         self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
         self.getPlayQueue()
@@ -223,29 +241,76 @@ class PhotoWindow(kodigui.BaseWindow):
         photo = self.playQueue.current()
         self.updatePqueueListSelection(photo)
 
-        self.showPhotoTimeout = time.time() + 0.2
         if not self.showPhotoThread or not self.showPhotoThread.isAlive():
             self.showPhotoThread = threading.Thread(target=self._showPhoto, name="showphoto")
             self.showPhotoThread.start()
 
     def _showPhoto(self):
-        while not util.MONITOR.waitForAbort(0.1):
-            if time.time() >= self.showPhotoTimeout:
-                break
-
-        self._reallyShowPhoto()
-
-    @busy.dialog()
-    def _reallyShowPhoto(self):
-        self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
+        """
+        load the current photo, preload the previous and the next one
+        :return:
+        """
         photo = self.playQueue.current()
-        photo.softReload()
+        loadItems = (photo, self.playQueue.getNext(), self.playQueue.getPrev())
+        for item in loadItems:
+            item.softReload()
+
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
-        meta = self.playerObject.build()
-        url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)
+
+        addToStack = []
+        for item in loadItems:
+            if not item:
+                continue
+
+            meta = self.playerObject.build(item=item)
+            bgURL = item.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60,
+                                                    background=colors.noAlpha.Background)
+
+            isCurrent = item == photo
+            if isCurrent:
+                self.setBoolProperty('is.updating', True)
+
+            path, background = self.getCachedPhotoData(meta.path, meta.url, bgURL)
+            if (path, background) not in self.photoStack:
+                addToStack.append((path, background))
+
+            if isCurrent:
+                self._reallyShowPhoto(item, path, background)
+                self.setBoolProperty('is.updating', False)
+
+        # maintain cache folder
+        self.photoStack = addToStack + self.photoStack
+        if len(self.photoStack) > self.PHOTO_STACK_SIZE:
+            clean = self.photoStack[self.PHOTO_STACK_SIZE:]
+            self.photoStack = self.photoStack[:self.PHOTO_STACK_SIZE]
+            for remList in clean:
+                for rem in remList:
+                    try:
+                        os.remove(rem)
+                    except:
+                        pass
+
+    def getCachedPhotoData(self, path, url, bgURL):
+        if not url:
+            return
+
+        ext = os.path.splitext(path)[1]
+        basename = hashlib.sha1(url).hexdigest()
+        tmpPath = os.path.join(self.tempFolder, basename + ext)
+        tmpBgPath = os.path.join(self.tempFolder, "%s_bg%s" % (basename, ext))
+
+        for p, url in ((tmpPath, url), (tmpBgPath, bgURL)):
+            if not os.path.exists(p):# and not xbmc.getCacheThumbName(tmpFn):
+                r = requests.get(url, allow_redirects=True)
+                with open(p, 'wb') as f:
+                    f.write(r.content)
+
+        return tmpPath, tmpBgPath
+
+    def _reallyShowPhoto(self, photo, path, background):
         self.setRotation(0)
-        self.setProperty('photo', url)
-        self.setProperty('background', photo.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('photo', path)
+        self.setProperty('background', background)
 
         self.setProperty('photo.title', photo.title)
         self.setProperty('photo.date', util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y')))
@@ -344,6 +409,8 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def doClose(self):
         self.pause()
+        shutil.rmtree(self.tempFolder, ignore_errors=True)
+
         kodigui.BaseWindow.doClose(self)
 
     def getCurrentItem(self):

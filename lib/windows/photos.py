@@ -271,7 +271,8 @@ class PhotoWindow(kodigui.BaseWindow):
         :return:
         """
         photo = self.playQueue.current()
-        loadItems = (photo, self.playQueue.getNext(), self.playQueue.getPrev())
+        next = self.playQueue.getNext()
+        loadItems = (photo, next, self.playQueue.getPrev())
         for item in loadItems:
             item.softReload()
 
@@ -297,7 +298,11 @@ class PhotoWindow(kodigui.BaseWindow):
                     return
 
                 if (path, background) not in self.photoStack:
-                    addToStack.append((path, background))
+                    if item == next:
+                        # move the next image to the top of the stack
+                        addToStack.insert(0, (path, background))
+                    else:
+                        addToStack.append((path, background))
 
                 if isCurrent:
                     self._reallyShowPhoto(item, path, background)

@@ -231,7 +231,7 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def updatePqueueListSelection(self, current=None):
         selected = self.pqueueList.getListItemByDataSource(current or self.playQueue.current())
-        if not selected:
+        if not selected or not selected.pos():
             return
 
         self.pqueueList.selectItem(selected.pos())

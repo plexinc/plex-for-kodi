@@ -254,7 +254,7 @@ class PhotoWindow(kodigui.BaseWindow):
             self.showPhotoThread.start()
 
         # wait for the current thread to end, which might still be loading the surrounding images, for 10 seconds
-        elif self.showPhotoThread and self.showPhotoThread.isAlive():
+        elif self.showPhotoThread.isAlive():
             waitedFor = 0
             self.setBoolProperty('is.updating', True)
             while waitedFor < 10:

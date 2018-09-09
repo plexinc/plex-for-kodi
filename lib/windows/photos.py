@@ -297,7 +297,7 @@ class PhotoWindow(kodigui.BaseWindow):
                 if isCurrent and not self.initialLoad:
                     self.setBoolProperty('is.updating', True)
 
-                path, background = self.getCachedPhotoData(meta.path, url, bgURL)
+                path, background = self.getCachedPhotoData(url, bgURL)
                 if not (path and background):
                     return
 
@@ -327,14 +327,13 @@ class PhotoWindow(kodigui.BaseWindow):
         finally:
             self.setBoolProperty('is.updating', False)
 
-    def getCachedPhotoData(self, path, url, bgURL):
+    def getCachedPhotoData(self, url, bgURL):
         if not url:
             return
 
-        ext = os.path.splitext(path)[1]
         basename = hashlib.sha1(url).hexdigest()
-        tmpPath = os.path.join(self.tempFolder, basename + ext)
-        tmpBgPath = os.path.join(self.tempFolder, "%s_bg%s" % (basename, ext))
+        tmpPath = os.path.join(self.tempFolder, basename)
+        tmpBgPath = os.path.join(self.tempFolder, "%s_bg" % basename)
 
         for p, url in ((tmpPath, url), (tmpBgPath, bgURL)):
             if not os.path.exists(p):# and not xbmc.getCacheThumbName(tmpFn):

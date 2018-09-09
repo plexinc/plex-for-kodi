@@ -608,7 +608,6 @@ class PlexPhotoPlayer(object):
             path = part.key or part.thumb
             server = item.getServer()
 
-            obj.path = path
             obj.url = server.buildUrl(path, True)
             obj.enableBlur = server.supportsPhotoTranscoding
 

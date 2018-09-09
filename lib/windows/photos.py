@@ -422,12 +422,12 @@ class PhotoWindow(kodigui.BaseWindow):
     def prev(self):
         if not self.playQueue.getPrev():
             return
-        self.showPhoto(trigger=lambda: self.playQueue.next())
+        self.showPhoto(trigger=lambda: self.playQueue.prev())
 
     def next(self):
         if not self.playQueue.getNext():
             return
-        self.showPhoto(trigger=lambda: self.playQueue.prev())
+        self.showPhoto(trigger=lambda: self.playQueue.next())
 
     def play(self):
         self.setProperty('playing', '1')

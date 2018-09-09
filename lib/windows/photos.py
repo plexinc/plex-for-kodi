@@ -293,7 +293,7 @@ class PhotoWindow(kodigui.BaseWindow):
                     self.setBoolProperty('is.updating', True)
 
                 path, background = self.getCachedPhotoData(meta.path, url, bgURL)
-                if not path and background:
+                if not (path and background):
                     return
 
                 if (path, background) not in self.photoStack:

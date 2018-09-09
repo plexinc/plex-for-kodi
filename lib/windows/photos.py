@@ -245,7 +245,7 @@ class PhotoWindow(kodigui.BaseWindow):
         url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)
         self.setRotation(0)
         self.setProperty('photo', url)
-        self.setProperty('background', util.backgroundFromArt(photo.thumb, width=self.width, height=self.height))
+        self.setProperty('background', photo.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
 
         self.setProperty('photo.title', photo.title)
         self.setProperty('photo.date', util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y')))

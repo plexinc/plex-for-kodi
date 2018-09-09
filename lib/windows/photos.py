@@ -260,6 +260,10 @@ class PhotoWindow(kodigui.BaseWindow):
             while waitedFor < 10:
                 if not self.showPhotoThread.isAlive() and not xbmc.abortRequested:
                     return self.showPhoto(**kwargs)
+                elif xbmc.abortRequested:
+                    self.setBoolProperty('is.updating', False)
+                    return
+
                 util.MONITOR.waitForAbort(0.1)
                 waitedFor += 0.1
 

@@ -236,13 +236,20 @@ class PhotoWindow(kodigui.BaseWindow):
 
         self.pqueueList.selectItem(selected.pos())
 
-    def showPhoto(self, **kwargs):
+    def showPhoto(self, trigger=None, **kwargs):
         self.slideshowNext = 0
 
-        photo = self.playQueue.current()
-        self.updatePqueueListSelection(photo)
-
         if not self.showPhotoThread or not self.showPhotoThread.isAlive():
+            # if trigger is given, trigger it. trigger loads the next or prev item, depending on what was requested
+            # doing this here, this late prevents erratic behaviour when multiple next/prev calls were made but we were
+            # still loading images
+            if trigger:
+                trigger()
+                self.updateProperties()
+
+            photo = self.playQueue.current()
+            self.updatePqueueListSelection(photo)
+
             self.showPhotoThread = threading.Thread(target=self._showPhoto, name="showphoto")
             self.showPhotoThread.start()
 
@@ -408,22 +415,14 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setFocusId(self.OVERLAY_BUTTON_ID)
 
     def prev(self):
-        if self.showPhotoThread and self.showPhotoThread.isAlive():
+        if not self.playQueue.getPrev():
             return
-
-        if not self.playQueue.prev():
-            return
-        self.updateProperties()
-        self.showPhoto()
+        self.showPhoto(trigger=lambda: self.playQueue.next())
 
     def next(self):
-        if self.showPhotoThread and self.showPhotoThread.isAlive():
+        if not self.playQueue.getNext():
             return
-
-        if not self.playQueue.next():
-            return
-        self.updateProperties()
-        self.showPhoto()
+        self.showPhoto(trigger=lambda: self.playQueue.prev())
 
     def play(self):
         self.setProperty('playing', '1')

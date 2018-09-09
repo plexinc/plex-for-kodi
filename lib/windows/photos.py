@@ -63,6 +63,7 @@ class PhotoWindow(kodigui.BaseWindow):
         self.rotate = 0
         self.tempFolder = None
         self.photoStack = []
+        self.initialLoad = True
 
     def onFirstInit(self):
         self.tempFolder = os.path.join(tempfile.gettempdir(), *self.tempSubFolder)
@@ -245,6 +246,18 @@ class PhotoWindow(kodigui.BaseWindow):
             self.showPhotoThread = threading.Thread(target=self._showPhoto, name="showphoto")
             self.showPhotoThread.start()
 
+        # wait for the current thread to end, which might still be loading the surrounding images, for 10 seconds
+        elif self.showPhotoThread and self.showPhotoThread.isAlive():
+            waitedFor = 0
+            self.setBoolProperty('is.updating', True)
+            while waitedFor < 10:
+                if not self.showPhotoThread.isAlive() and not xbmc.abortRequested:
+                    return self.showPhoto(**kwargs)
+                util.MONITOR.waitForAbort(0.1)
+                waitedFor += 0.1
+
+            # fixme raise error here
+
     def _showPhoto(self):
         """
         load the current photo, preload the previous and the next one
@@ -258,37 +271,45 @@ class PhotoWindow(kodigui.BaseWindow):
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
 
         addToStack = []
-        for item in loadItems:
-            if not item:
-                continue
+        try:
+            for item in loadItems:
+                if not item:
+                    continue
 
-            meta = self.playerObject.build(item=item)
-            bgURL = item.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60,
-                                                    background=colors.noAlpha.Background)
+                meta = self.playerObject.build(item=item)
+                url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)
+                bgURL = item.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60,
+                                                        background=colors.noAlpha.Background)
 
-            isCurrent = item == photo
-            if isCurrent:
-                self.setBoolProperty('is.updating', True)
+                isCurrent = item == photo
+                if isCurrent and not self.initialLoad:
+                    self.setBoolProperty('is.updating', True)
 
-            path, background = self.getCachedPhotoData(meta.path, meta.url, bgURL)
-            if (path, background) not in self.photoStack:
-                addToStack.append((path, background))
+                path, background = self.getCachedPhotoData(meta.path, url, bgURL)
+                if not path and background:
+                    return
 
-            if isCurrent:
-                self._reallyShowPhoto(item, path, background)
-                self.setBoolProperty('is.updating', False)
+                if (path, background) not in self.photoStack:
+                    addToStack.append((path, background))
 
-        # maintain cache folder
-        self.photoStack = addToStack + self.photoStack
-        if len(self.photoStack) > self.PHOTO_STACK_SIZE:
-            clean = self.photoStack[self.PHOTO_STACK_SIZE:]
-            self.photoStack = self.photoStack[:self.PHOTO_STACK_SIZE]
-            for remList in clean:
-                for rem in remList:
-                    try:
-                        os.remove(rem)
-                    except:
-                        pass
+                if isCurrent:
+                    self._reallyShowPhoto(item, path, background)
+                    self.setBoolProperty('is.updating', False)
+                    self.initialLoad = False
+
+            # maintain cache folder
+            self.photoStack = addToStack + self.photoStack
+            if len(self.photoStack) > self.PHOTO_STACK_SIZE:
+                clean = self.photoStack[self.PHOTO_STACK_SIZE:]
+                self.photoStack = self.photoStack[:self.PHOTO_STACK_SIZE]
+                for remList in clean:
+                    for rem in remList:
+                        try:
+                            os.remove(rem)
+                        except:
+                            pass
+        finally:
+            self.setBoolProperty('is.updating', False)
 
     def getCachedPhotoData(self, path, url, bgURL):
         if not url:
@@ -301,9 +322,15 @@ class PhotoWindow(kodigui.BaseWindow):
 
         for p, url in ((tmpPath, url), (tmpBgPath, bgURL)):
             if not os.path.exists(p):# and not xbmc.getCacheThumbName(tmpFn):
-                r = requests.get(url, allow_redirects=True)
-                with open(p, 'wb') as f:
-                    f.write(r.content)
+                try:
+                    r = requests.get(url, allow_redirects=True, timeout=10.0)
+                    r.raise_for_status()
+                except Exception, e:
+                    util.ERROR("Couldn't load image: %s" % e, notify=True)
+                    return None, None
+                else:
+                    with open(p, 'wb') as f:
+                        f.write(r.content)
 
         return tmpPath, tmpBgPath
 
@@ -381,12 +408,18 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setFocusId(self.OVERLAY_BUTTON_ID)
 
     def prev(self):
+        if self.showPhotoThread and self.showPhotoThread.isAlive():
+            return
+
         if not self.playQueue.prev():
             return
         self.updateProperties()
         self.showPhoto()
 
     def next(self):
+        if self.showPhotoThread and self.showPhotoThread.isAlive():
+            return
+
         if not self.playQueue.next():
             return
         self.updateProperties()

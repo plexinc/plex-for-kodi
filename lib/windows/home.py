@@ -203,6 +203,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
     SEARCH_BUTTON_ID = 203
     SERVER_LIST_ID = 260
+    PVR_BUTTON_ID = 6969
 
     PLAYER_STATUS_BUTTON_ID = 204
 
@@ -402,6 +403,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             if controlID == self.SECTION_LIST_ID:
                 self.checkSectionItem(action=action)
 
+            if controlID == self.PVR_BUTTON_ID and action == xbmcgui.ACTION_MOUSE_LEFT_CLICK:
+                self.pvrButtonClicked()
+
             if controlID == self.SERVER_BUTTON_ID:
                 if action == xbmcgui.ACTION_SELECT_ITEM:
                     self.showServers()
@@ -424,6 +428,24 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             elif controlID == self.USER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
                 self.setFocusId(self.SERVER_BUTTON_ID)
             elif controlID == self.SEARCH_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
+                if xbmc.getCondVisibility('System.HasPVRAddon'):
+                    self.setFocusId(self.PVR_BUTTON_ID)
+                else:
+                    if xbmc.getCondVisibility('Player.HasMedia + Control.IsVisible({0})'.format(self.PLAYER_STATUS_BUTTON_ID)):
+                        self.setFocusId(self.PLAYER_STATUS_BUTTON_ID)
+                    else:
+                        self.setFocusId(self.SERVER_BUTTON_ID)
+            elif controlID == self.PLAYER_STATUS_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
+                if xbmc.getCondVisibility('System.HasPVRAddon'):
+                    self.setFocusId(self.PVR_BUTTON_ID)
+                else:
+                    self.setFocusId(self.SEARCH_BUTTON_ID)
+            elif controlID == self.SERVER_BUTTON_ID and action == xbmcgui.ACTION_MOVE_LEFT:
+                if xbmc.getCondVisibility('Player.HasMedia + Control.IsVisible({0})'.format(self.PLAYER_STATUS_BUTTON_ID)):
+                    self.setFocusId(self.PLAYER_STATUS_BUTTON_ID)
+                else:
+                    self.setFocusId(self.PVR_BUTTON_ID)
+            elif controlID == self.PVR_BUTTON_ID and action == xbmcgui.ACTION_MOVE_RIGHT:
                 if xbmc.getCondVisibility('Player.HasMedia + Control.IsVisible({0})'.format(self.PLAYER_STATUS_BUTTON_ID)):
                     self.setFocusId(self.PLAYER_STATUS_BUTTON_ID)
                 else:
@@ -450,7 +472,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
                     if util.advancedSettings.fastBack and not optionsFocused and offSections \
                             and self.lastFocusID not in (self.USER_BUTTON_ID, self.SERVER_BUTTON_ID,
-                                                         self.SEARCH_BUTTON_ID, self.SECTION_LIST_ID):
+                                                         self.SEARCH_BUTTON_ID, self.SECTION_LIST_ID, self.PVR_BUTTON_ID):
                         self.setProperty('hub.focus', '0')
                         self.setFocusId(self.SECTION_LIST_ID)
                         return
@@ -479,6 +501,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.sectionClicked()
         # elif controlID == self.SERVER_BUTTON_ID:
         #     self.showServers()
+        elif controlID == self.PVR_BUTTON_ID:
+            self.pvrButtonClicked()
         elif controlID == self.SERVER_LIST_ID:
             self.setBoolProperty('show.servers', False)
             self.selectServer()
@@ -494,6 +518,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.hubItemClicked(controlID)
         elif controlID == self.SEARCH_BUTTON_ID:
             self.searchButtonClicked()
+
 
     def onFocus(self, controlID):
         self.lastFocusID = controlID
@@ -521,6 +546,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self))
+
+    def pvrButtonClicked(self):
+        xbmc.executebuiltin("ActivateWindow(10702)")
 
     def updateOnDeckHubs(self, **kwargs):
         tasks = [UpdateHubTask().setup(hub, self.updateHubCallback) for hub in self.updateHubs.values()]

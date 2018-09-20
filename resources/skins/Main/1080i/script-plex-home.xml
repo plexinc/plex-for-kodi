@@ -7804,13 +7804,32 @@
                 <control type="label">
                     <posx>160</posx>
                     <posy>35</posy>
-                    <width>500</width>
+                    <width>200</width>
                     <height>65</height>
                     <font>font12</font>
                     <align>left</align>
                     <aligny>center</aligny>
                     <textcolor>FFFFFFFF</textcolor>
                     <label>[UPPERCASE]$ADDON[script.plex 32430][/UPPERCASE]</label>
+                </control>
+                <control type="button" id="6969">
+			        <visible>[System.HasPVRAddon]</visible>
+                    <posx>600</posx>
+                    <posy>35</posy>
+                    <width>200</width>
+                    <height>66</height>
+                    <font>font12</font>
+                    <onleft>203</onleft>
+                    <ondown>50</ondown>
+                    <textcolor>FFFFFFFF</textcolor>
+                    <focusedcolor>FF000000</focusedcolor>
+                    <align>right</align>
+                    <aligny>center</aligny>
+                    <texturefocus colordiffuse="FFE5A00D" border="10">script.plex/white-square-rounded.png</texturefocus>
+                    <texturenofocus>-</texturenofocus>
+                    <textoffsetx>0</textoffsetx>
+                    <textoffsety>0</textoffsety>
+                    <label>Kodi PVR</label>
                 </control>
             </control>
             <control type="group">
@@ -7823,7 +7842,7 @@
                     <posy>38</posy>
                     <width>260</width>
                     <height>75</height>
-                    <onleft>203</onleft>
+                    <onleft>6969</onleft>
                     <ondown>50</ondown>
                     <font>font12</font>
                     <textcolor>FFFFFFFF</textcolor>
@@ -8023,7 +8042,7 @@
                                 <height>900</height>
                                 <onup>201</onup>
                                 <ondown>noop</ondown>
-                                <onleft>203</onleft>
+                                <onleft>6969</onleft>
                                 <onright>202</onright>
                                 <onunfocus>SetProperty(show.servers,)</onunfocus>
                                 <scrolltime>200</scrolltime>

@@ -22,6 +22,8 @@ from lib import metadata
 
 from lib.util import T
 
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10)
+
 
 class RelatedPaginator(pagination.BaseRelatedPaginator):
     def getData(self, offset, amount):
@@ -454,7 +456,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif self.video.type == 'movie':
             self.setProperty('preview.no', '1')
 
-        self.video.reload(checkFiles=1, includeExtras=1, includeExtrasCount=10)
+        self.video.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.video.relatedCount),
                                                  parent_window=self)
 

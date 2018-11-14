@@ -804,6 +804,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.setProperty('bif.image', self.handler.player.playerObject.getBifUrl(offset))
             self.bifImageControl.setPosition(bifx, 752)
 
+        self.seekbarControl.setPosition(0, self.seekbarControl.getPosition()[1])
         if set_to_current:
             self.seekbarControl.setWidth(w)
             self.positionControl.setWidth(w)
@@ -813,13 +814,14 @@ class SeekDialog(kodigui.BaseDialog):
             # current seek position below current offset? set the position bar's width to the current position of the
             # seek and the seek bar to the current position of the video, to visually indicate the backwards-seeking
             if self.selectedOffset < self.offset:
-                self.positionControl.setWidth(w)
-                self.seekbarControl.setWidth(current_w)
+                self.positionControl.setWidth(current_w)
+                self.seekbarControl.setWidth(w)
 
             # current seek position ahead of current offset? set the position bar's width to the current position of the
             # video and the seek bar to the current position of the seek, to visually indicate the forwards-seeking
             elif self.selectedOffset > self.offset:
-                self.seekbarControl.setWidth(w)
+                self.seekbarControl.setPosition(current_w, self.seekbarControl.getPosition()[1])
+                self.seekbarControl.setWidth(w - current_w)
                 # we may have "shortened" the width before, by seeking negatively, reset the position bar's width to
                 # the current video's position if that's the case
                 if self.positionControl.getWidth() < current_w:

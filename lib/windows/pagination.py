@@ -9,9 +9,10 @@ class MCLPaginator(object):
     """
     control = None
     pageSize = 8
+    initialPageSize = 18  # + orphans = 26
 
     # the amount of overhang allowed for both sides; don't show pagination when the overhang fits the current item count
-    orphans = pageSize / 2
+    orphans = pageSize
     offset = 0
     leafCount = None
     parentWindow = None
@@ -99,9 +100,9 @@ class MCLPaginator(object):
 
     @property
     def initialPage(self):
-        amount = self.pageSize
-        if self.pageSize + self.orphans >= self.leafCount:
-            amount = self.pageSize + self.orphans
+        amount = self.initialPageSize
+        if self.initialPageSize + self.orphans >= self.leafCount:
+            amount = self.initialPageSize + self.orphans
 
         data = self.getData(self.offset, amount)
         self._currentAmount = len(data)

@@ -73,16 +73,16 @@ class EpisodesPaginator(pagination.MCLPaginator):
     def initialPage(self):
         episode = self.parentWindow.episode
         offset = 0
-        amount = self.pageSize
+        amount = self.initialPageSize
         if episode:
             self._currentEpisode = episode
             # try cutting the query short while not querying all episodes, to find the slice with the currently
             # selected episode in it
             episodes = []
-            _amount = self.pageSize + self.orphans
+            _amount = self.initialPageSize + self.orphans
             epSeasonIndex = int(episode.index) - 1  # .index is 1-based
             if _amount < self.leafCount:
-                _amount = self.pageSize * 2
+                _amount = self.initialPageSize * 2
                 while episode not in episodes:
                     offset = int(max(0, epSeasonIndex - _amount / 2))
                     episodes = self.getData(offset, int(_amount))
@@ -102,7 +102,7 @@ class EpisodesPaginator(pagination.MCLPaginator):
 
         episodeFound = episode and episode in episodes
         if episodeFound:
-            if self.pageSize + self.orphans < self.leafCount:
+            if self.initialPageSize + self.orphans < self.leafCount:
                 # slice around the episode
                 # Clamp the left side dynamically based on the item index and how many items are left in the season.
                 # The episodes list might be longer than our limit, because the season doesn't necessarily have all the
@@ -111,19 +111,19 @@ class EpisodesPaginator(pagination.MCLPaginator):
                 # dynamically increasing the window size above. Re-clamp to :amount:, adding slack to both sides if
                 # the remaining episodes would fit inside half of :amount:.
                 tmpEpIdx = episodes.index(episode)
-                leftBoundary = self.pageSize - len(episodes[tmpEpIdx:tmpEpIdx + self.orphans])
+                leftBoundary = self.initialPageSize - len(episodes[tmpEpIdx:tmpEpIdx + self.orphans])
 
                 left = max(tmpEpIdx - leftBoundary, 0)
                 offset += left
                 epsLeft = self.leafCount - offset
                 #util.DEBUG_LOG("%s, %s, %s, %s, %s, %s" % (tmpEpIdx, leftBoundary, left, offset, self.leafCount, epsLeft))
                 # avoid short pages on the right end
-                if epsLeft <= self.pageSize + self.orphans:
+                if epsLeft <= self.initialPageSize + self.orphans:
                     amount = epsLeft
                     #util.DEBUG_LOG("PADDING RIGHT")
 
                 # avoid short pages on the left end
-                if offset < self.orphans and amount + offset < self.pageSize + self.orphans:
+                if offset < self.orphans and amount + offset < self.initialPageSize + self.orphans:
                     amount += offset
                     left = 0
                     offset = 0

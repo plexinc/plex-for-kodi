@@ -227,6 +227,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return self.playButtonClicked(force_episode=self.initialEpisode)
 
     def onReInit(self):
+        if not self.tasks:
+            self.tasks = backgroundthread.Tasks()
+
         self.selectEpisode()
 
         mli = self.episodeListControl.getSelectedItem()

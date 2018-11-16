@@ -223,6 +223,14 @@ class ControlledDialog(ControlledBase, BaseDialog):
 DUMMY_LIST_ITEM = xbmcgui.ListItem()
 
 
+class DummyDataSource(object):
+    def exists(self):
+        return False
+
+
+DUMMY_DATA_SOURCE = DummyDataSource()
+
+
 class ManagedListItem(object):
     def __init__(self, label='', label2='', iconImage='', thumbnailImage='', path='', data_source=None, properties=None):
         self._listItem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, path)
@@ -259,6 +267,7 @@ class ManagedListItem(object):
     def invalidate(self):
         self._valid = False
         self._listItem = DUMMY_LIST_ITEM
+        self.dataSource = DUMMY_DATA_SOURCE
 
     def _takeListItem(self, manager, lid):
         self._manager = manager

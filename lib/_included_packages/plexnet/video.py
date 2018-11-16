@@ -268,6 +268,7 @@ class Movie(PlayableVideo):
         self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''), self)
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
+        self.session = self._findSession(data)
         self.transcodeSession = self._findTranscodeSession(data)
 
     @property
@@ -425,6 +426,7 @@ class Episode(PlayableVideo, SectionOnDeckMixin):
         self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''), self)
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
+        self.session = self._findSession(data)
         self.transcodeSession = self._findTranscodeSession(data)
 
     @property

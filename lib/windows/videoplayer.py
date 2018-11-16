@@ -115,6 +115,8 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def doClose(self):
         util.DEBUG_LOG('VideoPlayerWindow: Closing')
         self.timeout = None
+        self.relatedPaginator = None
+        self.onDeckPaginator = None
         kodigui.ControlledWindow.doClose(self)
         player.PLAYER.handler.sessionEnded()
 

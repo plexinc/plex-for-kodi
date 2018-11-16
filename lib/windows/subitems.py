@@ -87,6 +87,10 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.initialized = False
         self.relatedPaginator = None
 
+    def doClose(self):
+        self.relatedPaginator = None
+        kodigui.ControlledWindow.doClose(self)
+
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)

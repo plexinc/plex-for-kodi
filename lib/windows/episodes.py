@@ -192,6 +192,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.lastItem = None
         self.lastFocusID = None
         self.lastNonOptionsFocusID = None
+        self.episodesPaginator = None
+        self.relatedPaginator = None
         self.tasks = backgroundthread.Tasks()
         self.initialized = False
 
@@ -204,6 +206,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.initialized = False
 
     def doClose(self):
+        self.episodesPaginator = None
+        self.relatedPaginator = None
         kodigui.ControlledWindow.doClose(self)
         if not self.tasks:
             return

@@ -224,6 +224,9 @@ DUMMY_LIST_ITEM = xbmcgui.ListItem()
 
 
 class DummyDataSource(object):
+    def __nonzero__(self):
+        return False
+
     def exists(self):
         return False
 

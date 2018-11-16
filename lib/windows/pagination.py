@@ -183,6 +183,10 @@ class MCLPaginator(object):
 
 
 class BaseRelatedPaginator(MCLPaginator):
+    initialPageSize = 8
+    pageSize = initialPageSize
+    orphans = initialPageSize / 2
+
     thumbFallback = lambda self, rel: 'script.plex/thumb_fallbacks/{0}.png'.format(
         rel.type in ('show', 'season', 'episode') and 'show' or 'movie')
 

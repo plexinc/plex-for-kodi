@@ -258,6 +258,9 @@ class SeekPlayerHandler(BasePlayerHandler):
                 util.garbageCollect()
 
     def seek(self, offset, settings_changed=False, seeking=SEEK_IN_PROGRESS):
+        if offset is None:
+            return
+
         self.offset = offset
 
         if self.mode == self.MODE_ABSOLUTE and not settings_changed:

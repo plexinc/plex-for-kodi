@@ -565,6 +565,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
         self.updateListItem(mli)
 
+        if not mli:
+            return
+
         if not mli.dataSource.exists():
             control.removeItem(mli.pos())
 

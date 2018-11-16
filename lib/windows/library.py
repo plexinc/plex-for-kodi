@@ -1184,6 +1184,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         elif self.section.TYPE in ('photo', 'photodirectory'):
             self.showPhoto(mli.dataSource)
 
+        if not mli:
+            return
+
         if not mli.dataSource.exists():
             self.showPanelControl.removeItem(mli.pos())
             return

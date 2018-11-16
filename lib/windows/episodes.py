@@ -253,14 +253,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def setup(self):
         self._setup()
 
-    def _setup(self):
+    def _setup(self, from_select_episode=False):
         player.PLAYER.on('new.video', self.onNewVideo)
         self.season.reload(includeExtras=1, includeExtrasCount=10)
-        self.episodesPaginator = EpisodesPaginator(self.episodeListControl, leaf_count=int(self.season.leafCount),
-                                                   parent_window=self)
+        if not from_select_episode:
+            self.episodesPaginator = EpisodesPaginator(self.episodeListControl, leaf_count=int(self.season.leafCount),
+                                                       parent_window=self)
 
-        self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.show_.relatedCount),
-                                                 parent_window=self)
+            self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.show_.relatedCount),
+                                                     parent_window=self)
 
         self.updateProperties()
         self.fillEpisodes()
@@ -279,7 +280,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         else:
             if not from_select_episode:
                 self.reset(self.episode)
-                self._setup()
+                self._setup(from_select_episode=True)
                 self.postSetup(from_select_episode=True)
 
         self.episode = None

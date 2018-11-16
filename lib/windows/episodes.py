@@ -23,6 +23,7 @@ import preplayutils
 import pagination
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
 
 
 class EpisodeReloadTask(backgroundthread.Task):
@@ -794,7 +795,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setProperty(
             'background',
-            (self.show_ or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt((self.show_ or self.season.show()).art, width=self.width, height=self.height)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', showTitle)
@@ -818,7 +819,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setItemInfo(self, video, mli):
         # video.reload(checkFiles=1)
-        mli.setProperty('background', video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        mli.setProperty('background', util.backgroundFromArt(video.art, width=self.width, height=self.height))
         mli.setProperty('title', video.title)
         mli.setProperty('show.title', video.grandparentTitle or (self.show_.title if self.show_ else ''))
         mli.setProperty('duration', util.durationToText(video.duration.asInt()))

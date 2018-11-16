@@ -160,15 +160,6 @@
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>A0000000</colordiffuse>
                 </control>
-                <control type="image" id="200">
-                    <visible>Control.HasFocus(100) | !String.IsEmpty(Window.Property(button.seek))</visible>
-                    <posx>0</posx>
-                    <posy>1</posy>
-                    <width>1</width>
-                    <height>8</height>
-                    <texture>script.plex/white-square.png</texture>
-                    <colordiffuse>FFE5A00D</colordiffuse>
-                </control>
                 <control type="image" id="201">
                     <posx>0</posx>
                     <posy>2</posy>
@@ -176,6 +167,15 @@
                     <height>6</height>
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>FFAC5B00</colordiffuse>
+                </control>
+                <control type="image" id="200">
+                    <visible>Control.HasFocus(100) | !String.IsEmpty(Window.Property(button.seek))</visible>
+                    <posx>0</posx>
+                    <posy>2</posy>
+                    <width>1</width>
+                    <height>6</height>
+                    <texture>script.plex/white-square.png</texture>
+                    <colordiffuse>FFE5A00D</colordiffuse>
                 </control>
             </control>
         </control>

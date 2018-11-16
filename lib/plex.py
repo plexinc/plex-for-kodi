@@ -217,6 +217,12 @@ class PlexInterface(plexapp.AppInterface):
         else:
             return 360
 
+    def getThemeMusicValue(self):
+        index = 10 - self.getPreference("theme_music", 11)
+        if index > 0:
+            return index * 10
+        return 0
+
 
 plexapp.setInterface(PlexInterface())
 plexapp.setUserAgent(defaultUserAgent())

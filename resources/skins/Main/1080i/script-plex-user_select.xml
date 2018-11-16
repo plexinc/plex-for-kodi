@@ -28,7 +28,7 @@
 
         <control type="group">
             <animation effect="fade" time="100" start="100" end="20" condition="ControlGroup(400).HasFocus(0)">Conditional</animation>
-            <visible>Player.HasAudio</visible>
+            <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
             <posx>441</posx>
             <posy>780</posy>
 

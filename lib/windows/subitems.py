@@ -7,6 +7,7 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import metadata
+from lib import player
 
 from plexnet import playlist
 
@@ -80,6 +81,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.mediaItem = kwargs.get('media_item')
         self.parentList = kwargs.get('parent_list')
+        self.cameFrom = kwargs.get('came_from')
         self.mediaItems = None
         self.exitCommand = None
         self.lastFocusID = None
@@ -102,6 +104,15 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.initialized = True
 
         self.setFocusId(self.PLAY_BUTTON_ID)
+
+    def onInit(self):
+        super(ShowWindow, self).onInit()
+        if self.mediaItem.theme and (not self.cameFrom or self.cameFrom != self.mediaItem.ratingKey):
+            self.cameFrom = self.mediaItem.ratingKey
+            volume = self.mediaItem.settings.getThemeMusicValue()
+            if volume > 0:
+                player.PLAYER.playBackgroundMusic(self.mediaItem.theme.asURL(True), volume,
+                                                  self.mediaItem.ratingKey)
 
     def setup(self):
         self.mediaItem.reload(includeExtras=1, includeExtrasCount=10)
@@ -256,6 +267,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+        if player.PLAYER.bgmPlaying and player.PLAYER.handler.currentlyPlaying != self.mediaItem.ratingKey:
+            player.PLAYER.stopAndWait()
 
     def getMediaItems(self):
         return False

@@ -598,13 +598,15 @@ class PlexPhotoPlayer(object):
         self.media = item.media()[0]
         self.metadata = None
 
-    def build(self):
-        if self.media.parts and self.media.parts[0]:
+    def build(self, item=None):
+        item = item or self.item
+        media = item.media()[0]
+        if media.parts and media.parts[0]:
             obj = util.AttributeDict()
 
-            part = self.media.parts[0]
+            part = media.parts[0]
             path = part.key or part.thumb
-            server = self.item.getServer()
+            server = item.getServer()
 
             obj.url = server.buildUrl(path, True)
             obj.enableBlur = server.supportsPhotoTranscoding

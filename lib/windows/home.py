@@ -397,7 +397,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         try:
             if not controlID and not action == xbmcgui.ACTION_MOUSE_MOVE:
                 if self.lastFocusID:
-                    self.setFocusId(self.lastFocusID)
+                    if 399 < self.lastFocusID < 500:
+                        if self.hubControls[self.lastFocusID]:
+                            self.setFocusId(self.lastFocusID)
+                    else:
+                        self.setFocusId(self.lastFocusID)
 
             if controlID == self.SECTION_LIST_ID:
                 self.checkSectionItem(action=action)

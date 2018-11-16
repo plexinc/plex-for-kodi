@@ -859,10 +859,11 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetSeeking()
             return
 
-        if self.autoSeekTimeout and time.time() >= self.autoSeekTimeout and self.offset != self.selectedOffset:
+        if offset or (self.autoSeekTimeout and time.time() >= self.autoSeekTimeout and
+                      self.offset != self.selectedOffset):
             self.resetAutoSeekTimer(None)
             self.doSeek()
-            return
+            return True
 
         self.updateCurrent(update_position_control=not self._seeking and not self._applyingSeek)
 

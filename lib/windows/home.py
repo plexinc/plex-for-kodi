@@ -354,6 +354,47 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.hookSignals()
         util.CRON.registerReceiver(self)
 
+    def onReInit(self):
+        if self.lastFocusID:
+            # try focusing the last focused ID. if that's a hub and it's empty (=not focusable), try focusing the
+            # next best hub
+            if 399 < self.lastFocusID < 500:
+                hubControlIndex = self.lastFocusID - 400
+
+                if hubControlIndex in self.hubFocusIndexes and self.hubControls[hubControlIndex]:
+                    util.DEBUG_LOG("Re-focusing %i" % self.lastFocusID)
+                    self.setFocusId(self.lastFocusID)
+                else:
+                    util.DEBUG_LOG("Focus requested on %i, which can't focus. Trying next hub" % self.lastFocusID)
+                    self.focusFirstValidHub(hubControlIndex)
+
+            else:
+                self.setFocusId(self.lastFocusID)
+
+    def focusFirstValidHub(self, startIndex=None):
+        indices = self.hubFocusIndexes
+        if startIndex is not None:
+            try:
+                indices = self.hubFocusIndexes[self.hubFocusIndexes.index(startIndex):]
+                util.DEBUG_LOG("Trying to focus the next best hub after: %i" % (400 + startIndex))
+            except IndexError:
+                pass
+
+        for index in indices:
+            if self.hubControls[index]:
+                util.DEBUG_LOG("Focusing hub: %i" % (400 + index))
+                self.setFocusId(400+index)
+                return
+
+        if startIndex is not None:
+            util.DEBUG_LOG("Tried all possible hubs after %i. Continuing from the top" % (400 + startIndex))
+        else:
+            util.DEBUG_LOG("Can't find any suitable hub to focus. This is bad.")
+            self.setFocusId(self.SECTION_LIST_ID)
+            return
+
+        return self.focusFirstValidHub()
+
     def hookSignals(self):
         plexapp.SERVERMANAGER.on('new:server', self.onNewServer)
         plexapp.SERVERMANAGER.on('remove:server', self.onRemoveServer)

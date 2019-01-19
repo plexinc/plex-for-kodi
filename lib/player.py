@@ -776,11 +776,18 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         xbmc.Player.play(self, *args, **kwargs)
 
     def playBackgroundMusic(self, source, volume, rating_key, *args, **kwargs):
-        if self.isPlaying() and not self.lastPlayWasBGM:
-            return
+        if self.isPlaying():
+            if not self.lastPlayWasBGM:
+                return
 
-        elif self.isPlaying() and self.lastPlayWasBGM and self.handler.currentlyPlaying == rating_key:
-            return
+            else:
+                # don't re-queue the currently playing theme
+                if self.handler.currentlyPlaying == rating_key:
+                    return
+
+                # cancel any currently playing theme before starting the new one
+                else:
+                    self.stopAndWait()
 
         if self.BGMTask and self.BGMTask.isValid():
             self.BGMTask.cancel()

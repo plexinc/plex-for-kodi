@@ -646,7 +646,6 @@ class BGMPlayerHandler(BasePlayerHandler):
         util.setGlobalProperty('theme_playing', '1')
 
         self.oldVolume = util.rpc.Application.GetProperties(properties=["volume"])["volume"]
-        util.DEBUG_LOG("THIS IS OLD VOLUME: %s" % self.oldVolume)
 
     def onPlayBackStarted(self):
         util.DEBUG_LOG("BGM: playing theme for %s" % self.currentlyPlaying)

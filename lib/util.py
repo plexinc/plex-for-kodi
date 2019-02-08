@@ -549,6 +549,7 @@ def getProgressImage(obj):
         return ''
     pct = int((obj.viewOffset.asInt() / obj.duration.asFloat()) * 100)
     pct = pct - pct % 2  # Round to even number - we have even numbered progress only
+    pct = max(pct, 2)
     return 'script.plex/progress/{0}.png'.format(pct)
 
 

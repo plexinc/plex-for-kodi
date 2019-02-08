@@ -80,9 +80,14 @@ class MCLPaginator(object):
         amount = self.pageSize
 
         if self._direction == "left":
-            # move the slice to the left by :amount: based on :offset:
-            amount = min(offset, self.pageSize)
-            offset -= amount
+            if offset <= self.initialPageSize:
+                # return to initial page
+                offset = 0
+                amount = self.initialPageSize
+            else:
+                # move the slice to the left by :amount: based on :offset:
+                amount = min(offset, self.pageSize)
+                offset -= amount
 
             # avoid short pages on the left end
             if 0 < offset < self.orphans:

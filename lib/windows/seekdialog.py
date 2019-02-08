@@ -81,6 +81,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.offset = 0
         self.selectedOffset = 0
         self.bigSeekOffset = 0
+        self.bigSeekChanged = False
         self.title = ''
         self.title2 = ''
         self.fromSeek = 0
@@ -138,6 +139,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._seekingWithoutOSD = False
         self._delayedSeekTimeout = None
         self._applyingSeek = False
+        self.bigSeekChanged = False
         self.selectedOffset = None
         self.setProperty('button.seek', '')
         self.resetAutoSeekTimer(None)
@@ -264,9 +266,9 @@ class SeekDialog(kodigui.BaseDialog):
                     xbmc.executebuiltin('Action(CodecInfo)')
             elif controlID == self.BIG_SEEK_LIST_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_BIG_STEP_FORWARD):
-                    return self.updateBigSeek()
+                    return self.updateBigSeek(changed=True)
                 elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_BIG_STEP_BACK):
-                    return self.updateBigSeek()
+                    return self.updateBigSeek(changed=True)
 
             if action.getButtonCode() == 61516:
                 builtin.Action('CycleSubtitle')
@@ -327,9 +329,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.lastFocusID = controlID
         if controlID == self.MAIN_BUTTON_ID:
             self.selectedOffset = self.trueOffset()
-            if lastFocusID == self.BIG_SEEK_LIST_ID:
+            if lastFocusID == self.BIG_SEEK_LIST_ID and self.bigSeekChanged:
                 xbmc.sleep(100)
-                self.updateBigSeek()
+                self.updateBigSeek(changed=True)
                 self.updateProgress(set_to_current=False)
                 if self.useAutoSeek:
                     self.delayedSeek()
@@ -340,7 +342,7 @@ class SeekDialog(kodigui.BaseDialog):
 
         elif controlID == self.BIG_SEEK_LIST_ID:
             self.setBigSeekShift()
-            self.updateBigSeek()
+            self.updateBigSeek(changed=False)
         elif xbmc.getCondVisibility('ControlGroup(400).HasFocus(0)'):
             self.selectedOffset = self.trueOffset()
             self.updateProgress()
@@ -613,12 +615,15 @@ class SeekDialog(kodigui.BaseDialog):
         self._seeking = True
         # xbmc.sleep(100)
 
-    def updateBigSeek(self):
-        self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
-        self.updateProgress(set_to_current=False)
+    def updateBigSeek(self, changed=False):
+        if changed:
+            self.bigSeekChanged = True
+            self.selectedOffset = self.bigSeekControl.getSelectedItem().dataSource + self.bigSeekOffset
+            self.updateProgress(set_to_current=False)
         self.resetSkipSteps()
 
     def bigSeekSelected(self):
+        self.bigSeekChanged = True
         self.setFocusId(self.MAIN_BUTTON_ID)
 
     def updateProperties(self, **kwargs):

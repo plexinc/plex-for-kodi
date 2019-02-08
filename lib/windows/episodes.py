@@ -779,6 +779,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if not mli or mli.getProperty("is.boundary"):
             return
 
+        lastItem = self.lastItem
+
+        if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
+            items = self.episodesPaginator.wrap(mli, lastItem, action)
+            mli = self.episodeListControl.getSelectedItem()
+            if items:
+                self.reloadItems(items)
+                return True
+
         if mli != self.lastItem:
             self.lastItem = mli
             self.setProgress(mli)

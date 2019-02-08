@@ -1,5 +1,6 @@
 # coding=utf-8
 import kodigui
+import xbmcgui
 from lib import util
 
 
@@ -20,6 +21,7 @@ class MCLPaginator(object):
 
     _direction = None
     _currentAmount = None
+    _lastAmount = None
     _boundaryHit = False
 
     def __init__(self, control, parent_window, page_size=None, orphans=None, leaf_count=None):
@@ -34,6 +36,7 @@ class MCLPaginator(object):
     def reset(self):
         self.offset = 0
         self._currentAmount = None
+        self._lastAmount = None
         self._boundaryHit = False
         self._direction = None
 
@@ -77,9 +80,14 @@ class MCLPaginator(object):
         amount = self.pageSize
 
         if self._direction == "left":
-            # move the slice to the left by :amount: based on :offset:
-            amount = min(offset, self.pageSize)
-            offset -= amount
+            if offset <= self.initialPageSize:
+                # return to initial page
+                offset = 0
+                amount = self.initialPageSize
+            else:
+                # move the slice to the left by :amount: based on :offset:
+                amount = min(offset, self.pageSize)
+                offset -= amount
 
             # avoid short pages on the left end
             if 0 < offset < self.orphans:
@@ -95,6 +103,7 @@ class MCLPaginator(object):
 
         self.offset = offset
         data = self.getData(offset, amount)
+        self._lastAmount = self._currentAmount
         self._currentAmount = len(data)
         return data
 
@@ -105,6 +114,7 @@ class MCLPaginator(object):
             amount = self.initialPageSize + self.orphans
 
         data = self.getData(self.offset, amount)
+        self._lastAmount = self._currentAmount
         self._currentAmount = len(data)
         return data
 
@@ -167,19 +177,57 @@ class MCLPaginator(object):
                 self.control.selectItem(1)
                 return True
 
-    def paginate(self):
+    def paginate(self, force_page=False):
         """
         Triggers the pagination for the currently selected view. In case of a hit boundary, show the next or previous
         page, otherwise show the initial page.
         :return:
         """
-        if self._boundaryHit:
+        if self._boundaryHit or force_page:
             items = self.nextPage
 
         else:
             items = self.initialPage
 
         return self.populate(items)
+
+    @property
+    def canSimpleWrap(self):
+        return self.initialPageSize + self.orphans >= self.leafCount
+
+    def wrap(self, mli, last_mli, action):
+        """
+        Wraps around the list if the first or last item is currently selected and the user requests to round robin.
+        :param mli: current item
+        :param last_mli: previous item
+        :param action: xbmcgui action
+        :return:
+        """
+
+        index = int(mli.getProperty("index"))
+        last_mli_index = int(last_mli.getProperty("index"))
+
+        # _lastAmount is used to immediately wrap again after a wrap has happened; potentially an issue
+        if last_mli_index not in (0, self._currentAmount - 1, (self._lastAmount - 1) if self._lastAmount else None):
+            return
+
+        items = None
+        if action == xbmcgui.ACTION_MOVE_LEFT and index == 0:
+            if not self.canSimpleWrap:
+                self.offset = self.leafCount - self.orphans - self.pageSize
+                self._direction = "right"
+                items = self.paginate(force_page=True)
+                self.control.selectItem(self._currentAmount)
+            else:
+                self.control.selectItem(self.leafCount - 1)
+        elif action == xbmcgui.ACTION_MOVE_RIGHT and index == self._currentAmount - 1:
+            if not self.canSimpleWrap:
+                self.offset = 0
+                self._direction = "left"
+                items = self.paginate()
+            self.control.selectItem(0)
+        if items:
+            return items
 
 
 class BaseRelatedPaginator(MCLPaginator):

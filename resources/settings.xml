@@ -10,6 +10,7 @@
   </category>
   <category label="32464">
     <setting id="auto_seek" type="bool" label="32466" default="true" />
+    <setting id="auto_seek_delay" subsetting="true" enable="eq(-1,true)" type="slider" label="32487" default="0" range="0,.1,5" option="float" />
     <setting id="kodi_skip_stepping" type="bool" label="32465" default="false" />
     <setting id="dynamic_timeline_seek" type="bool" label="32471" default="false" />
   </category>

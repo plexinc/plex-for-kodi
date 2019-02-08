@@ -467,6 +467,7 @@ class AdvancedSettings(object):
         ("debug", False),
         ("kodi_skip_stepping", False),
         ("auto_seek", True),
+        ("auto_seek_delay", 0),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
     )

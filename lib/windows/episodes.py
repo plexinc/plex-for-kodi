@@ -759,9 +759,14 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if not mli or mli.getProperty("is.boundary"):
             return
 
+        lastItem = self.lastItem
+
         if mli != self.lastItem:
             self.lastItem = mli
             self.setProgress(mli)
+
+        if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
+            self.episodesPaginator.wrap(mli, lastItem, action)
 
         if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_PAGE_UP):
             if mli.getProperty('is.header'):

@@ -1,5 +1,6 @@
 # coding=utf-8
 import kodigui
+import xbmcgui
 from lib import util
 
 
@@ -180,6 +181,33 @@ class MCLPaginator(object):
             items = self.initialPage
 
         return self.populate(items)
+
+    @property
+    def canWrap(self):
+        return self.initialPageSize + self.orphans >= self.leafCount
+
+    def wrap(self, mli, last_mli, action):
+        """
+        Wraps around the list if the first or last item is currently selected and the user requests to round robin.
+        fixme: This currently only works in non-paginated views
+        :param mli: current item
+        :param last_mli: previous item
+        :param action: xbmcgui action
+        :return: bool
+        """
+        if not self.canWrap:
+            return
+
+        index = int(mli.getProperty("index"))
+        last_mli_index = int(last_mli.getProperty("index"))
+        if last_mli_index not in (0, self.leafCount - 1):
+            return
+
+        if action == xbmcgui.ACTION_MOVE_LEFT and index == 0:
+            self.control.selectItem(self.leafCount - 1)
+        elif action == xbmcgui.ACTION_MOVE_RIGHT and index == self.leafCount - 1:
+            self.control.selectItem(0)
+        return True
 
 
 class BaseRelatedPaginator(MCLPaginator):

@@ -535,6 +535,7 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
 def play(video=None, play_queue=None, resume=False):
     w = VideoPlayerWindow.open(video=video, play_queue=play_queue, resume=resume)
+    player.PLAYER.reset()
     player.PLAYER.off('session.ended', w.sessionEnded)
     player.PLAYER.off('post.play', w.postPlay)
     player.PLAYER.off('change.background', w.changeBackground)

@@ -15,6 +15,7 @@ from kodijsonrpc import rpc
 import xbmc
 import xbmcgui
 import xbmcaddon
+import colors
 
 from plexnet import signalsmixin
 
@@ -469,6 +470,9 @@ class AdvancedSettings(object):
         ("auto_seek", True),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
+        ("dynamic_backgrounds", False),
+        ("background_art_blur_amount", 128),
+        ("background_art_opacity_amount", 60),
     )
 
     def __init__(self):
@@ -546,6 +550,15 @@ def getProgressImage(obj):
     pct = int((obj.viewOffset.asInt() / obj.duration.asFloat()) * 100)
     pct = pct - pct % 2  # Round to even number - we have even numbered progress only
     return 'script.plex/progress/{0}.png'.format(pct)
+
+
+def backgroundFromArt(art, width=1920, height=1080, background=colors.noAlpha.Background):
+    return art.asTranscodedImageURL(
+        width, height,
+        blur=advancedSettings.backgroundArtBlurAmount,
+        opacity=advancedSettings.backgroundArtOpacityAmount,
+        background=background
+    )
 
 
 def trackIsPlaying(track):

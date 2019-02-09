@@ -966,6 +966,18 @@ msgctxt "#32467"
 msgid "User Interface"
 msgstr "Benutzeroberfläche"
 
+msgctxt "#32468"
+msgid "Show dynamic background art"
+msgstr "Dynamische Hintergrundbilder aktivieren"
+
+msgctxt "#32469"
+msgid "Background art blur amount"
+msgstr "Unschärfe der Hintergrundbilder"
+
+msgctxt "#32470"
+msgid "Background art opacity"
+msgstr "Deckkraft der Hintergrundbilder"
+
 msgctxt "#32471"
 msgid "Use Plex/Kodi steps for timeline"
 msgstr "Plex/Kodi-Skip-Schritte für die Zeitachse verwenden"

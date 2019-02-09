@@ -20,6 +20,7 @@ from lib import util
 from lib import metadata
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
 
 VIDEO_RELOAD_KW = dict(includeRelated=1, includeRelatedCount=10)
 
@@ -447,7 +448,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.fillRoles(hasPrev)
 
     def setInfo(self):
-        self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('background', util.backgroundFromArt(self.video.art, width=self.width, height=self.height))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
         self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))

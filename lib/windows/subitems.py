@@ -22,6 +22,7 @@ import windowutils
 import search
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
 
 
 class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
@@ -105,7 +106,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
-            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt(self.mediaItem.art, width=self.width, height=self.height)
         )
         self.setProperty('duration', util.durationToText(self.mediaItem.fixedDuration()))
         self.setProperty('info', '')
@@ -607,7 +608,7 @@ class ArtistWindow(ShowWindow):
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
-            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt(self.mediaItem.art, width=self.width, height=self.height)
         )
 
     @busy.dialog()

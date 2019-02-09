@@ -15,5 +15,8 @@
   </category>
   <category label="32467">
     <setting id="fast_back" type="bool" label="32485" default="false" />
+    <setting id="dynamic_backgrounds" type="bool" label="32468" default="false" />
+    <setting id="background_art_blur_amount" type="slider" label="32469" default="128" range="0,256" />
+    <setting id="background_art_opacity_amount" type="slider" label="32470" default="60" range="0,100" />
   </category>
 </settings>

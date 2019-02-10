@@ -10,6 +10,10 @@ import playersettings
 import dropdown
 
 from lib import util
+from plexnet.videosession import VideoSessionInfo, ATTRIBUTE_TYPES as SESSION_ATTRIBUTE_TYPES
+from plexnet.exceptions import ServerNotOwned, NotFound
+from plexnet.signalsmixin import SignalsMixin
+
 from lib.kodijsonrpc import builtin
 
 from lib.util import T
@@ -90,7 +94,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.autoSeekTimeout = None
         self.hasDialog = False
         self.lastFocusID = None
-        self.playlistDialogVisible = False
+        self._playlistDialogVisible = False
         self._seeking = False
         self._applyingSeek = False
         self._seekingWithoutOSD = False
@@ -103,9 +107,12 @@ class SeekDialog(kodigui.BaseDialog):
         self._atSkipStep = -1
         self._lastSkipDirection = None
         self._forcedLastSkipAmount = None
+        self.lastTimelineResponse = None
         self.skipSteps = self.SKIP_STEPS
         self.useAutoSeek = util.advancedSettings.autoSeek
         self.useDynamicStepsForTimeline = util.advancedSettings.dynamicTimelineSeek
+
+        self.player.video.server.on("np:timelineResponse", self.timelineResponseCallback)
 
         if util.kodiSkipSteps and util.advancedSettings.kodiSkipStepping:
             self.skipSteps = {"negative": [], "positive": []}
@@ -125,6 +132,10 @@ class SeekDialog(kodigui.BaseDialog):
     @property
     def player(self):
         return self.handler.player
+
+    def timelineResponseCallback(self, **kwargs):
+        response = kwargs.get("response")
+        self.lastTimelineResponse = response.getBodyXml()
 
     def resetTimeout(self):
         self.timeout = time.time() + self._hideDelay
@@ -176,6 +187,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.update()
 
     def onReInit(self):
+        self.lastTimelineResponse = None
         self.resetTimeout()
         self.resetSeeking()
         self.updateProperties()
@@ -253,8 +265,11 @@ class SeekDialog(kodigui.BaseDialog):
                     self.showOSD()
                     self.setFocusId(self.BIG_SEEK_LIST_ID)
                 elif action.getButtonCode() == 61519:
-                    # xbmc.executebuiltin('Action(PlayerProcessInfo)')
-                    xbmc.executebuiltin('Action(CodecInfo)')
+                    if self.getProperty('show.PPI'):
+                        self.hidePPIDialog()
+                    else:
+                        self.showPPIDialog()
+
             elif controlID == self.BIG_SEEK_LIST_ID:
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_BIG_STEP_FORWARD):
                     return self.updateBigSeek()
@@ -391,6 +406,71 @@ class SeekDialog(kodigui.BaseDialog):
                     util.garbageCollect()
         finally:
             kodigui.BaseDialog.doClose(self)
+
+    def showPPIDialog(self):
+        for attrib in SESSION_ATTRIBUTE_TYPES.values():
+            self.setProperty('ppi.%s' % attrib.label, "")
+
+        self.setProperty('show.PPI', '1')
+        self.setProperty('ppi.Status', 'Loading ...')
+
+        def getVideoSession(currentVideo):
+            return currentVideo.server.findVideoSession(currentVideo.settings.getGlobal("clientIdentifier"),
+                                                        currentVideo.ratingKey)
+
+        while not self.player.started:
+            util.MONITOR.waitForAbort(0.1)
+
+        info = None
+        currentVideo = self.player.video
+        try:
+            videoSession = None
+            elapsed = 0
+            while not videoSession:
+                if elapsed > 10:
+                    raise NotFound
+
+                videoSession = getVideoSession(currentVideo)
+                if videoSession:
+                    break
+
+                util.MONITOR.waitForAbort(1)
+                elapsed += 1
+
+            # fill attributes
+            info = VideoSessionInfo(videoSession, currentVideo)
+
+        except ServerNotOwned:
+            # timeline response data fallback
+            elapsed = 0
+            try:
+                while not self.lastTimelineResponse:
+                    if elapsed > 10:
+                        raise NotFound
+
+                    util.MONITOR.waitForAbort(0.1)
+                    elapsed += 0.1
+
+                info = VideoSessionInfo(None, currentVideo, incompleteSessionData=self.lastTimelineResponse)
+            except NotFound:
+                self.setProperty('ppi.Status', 'Info not available (data not found)')
+
+            except:
+                util.ERROR()
+
+        except NotFound:
+            self.setProperty('ppi.Status', 'Info not available (session not found)')
+
+        except:
+            util.ERROR()
+
+        if info:
+            self.setProperty('ppi.Status', '')
+            for attrib in info.attributes.values():
+                self.setProperty('ppi.%s' % attrib.label, attrib.value)
+
+    def hidePPIDialog(self):
+        self.setProperty('show.PPI', '')
 
     def resetSkipSteps(self):
         self._forcedLastSkipAmount = None
@@ -584,12 +664,15 @@ class SeekDialog(kodigui.BaseDialog):
 
     def showSettings(self):
         with self.propertyContext('settings.visible'):
-            playersettings.showDialog(self.player.video, via_osd=True)
+            playersettings.showDialog(self.player.video, via_osd=True, parent=self)
 
         changed = self.videoSettingsHaveChanged()
         if changed == 'SUBTITLE':
             self.handler.setSubtitles()
         elif changed:
+            if self.getProperty("show.PPI"):
+                self.hidePPIDialog()
+
             self.doSeek(self.trueOffset(), settings_changed=True)
 
     def setBigSeekShift(self):
@@ -865,6 +948,15 @@ class SeekDialog(kodigui.BaseDialog):
             return
 
         self.updateCurrent(update_position_control=not self._seeking and not self._applyingSeek)
+
+    @property
+    def playlistDialogVisible(self):
+        return self._playlistDialogVisible
+
+    @playlistDialogVisible.setter
+    def playlistDialogVisible(self, value):
+        self._playlistDialogVisible = value
+        self.setProperty('playlist.visible', '1' if value else '')
 
     def showPlaylistDialog(self):
         if not self.playlistDialog:

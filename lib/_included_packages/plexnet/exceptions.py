@@ -16,3 +16,7 @@ class Unsupported(Exception):
 
 class Unauthorized(Exception):
     pass
+
+
+class ServerNotOwned(Exception):
+    pass

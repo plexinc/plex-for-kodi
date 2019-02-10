@@ -179,8 +179,166 @@
                 </control>
             </control>
         </control>
+        <control type="group" id="803">
+            <bottom>0</bottom>
+            <height>350</height>
+            <visible>!String.IsEmpty(Window.Property(show.PPI)) + String.IsEmpty(Window.Property(settings.visible)) + String.IsEmpty(Window.Property(playlist.visible))</visible>
+            <animation effect="fade" start="0" end="100" time="300">Visible</animation>
+	        <animation effect="fade" start="100" end="0" time="200">Hidden</animation>
+            <control type="image">
+                <left>10</left>
+                <top>-220</top>
+                <right>10</right>
+                <height>420</height>
+                <texture border="40">buttons/dialogbutton-nofo.png</texture>
+            </control>
+            <control type="grouplist">
+                <left>52</left>
+                <top>-184</top>
+                <width>1786</width>
+                <height>350</height>
+                <orientation>horizontal</orientation>
+                <itemgap>10</itemgap>
+                <control type="grouplist">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>793</width>
+                    <control type="label">
+                        <width>793</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>$INFO[Player.Process(videodecoder),[COLOR FFE5A00D]$LOCALIZE[31139]:[/COLOR] ]$VAR[VideoHWDecoder, (,)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo</visible>
+                    </control>
+                    <control type="label">
+                        <width>793</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>$INFO[Player.Process(pixformat),[COLOR FFE5A00D]$LOCALIZE[31140]:[/COLOR] ]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo</visible>
+                    </control>
+                    <control type="label">
+                        <width>793</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>$INFO[Player.Process(deintmethod),[COLOR FFE5A00D]$LOCALIZE[16038]:[/COLOR] ]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo</visible>
+                    </control>
+                    <control type="label">
+                        <width>793</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>$INFO[Player.Process(videowidth),[COLOR FFE5A00D]$LOCALIZE[38031]:[/COLOR] ,x]$INFO[Player.Process(videoheight),, px]$INFO[Player.Process(videodar),$COMMA , AR]$INFO[Player.Process(videofps),$COMMA , FPS]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo</visible>
+                    </control>
+                    <control type="textbox">
+                        <width>793</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <autoscroll delay="1000" time="1000" repeat="2000"></autoscroll>
+                        <label>[COLOR FFE5A00D]$LOCALIZE[460]:[/COLOR] $INFO[Player.Process(audiochannels),,$COMMA ]$INFO[Player.Process(audiodecoder)]$INFO[Player.Process(audiobitspersample),$COMMA , bits]$INFO[Player.Process(audiosamplerate),$COMMA , Hz]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                    </control>
+                    <control type="label">
+                        <width>793</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>$INFO[System.Memory(used.percent),[COLOR FFE5A00D]$LOCALIZE[31030]:[/COLOR] ,]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                    </control>
+                </control>
+                <control type="grouplist">
+                    <left>0</left>
+                    <top>0</top>
+                    <width>993</width>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>$INFO[Window.Property(ppi.Status)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Status))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>[COLOR FFE5A00D]Mode:[/COLOR] $INFO[Window.Property(ppi.Mode)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Mode))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>[COLOR FFE5A00D]Container:[/COLOR] $INFO[Window.Property(ppi.Container)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Container))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>[COLOR FFE5A00D]Video:[/COLOR] $INFO[Window.Property(ppi.Video)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Video))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>[COLOR FFE5A00D]Audio:[/COLOR] $INFO[Window.Property(ppi.Audio)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Audio))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>[COLOR FFE5A00D]Subtitle:[/COLOR] $INFO[Window.Property(ppi.Subtitles)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.Subtitles))</visible>
+                    </control>
+                    <control type="label">
+                        <width>893</width>
+                        <height>50</height>
+                        <aligny>bottom</aligny>
+                        <label>[COLOR FFE5A00D]Server:[/COLOR] $INFO[Window.Property(ppi.User)]</label>
+                        <font>font14</font>
+                        <shadowcolor>black</shadowcolor>
+                        <visible>Player.HasVideo + !String.IsEmpty(Window.Property(ppi.User))</visible>
+                    </control>
+                </control>
+            </control>
+            <control type="label">
+                <left>52</left>
+                <top>120</top>
+                <width>1786</width>
+                <height>50</height>
+                <aligny>bottom</aligny>
+                <label>$INFO[System.CpuUsage,[COLOR FFE5A00D]$LOCALIZE[13271][/COLOR] ]</label>
+                <font>font14</font>
+                <shadowcolor>black</shadowcolor>
+            </control>
+		</control>
         <control type="group" id="801">
-            <visible>!String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsActive(selectdialog)</visible>
+            <visible>!String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(playerprocessinfo) + !Window.IsActive(selectdialog)</visible>
             <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
             <control type="group" id="300">
                 <visible>!String.IsEmpty(Window.Property(has.bif)) + [Control.HasFocus(100) | Control.HasFocus(501) | !String.IsEmpty(Window.Property(button.seek))]</visible>

@@ -175,6 +175,14 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             plexapp.MANAGER.refreshResources(True)
             return None
 
+        # add offset/limit
+        offset = kwargs.pop("offset", None)
+        limit = kwargs.pop("limit", None)
+        if offset is not None:
+            url = http.addUrlParam(url, "X-Plex-Container-Start=%s" % offset)
+        if limit is not None:
+            url = http.addUrlParam(url, "X-Plex-Container-Size=%s" % limit)
+
         util.LOG('{0} {1}'.format(method.__name__.upper(), re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', url)))
         try:
             response = method(url, **kwargs)

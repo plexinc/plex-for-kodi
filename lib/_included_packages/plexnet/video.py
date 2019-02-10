@@ -177,7 +177,41 @@ class Video(media.MediaItem):
         return self.media()[0].isAccessible()
 
 
-class PlayableVideo(Video):
+class RelatedMixin(object):
+    _relatedCount = None
+
+    @property
+    def relatedCount(self):
+        if self._relatedCount is None:
+            self._relatedCount = self.getRelated(0, 0).totalSize
+
+        return self._relatedCount
+
+    @property
+    def related(self):
+        return self.getRelated(0, 8)
+
+    def getRelated(self, offset=None, limit=None, _max=36):
+        path = '/library/metadata/%s/similar' % self.ratingKey
+        return plexobjects.listItems(self.server, path, offset=offset, limit=limit, params={"count": _max})
+
+
+class SectionOnDeckMixin(object):
+    _sectionOnDeckCount = None
+
+    def sectionOnDeck(self, offset=None, limit=None):
+        query = '/library/sections/{0}/onDeck'.format(self.getLibrarySectionId())
+        return plexobjects.listItems(self.server, query, offset=offset, limit=limit)
+
+    @property
+    def sectionOnDeckCount(self):
+        if self._sectionOnDeckCount is None:
+            self._sectionOnDeckCount = self.sectionOnDeck(0, 0).totalSize
+
+        return self._sectionOnDeckCount
+
+
+class PlayableVideo(Video, RelatedMixin):
     TYPE = None
 
     def _setData(self, data):
@@ -221,7 +255,7 @@ class Movie(PlayableVideo):
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
-            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
+            #self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
         else:
             if data.find(media.Media.TYPE) is not None:
                 self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
@@ -275,7 +309,7 @@ class Movie(PlayableVideo):
 
 
 @plexobjects.registerLibType
-class Show(Video):
+class Show(Video, RelatedMixin, SectionOnDeckMixin):
     TYPE = 'show'
 
     def _setData(self, data):
@@ -283,7 +317,7 @@ class Show(Video):
         if self.isFullObject():
             self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
-            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
+            #self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
 
     @property
@@ -322,10 +356,6 @@ class Show(Video):
     def refresh(self):
         self.server.query('/library/metadata/%s/refresh' % self.ratingKey)
 
-    def sectionOnDeck(self):
-        query = '/library/sections/{0}/onDeck'.format(self.getLibrarySectionId())
-        return plexobjects.listItems(self.server, query)
-
 
 @plexobjects.registerLibType
 class Season(Video):
@@ -348,9 +378,9 @@ class Season(Video):
     def isWatched(self):
         return self.viewedLeafCount == self.leafCount
 
-    def episodes(self, watched=None):
+    def episodes(self, watched=None, offset=None, limit=None):
         path = self.key
-        return plexobjects.listItems(self.server, path, watched=watched)
+        return plexobjects.listItems(self.server, path, watched=watched, offset=offset, limit=limit)
 
     def episode(self, title):
         path = self.key
@@ -370,7 +400,7 @@ class Season(Video):
 
 
 @plexobjects.registerLibType
-class Episode(PlayableVideo):
+class Episode(PlayableVideo, SectionOnDeckMixin):
     TYPE = 'episode'
 
     def init(self, data):
@@ -448,10 +478,8 @@ class Episode(PlayableVideo):
     def roles(self):
         return self.show().roles
 
-    @property
-    def related(self):
-        self.show().reload(_soft=True, includeRelated=1, includeRelatedCount=10)
-        return self.show().related
+    def getRelated(self, offset=None, limit=None, _max=36):
+        return self.show().getRelated(offset=offset, limit=limit, _max=_max)
 
 
 @plexobjects.registerLibType

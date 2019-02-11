@@ -52,6 +52,7 @@ class PhotoDirectory(media.MediaItem):
 
 
 @plexobjects.registerLibFactory('photo')
+@plexobjects.registerLibFactory('image')
 def PhotoFactory(data, initpath=None, server=None, container=None):
     if data.tag == 'Photo':
         return Photo(data, initpath=initpath, server=server, container=container)

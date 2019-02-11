@@ -978,3 +978,11 @@ msgstr ""
 msgctxt "#32487"
 msgid "Seek Delay"
 msgstr ""
+
+msgctxt "#32488"
+msgid "Screensaver"
+msgstr ""
+
+msgctxt "#32489"
+msgid "Quiz Mode"
+msgstr ""

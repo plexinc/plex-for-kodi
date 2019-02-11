@@ -470,6 +470,7 @@ class AdvancedSettings(object):
         ("auto_seek_delay", 0),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
+        ("screensaver_quiz", False),
     )
 
     def __init__(self):

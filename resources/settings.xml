@@ -16,4 +16,7 @@
   <category label="32467">
     <setting id="fast_back" type="bool" label="32485" default="false" />
   </category>
+  <category label="32488">
+    <setting id="screensaver_quiz" type="bool" label="32489" default="false" />
+  </category>
 </settings>

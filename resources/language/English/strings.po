@@ -975,6 +975,13 @@ msgctxt "#32485"
 msgid "Go back instantly with the previous menu action in scrolled views"
 msgstr ""
 
+msgctxt "#32488"
+msgid "Screensaver"
+msgstr ""
+
+msgctxt "#32489"
+msgid "Quiz Mode"
+msgstr ""
 msgctxt "#32492"
 msgid "Kodi Subtitle Settings"
 msgstr ""

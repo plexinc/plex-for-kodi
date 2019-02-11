@@ -13,6 +13,7 @@
     <extension point="xbmc.python.pluginsource" library="plugin.py">
         <provides>executable</provides>
     </extension>
+	<extension point="xbmc.ui.screensaver" library="screensaver.py"/>
     <extension point="xbmc.service" library="service.py" start="startup"></extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plex for Kodi</summary>

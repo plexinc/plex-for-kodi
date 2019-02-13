@@ -509,6 +509,9 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         elif controlID != 250 and xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(100).HasFocus(0)'):
             util.setGlobalBoolProperty('off.sections', '1')
 
+        if player.PLAYER.bgmPlaying:
+            player.PLAYER.stopAndWait()
+
     def confirmExit(self):
         button = optionsdialog.show(
             T(32334, 'Confirm Exit'),

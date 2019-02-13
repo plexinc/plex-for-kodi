@@ -48,10 +48,25 @@ class BasicSetting(Setting):
         return self
 
 
-class QualitySetting(BasicSetting):
+class ListSetting(BasicSetting):
     type = 'LIST'
+    options = ()
 
-    QUALITY = (
+    def translate(self, val):
+        return self.options[len(self.options) - 1 - val]
+
+    def optionLabels(self):
+        return self.options
+
+    def optionIndex(self):
+        return len(self.options) - 1 - self.get()
+
+    def set(self, val):
+        BasicSetting.set(self, len(self.options) - 1 - val)
+
+
+class QualitySetting(ListSetting):
+    options = (
         T(32001),
         T(32002),
         T(32003),
@@ -68,17 +83,11 @@ class QualitySetting(BasicSetting):
         T(32014),
     )
 
-    def translate(self, val):
-        return self.QUALITY[13 - val]
 
-    def optionLabels(self):
-        return self.QUALITY
-
-    def optionIndex(self):
-        return 13 - self.get()
-
-    def set(self, val):
-        BasicSetting.set(self, 13 - val)
+class ThemeMusicSetting(ListSetting):
+    options = [
+        T(32481),
+    ] + [T(32482) % {"percentage": 10+i} for i in range(0, 100, 10)]
 
 
 class BoolSetting(BasicSetting):
@@ -190,6 +199,7 @@ class Settings(object):
                         "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
                     )
                 ),
+                ThemeMusicSetting('theme_music', T(32480, 'Theme music'), 11),
             )
         ),
         'audio': (

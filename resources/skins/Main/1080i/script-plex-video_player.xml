@@ -1019,11 +1019,11 @@
                     </control>
                 </control>
                 <control type="group">
-                    <visible>Player.HasAudio</visible>
+                    <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
                     <posx>438</posx>
                     <posy>0</posy>
                     <control type="button" id="204">
-                        <visible>Player.HasAudio</visible>
+                        <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
                         <posx>-10</posx>
                         <posy>38</posy>
                         <width>260</width>

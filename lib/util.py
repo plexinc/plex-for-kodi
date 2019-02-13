@@ -89,7 +89,7 @@ class AdvancedSettings(object):
         ("auto_seek", True),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
-        ("screensaver_quiz", False)
+        ("screensaver_quiz", False),
     )
 
     def __init__(self):
@@ -394,17 +394,16 @@ class CronReceiver():
 
 class Cron(threading.Thread):
     def __init__(self, interval):
+        threading.Thread.__init__(self, name='CRON')
+        self.stopped = threading.Event()
+        self.force = threading.Event()
+        self.interval = interval
+        self._lastHalfHour = self._getHalfHour()
+        self._receivers = []
+
         global CRON
 
-        if CRON == None:
-            threading.Thread.__init__(self, name='CRON')
-            self.stopped = threading.Event()
-            self.force = threading.Event()
-            self.interval = interval
-            self._lastHalfHour = self._getHalfHour()
-            self._receivers = []
-    
-            CRON = self
+        CRON = self
 
     def __enter__(self):
         self.start()

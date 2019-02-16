@@ -704,10 +704,11 @@ class SeekDialog(kodigui.BaseDialog):
         self._seekingWithoutOSD = without_osd
         lastSelectedOffset = self.selectedOffset
         self.selectedOffset += offset
-        if self.selectedOffset > self.duration:
-            # offset = +100, at = 80000, duration = 80005, realoffset = 5
-            self._forcedLastSkipAmount = self.duration - lastSelectedOffset
-            self.selectedOffset = self.duration
+        # Don't skip past 5 seconds from end
+        if self.selectedOffset > self.duration - 5:
+            # offset = +100, at = 80000, duration = 80007, realoffset = 2
+            self._forcedLastSkipAmount = self.duration - 5 - lastSelectedOffset
+            self.selectedOffset = self.duration - 5
         elif self.selectedOffset < 0:
             # offset = -100, at = 5, realat = -95, realoffset = -100 - -95 = -5
             self._forcedLastSkipAmount = offset - self.selectedOffset

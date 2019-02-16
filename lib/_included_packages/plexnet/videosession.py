@@ -68,11 +68,11 @@ class MediaDetails:
                         reference_data["part"] = part
 
                         for stream in part.streams:
-                            if stream.id == mediaChoice.videoStream.id:
+                            if mediaChoice.videoStream != None and stream.id == mediaChoice.videoStream.id:
                                 reference_data["video_stream"] = stream
-                            elif stream.id == mediaChoice.audioStream.id:
+                            elif mediaChoice.audioStream != None and stream.id == mediaChoice.audioStream.id:
                                 reference_data["audio_stream"] = stream
-                            elif stream.id == mediaChoice.subtitleStream.id:
+                            elif mediaChoice.subtitleStream != None and stream.id == mediaChoice.subtitleStream.id:
                                 reference_data["subtitle_stream"] = stream
 
         final_data = {

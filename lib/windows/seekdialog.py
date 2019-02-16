@@ -445,7 +445,8 @@ class SeekDialog(kodigui.BaseDialog):
     def skipForward(self, without_osd=False):
         step = self.determineSkipStep("positive")
         if step is not None:
-            self.seekByOffset(step, without_osd=without_osd)
+            if not self.seekByOffset(step, without_osd=without_osd):
+                return
 
         if self.useAutoSeek:
             self.delayedSeek()
@@ -455,7 +456,8 @@ class SeekDialog(kodigui.BaseDialog):
     def skipBack(self, without_osd=False):
         step = self.determineSkipStep("negative")
         if step is not None:
-            self.seekByOffset(step, without_osd=without_osd)
+            if not self.seekByOffset(step, without_osd=without_osd):
+                return
 
         if self.useAutoSeek:
             self.delayedSeek()
@@ -700,24 +702,31 @@ class SeekDialog(kodigui.BaseDialog):
         :param without_osd: indicates whether this seek was done with or without OSD
         :return:
         """
+        lastSelectedOffset = self.selectedOffset
+        # If we are seeking forward and already past 5 seconds from end, don't seek at all
+        if lastSelectedOffset > self.duration - 5000 and offset > 0:
+            return False
+            
         self._seeking = True
         self._seekingWithoutOSD = without_osd
-        lastSelectedOffset = self.selectedOffset
         self.selectedOffset += offset
-        if self.selectedOffset > self.duration:
-            # offset = +100, at = 80000, duration = 80005, realoffset = 5
-            self._forcedLastSkipAmount = self.duration - lastSelectedOffset
-            self.selectedOffset = self.duration
-        elif self.selectedOffset < 0:
-            # offset = -100, at = 5, realat = -95, realoffset = -100 - -95 = -5
-            self._forcedLastSkipAmount = offset - self.selectedOffset
-            self.selectedOffset = 0
+        # Don't skip past 5 seconds from end
+        if self.selectedOffset > self.duration - 5000:
+            # offset = +100, at = 80000, duration = 80007, realoffset = 2
+            self._forcedLastSkipAmount = self.duration - 5000 - lastSelectedOffset
+            self.selectedOffset = self.duration - 5000
+        # Don't skip back past 1 (0 is handled specially so seeking to 0 will not do a seek)
+        elif self.selectedOffset < 1:
+            # offset = -100, at = 5, realat = -95, realoffset = 1 - 5 = -4
+            self._forcedLastSkipAmount = 1 - lastSelectedOffset
+            self.selectedOffset = 1
 
         self.updateProgress(set_to_current=False)
         self.setBigSeekShift()
         if auto_seek:
             self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
+        return True
 
     def seekMouse(self, action, without_osd=False, preview=False):
         x = self.mouseXTrans(action.getAmount1())

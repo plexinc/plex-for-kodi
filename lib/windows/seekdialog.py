@@ -240,6 +240,13 @@ class SeekDialog(kodigui.BaseDialog):
 
                     else:
                         self.skipBack(without_osd=True)
+                if action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN):
+                    # we're seeking from the timeline, with the OSD closed; act as we're skipping
+                    if not self._seeking:
+                        self.selectedOffset = self.trueOffset()
+
+                    if self.skipChapter(forward=(action == xbmcgui.ACTION_MOVE_UP), without_osd=True):
+                        return
                 if action in (
                     xbmcgui.ACTION_MOVE_UP,
                     xbmcgui.ACTION_MOVE_DOWN,
@@ -441,22 +448,43 @@ class SeekDialog(kodigui.BaseDialog):
                 return
 
         return step
+    
+    def skipChapter(self, forward=True, without_osd=False):
+        lastSelectedOffset = self.selectedOffset
+        util.DEBUG_LOG('chapter skipping from {0} with formawrd {1}'.format(lastSelectedOffset, forward))
+        if forward:
+            nextChapters = [c for c in self.chapters if c.startTime() > lastSelectedOffset]
+            util.DEBUG_LOG('Found {0} chapters among {1}'.format(len(nextChapters), len(self.chapters)))
+            if len(nextChapters) == 0:
+                return False
+            chapter = nextChapters[0]
+        else:
+            startTimeLimit = lastSelectedOffset - 2000
+            if startTimeLimit < 0:
+                startTimeLimit = 0
+            lastChapters = [c for c in self.chapters if c.startTime() <= startTimeLimit]
+            util.DEBUG_LOG('Found {0} chapters among {1}'.format(len(lastChapters), len(self.chapters)))
+            if len(lastChapters) == 0:
+                return False
+            chapter = lastChapters[-1]
+        
+        util.DEBUG_LOG('New start time is {0}'.format(chapter.startTime()))
+        self.skipByOffset(chapter.startTime() - lastSelectedOffset, without_osd=without_osd)
+        return True
 
     def skipForward(self, without_osd=False):
-        step = self.determineSkipStep("positive")
-        if step is not None:
-            if not self.seekByOffset(step, without_osd=without_osd):
-                return
-
-        if self.useAutoSeek:
-            self.delayedSeek()
-        else:
-            self.setProperty('button.seek', '1')
+        self.skipByStep("positive", without_osd)
 
     def skipBack(self, without_osd=False):
-        step = self.determineSkipStep("negative")
-        if step is not None:
-            if not self.seekByOffset(step, without_osd=without_osd):
+        self.skipByStep("negative", without_osd)
+    
+    def skipByStep(self, direction="positive", without_osd=False):
+        step = self.determineSkipStep(direction)
+        self.skipByOffset(step, without_osd)
+
+    def skipByOffset(self, offset, without_osd=False):
+        if offset is not None:
+            if not self.seekByOffset(offset, without_osd=without_osd):
                 return
 
         if self.useAutoSeek:
@@ -750,7 +778,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.updateProgress(set_to_current=False)
             self.setProperty('button.seek', '1')
 
-    def setup(self, duration, offset=0, bif_url=None, title='', title2=''):
+    def setup(self, duration, offset=0, bif_url=None, title='', title2='', chapters=[]):
         self.title = title
         self.title2 = title2
         self.setProperty('video.title', title)
@@ -760,6 +788,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.baseOffset = offset
         self.offset = 0
         self._duration = duration
+        self.chapters = chapters
         self.bifURL = bif_url
         self.hasBif = bool(self.bifURL)
         if self.hasBif:

@@ -485,7 +485,8 @@ class SeekDialog(kodigui.BaseDialog):
 
     def skipByOffset(self, offset, without_osd=False):
         if offset is not None:
-            self.seekByOffset(offset, without_osd=without_osd)
+            if not self.seekByOffset(offset, without_osd=without_osd):
+                return
 
         if self.useAutoSeek:
             self.delayedSeek()
@@ -720,19 +721,19 @@ class SeekDialog(kodigui.BaseDialog):
         :param without_osd: indicates whether this seek was done with or without OSD
         :return:
         """
+        lastSelectedOffset = self.selectedOffset
+        # If we are seeking forward and already past 5 seconds from end, don't seek at all
+        if lastSelectedOffset > self.duration - 5000 and offset > 0:
+            return False
+            
         self._seeking = True
         self._seekingWithoutOSD = without_osd
-        lastSelectedOffset = self.selectedOffset
         self.selectedOffset += offset
         # Don't skip past 5 seconds from end
         if self.selectedOffset > self.duration - 5000:
-            # If we are seeking forward and already past 5 seconds from end, don't seek at all
-            if lastSelectedOffset > self.duration - 5000:
-                self.selectedOffset = lastSelectedOffset
-            else:
-                # offset = +100, at = 80000, duration = 80007, realoffset = 2
-                self._forcedLastSkipAmount = self.duration - 5000 - lastSelectedOffset
-                self.selectedOffset = self.duration - 5000
+            # offset = +100, at = 80000, duration = 80007, realoffset = 2
+            self._forcedLastSkipAmount = self.duration - 5000 - lastSelectedOffset
+            self.selectedOffset = self.duration - 5000
         # Don't skip back past 1 (0 is handled specially so seeking to 0 will not do a seek)
         elif self.selectedOffset < 1:
             # offset = -100, at = 5, realat = -95, realoffset = 1 - 5 = -4
@@ -744,6 +745,7 @@ class SeekDialog(kodigui.BaseDialog):
         if auto_seek:
             self.resetAutoSeekTimer()
         self.bigSeekHideTimer.reset()
+        return True
 
     def seekMouse(self, action, without_osd=False, preview=False):
         x = self.mouseXTrans(action.getAmount1())

@@ -725,10 +725,14 @@ class SeekDialog(kodigui.BaseDialog):
         lastSelectedOffset = self.selectedOffset
         self.selectedOffset += offset
         # Don't skip past 5 seconds from end
-        if self.selectedOffset > self.duration - 5:
-            # offset = +100, at = 80000, duration = 80007, realoffset = 2
-            self._forcedLastSkipAmount = self.duration - 5 - lastSelectedOffset
-            self.selectedOffset = self.duration - 5
+        if self.selectedOffset > self.duration - 5000:
+            # If we are seeking forward and already past 5 seconds from end, don't seek at all
+            if lastSelectedOffset > self.duration - 5000:
+                self.selectedOffset = lastSelectedOffset
+            else:
+                # offset = +100, at = 80000, duration = 80007, realoffset = 2
+                self._forcedLastSkipAmount = self.duration - 5000 - lastSelectedOffset
+                self.selectedOffset = self.duration - 5000
         # Don't skip back past 1 (0 is handled specially so seeking to 0 will not do a seek)
         elif self.selectedOffset < 1:
             # offset = -100, at = 5, realat = -95, realoffset = 1 - 5 = -4

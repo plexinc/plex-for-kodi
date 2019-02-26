@@ -488,7 +488,7 @@ msgid "Artists"
 msgstr ""
 
 msgctxt "#32348"
-msgid "movies"
+msgid "Movies"
 msgstr ""
 
 msgctxt "#32349"
@@ -973,4 +973,8 @@ msgstr ""
 
 msgctxt "#32485"
 msgid "Go back instantly with the previous menu action in scrolled views"
+msgstr ""
+
+msgctxt "#32490"
+msgid "Collections"
 msgstr ""

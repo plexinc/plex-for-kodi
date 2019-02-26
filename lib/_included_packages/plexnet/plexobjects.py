@@ -513,7 +513,7 @@ class ItemContainer(list):
         return self
 
 
-def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None):
+def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None, tag_fallback=False):
     data = data if data is not None else server.query(path)
     container = container or PlexContainer(data, path, server, path)
     items = ItemContainer().init(container)
@@ -526,7 +526,7 @@ def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, 
         if watched is False and elem.attrib.get('viewCount', 0) >= 1:
             continue
         try:
-            items.append(buildItem(server, elem, path, bytag, container))
+            items.append(buildItem(server, elem, path, bytag, container, tag_fallback))
         except exceptions.UnknownType:
             pass
 

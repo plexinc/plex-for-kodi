@@ -96,10 +96,11 @@ TYPE_KEYS = {
 TYPE_PLURAL = {
     'artist': T(32347, 'artists'),
     'album': T(32461, 'albums'),
-    'movie': T(32348, 'movies'),
+    'movie': T(32348, 'Movies'),
     'photo': T(32349, 'photos'),
     'show': T(32350, 'Shows'),
-    'episode': T(32458, 'Episodes')
+    'episode': T(32458, 'Episodes'),
+    'collection': T(32490, 'Collections'),
 }
 
 SORT_KEYS = {
@@ -140,7 +141,7 @@ def setItemType(type_=None):
 
 
 class ChunkRequestTask(backgroundthread.Task):
-    def setup(self, section, start, size, callback, filter_=None, sort=None, unwatched=False):
+    def setup(self, section, start, size, callback, filter_=None, sort=None, unwatched=False, subDir=False):
         self.section = section
         self.start = start
         self.size = size
@@ -148,6 +149,7 @@ class ChunkRequestTask(backgroundthread.Task):
         self.filter = filter_
         self.sort = sort
         self.unwatched = unwatched
+        self.subDir = subDir
         return self
 
     def contains(self, pos):
@@ -163,6 +165,8 @@ class ChunkRequestTask(backgroundthread.Task):
                 type_ = 4
             elif ITEM_TYPE == 'album':
                 type_ = 9
+            elif ITEM_TYPE == 'collection':
+                type_ = 18
             items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched, type_=type_)
             if self.isCanceled():
                 return
@@ -393,6 +397,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         windowutils.UtilMixin.__init__(self)
         self.section = kwargs.get('section')
         self.filter = kwargs.get('filter_')
+        self.subDir = kwargs.get('subDir')
         self.keyItems = {}
         self.firstOfKeyItems = {}
         self.tasks = backgroundthread.Tasks()
@@ -470,6 +475,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             else:
                 self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
             self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
+            self.setProperty('subDir', self.subDir and '1' or '')
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
             util.setGlobalProperty('sort', self.sort)
@@ -731,7 +737,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         else:
             self.chunkCallback([False] * CHUNK_SIZE, start)
             task = ChunkRequestTask().setup(
-                self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+                self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, subDir=self.subDir
             )
 
             self.tasks.add(task)
@@ -793,7 +799,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 self.chunkCallback,
                 filter_=self.getFilterOpts(),
                 sort=self.getSortOpts(),
-                unwatched=self.filterUnwatched
+                unwatched=self.filterUnwatched,
+                subDir=self.subDir
             )
 
             self.tasks.add(task)
@@ -887,6 +894,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if self.section.TYPE == 'show':
             for t in ('show', 'episode'):
                 options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
+        elif self.section.TYPE == 'movie':
+            for t in ('movie', 'collection'):
+                options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})                
         elif self.section.TYPE == 'artist':
             for t in ('artist', 'album'):
                 options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
@@ -1174,7 +1184,22 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'movie':
-            self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
+            datasource = mli.dataSource
+            if datasource.isDirectory():
+                cls = self.section.__class__
+                section = cls(self.section.data, self.section.initpath, self.section.server, self.section.container)
+                sectionId = section.key
+                if not sectionId.isdigit():
+                    sectionId = section.getLibrarySectionId()
+
+                section.set('librarySectionID', sectionId)
+                section.key = datasource.key
+                section.title = datasource.title
+
+                self.processCommand(opener.handleOpen(LibraryWindow, windows=self._windows, default_window=self._next, section=section, filter_=self.filter, subDir=True))
+                self.librarySettings.setItemType(self.librarySettings.getItemType())
+            else:
+                self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=datasource, parent_list=self.showPanelControl))
             updateWatched = True
         elif self.section.TYPE == 'artist':
             if ITEM_TYPE == 'album':
@@ -1277,11 +1302,13 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             type_ = 4
         elif ITEM_TYPE == 'album':
             type_ = 9
+        elif ITEM_TYPE == 'collection':
+            type_ = 18
 
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        if self.sort != 'titleSort':
+        if self.sort != 'titleSort' or self.subDir:
             sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
             totalSize = sectionAll.totalSize.asInt()
             if not self.chunkMode:
@@ -1355,7 +1382,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         for start in range(0, totalSize, CHUNK_SIZE):
             tasks.append(
                 ChunkRequestTask().setup(
-                    self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched
+                    self.section, start, CHUNK_SIZE, self.chunkCallback, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, subDir=self.subDir
                 )
             )
             ct += 1
@@ -1588,7 +1615,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                             mli.setProperty('key', self.chunkMode.getKey(pos))
 
                         if showUnwatched:
-                            mli.setLabel2(util.durationToText(obj.fixedDuration()))
+                            if not obj.isDirectory():
+                                mli.setLabel2(util.durationToText(obj.fixedDuration()))
                             mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
                             if not obj.isWatched:
                                 if self.section.TYPE == 'show':

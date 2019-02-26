@@ -488,7 +488,7 @@ msgid "Artists"
 msgstr ""
 
 msgctxt "#32348"
-msgid "movies"
+msgid "Movies"
 msgstr ""
 
 msgctxt "#32349"
@@ -985,4 +985,8 @@ msgstr ""
 
 msgctxt "#32489"
 msgid "Quiz Mode"
+msgstr ""
+
+msgctxt "#32490"
+msgid "Collections"
 msgstr ""

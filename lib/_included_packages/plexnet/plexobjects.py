@@ -146,6 +146,7 @@ class PlexObject(object, Checks):
         self.titleSort = PlexValue('')
         self.deleted = False
         self._reloaded = False
+        self.data = data
 
         if data is None:
             return

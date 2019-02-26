@@ -989,6 +989,12 @@ msgstr ""
 
 msgctxt "#32490"
 msgid "Collections"
-msgstr ""msgctxt "#32492"
+msgstr ""
+
+msgctxt "#32491"
+msgid "Folders"
+msgstr ""
+
+msgctxt "#32492"
 msgid "Kodi Subtitle Settings"
 msgstr ""

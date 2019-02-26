@@ -669,6 +669,7 @@
                 <onright>210</onright>
                 <ondown>50</ondown>
                 <control type="button" id="311">
+                	<visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
@@ -685,6 +686,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="211">
+                	<visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
                     <width max="400">auto</width>
                     <height>65</height>
                     <font>font10</font>
@@ -732,6 +734,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="210">
+                	<visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
                     <width max="300">auto</width>
                     <height>65</height>
                     <font>font10</font>

@@ -101,6 +101,7 @@ TYPE_PLURAL = {
     'show': T(32350, 'Shows'),
     'episode': T(32458, 'Episodes'),
     'collection': T(32490, 'Collections'),
+    'folder': T(32491, 'Folders'),
 }
 
 SORT_KEYS = {
@@ -167,7 +168,12 @@ class ChunkRequestTask(backgroundthread.Task):
                 type_ = 9
             elif ITEM_TYPE == 'collection':
                 type_ = 18
-            items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched, type_=type_)
+
+            if ITEM_TYPE == 'folder':
+                items = self.section.folder(self.start, self.size, self.subDir)
+            else:
+                items = self.section.all(self.start, self.size, self.filter, self.sort, self.unwatched, type_=type_)
+
             if self.isCanceled():
                 return
             self.callback(items, self.start)
@@ -481,6 +487,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             util.setGlobalProperty('sort', self.sort)
             self.setProperty('filter1.display', self.filterUnwatched and T(32368, 'UNPLAYED') or T(32345, 'All'))
             self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
+            self.setProperty('media.itemType', ITEM_TYPE or self.section.TYPE)
             self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
             self.setProperty('media', self.section.TYPE)
             self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
@@ -895,7 +902,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             for t in ('show', 'episode'):
                 options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})
         elif self.section.TYPE == 'movie':
-            for t in ('movie', 'collection'):
+            for t in ('movie', 'collection', 'folder'):
                 options.append({'type': t, 'display': TYPE_PLURAL.get(t, t)})                
         elif self.section.TYPE == 'artist':
             for t in ('artist', 'album'):
@@ -1308,8 +1315,11 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        if self.sort != 'titleSort' or self.subDir:
-            sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
+        if self.sort != 'titleSort' or ITEM_TYPE == 'folder' or self.subDir:
+            if ITEM_TYPE == 'folder':
+                sectionAll = self.section.folder(0, 0, self.subDir)
+            else:
+                sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
             totalSize = sectionAll.totalSize.asInt()
             if not self.chunkMode:
                 for x in range(totalSize):

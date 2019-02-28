@@ -227,7 +227,7 @@
                                         <colordiffuse>80000000</colordiffuse>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(101)</scroll>
                                         <posx>0</posx>
                                         <posy>244</posy>
                                         <width>244</width>

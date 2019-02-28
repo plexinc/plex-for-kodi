@@ -795,7 +795,7 @@
                                             </control>
                                         </control>
                                         <control type="label">
-                                            <scroll>false</scroll>
+                                            <scroll>Control.HasFocus(401)</scroll>
                                             <posx>0</posx>
                                             <posy>369</posy>
                                             <width>244</width>
@@ -948,7 +948,7 @@
                                             <posx>0</posx>
                                             <posy>253</posy>
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(403)</scroll>
                                                 <posx>0</posx>
                                                 <posy>0</posy>
                                                 <width>244</width>
@@ -959,7 +959,7 @@
                                                 <label>$INFO[ListItem.Label]</label>
                                             </control>
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(403)</scroll>
                                                 <posx>0</posx>
                                                 <posy>30</posy>
                                                 <width>244</width>

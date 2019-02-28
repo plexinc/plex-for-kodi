@@ -504,7 +504,7 @@
                                             </control>
                                         </control>
                                         <control type="label">
-                                            <scroll>false</scroll>
+                                            <scroll>Control.HasFocus(400)</scroll>
                                             <posx>0</posx>
                                             <posy>240</posy>
                                             <width>158</width>
@@ -643,7 +643,7 @@
                                         </control>
                                         <control type="group">
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(401)</scroll>
                                                 <posx>0</posx>
                                                 <posy>175</posy>
                                                 <width>299</width>
@@ -654,7 +654,7 @@
                                                 <label>$INFO[ListItem.Label]</label>
                                             </control>
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(401)</scroll>
                                                 <posx>0</posx>
                                                 <posy>210</posy>
                                                 <width>299</width>
@@ -908,7 +908,7 @@
                                             </control>
                                         </control>
                                         <control type="label">
-                                            <scroll>false</scroll>
+                                            <scroll>Control.HasFocus(402)</scroll>
                                             <posx>0</posx>
                                             <posy>369</posy>
                                             <width>244</width>

@@ -317,7 +317,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>true</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>

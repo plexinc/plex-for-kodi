@@ -23,7 +23,7 @@ from lib import metadata
 from lib.util import T
 from lib.windows.home import MOVE_SET
 
-VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10)
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
 
 
 class RelatedPaginator(pagination.BaseRelatedPaginator):
@@ -89,6 +89,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.initialized = True
 
     def doAutoPlay(self):
+        # First reload the video to get all the other info
+        self.video.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         return self.playVideo()
 
     def onReInit(self):

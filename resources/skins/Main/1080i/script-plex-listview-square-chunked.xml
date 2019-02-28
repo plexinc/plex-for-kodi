@@ -300,7 +300,7 @@
                 </control>
 
                 <control type="scrollbar" id="152">
-                    <visible>!StringCompare(Window(10000).Property(script.plex.item.type),album)</visible>
+                    <visible>!String.IsEqual(Window(10000).Property(script.plex.item.type),album)</visible>
                     <hitrect x="1108" y="33" w="90" h="879" />
                     <left>1128</left>
                     <top>33</top>
@@ -320,7 +320,7 @@
                     <onleft>151</onleft>
                 </control>
                 <control type="group">
-                    <visible>StringCompare(Window(10000).Property(script.plex.item.type),album)</visible>
+                    <visible>String.IsEqual(Window(10000).Property(script.plex.item.type),album)</visible>
                     <left>1128</left>
                     <top>33</top>
                     <width>10</width>
@@ -449,7 +449,7 @@
             <posx>60</posx>
             <posy>248</posy>
             <control type="group">
-                <visible>StringCompare(Window.Property(media),photo) | StringCompare(Window.Property(media),photodirectory)</visible>
+                <visible>String.IsEqual(Window.Property(media),photo) | String.IsEqual(Window.Property(media),photodirectory)</visible>
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
@@ -468,7 +468,7 @@
                 </control>
             </control>
             <control type="image">
-                <visible>StringCompare(Window.Property(media),artist)</visible>
+                <visible>String.IsEqual(Window.Property(media),artist)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
                 <width>355</width>
@@ -537,7 +537,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>StringCompare(Window(10000).Property(script.plex.sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
+            <visible>String.IsEqual(Window(10000).Property(script.plex.sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1830</posx>
             <posy>150</posy>
@@ -561,7 +561,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="label">
-                                <visible>!StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
+                                <visible>!String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>34</width>
@@ -573,7 +573,7 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                             <control type="group">
-                                <visible>StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
+                                <visible>String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -607,7 +607,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="label">
-                                <visible>!StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
+                                <visible>!String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>34</width>
@@ -619,7 +619,7 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                             <control type="group">
-                                <visible>StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
+                                <visible>String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -862,7 +862,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="310">
-                    <visible>!StringCompare(Window.Property(media),artist)</visible>
+                    <visible>!String.IsEqual(Window.Property(media),artist)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
@@ -879,7 +879,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="312">
-                    <visible>StringCompare(Window.Property(media),artist)</visible>
+                    <visible>String.IsEqual(Window.Property(media),artist)</visible>
                     <width max="300">auto</width>
                     <height>65</height>
                     <font>font12</font>

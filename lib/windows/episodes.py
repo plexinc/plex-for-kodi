@@ -25,6 +25,7 @@ import pagination
 from lib.util import T
 from lib.windows.home import MOVE_SET
 
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
 
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
@@ -41,7 +42,7 @@ class EpisodeReloadTask(backgroundthread.Task):
             return
 
         try:
-            self.episode.reload(checkFiles=1)
+            self.episode.reload(checkFiles=1, includeChapters=1)
             if self.isCanceled():
                 return
             self.callback(self.episode)
@@ -229,6 +230,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.postSetup()
 
     def doAutoPlay(self):
+        # First reload the video to get all the other info
+        self.initialEpisode.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         return self.playButtonClicked(force_episode=self.initialEpisode)
 
     def onFirstInit(self):
@@ -268,7 +271,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def _setup(self, from_select_episode=False):
         player.PLAYER.on('new.video', self.onNewVideo)
-        self.season.reload(includeExtras=1, includeExtrasCount=10)
+        self.season.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         if not from_select_episode:
             self.episodesPaginator = EpisodesPaginator(self.episodeListControl, leaf_count=int(self.season.leafCount),
                                                        parent_window=self)

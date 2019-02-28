@@ -311,6 +311,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self.updateHubs = {}
         windowutils.HOME = self
 
+        self.lock = threading.Lock()
+
         util.setGlobalBoolProperty('off.sections', '')
 
     def onFirstInit(self):
@@ -581,16 +583,17 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             for task in self.tasks:
                 task.cancel()
 
-        self.setProperty('hub.focus', '')
-        self.displayServerAndUser()
-        if not plexapp.SERVERMANAGER.selectedServer:
-            self.setFocusId(self.USER_BUTTON_ID)
-            return False
-
-        self.showSections()
-        self.backgroundSet = False
-        self.showHubs(HomeSection)
-        return True
+        with self.lock:
+            self.setProperty('hub.focus', '')
+            self.displayServerAndUser()
+            if not plexapp.SERVERMANAGER.selectedServer:
+                self.setFocusId(self.USER_BUTTON_ID)
+                return False
+    
+            self.showSections()
+            self.backgroundSet = False
+            self.showHubs(HomeSection)
+            return True
 
     def hubItemClicked(self, hubControlID, auto_play=False):
         control = self.hubControls[hubControlID - 400]
@@ -703,36 +706,39 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         self._sectionReallyChanged()
 
     def _sectionReallyChanged(self):
-        section = self.lastSection
-        self.setProperty('hub.focus', '')
-        if util.advancedSettings.dynamicBackgrounds:
-            self.backgroundSet = False
+        with self.lock:
+            section = self.lastSection
+            self.setProperty('hub.focus', '')
+            if util.advancedSettings.dynamicBackgrounds:
+                self.backgroundSet = False
 
-        util.DEBUG_LOG('Section changed ({0}): {1}'.format(section.key, repr(section.title)))
-        self.showHubs(section)
-        self.lastSection = section
-        self.checkSectionItem(force=True)
+            util.DEBUG_LOG('Section changed ({0}): {1}'.format(section.key, repr(section.title)))
+            self.showHubs(section)
+            self.lastSection = section
+            self.checkSectionItem(force=True)
 
     def sectionHubsCallback(self, section, hubs):
-        update = bool(self.sectionHubs.get(section.key))
-        self.sectionHubs[section.key] = hubs
-        if self.lastSection == section:
-            self.showHubs(section, update=update)
+        with self.lock:
+            update = bool(self.sectionHubs.get(section.key))
+            self.sectionHubs[section.key] = hubs
+            if self.lastSection == section:
+                self.showHubs(section, update=update)
 
     def updateHubCallback(self, hub, items=None):
-        for mli in self.sectionList:
-            section = mli.dataSource
-            if not section:
-                continue
-
-            hubs = self.sectionHubs.get(section.key, ())
-            for idx, ihub in enumerate(hubs):
-                if ihub == hub:
-                    if self.lastSection == section:
-                        util.DEBUG_LOG('Hub {0} updated - refreshing section: {1}'.format(hub.hubIdentifier, repr(section.title)))
-                        hubs[idx] = hub
-                        self.showHub(hub, items=items)
-                        return
+        with self.lock:
+            for mli in self.sectionList:
+                section = mli.dataSource
+                if not section:
+                    continue
+    
+                hubs = self.sectionHubs.get(section.key, ())
+                for idx, ihub in enumerate(hubs):
+                    if ihub == hub:
+                        if self.lastSection == section:
+                            util.DEBUG_LOG('Hub {0} updated - refreshing section: {1}'.format(hub.hubIdentifier, repr(section.title)))
+                            hubs[idx] = hub
+                            self.showHub(hub, items=items)
+                            return
 
     def extendHubCallback(self, hub, items):
         self.updateHubCallback(hub, items)

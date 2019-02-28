@@ -156,7 +156,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.mode = self.MODE_RELATIVE
         self.ended = False
 
-    def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK):
+    def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK, chapters=[]):
         self.ended = False
         self.baseOffset = offset / 1000.0
         self.seeking = seeking
@@ -164,8 +164,9 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.bifURL = bif_url
         self.title = title
         self.title2 = title2
+        self.chapters = chapters
         self.getDialog(setup=True)
-        self.dialog.setup(self.duration, int(self.baseOffset * 1000), self.bifURL, self.title, self.title2)
+        self.dialog.setup(self.duration, int(self.baseOffset * 1000), self.bifURL, self.title, self.title2, chapters=self.chapters)
 
     def getDialog(self, setup=False):
         if not self.dialog:
@@ -851,7 +852,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         self.stopAndWait()  # Stop before setting up the handler to prevent player events from causing havoc
 
-        self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking)
+        self.handler.setup(self.video.duration.asInt(), offset, bifURL, title=self.video.grandparentTitle, title2=self.video.title, seeking=seeking, chapters=self.video.chapters)
 
         if meta.isTranscoded:
             self.handler.mode = self.handler.MODE_RELATIVE
@@ -1141,7 +1142,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
             self.currentTime = self.getTime()
             util.MONITOR.waitForAbort(0.1)
-            if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
+            if xbmc.getCondVisibility('Window.IsActive(videoosd)'):
                 if not self.hasOSD:
                     self.hasOSD = True
                     self.onVideoOSD()

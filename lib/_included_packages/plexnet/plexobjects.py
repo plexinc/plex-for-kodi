@@ -146,6 +146,7 @@ class PlexObject(object, Checks):
         self.titleSort = PlexValue('')
         self.deleted = False
         self._reloaded = False
+        self.data = data
 
         if data is None:
             return
@@ -527,7 +528,7 @@ class ItemContainer(list):
 
 
 def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None, offset=None,
-              limit=None, **kwargs):
+              limit=None, tag_fallback=False, **kwargs):
     data = data if data is not None else server.query(path, offset=offset, limit=limit, **kwargs)
     container = container or PlexContainer(data, path, server, path)
     items = ItemContainer().init(container)
@@ -540,7 +541,7 @@ def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, 
         if watched is False and elem.attrib.get('viewCount', 0) >= 1:
             continue
         try:
-            items.append(buildItem(server, elem, path, bytag, container))
+            items.append(buildItem(server, elem, path, bytag, container, tag_fallback))
         except exceptions.UnknownType:
             pass
 

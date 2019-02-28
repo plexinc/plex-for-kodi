@@ -468,11 +468,13 @@ class AdvancedSettings(object):
         ("debug", False),
         ("kodi_skip_stepping", False),
         ("auto_seek", True),
+        ("auto_seek_delay", 0),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
         ("dynamic_backgrounds", False),
         ("background_art_blur_amount", 128),
         ("background_art_opacity_amount", 60),
+        ("screensaver_quiz", False),
     )
 
     def __init__(self):

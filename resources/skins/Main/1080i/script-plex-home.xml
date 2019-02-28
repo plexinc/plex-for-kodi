@@ -312,7 +312,7 @@
                                     </control>
                                 </control>
                                 <control type="label">
-                                    <scroll>false</scroll>
+                                    <scroll>Control.HasFocus(100)</scroll>
                                     <posx>0</posx>
                                     <posy>125</posy>
                                     <width>238</width>
@@ -624,7 +624,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(400)</scroll>
                                         <posx>0</posx>
                                         <posy>309</posy>
                                         <width>532</width>
@@ -636,7 +636,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(400)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.400))</visible>
                                         <posx>0</posx>
                                         <posy>337</posy>
@@ -921,7 +921,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(401)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -932,7 +932,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(401)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.401))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -1254,7 +1254,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(402)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -1265,7 +1265,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(402)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.402))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -1587,7 +1587,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(403)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -1598,7 +1598,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(403)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.403))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -1920,7 +1920,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(404)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -1931,7 +1931,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(404)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.404))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -2215,7 +2215,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(405)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -2226,7 +2226,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(405)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.405))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -2553,7 +2553,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(406)</scroll>
                                         <posx>0</posx>
                                         <posy>309</posy>
                                         <width>532</width>
@@ -2565,7 +2565,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(406)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.406))</visible>
                                         <posx>0</posx>
                                         <posy>337</posy>
@@ -2850,7 +2850,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(407)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -2861,7 +2861,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(407)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.407))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -3183,7 +3183,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(408)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -3194,7 +3194,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(408)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.408))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -3478,7 +3478,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(409)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -3489,7 +3489,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(409)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.409))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -3735,7 +3735,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(410)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -3746,7 +3746,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(410)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.410))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -3992,7 +3992,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(411)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -4003,7 +4003,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(411)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.411))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -4249,7 +4249,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(412)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -4260,7 +4260,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(412)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.412))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -4506,7 +4506,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(420)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -4517,7 +4517,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(420)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.420))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -4763,7 +4763,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(421)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -4774,7 +4774,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(421)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.421))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -5020,7 +5020,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(422)</scroll>
                                         <posx>0</posx>
                                         <posy>254</posy>
                                         <width>244</width>
@@ -5031,7 +5031,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                        <scroll>false</scroll>
+                                        <scroll>Control.HasFocus(422)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.422))</visible>
                                         <posx>0</posx>
                                         <posy>281</posy>
@@ -5315,7 +5315,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(413)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -5326,7 +5326,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(413)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.413))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -5648,7 +5648,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(414)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -5659,7 +5659,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(414)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.414))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -5981,7 +5981,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(415)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -5992,7 +5992,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(415)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.415))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -6314,7 +6314,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(416)</scroll>
                                         <posx>0</posx>
                                         <posy>371</posy>
                                         <width>244</width>
@@ -6325,7 +6325,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(416)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.416))</visible>
                                         <posx>0</posx>
                                         <posy>398</posy>
@@ -6690,7 +6690,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(417)</scroll>
                                         <posx>0</posx>
                                         <posy>309</posy>
                                         <width>532</width>
@@ -6702,7 +6702,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(417)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.417))</visible>
                                         <posx>0</posx>
                                         <posy>337</posy>
@@ -7030,7 +7030,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(418)</scroll>
                                         <posx>0</posx>
                                         <posy>309</posy>
                                         <width>532</width>
@@ -7042,7 +7042,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(418)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.418))</visible>
                                         <posx>0</posx>
                                         <posy>337</posy>
@@ -7370,7 +7370,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(419)</scroll>
                                         <posx>0</posx>
                                         <posy>309</posy>
                                         <width>532</width>
@@ -7382,7 +7382,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(419)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.419))</visible>
                                         <posx>0</posx>
                                         <posy>337</posy>
@@ -7710,7 +7710,7 @@
                                         </control>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(423)</scroll>
                                         <posx>0</posx>
                                         <posy>309</posy>
                                         <width>532</width>
@@ -7722,7 +7722,7 @@
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
                                     <control type="label">
-                                    	<scroll>false</scroll>
+                                    	<scroll>Control.HasFocus(423)</scroll>
                                         <visible>!String.IsEmpty(Window.Property(hub.text2lines.423))</visible>
                                         <posx>0</posx>
                                         <posy>337</posy>

@@ -103,6 +103,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._atSkipStep = -1
         self._lastSkipDirection = None
         self._forcedLastSkipAmount = None
+        self._ignoreInput = False
         self.skipSteps = self.SKIP_STEPS
         self.useAutoSeek = util.advancedSettings.autoSeek
         self.useDynamicStepsForTimeline = util.advancedSettings.dynamicTimelineSeek
@@ -191,86 +192,89 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetTimeout()
 
             controlID = self.getFocusId()
-            if action.getId() in KEY_MOVE_SET:
-                self.setProperty('mouse.mode', '')
-                if not controlID:
-                    self.setBigSeekShift()
-                    self.setFocusId(400)
-                    return
-            elif action == xbmcgui.ACTION_MOUSE_MOVE:
-                self.setProperty('mouse.mode', '1')
 
-            if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
-                if action == xbmcgui.ACTION_MOUSE_LEFT_CLICK:
-                    if self.getProperty('mouse.mode') != '1':
-                        self.setProperty('mouse.mode', '1')
-
-                    self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID)
-                    return
+            if not self._ignoreInput:
+                if action.getId() in KEY_MOVE_SET:
+                    self.setProperty('mouse.mode', '')
+                    if not controlID:
+                        self.setBigSeekShift()
+                        self.setFocusId(400)
+                        return
                 elif action == xbmcgui.ACTION_MOUSE_MOVE:
-                    self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID, preview=True)
-                    return
+                    self.setProperty('mouse.mode', '1')
 
-            if controlID == self.MAIN_BUTTON_ID:
-                # we're seeking from the timeline with the OSD open - do an actual timeline seek
+                if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
+                    if action == xbmcgui.ACTION_MOUSE_LEFT_CLICK:
+                        if self.getProperty('mouse.mode') != '1':
+                            self.setProperty('mouse.mode', '1')
 
-                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
-                    if self.useDynamicStepsForTimeline:
-                        return self.skipForward()
-                    return self.seekByOffset(10000, auto_seek=self.useAutoSeek)
+                        self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID)
+                        return
+                    elif action == xbmcgui.ACTION_MOUSE_MOVE:
+                        self.seekMouse(action, without_osd=controlID == self.NO_OSD_BUTTON_ID, preview=True)
+                        return
 
-                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
-                    if self.useDynamicStepsForTimeline:
-                        return self.skipBack()
-                    return self.seekByOffset(-10000, auto_seek=self.useAutoSeek)
+                if controlID == self.MAIN_BUTTON_ID:
+                    # we're seeking from the timeline with the OSD open - do an actual timeline seek
 
-                elif action == xbmcgui.ACTION_MOVE_DOWN:
-                    self.updateBigSeek()
-                # elif action == xbmcgui.ACTION_MOVE_UP:
-                #     self.seekForward(60000)
-                # elif action == xbmcgui.ACTION_MOVE_DOWN:
-                #     self.seekBack(60000)
-            elif controlID == self.NO_OSD_BUTTON_ID:
-                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
-                    # we're seeking from the timeline, with the OSD closed; act as we're skipping
-                    if not self._seeking:
+                    if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
+                        if self.useDynamicStepsForTimeline:
+                            return self.skipForward()
+                        return self.seekByOffset(10000, auto_seek=self.useAutoSeek)
+
+                    elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_STEP_BACK):
+                        if self.useDynamicStepsForTimeline:
+                            return self.skipBack()
+                        return self.seekByOffset(-10000, auto_seek=self.useAutoSeek)
+
+                    elif action == xbmcgui.ACTION_MOVE_DOWN:
+                        self.updateBigSeek()
+                    # elif action == xbmcgui.ACTION_MOVE_UP:
+                    #     self.seekForward(60000)
+                    # elif action == xbmcgui.ACTION_MOVE_DOWN:
+                    #     self.seekBack(60000)
+                elif controlID == self.NO_OSD_BUTTON_ID:
+                    if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
+                        # we're seeking from the timeline, with the OSD closed; act as we're skipping
+                        if not self._seeking:
+                            self.selectedOffset = self.trueOffset()
+
+                        if action == xbmcgui.ACTION_MOVE_RIGHT:
+                            self.skipForward(without_osd=True)
+
+                        else:
+                            self.skipBack(without_osd=True)
+                    if action in (
+                        xbmcgui.ACTION_MOVE_UP,
+                        xbmcgui.ACTION_MOVE_DOWN,
+                        xbmcgui.ACTION_BIG_STEP_FORWARD,
+                        xbmcgui.ACTION_BIG_STEP_BACK
+                    ) and not self._seekingWithoutOSD:
                         self.selectedOffset = self.trueOffset()
+                        self.setBigSeekShift()
+                        self.updateProgress()
+                        self.showOSD()
+                        self.setFocusId(self.BIG_SEEK_LIST_ID)
+                    elif action.getButtonCode() == 61519:
+                        # xbmc.executebuiltin('Action(PlayerProcessInfo)')
+                        xbmc.executebuiltin('Action(CodecInfo)')
+                elif controlID == self.BIG_SEEK_LIST_ID:
+                    if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_BIG_STEP_FORWARD):
+                        return self.updateBigSeek()
+                    elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_BIG_STEP_BACK):
+                        return self.updateBigSeek()
 
-                    if action == xbmcgui.ACTION_MOVE_RIGHT:
-                        self.skipForward(without_osd=True)
+                if action.getButtonCode() == 61516:
+                    builtin.Action('CycleSubtitle')
+                elif action.getButtonCode() == 61524:
+                    builtin.Action('ShowSubtitles')
+                elif action == xbmcgui.ACTION_NEXT_ITEM:
+                    self.handler.next()
+                elif action == xbmcgui.ACTION_PREV_ITEM:
+                    self.handler.prev()
 
-                    else:
-                        self.skipBack(without_osd=True)
-                if action in (
-                    xbmcgui.ACTION_MOVE_UP,
-                    xbmcgui.ACTION_MOVE_DOWN,
-                    xbmcgui.ACTION_BIG_STEP_FORWARD,
-                    xbmcgui.ACTION_BIG_STEP_BACK
-                ) and not self._seekingWithoutOSD:
-                    self.selectedOffset = self.trueOffset()
-                    self.setBigSeekShift()
-                    self.updateProgress()
-                    self.showOSD()
-                    self.setFocusId(self.BIG_SEEK_LIST_ID)
-                elif action.getButtonCode() == 61519:
-                    # xbmc.executebuiltin('Action(PlayerProcessInfo)')
-                    xbmc.executebuiltin('Action(CodecInfo)')
-            elif controlID == self.BIG_SEEK_LIST_ID:
-                if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_BIG_STEP_FORWARD):
-                    return self.updateBigSeek()
-                elif action in (xbmcgui.ACTION_MOVE_LEFT, xbmcgui.ACTION_BIG_STEP_BACK):
-                    return self.updateBigSeek()
-
-            if action.getButtonCode() == 61516:
-                builtin.Action('CycleSubtitle')
-            elif action.getButtonCode() == 61524:
-                builtin.Action('ShowSubtitles')
-            elif action == xbmcgui.ACTION_NEXT_ITEM:
-                self.handler.next()
-            elif action == xbmcgui.ACTION_PREV_ITEM:
-                self.handler.prev()
-            elif action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_STOP):
-                if self._seeking:
+            if action in (xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_STOP):
+                if self._seeking and not self._ignoreInput:
                     self.resetSeeking()
                     self.updateCurrent()
                     self.updateProgress()
@@ -338,6 +342,9 @@ class SeekDialog(kodigui.BaseDialog):
         self.lastFocusID = controlID
 
     def onClick(self, controlID):
+        if self._ignoreInput:
+            return
+
         if controlID in (self.MAIN_BUTTON_ID, self.NO_OSD_BUTTON_ID):
             # only react to click events on our main areas if we're not in mouse mode, otherwise mouse seeking is
             # handled by onAction
@@ -673,6 +680,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def doSeek(self, offset=None, settings_changed=False):
         self._applyingSeek = True
+        self._ignoreInput = settings_changed
         self.resetSkipSteps()
         self.updateProgress()
 
@@ -827,6 +835,10 @@ class SeekDialog(kodigui.BaseDialog):
     def onPlaybackResumed(self):
         self._osdHideFast = True
         self.tick()
+
+    def onPlaybackStarted(self):
+        if self._ignoreInput:
+            self._ignoreInput = False
 
     def onPlaybackPaused(self):
         self._osdHideFast = False

@@ -595,7 +595,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def delayedSeek(self):
         self.setProperty('button.seek', '1')
-        delay = self._autoSeekDelay;
+        delay = self._autoSeekDelay
         
         if delay > 0:
             self._delayedSeekTimeout = time.time() + delay

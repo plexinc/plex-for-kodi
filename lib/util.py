@@ -512,7 +512,7 @@ def getTimeFormat():
     # Checking for %H%H or %I%I only would be the obvious way here to determine whether the hour should be padded,
     # but the formats returned for regional settings with padding only have %H in them. This seems like a Kodi bug.
     # Use a fallback.
-    currentTime = unicode(xbmc.getInfoLabel('System.Time'))
+    currentTime = unicode(xbmc.getInfoLabel('System.Time'), encoding="utf-8")
     padHour = "%H%H" in origFmt or "%I%I" in origFmt or (currentTime[0] == "0" and currentTime[1] != ":")
     return fmt, padHour
 

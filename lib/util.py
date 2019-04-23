@@ -27,6 +27,9 @@ PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
 SETTINGS_LOCK = threading.Lock()
 
+KODI_VERSION_MAJOR, KODI_VERSION_MINOR = [int(v) for v in
+                                          xbmc.getInfoLabel('System.BuildVersion').split()[0].split(".")]
+
 
 class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
     def watchStatusChanged(self):
@@ -49,6 +52,60 @@ def T(ID, eng=''):
 
 def LOG(msg, level=xbmc.LOGNOTICE):
     xbmc.log('script.plex: {0}'.format(msg), level)
+
+
+def getSetting(key, default=None):
+    with SETTINGS_LOCK:
+        setting = ADDON.getSetting(key)
+        return _processSetting(setting, default)
+
+
+def _processSetting(setting, default):
+    if not setting:
+        return default
+    if isinstance(default, bool):
+        return setting.lower() == 'true'
+    elif isinstance(default, float):
+        return float(setting)
+    elif isinstance(default, int):
+        return int(float(setting or 0))
+    elif isinstance(default, list):
+        if setting:
+            return json.loads(binascii.unhexlify(setting))
+        else:
+            return default
+
+    return setting
+
+
+class AdvancedSettings(object):
+    """
+    @DynamicAttrs
+    """
+
+    _proxiedSettings = (
+        ("debug", False),
+        ("kodi_skip_stepping", False),
+        ("auto_seek", True),
+        ("dynamic_timeline_seek", False),
+        ("fast_back", False),
+    )
+
+    def __init__(self):
+        # register every known setting camelCased as an attribute to this instance
+        for setting, default in self._proxiedSettings:
+            name_split = setting.split("_")
+            setattr(self, name_split[0] + ''.join(x.capitalize() or '_' for x in name_split[1:]),
+                    getSetting(setting, default))
+
+
+advancedSettings = AdvancedSettings()
+
+
+def getAdvancedSettings():
+    # yes, global, hang me!
+    global advancedSettings
+    advancedSettings = AdvancedSettings()
 
 
 def DEBUG_LOG(msg):
@@ -84,30 +141,6 @@ def ERROR(txt='', hide_tb=False, notify=False):
 
 def TEST(msg):
     xbmc.log('---TEST: {0}'.format(msg), xbmc.LOGNOTICE)
-
-
-def getSetting(key, default=None):
-    with SETTINGS_LOCK:
-        setting = ADDON.getSetting(key)
-        return _processSetting(setting, default)
-
-
-def _processSetting(setting, default):
-    if not setting:
-        return default
-    if isinstance(default, bool):
-        return setting.lower() == 'true'
-    elif isinstance(default, float):
-        return float(setting)
-    elif isinstance(default, int):
-        return int(float(setting or 0))
-    elif isinstance(default, list):
-        if setting:
-            return json.loads(binascii.unhexlify(setting))
-        else:
-            return default
-
-    return setting
 
 
 def setSetting(key, value):
@@ -457,35 +490,6 @@ class Cron(threading.Thread):
             DEBUG_LOG('Cron: Receiver canceled: {0}'.format(receiver))
             self._receivers.pop(self._receivers.index(receiver))
 
-
-class AdvancedSettings(object):
-    """
-    @DynamicAttrs
-    """
-
-    _proxiedSettings = (
-        ("debug", False),
-        ("kodi_skip_stepping", False),
-        ("auto_seek", True),
-        ("dynamic_timeline_seek", False),
-        ("fast_back", False),
-    )
-
-    def __init__(self):
-        # register every known setting camelCased as an attribute to this instance
-        for setting, default in self._proxiedSettings:
-            name_split = setting.split("_")
-            setattr(self, name_split[0] + ''.join(x.capitalize() or '_' for x in name_split[1:]),
-                    getSetting(setting, default))
-
-
-advancedSettings = AdvancedSettings()
-
-
-def getAdvancedSettings():
-    # yes, global, hang me!
-    global advancedSettings
-    advancedSettings = AdvancedSettings()
 
 
 def getTimeFormat():

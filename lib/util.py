@@ -27,8 +27,8 @@ PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
 SETTINGS_LOCK = threading.Lock()
 
-KODI_VERSION_MAJOR, KODI_VERSION_MINOR = [int(v) for v in
-                                          xbmc.getInfoLabel('System.BuildVersion').split()[0].split(".")]
+_splitver = xbmc.getInfoLabel('System.BuildVersion').split()[0].split(".")
+KODI_VERSION_MAJOR, KODI_VERSION_MINOR = int(_splitver[0].split("-")[0]), int(_splitver[1].split("-")[0])
 
 
 class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):

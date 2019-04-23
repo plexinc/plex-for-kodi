@@ -106,8 +106,10 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         if not self.nonPlayback:
             options += [
                 ('kodi_video', T(32398, 'Kodi Video Settings'), ''),
-                ('kodi_audio', T(32399, 'Kodi Audio Settings'), '')
+                ('kodi_audio', T(32399, 'Kodi Audio Settings'), ''),
             ]
+            if util.KODI_VERSION_MAJOR >= 18:
+                options.append(('kodi_subtitle', T(32492, 'Kodi Subtitle Settings'), ''))
 
         if self.viaOSD:
             if self.parent.getProperty("show.PPI"):
@@ -170,6 +172,8 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
             xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
         elif result == 'kodi_audio':
             xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
+        elif result == 'kodi_subtitle':
+            xbmc.executebuiltin('ActivateWindow(OSDSubtitleSettings)')
         elif result == "stream_info":
             if self.parent:
                 if self.parent.getProperty("show.PPI"):

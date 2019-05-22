@@ -251,7 +251,7 @@ class PlexPlayer(object):
             # Global variables for all decisions
             decisionPath = http.addUrlParam(decisionPath, "mediaBufferSize=20971") # Kodi default is 20971520 (20MB)
             decisionPath = http.addUrlParam(decisionPath, "hasMDE=1")
-            decisionPath = http.addUrlParam(decisionPath, 'X-Plex-Platform=Chrome')
+            decisionPath = http.addUrlParam(decisionPath, 'X-Plex-Platform=Generic')
 
         return decisionPath
 
@@ -332,14 +332,24 @@ class PlexPlayer(object):
             else:
                 numChannels = 8
 
-            for codec in ("ac3", "eac3", "dca"):
-                if self.item.settings.supportsAudioStream(codec, numChannels):
-                    builder.extras.append("append-transcode-target-audio-codec(type=videoProfile&context=streaming&audioCodec=" + codec + ")")
-                    builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=" + codec + ")")
-                    if codec == "dca":
-                        builder.extras.append(
-                            "add-limitation(scope=videoAudioCodec&scopeName=dca&type=upperBound&name=audio.channels&value=8&isRequired=false)"
-                        )
+            codecs = ("ac3", "eac3", "dca")
+            if self.item.settings.getPreference("allow_hd_audio", False):
+                codecs += "truehd",
+            
+            builder.extras.append("add-transcode-target(type=videoProfile&context=streaming&protocol=http&container=mkv&videoCodec=h264&audioCodec=" + ",".join(codecs) + ")")
+
+            # for codec in codecs:
+            #     if self.item.settings.supportsAudioStream(codec, numChannels):
+            #         builder.extras.append("append-transcode-target-audio-codec(type=videoProfile&context=streaming&audioCodec=" + codec + ")")
+            #         builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=" + codec + ")")
+            #         if codec == "dca":
+            #             builder.extras.append(
+            #                 "add-limitation(scope=videoAudioCodec&scopeName=dca&type=upperBound&name=audio.channels&value=8&isRequired=false)"
+            #             )
+            #         if codec == "truehd":
+            #             builder.extras.append(
+            #                 "add-limitation(scope=videoAudioCodec&scopeName=truhd&type=upperBound&name=audio.channels&value=12&isRequired=false)"
+            #             )
 
         # AAC sample rate cannot be less than 22050hz (HLS is capable).
         if self.choice.audioStream is not None and self.choice.audioStream.samplingRate.asInt(22050) < 22050:

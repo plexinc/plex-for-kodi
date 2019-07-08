@@ -23,7 +23,6 @@ import preplayutils
 
 from lib.util import T
 
-
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
         self.episode = episode
@@ -118,6 +117,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self._setup()
         self.postSetup()
 
+    def doAutoPlay(self):
+        return self.playButtonClicked(force_episode=self.initialEpisode)
+
     def onReInit(self):
         self.selectEpisode()
 
@@ -186,7 +188,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
             elif action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) or not controlID:
+                if (not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
+                        self.OPTIONS_GROUP_ID)) or not controlID) and \
+                        not util.advancedSettings.fastBack:
                     if self.getProperty('on.extras'):
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
@@ -573,13 +577,14 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.delete()
 
     def delete(self):
+        # Delete disabled by mark
+        return		
         button = optionsdialog.show(
             T(32326, 'Really delete?'),
             T(32327, 'Are you sure you really want to delete this media?'),
             T(32328, 'Yes'),
             T(32329, 'No')
         )
-
         if button != 0:
             return
 
@@ -695,6 +700,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def setPostReloadItemInfo(self, video, mli):
         self.setItemAudioAndSubtitleInfo(video, mli)
         mli.setProperty('unwatched', not video.isWatched and '1' or '')
+        mli.setProperty('video.codec', video.videoCodecString())
         mli.setProperty('video.res', video.resolutionString())
         mli.setProperty('audio.codec', video.audioCodecString())
         mli.setProperty('audio.channels', video.audioChannelsString(metadata.apiTranslate))

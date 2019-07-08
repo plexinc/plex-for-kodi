@@ -97,9 +97,11 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.resetPassoutProtection()
                 if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                     if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
-                        self.setFocusId(self.OPTIONS_GROUP_ID)
-                        return
-
+                        if not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU:
+                            self.lastNonOptionsFocusID = self.lastFocusID
+                            self.setFocusId(self.OPTIONS_GROUP_ID)
+                            return
+    
                 if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
                     self.doClose()
                     return
@@ -411,7 +413,10 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         for ondeck in onDeckHub.items:
             title = ondeck.grandparentTitle or ondeck.title
             if ondeck.type == 'episode':
-                thumb = ondeck.thumb.asTranscodedImageURL(*self.ONDECK_DIM)
+                #thumb = ondeck.defaultArt.asTranscodedImageURL(*self.THUMB_POSTER_DIM)
+                thumb = ondeck.defaultArt.asTranscodedImageURL(*self.ONDECK_DIM)
+                #thumb = ondeck.thumb.asTranscodedImageURL(*self.ONDECK_DIM)
+                #thumb = ondeck.defaultThumb.asTranscodedImageURL(*self.THUMB_POSTER_DIM)
             else:
                 thumb = ondeck.defaultArt.asTranscodedImageURL(*self.ONDECK_DIM)
 

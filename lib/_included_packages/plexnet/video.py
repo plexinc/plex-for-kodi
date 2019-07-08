@@ -141,6 +141,13 @@ class Video(media.MediaItem):
         return server.buildUrl('/{0}/:/transcode/universal/start.m3u8?{1}'.format(streamtype, compat.urlencode(final)), includeToken=True)
         # path = "/video/:/transcode/universal/" + command + "?session=" + AppSettings().GetGlobal("clientIdentifier")
 
+    def videoCodecString(self):
+        res = self.media[0].videoCodec
+        if not res:
+            return ''
+        else:
+            return res.upper()
+		
     def resolutionString(self):
         res = self.media[0].videoResolution
         if not res:
@@ -150,6 +157,33 @@ class Video(media.MediaItem):
             return '{0}p'.format(self.media[0].videoResolution)
         else:
             return res.upper()
+
+    def durationString(self):
+        res = self.media[0].duration
+        if not res:
+            return ''
+
+        if res.isdigit():
+            mins = int(res) / 60000
+            return '{0} min'.format(mins)
+        else:
+            return res.upper()
+
+    def framerateString(self):
+        res = self.media[0].videoFrameRate
+        if not res:
+            return ''
+        return res.upper()
+
+    def aspectratioString(self):
+        AspectRatio = self.media[0].aspectRatio
+        if AspectRatio == "1.78":
+            AspectRatioString = "16x9"
+        elif AspectRatio == "1.33":
+            AspectRatioString = "4x3"
+        else:
+		    AspectRatioString = AspectRatio + ":1"
+        return AspectRatioString
 
     def audioCodecString(self):
         codec = (self.media[0].audioCodec or '').lower()
@@ -173,6 +207,20 @@ class Video(media.MediaItem):
         else:
             return ""
 
+    def summaryString(self):
+        summary = self.summary
+        return summary
+
+    def titleString(self):
+        title = self.title
+        return title
+
+    def airdateString(self):
+        if self.originallyAvailableAt == '':
+            return ''
+        else:	
+            return 'Aired: ' + self.originallyAvailableAt
+
     def available(self):
         return self.media()[0].isAccessible()
 
@@ -184,7 +232,7 @@ class PlayableVideo(Video):
         Video._setData(self, data)
         if self.isFullObject():
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
-
+            
     def reload(self, *args, **kwargs):
         if not kwargs.get('_soft'):
             if self.get('viewCount'):
@@ -212,11 +260,12 @@ class Movie(PlayableVideo):
 
     def _setData(self, data):
         PlayableVideo._setData(self, data)
+        # Mark: added to get genre on series grandparent item which is not a fullobject.
+        self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
         if self.isFullObject():
             self.collections = plexobjects.PlexItemList(data, media.Collection, media.Collection.TYPE, server=self.server)
             self.countries = plexobjects.PlexItemList(data, media.Country, media.Country.TYPE, server=self.server)
             self.directors = plexobjects.PlexItemList(data, media.Director, media.Director.TYPE, server=self.server)
-            self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
@@ -280,8 +329,9 @@ class Show(Video):
 
     def _setData(self, data):
         Video._setData(self, data)
+        # Mark: added to get genre on series grandparent item which is not a fullobject.
+        self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
         if self.isFullObject():
-            self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)

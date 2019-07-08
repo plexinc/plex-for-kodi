@@ -15,6 +15,7 @@ from kodijsonrpc import rpc
 import xbmc
 import xbmcgui
 import xbmcaddon
+import colors
 
 from plexnet import signalsmixin
 
@@ -27,6 +28,9 @@ PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
 
 SETTINGS_LOCK = threading.Lock()
 
+_splitver = xbmc.getInfoLabel('System.BuildVersion').split()[0].split(".")
+KODI_VERSION_MAJOR, KODI_VERSION_MINOR = int(_splitver[0].split("-")[0]), int(_splitver[1].split("-")[0])
+
 
 class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
     def watchStatusChanged(self):
@@ -35,6 +39,8 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
     def onNotification(self, sender, method, data):
         if sender == 'script.plex' and method.endswith('RESTORE'):
             from windows import kodigui
+            getAdvancedSettings()
+            populateTimeFormat()
             xbmc.executebuiltin('ActivateWindow({0})'.format(kodigui.BaseFunctions.lastWinID))
 
 
@@ -49,11 +55,70 @@ def LOG(msg, level=xbmc.LOGNOTICE):
     xbmc.log('script.plex: {0}'.format(msg), level)
 
 
+def getSetting(key, default=None):
+    with SETTINGS_LOCK:
+        setting = ADDON.getSetting(key)
+        return _processSetting(setting, default)
+
+
+def _processSetting(setting, default):
+    if not setting:
+        return default
+    if isinstance(default, bool):
+        return setting.lower() == 'true'
+    elif isinstance(default, float):
+        return float(setting)
+    elif isinstance(default, int):
+        return int(float(setting or 0))
+    elif isinstance(default, list):
+        if setting:
+            return json.loads(binascii.unhexlify(setting))
+        else:
+            return default
+
+    return setting
+
+
+class AdvancedSettings(object):
+    """
+    @DynamicAttrs
+    """
+
+    _proxiedSettings = (
+        ("debug", False),
+        ("kodi_skip_stepping", False),
+        ("auto_seek", True),
+        ("auto_seek_delay", 0),
+        ("dynamic_timeline_seek", False),
+        ("fast_back", False),
+        ("dynamic_backgrounds", False),
+        ("background_art_blur_amount", 128),
+        ("background_art_opacity_amount", 60),
+        ("screensaver_quiz", False),
+    )
+
+    def __init__(self):
+        # register every known setting camelCased as an attribute to this instance
+        for setting, default in self._proxiedSettings:
+            name_split = setting.split("_")
+            setattr(self, name_split[0] + ''.join(x.capitalize() or '_' for x in name_split[1:]),
+                    getSetting(setting, default))
+
+
+advancedSettings = AdvancedSettings()
+
+
+def getAdvancedSettings():
+    # yes, global, hang me!
+    global advancedSettings
+    advancedSettings = AdvancedSettings()
+
+
 def DEBUG_LOG(msg):
     if _SHUTDOWN:
         return
 
-    if not getSetting('debug', False) and not xbmc.getCondVisibility('System.GetBool(debug.showloginfo)'):
+    if not advancedSettings.debug and not xbmc.getCondVisibility('System.GetBool(debug.showloginfo)'):
         return
 
     LOG(msg)
@@ -82,30 +147,6 @@ def ERROR(txt='', hide_tb=False, notify=False):
 
 def TEST(msg):
     xbmc.log('---TEST: {0}'.format(msg), xbmc.LOGNOTICE)
-
-
-def getSetting(key, default=None):
-    with SETTINGS_LOCK:
-        setting = ADDON.getSetting(key)
-        return _processSetting(setting, default)
-
-
-def _processSetting(setting, default):
-    if not setting:
-        return default
-    if isinstance(default, bool):
-        return setting.lower() == 'true'
-    elif isinstance(default, float):
-        return float(setting)
-    elif isinstance(default, int):
-        return int(float(setting or 0))
-    elif isinstance(default, list):
-        if setting:
-            return json.loads(binascii.unhexlify(setting))
-        else:
-            return default
-
-    return setting
 
 
 def setSetting(key, value):
@@ -332,6 +373,16 @@ def timeInDayLocalSeconds():
     return int(time.time() - sod)
 
 
+def getKodiSkipSteps():
+    try:
+        return rpc.Settings.GetSettingValue(setting="videoplayer.seeksteps")["value"]
+    except:
+        return
+
+
+kodiSkipSteps = getKodiSkipSteps()
+
+
 CRON = None
 
 
@@ -446,6 +497,44 @@ class Cron(threading.Thread):
             self._receivers.pop(self._receivers.index(receiver))
 
 
+
+def getTimeFormat():
+    """
+    Get global time format.
+    Kodi's time format handling is broken right now, as they return incompatible formats for strftime.
+    %H%H is being returned for manually set zero-padded values, in case of a regional zero-padded hour component,
+    only %H is returned.
+
+    For now, sail around that by testing the current time for padded hour values.
+
+    Tests of the values returned by xbmc.getRegion("time"):
+    %I:%M:%S %p = h:mm:ss, non-zero-padded, 12h PM
+    %I:%M:%S = 12h, h:mm:ss, non-zero-padded, regional
+    %I%I:%M:%S = 12h, zero padded, hh:mm:ss
+    %H%H:%M:%S = 24h, zero padded, hh:mm:ss
+    %H:%M:%S = 24h, zero padded, regional, regional (central europe)
+
+    :return: tuple of strftime-compatible format, boolean padHour
+    """
+    origFmt = xbmc.getRegion('time')
+    fmt = origFmt.replace("%H%H", "%H").replace("%I%I", "%I")
+
+    # Checking for %H%H or %I%I only would be the obvious way here to determine whether the hour should be padded,
+    # but the formats returned for regional settings with padding only have %H in them. This seems like a Kodi bug.
+    # Use a fallback.
+    currentTime = unicode(xbmc.getInfoLabel('System.Time'), encoding="utf-8")
+    padHour = "%H%H" in origFmt or "%I%I" in origFmt or (currentTime[0] == "0" and currentTime[1] != ":")
+    return fmt, padHour
+
+
+timeFormat, padHour = getTimeFormat()
+
+
+def populateTimeFormat():
+    global timeFormat, padHour
+    timeFormat, padHour = getTimeFormat()
+
+
 def getPlatform():
     for key in [
         'System.Platform.Android',
@@ -460,12 +549,23 @@ def getPlatform():
         if xbmc.getCondVisibility(key):
             return key.rsplit('.', 1)[-1]
 
+
 def getProgressImage(obj):
     if not obj.get('viewOffset'):
         return ''
     pct = int((obj.viewOffset.asInt() / obj.duration.asFloat()) * 100)
     pct = pct - pct % 2  # Round to even number - we have even numbered progress only
+    pct = max(pct, 2)
     return 'script.plex/progress/{0}.png'.format(pct)
+
+
+def backgroundFromArt(art, width=1920, height=1080, background=colors.noAlpha.Background):
+    return art.asTranscodedImageURL(
+        width, height,
+        blur=advancedSettings.backgroundArtBlurAmount,
+        opacity=advancedSettings.backgroundArtOpacityAmount,
+        background=background
+    )
 
 
 def trackIsPlaying(track):

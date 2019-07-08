@@ -21,6 +21,7 @@ from lib import metadata
 
 from lib.util import T
 
+VIDEO_RELOAD_KW = dict(includeRelated=1, includeRelatedCount=10)
 
 class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'
@@ -98,7 +99,9 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.setFocusId(self.lastFocusID)
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+              if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
+                        self.OPTIONS_GROUP_ID)) and \
+                        (not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU):
                     if self.getProperty('on.extras'):
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
@@ -549,6 +552,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 mli.setProperty(
                     'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(extra.type in ('show', 'season', 'episode') and 'show' or 'movie')
                 )
+                #mli.setProperty('ExtLabel',u'{0} \u2022 {1} \u2022 {2}'.format(extra.resolutionString(), extra.audioChannelsString(metadata.apiTranslate), extra.durationString()))
                 items.append(mli)
                 idx += 1
 

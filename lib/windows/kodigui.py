@@ -17,7 +17,6 @@ class BaseFunctions:
     height = 720
 
     usesGenerate = False
-    lastWinID = None
 
     def __init__(self):
         self.isOpen = True
@@ -93,7 +92,6 @@ class BaseWindow(xbmcgui.WindowXML, BaseFunctions):
 
     def onInit(self):
         self._winID = xbmcgui.getCurrentWindowId()
-        BaseFunctions.lastWinID = self._winID
         if self.started:
             self.onReInit()
         else:
@@ -145,9 +143,9 @@ class BaseDialog(xbmcgui.WindowXMLDialog, BaseFunctions):
 
     def onInit(self):
         self._winID = xbmcgui.getCurrentWindowDialogId()
-        BaseFunctions.lastWinID = self._winID
         if self.started:
             self.onReInit()
+
         else:
             self.started = True
             self.onFirstInit()
@@ -230,6 +228,8 @@ class ManagedListItem(object):
         self.properties = {}
         self.label = label
         self.label2 = label2
+        self.label3 = ""
+        self.summary = ""
         self.iconImage = iconImage
         self.thumbnailImage = thumbnailImage
         self.path = path
@@ -282,6 +282,9 @@ class ManagedListItem(object):
     def clear(self):
         self.label = ''
         self.label2 = ''
+        self.label3 = ''
+        self.summary = ''
+        self.airdate = ''
         self.iconImage = ''
         self.thumbnailImage = ''
         self.path = ''
@@ -305,6 +308,15 @@ class ManagedListItem(object):
 
     def getLabel2(self):
         return self.label2
+
+    def getLabel3(self):
+        return self.label3
+ 
+    def getSummary(self):
+        return self.summary
+
+    def getAirDate(self):
+        return self.airdate
 
     def getProperty(self, key):
         return self.properties.get(key, '')
@@ -341,6 +353,18 @@ class ManagedListItem(object):
     def setLabel2(self, label):
         self.label2 = label
         return self.listItem.setLabel2(label)
+
+    def setLabel3(self, label):
+        self.label3 = label
+        return self.listItem.setProperty("label3", label)
+
+    def setSummary(self, label):
+        self.summary = label
+        return self.listItem.setProperty("summary", label)
+
+    def setAirDate(self, label):
+        self.airdate = label
+        return self.listItem.setProperty("airdate", label)
 
     def setMimeType(self, mimetype):
         return self.listItem.setMimeType(mimetype)

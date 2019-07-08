@@ -10,6 +10,7 @@ from lib import util
 from lib import backgroundthread
 from lib import colors
 from lib import player
+from lib import metadata
 
 import plexnet
 from plexnet import plexapp
@@ -21,11 +22,12 @@ import opener
 import search
 import optionsdialog
 
+
 from lib.util import T
 
 
 HUBS_REFRESH_INTERVAL = 300  # 5 Minutes
-HUB_PAGE_SIZE = 10
+HUB_PAGE_SIZE = 50
 
 MOVE_SET = frozenset(
     (
@@ -232,21 +234,23 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         'home.ondeck': {'index': 1, 'with_progress': True, 'do_updates': True, 'text2lines': True},
         'home.television.recent': {'index': 2, 'text2lines': True, 'text2lines': True},
         'home.movies.recent': {'index': 4, 'text2lines': True},
+        '''	Mark: dont want the following items on home page.	
         'home.music.recent': {'index': 5, 'text2lines': True},
         'home.videos.recent': {'index': 6, 'ar16x9': True},
         'home.playlists': {'index': 9},
         'home.photos.recent': {'index': 10, 'text2lines': True},
+        '''
         # SHOW
         'tv.ondeck': {'index': 1, 'with_progress': True, 'do_updates': True, 'text2lines': True},
-        'tv.recentlyaired': {'index': 2, 'text2lines': True},
-        'tv.recentlyadded': {'index': 3, 'text2lines': True},
-        'tv.inprogress': {'index': 4, 'with_progress': True, 'do_updates': True, 'text2lines': True},
-        'tv.startwatching': {'index': 7},
-        'tv.rediscover': {'index': 8},
-        'tv.morefromnetwork': {'index': 13},
-        'tv.toprated': {'index': 14},
-        'tv.moreingenre': {'index': 15},
-        'tv.recentlyviewed': {'index': 16, 'text2lines': True},
+        'tv.recentlyviewed': {'index': 2, 'text2lines': True},
+        'tv.recentlyaired': {'index': 3, 'text2lines': True},
+        'tv.recentlyadded': {'index': 4, 'text2lines': True},
+        'tv.inprogress': {'index': 5, 'with_progress': True, 'do_updates': True, 'text2lines': True},
+        'tv.startwatching': {'index': 7, 'text2lines': True},
+        'tv.rediscover': {'index': 8, 'text2lines': True},
+        'tv.morefromnetwork': {'index': 13, 'text2lines': True},
+        'tv.toprated': {'index': 14, 'text2lines': True},
+        'tv.moreingenre': {'index': 15, 'text2lines': True},
         # MOVIE
         'movie.inprogress': {'index': 0, 'with_progress': True, 'with_art': True, 'do_updates': True, 'text2lines': True},
         'movie.recentlyreleased': {'index': 1, 'text2lines': True},
@@ -429,20 +433,37 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.hubItemClicked(controlID, auto_play=True)
                     return
 
-            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and self.getProperty('off.sections'):
-                    self.setFocusId(self.OPTIONS_GROUP_ID)
-                    return
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_CONTEXT_MENU):
+                optionsFocused = xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID))
+                offSections = util.getGlobalProperty('off.sections')
+                if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
+                    if self.getFocusId() == self.USER_LIST_ID:
+                        self.setFocusId(self.USER_BUTTON_ID)
+                        return
+                    elif self.getFocusId() == self.SERVER_LIST_ID:
+                        self.setFocusId(self.SERVER_BUTTON_ID)
+                        return
 
-            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
-                if self.getFocusId() == self.USER_LIST_ID:
-                    self.setFocusId(self.USER_BUTTON_ID)
-                    return
-                elif self.getFocusId() == self.SERVER_LIST_ID:
-                    self.setFocusId(self.SERVER_BUTTON_ID)
-                    return
+                    if util.advancedSettings.fastBack and not optionsFocused and offSections \
+                            and self.lastFocusID not in (self.USER_BUTTON_ID, self.SERVER_BUTTON_ID,
+                                                         self.SEARCH_BUTTON_ID, self.SECTION_LIST_ID):
+                        self.setProperty('hub.focus', '0')
+                        self.setFocusId(self.SECTION_LIST_ID)
+                        return
 
-                if not self.confirmExit():
+                if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+                    if not optionsFocused and offSections \
+                            and (not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU):
+                        self.lastNonOptionsFocusID = self.lastFocusID
+                        self.setFocusId(self.OPTIONS_GROUP_ID)
+                        return
+                    elif action == xbmcgui.ACTION_CONTEXT_MENU and optionsFocused and offSections \
+                            and self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
+                if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU) and not self.confirmExit():
                     return
         except:
             util.ERROR()
@@ -495,8 +516,8 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         return button == 0
 
     def searchButtonClicked(self):
-        self.processCommand(search.dialog(self))
-
+        self.processCommand(search.dialog(self)) 
+   
     def updateOnDeckHubs(self, **kwargs):
         tasks = [UpdateHubTask().setup(hub, self.updateHubCallback) for hub in self.updateHubs.values()]
         self.tasks += tasks
@@ -582,8 +603,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def checkHubItem(self, controlID):
         control = self.hubControls[controlID - 400]
         mli = control.getSelectedItem()
+
         if not mli or not mli.getProperty('is.end'):
             return
+
 
         mli.setBoolProperty('is.updating', True)
         self.cleanTasks()
@@ -681,7 +704,11 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             self.tasks = [SectionHubsTask().setup(s, self.sectionHubsCallback) for s in [HomeSection, PlaylistsSection] + sections]
             backgroundthread.BGThreader.addTasks(self.tasks)
 
+        # This is the library sections at the top
         for section in sections:
+            # Skip libraries with - in the name, it is how we designate so master admin account doesn't have to see every library		
+            if '-' in section.title:
+                continue
             mli = kodigui.ManagedListItem(section.title, thumbnailImage='script.plex/home/type/{0}.png'.format(section.type), data_source=section)
             mli.setProperty('item', '1')
             items.append(mli)
@@ -802,6 +829,10 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         else:
             title = obj.get('grandparentTitle') or obj.get('parentTitle') or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
+        mli.setSummary(obj.summary)
+        mli.setProperty('summarystring', obj.summary)
+        mli.setProperty('title', u'{0}'.format(title))
+        mli.setProperty('episodetitle', u'{0}'.format(title))
         return mli
 
     def createParentedListItem(self, obj, thumb_w, thumb_h, with_parent_title=False):
@@ -810,16 +841,48 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
         else:
             title = obj.parentTitle or obj.title or ''
         mli = kodigui.ManagedListItem(title, thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
+        mli.setSummary(obj.summary)
+        mli.setProperty('summarystring', obj.summary)
+        mli.setProperty('title', u'{0}'.format(title))
+        mli.setProperty('episodetitle', u'{0}'.format(title))
         return mli
 
     def createSimpleListItem(self, obj, thumb_w, thumb_h):
         mli = kodigui.ManagedListItem(obj.title or '', thumbnailImage=obj.defaultThumb.asTranscodedImageURL(thumb_w, thumb_h), data_source=obj)
         return mli
 
+    def getFriendlyAudioString(self, obj):
+        Channels = obj.audioChannelsString(metadata.apiTranslate)
+        Codec = obj.audioCodecString()
+        AudioString = u'{0} \u2022 {1}'.format(Codec, Channels)
+        if Channels == "7.1":
+            if Codec == "TRUEHD":
+                AudioString = "ATMOS"
+            elif Codec == "DTS":
+                AudioString = "DTS-X"
+        return AudioString
+
     def createEpisodeListItem(self, obj, wide=False):
         mli = self.createGrandparentedListItem(obj, *self.THUMB_POSTER_DIM)
         if obj.index:
+            FriendlyAudioString = self.getFriendlyAudioString(obj)
             subtitle = u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), obj.parentIndex, T(32311, 'E'), obj.index)
+            if FriendlyAudioString == "ATMOS" or FriendlyAudioString == "DTS-X":
+                mli.setProperty('label3', u'{0} \u2022 {1} \u2022 {2}'.format(obj.resolutionString(), FriendlyAudioString, obj.durationString()))
+            else:
+                mli.setProperty('label3', u'{0} \u2022 {1} \u2022 {2}'.format(obj.resolutionString(), obj.audioChannelsString(metadata.apiTranslate), obj.durationString()))
+            mli.setSummary(obj.summaryString())
+            mli.setAirDate(obj.airdateString())
+            mli.setProperty('summarystring', obj.summaryString())
+            mli.setProperty('audioinfo', FriendlyAudioString)
+            mli.setProperty('videoinfo', u'{0} \u2022 {1}'.format(obj.videoCodecString(), obj.resolutionString()))
+            mli.setProperty('title', u'{0}'.format(obj.titleString()))
+            mli.setProperty('episodetitle', u'S{0}E{1} \u2022 {2}'.format(obj.parentIndex, obj.index, obj.titleString()))
+            mli.setProperty('contentrating', u'{0}'.format(obj.contentRating))
+            mli.setProperty('rating', u'{0}'.format(obj.rating))
+            mli.setProperty('framerate', u'{0}'.format(obj.framerateString()))
+            mli.setProperty('aspectratio', u'{0}'.format(obj.aspectratioString()))
+            mli.setProperty('fileinfo', u'{0} \u2022 {1} \u2022 {2} \u2022 {3}'.format(obj.videoCodecString(), obj.resolutionString(), obj.audioCodecString(), obj.audioChannelsString(metadata.apiTranslate)))
         else:
             subtitle = obj.originallyAvailableAt.asDatetime('%m/%d/%y')
 
@@ -835,8 +898,14 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
 
     def createSeasonListItem(self, obj, wide=False):
         mli = self.createParentedListItem(obj, *self.THUMB_POSTER_DIM)
-        # mli.setLabel2('Season {0}'.format(obj.index))
+        show = obj.show()
+        genres = u' / '.join([g.tag for g in show.genres][:2])
+        mli.setProperty('videoinfo', genres)
+        #subtitle = show.originallyAvailableAt.asDatetime('%m/%d/%y')
+        mli.setLabel2(u'Season {0}'.format(obj.index))
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
+        mli.setProperty('summarystring', show.get('summary'))
+        mli.setAirDate('Show Description') # air date is being used because this string is last in header
         if not obj.isWatched:
             mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
         return mli
@@ -844,13 +913,44 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
     def createMovieListItem(self, obj, wide=False):
         mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
         mli.setLabel2(obj.year)
+        FriendlyAudioString = self.getFriendlyAudioString(obj)
+        if FriendlyAudioString == "ATMOS" or FriendlyAudioString == "DTS-X":
+            mli.setProperty('label3', u'{0} \u2022 {1} \u2022 {2}'.format(obj.resolutionString(), FriendlyAudioString, obj.durationString()))
+        else:
+            mli.setProperty('label3', u'{0} \u2022 {1} \u2022 {2}'.format(obj.resolutionString(), obj.audioChannelsString(metadata.apiTranslate), obj.durationString()))
+        mli.setSummary(obj.summaryString())
+        mli.setProperty('summarystring', obj.summaryString())
+        mli.setProperty('audioinfo', self.getFriendlyAudioString(obj))
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/movie.png')
+        mli.setProperty('videoinfo', u'{0} \u2022 {1}'.format(obj.videoCodecString(), obj.resolutionString()))
+        mli.setProperty('fileinfo', u'{0} \u2022 {1} \u2022 {2} \u2022 {3}'.format(obj.videoCodecString(), obj.resolutionString(), obj.audioCodecString(), obj.audioChannelsString(metadata.apiTranslate)))
+        mli.setProperty('title', u'{0}'.format(obj.titleString()))
+        mli.setProperty('episodetitle', u'{0}'.format(obj.titleString()))
+        mli.setProperty('contentrating', u'{0}'.format(obj.contentRating))
+        mli.setProperty('rating', u'{0}'.format(obj.rating))
+        mli.setProperty('framerate', u'{0}'.format(obj.framerateString()))
+        mli.setProperty('aspectratio', u'{0}'.format(obj.aspectratioString()))
+        mli.setAirDate(u'{0} \u2022 {1}'.format(obj.aspectratioString(), obj.durationString()))
         if not obj.isWatched:
             mli.setProperty('unwatched', '1')
         return mli
 
     def createShowListItem(self, obj, wide=False):
         mli = self.createSimpleListItem(obj, *self.THUMB_POSTER_DIM)
+        mli.setLabel2(obj.year)
+        if obj.childCount == '1':
+            mli.setProperty('label3', "{0} Episodes".format(obj.leafCount))
+        else:
+            mli.setProperty('label3', u'{0} Seasons \u2022 {1} Episodes'.format(obj.childCount, obj.leafCount))
+        genres = u' / '.join([g.tag for g in obj.genres][:2])
+        mli.setProperty('videoinfo', genres)
+  
+		#mli.setProperty('seasons', obj.childCount)
+		#mli.setProperty('episodes', obj.leafCount)
+        mli.setSummary(obj.summary)
+        mli.setProperty('summarystring', obj.summaryString())
+        mli.setProperty('title', u'{0}'.format(obj.titleString()))
+        mli.setProperty('episodetitle', u'{0}'.format(obj.titleString()))
         mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
         if not obj.isWatched:
             mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))

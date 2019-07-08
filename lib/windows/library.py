@@ -12,6 +12,7 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import backgroundthread
+from lib import metadata
 
 import busy
 import subitems
@@ -512,7 +513,8 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and \
+                        (not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU):
                     if xbmc.getCondVisibility('Integer.IsGreater(Container(101).ListItem.Property(index),5)'):
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
@@ -1567,6 +1569,17 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                         mli.setThumbnailImage(obj.defaultThumb.asTranscodedImageURL(*thumbDim))
                         mli.dataSource = obj
                         mli.setProperty('summary', obj.get('summary'))
+                        mli.setProperty('seasons', obj.childCount)
+                        mli.setProperty('episodes', obj.leafCount)
+                        mli.setProperty('year', obj.year)
+                        mli.setProperty('studio', obj.studio)
+                        mli.setProperty('rating', obj.rating)
+                        if obj.duration == '':
+                            mli.setProperty('duration', "0 Mins")
+                        else:
+                            mli.setProperty('duration', str(int(int(obj.duration) / 60000)) + " Mins")
+                        genres = u' / '.join([g.tag for g in obj.genres][:3])
+                        mli.setProperty('genres', genres)
 
                         if self.chunkMode:
                             mli.setProperty('key', self.chunkMode.getKey(pos))
@@ -1586,11 +1599,26 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                         else:
                             mli.setProperty('index', '')
 
+                    if ITEM_TYPE == 'movie':
+                        FriendlyAudioString = self.getFriendlyAudioString(obj)
+                        mli.setProperty('mediainfo', u'{0} \u2022 {1} \u2022 {2}'.format(obj.videoCodecString(), obj.resolutionString(), FriendlyAudioString))
+
                     pos += 1
+					
+    def getFriendlyAudioString(self, obj):
+        Channels = obj.audioChannelsString(metadata.apiTranslate)
+        Codec = obj.audioCodecString()
+        AudioString = u'{0} \u2022 {1}'.format(Codec, Channels)
+        if Channels == "7.1":
+            if Codec == "TRUEHD":
+                AudioString = "ATMOS"
+            elif Codec == "DTS":
+                AudioString = "DTS-X"
+        return AudioString
 
 
 class PostersWindow(kodigui.ControlledWindow):
-    xmlFile = 'script-plex-posters.xml'
+    xmlFile = 'script-plex-posters-wide.xml'
     path = util.ADDON.getAddonInfo('path')
     theme = 'Main'
     res = '1080i'
@@ -1622,6 +1650,38 @@ class PostersWindow(kodigui.ControlledWindow):
 
     CUSTOM_SCOLLBAR_BUTTON_ID = 951
 
+class PostersWindowSmall(kodigui.ControlledWindow):
+    xmlFile = 'script-plex-posters.xml'
+    path = util.ADDON.getAddonInfo('path')
+    theme = 'Main'
+    res = '1080i'
+    width = 1920
+    height = 1080
+
+    POSTERS_PANEL_ID = 101
+    KEY_LIST_ID = 151
+    SCROLLBAR_ID = 152
+
+    OPTIONS_GROUP_ID = 200
+
+    HOME_BUTTON_ID = 201
+    SEARCH_BUTTON_ID = 202
+    PLAYER_STATUS_BUTTON_ID = 204
+
+    SORT_BUTTON_ID = 210
+    FILTER1_BUTTON_ID = 211
+    FILTER2_BUTTON_ID = 212
+    ITEM_TYPE_BUTTON_ID = 312
+
+    PLAY_BUTTON_ID = 301
+    SHUFFLE_BUTTON_ID = 302
+    OPTIONS_BUTTON_ID = 303
+    VIEWTYPE_BUTTON_ID = 304
+
+    VIEWTYPE = 'panel'
+    MULTI_WINDOW_ID = 0
+
+    CUSTOM_SCOLLBAR_BUTTON_ID = 951
 
 class PostersChunkedWindow(PostersWindow):
     xmlFile = 'script-plex-listview-16x9-chunked.xml'
@@ -1667,8 +1727,9 @@ class ListViewSquareChunkedWindow(PostersWindow):
 
 VIEWS_POSTER = {
     'panel': PostersWindow,
+    #'panel': PostersWindowSmall,
     'list': ListView16x9Window,
-    'all': (PostersWindow, ListView16x9Window)
+    'all': (PostersWindow, ListView16x9Window)#, PostersWindowSmall)
 }
 
 VIEWS_POSTER_CHUNKED = {

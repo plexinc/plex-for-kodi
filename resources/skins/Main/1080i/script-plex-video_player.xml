@@ -12,7 +12,7 @@
             <posy>0</posy>
             <width>1920</width>
             <height>1080</height>
-            <texture background="true" fallback="script.plex/home/background-fallback.png">$INFO[Window.Property(background)]</texture>
+            <texture background="true" fallback="script.plex/home/background-fallback.png"></texture>
         </control>
         <control type="group">
             <visible>!String.IsEmpty(Window.Property(post.play))</visible>
@@ -22,7 +22,7 @@
                     <posy>0</posy>
                     <width>1920</width>
                     <height>1080</height>
-                    <texture  fallback="script.plex/home/background-fallback.png" background="true">$INFO[Window.Property(post.play.background)]</texture>
+                    <texture  fallback="script.plex/home/background-fallback.png" background="true"></texture>
                 </control>
             </control>
 
@@ -1026,13 +1026,6 @@
                         <width>1920</width>
                         <height>1080</height>
                         <texture>script.plex/home/background-fallback.png</texture>
-                    </control>
-                    <control type="image">
-                        <posx>0</posx>
-                        <posy>0</posy>
-                        <width>1920</width>
-                        <height>1080</height>
-                        <texture background="true">$INFO[Window.Property(background)]</texture>
                     </control>
                 </control>
                 <control type="image">

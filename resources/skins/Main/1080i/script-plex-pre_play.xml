@@ -13,15 +13,7 @@
                 <posy>0</posy>
                 <width>1920</width>
                 <height>1080</height>
-                <texture>script.plex/home/background-fallback.png</texture>
-            </control>
-            <control type="image">
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>1920</width>
-                <height>1080</height>
-                <fadetime>1000</fadetime>
-                <texture  background="true">$INFO[Window.Property(background)]</texture>
+                <texture background="true">script.plex/home/background-fallback.png</texture>
             </control>
         </control>
 
@@ -495,12 +487,24 @@
                                         <posx>0</posx>
                                         <posy>180</posy>
                                         <width>299</width>
-                                        <height>60</height>
+                                        <height>50</height>
                                         <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
+									<!-- 
+                                    <control type="textbox">
+                                        <posx>0</posx>
+                                        <posy>230</posy>
+                                        <width>299</width>
+                                        <height>30</height>
+                                        <font>font08</font>
+                                        <align>center</align>
+                                        <textcolor>FFFFFFFF</textcolor>
+                                        <label>$INFO[ListItem.Property(ExtLabel)]</label>
+                                    </control>
+									-->
                                 </control>
                             </control>
                         </itemlayout>
@@ -719,7 +723,7 @@
                                             </control>
                                         </control>
                                         <control type="label">
-                                            <scroll>false</scroll>
+                                            <scroll>Control.HasFocus(401)</scroll>
                                             <posx>0</posx>
                                             <posy>369</posy>
                                             <width>244</width>
@@ -872,7 +876,7 @@
                                             <posx>0</posx>
                                             <posy>253</posy>
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(403)</scroll>
                                                 <posx>0</posx>
                                                 <posy>0</posy>
                                                 <width>244</width>

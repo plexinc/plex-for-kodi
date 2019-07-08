@@ -1,14 +1,8 @@
-import xbmc
-
-if xbmc.getInfoLabel('Window(10000).Property(script.plex.running)') == "1":
-    command = 'XBMC.NotifyAll({0},{1},{2})'.format('script.plex', 'RESTORE', None)
-    xbmc.executebuiltin(command)
-    raise SystemExit
-
 import gc
 import atexit
 import threading
 
+import xbmc
 import plex
 
 from plexnet import plexapp
@@ -45,8 +39,8 @@ def realExit():
 
 def signout():
     util.setSetting('auth.token', '')
-    util.DEBUG_LOG('Main: Signing out...')
-    plexapp.ACCOUNT.signOut()
+    util.DEBUG_LOG('Main: Signing out...disabled by mark')
+    #plexapp.ACCOUNT.signOut()
 
 
 def main():
@@ -132,6 +126,9 @@ def _main():
     except:
         util.ERROR()
     finally:
+        util.DEBUG_LOG('Main: Killing Kodi for fast shutdown...')
+        import os
+        os.system('taskkill /IM kodi.exe')		
         util.DEBUG_LOG('Main: SHUTTING DOWN...')
         background.setShutdown()
         player.shutdown()
@@ -144,7 +141,6 @@ def _main():
         background.setSplash(False)
 
         util.DEBUG_LOG('FINISHED')
-
         from windows import kodigui
         kodigui.MONITOR = None
         util.shutdown()

@@ -11,6 +11,8 @@ from plexnet import plexplayer
 from plexnet import plexapp
 from plexnet import signalsmixin
 from plexnet import util as plexnetUtil
+import time
+import os
 
 FIVE_MINUTES_MILLIS = 300000
 
@@ -144,6 +146,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.bifURL = ''
         self.title = ''
         self.title2 = ''
+        self.startplaytime = 0		
         self.reset()
 
     def reset(self):
@@ -192,11 +195,22 @@ class SeekPlayerHandler(BasePlayerHandler):
         return True
 
     def showPostPlay(self):
+        util.DEBUG_LOG('showPostPlay Entering')
         if not self.shouldShowPostPlay():
             return
 
         self.seeking = self.SEEK_POST_PLAY
         self.hideOSD(delete=True)
+        		
+        EndStamp = time.time()
+        PlayedTimeSeconds = EndStamp - self.startplaytime
+        TargetTime = FIVE_MINUTES_MILLIS / 1000
+
+        util.DEBUG_LOG('showPostPlay - played for {0} Seconds'.format(PlayedTimeSeconds))
+        util.DEBUG_LOG('showPostPlay - EndStamp: {0} StartStamp: {1} Target: {2}'.format(EndStamp, self.startplaytime, FIVE_MINUTES_MILLIS))
+        if PlayedTimeSeconds >= TargetTime:
+            util.DEBUG_LOG('showPostPlay - marking as watched')
+            self.player.video.markWatched()
 
         self.player.trigger('post.play', video=self.player.video, playlist=self.playlist, handler=self)
 
@@ -299,6 +313,16 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackStarted(self):
         util.DEBUG_LOG('SeekHandler: onPlayBackStarted - mode={0}'.format(self.mode))
+        self.startplaytime = time.time() #store the start time stamp
+        ratingKey = self.player.video.ratingKey
+        util.DEBUG_LOG('SeekHandler: onPlayBackStarted - ratingKey={0}'.format(ratingKey))
+        if os.path.isfile("c:\\htpc\\plexapi\\plexfile.txt"):
+            util.DEBUG_LOG('SeekHandler: deleting existing plexfile.txt')
+            os.remove('c:\\htpc\\plexapi\\plexfile.txt')
+
+        if os.path.isfile("c:\\htpc\\plexapi\\getplexfilefromid.exe"):
+            util.DEBUG_LOG('SeekHandler: running getplexfilefromid.exe since the file exists')
+            os.system('c:\\htpc\\plexapi\\getplexfilefromid.exe {0}'.format(ratingKey))
 
         self.updateNowPlaying(force=True, refreshQueue=True)
 
@@ -610,6 +634,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     STATE_BUFFERING = "buffering"
 
     def init(self):
+        self.playstart = 0
+        self.playend = 0
         self._closed = False
         self._nextItem = None
         self.started = False
@@ -693,6 +719,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         xbmc.Player.play(self, *args, **kwargs)
 
     def playVideo(self, video, resume=False, force_update=False, session_id=None, handler=None):
+        util.DEBUG_LOG('playVideo called: {0}'.format(video))
         self.handler = handler or SeekPlayerHandler(self, session_id)
         self.video = video
         self.open()
@@ -863,6 +890,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def onPlayBackStarted(self):
         self.started = True
+        #self.playstart = self.getTime()
         util.DEBUG_LOG('Player - STARTED')
         self.trigger('playback.started')
         if not self.handler:
@@ -897,6 +925,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         util.DEBUG_LOG('Player - ENDED' + (not self.started and ': FAILED' or ''))
         if not self.handler:
             return
+        #self.playend = self.getTime()
+        #util.DEBUG_LOG('Time played: ' + str(self.playstart))
         self.handler.onPlayBackEnded()
 
     def onPlayBackSeek(self, time, offset):

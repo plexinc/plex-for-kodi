@@ -8,6 +8,18 @@
     <!-- <setting id="playback_directplay_force" type="bool" label="32027" default="false" enable="eq(-1,true)" subsetting="true" /> -->
     <setting id="debug" type="bool" label="32024" default="false" />
   </category>
+  <category label="32464">
+    <setting id="auto_seek" type="bool" label="32466" default="true" />
+    <setting id="auto_seek_delay" subsetting="true" enable="eq(-1,true)" type="slider" label="32487" default="1" range="0,.1,5" option="float" />
+    <setting id="kodi_skip_stepping" type="bool" label="32465" default="false" />
+    <setting id="dynamic_timeline_seek" type="bool" label="32471" default="false" />
+  </category>
+  <category label="32467">
+    <setting id="fast_back" type="bool" label="32485" default="false" />
+    <setting id="dynamic_backgrounds" type="bool" label="32468" default="false" />
+    <setting id="background_art_blur_amount" type="slider" label="32469" default="128" range="0,256" />
+    <setting id="background_art_opacity_amount" type="slider" label="32470" default="60" range="0,100" />
+  </category>
   <category label="32488">
     <setting id="screensaver_quiz" type="bool" label="32489" default="false" />
   </category>

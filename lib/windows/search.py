@@ -189,7 +189,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         )
 
         self.edit = kodigui.SafeControlEdit(650, 651, self, key_callback=self.updateFromEdit, grab_focus=True)
-        self.edit.setCompatibleMode(rpc.Application.GetProperties(properties=["version"])["major"] < 17)
+        self.edit.setCompatibleMode(rpc.Application.GetProperties(properties=["version"])["version"]["major"] < 17)
 
         self.setProperty('search.section', 'all')
         self.updateQuery()
@@ -221,7 +221,12 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
         if 2099 < controlID < 2200:
             self.setProperty('hub.focus', str(controlID - 2099))
 
-    def updateFromEdit(self):
+    def updateFromEdit(self, actionID):
+        if actionID == xbmcgui.ACTION_PREVIOUS_MENU:
+            self.isActive = False
+            self.doClose()
+            return
+
         self.updateQuery()
 
     def updateQuery(self):

@@ -56,7 +56,7 @@
                 <posy>0</posy>
                 <width>600</width>
                 <height>924</height>
-                <onup condition="StringCompare(Window.Property(close.direction),top)">Close</onup>
+                <onup condition="String.IsEqual(Window.Property(close.direction),top)">Close</onup>
                 <onup condition="!String.IsEqual(Window.Property(close.direction),top)">noop</onup>
                 <onleft condition="String.IsEqual(Window.Property(close.direction),left)">Close</onleft>
                 <onright condition="String.IsEqual(Window.Property(close.direction),right)">Close</onright>

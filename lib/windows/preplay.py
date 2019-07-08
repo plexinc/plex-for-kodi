@@ -12,6 +12,7 @@ import dropdown
 import windowutils
 import optionsdialog
 import preplayutils
+import pagination
 
 from plexnet import plexplayer, media
 
@@ -20,8 +21,15 @@ from lib import util
 from lib import metadata
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
 
-VIDEO_RELOAD_KW = dict(includeRelated=1, includeRelatedCount=10)
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
+
+
+class RelatedPaginator(pagination.BaseRelatedPaginator):
+    def getData(self, offset, amount):
+        return self.parentWindow.video.getRelated(offset=offset, limit=amount)
+
 
 class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     xmlFile = 'script-plex-pre_play.xml'
@@ -58,12 +66,18 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def __init__(self, *args, **kwargs):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.video = kwargs.get('video')
-        self.auto_play = kwargs.get('auto_play')
         self.parentList = kwargs.get('parent_list')
         self.videos = None
         self.exitCommand = None
         self.trailer = None
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
+        self.initialized = False
+        self.relatedPaginator = None
+
+    def doClose(self):
+        self.relatedPaginator = None
+        kodigui.ControlledWindow.doClose(self)
 
     def onFirstInit(self):
         self.extraListControl = kodigui.ManagedControlList(self, self.EXTRA_LIST_ID, 5)
@@ -72,20 +86,25 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
         self.setup()
+        self.initialized = True
 
-        if self.auto_play:
-            self.auto_play = False
-            self.playVideo()
+    def doAutoPlay(self):
+        # First reload the video to get all the other info
+        self.video.reload(checkFiles=1, **VIDEO_RELOAD_KW)
+        return self.playVideo()
 
     def onReInit(self):
+        self.initialized = False
         self.video.reload()
         self.refreshInfo()
+        self.initialized = True
 
     def refreshInfo(self):
         oldFocusId = self.getFocusId()
 
         util.setGlobalProperty('hide.resume', '' if self.video.viewOffset.asInt() else '1')
         self.setInfo()
+        self.fillRelated()
         xbmc.sleep(100)
 
         if oldFocusId == self.PLAY_BUTTON_ID:
@@ -99,12 +118,18 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.setFocusId(self.lastFocusID)
 
             if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-              if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
+                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
                         self.OPTIONS_GROUP_ID)) and \
                         (not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU):
                     if self.getProperty('on.extras'):
+                        self.lastNonOptionsFocusID = self.lastFocusID
                         self.setFocusId(self.OPTIONS_GROUP_ID)
                         return
+                elif xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) \
+                        and self.getProperty('on.extras') and self.lastNonOptionsFocusID:
+                    self.setFocusId(self.lastNonOptionsFocusID)
+                    self.lastNonOptionsFocusID = None
+                    return
 
             if action == xbmcgui.ACTION_LAST_PAGE and xbmc.getCondVisibility('ControlGroup(300).HasFocus(0)'):
                 self.next()
@@ -116,6 +141,11 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             elif action == xbmcgui.ACTION_PREV_ITEM:
                 self.setFocusId(300)
                 self.prev()
+
+            if controlID == self.RELATED_LIST_ID:
+                if self.relatedPaginator.boundaryHit:
+                    self.relatedPaginator.paginate()
+                    return
         except:
             util.ERROR()
 
@@ -186,10 +216,11 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if len(self.video.media) > 1:
             options.append({'key': 'play_version', 'display': T(32451, 'Play Version...')})
 
-        if self.video.isWatched and not self.video.viewOffset.asInt():
-            options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
-        else:
-            options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
+        inProgress = self.video.viewOffset.asInt()
+        if not self.video.isWatched or inProgress:
+            options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Played')})
+        if self.video.isWatched or inProgress:
+            options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unplayed')})
 
         options.append(dropdown.SEPARATOR)
 
@@ -221,11 +252,11 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif choice['key'] == 'play_next':
             xbmc.executebuiltin('PlayerControl(Next)')
         elif choice['key'] == 'mark_watched':
-            self.video.markWatched()
+            self.video.markWatched(**VIDEO_RELOAD_KW)
             self.refreshInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'mark_unwatched':
-            self.video.markUnwatched()
+            self.video.markUnwatched(**VIDEO_RELOAD_KW)
             self.refreshInfo()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_season':
@@ -405,6 +436,7 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             resume = (button == 0)
 
         self.processCommand(videoplayer.play(video=self.video, resume=resume))
+        return True
 
     def openItem(self, control=None, item=None):
         if not item:
@@ -432,14 +464,17 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif self.video.type == 'movie':
             self.setProperty('preview.no', '1')
 
-        self.video.reload(checkFiles=1, includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.video.reload(checkFiles=1, **VIDEO_RELOAD_KW)
+        self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.video.relatedCount),
+                                                 parent_window=self)
+
         self.setInfo()
         self.fillExtras()
         hasPrev = self.fillRelated()
         self.fillRoles(hasPrev)
 
     def setInfo(self):
-        self.setProperty('background', self.video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('background', util.backgroundFromArt(self.video.art, width=self.width, height=self.height))
         self.setProperty('title', self.video.title)
         self.setProperty('duration', util.durationToText(self.video.duration.asInt()))
         self.setProperty('summary', self.video.summary.strip().replace('\t', ' '))
@@ -552,7 +587,6 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 mli.setProperty(
                     'thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(extra.type in ('show', 'season', 'episode') and 'show' or 'movie')
                 )
-                #mli.setProperty('ExtLabel',u'{0} \u2022 {1} \u2022 {2}'.format(extra.resolutionString(), extra.audioChannelsString(metadata.apiTranslate), extra.durationString()))
                 items.append(mli)
                 idx += 1
 
@@ -564,28 +598,17 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return True
 
     def fillRelated(self, has_prev=False):
-        items = []
-        idx = 0
-
-        if not self.video.related:
+        if not self.relatedPaginator.leafCount:
             self.relatedListControl.reset()
             return False
 
-        for rel in self.video.related()[0].items:
-            mli = kodigui.ManagedListItem(rel.title or '', thumbnailImage=rel.thumb.asTranscodedImageURL(*self.RELATED_DIM), data_source=rel)
-            if mli:
-                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                idx += 1
+        items = self.relatedPaginator.paginate()
 
         if not items:
             return False
 
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
-        self.relatedListControl.reset()
-        self.relatedListControl.addItems(items)
         return True
 
     def fillRoles(self, has_prev=False):

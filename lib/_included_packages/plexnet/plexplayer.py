@@ -235,8 +235,6 @@ class PlexPlayer(object):
             server = self.metadata.transcodeServer or self.item.getServer()
             decisionPath = self.buildTranscode(server, util.AttributeDict(), self.metadata.partIndex, True, False).decisionPath
 
-        util.TEST(decisionPath)
-
         # Modify the decision params based on the transcode url
         if decisionPath:
             if directPlay:
@@ -330,9 +328,9 @@ class PlexPlayer(object):
         # Augment the server's profile for things that depend on the Roku's configuration.
         if self.item.settings.supportsSurroundSound():
             if self.choice.audioStream is not None:
-                numChannels = self.choice.audioStream.channels.asInt(6)
+                numChannels = self.choice.audioStream.channels.asInt(8)
             else:
-                numChannels = 6
+                numChannels = 8
 
             for codec in ("ac3", "eac3", "dca"):
                 if self.item.settings.supportsAudioStream(codec, numChannels):
@@ -340,7 +338,7 @@ class PlexPlayer(object):
                     builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=" + codec + ")")
                     if codec == "dca":
                         builder.extras.append(
-                            "add-limitation(scope=videoAudioCodec&scopeName=dca&type=upperBound&name=audio.channels&value=6&isRequired=false)"
+                            "add-limitation(scope=videoAudioCodec&scopeName=dca&type=upperBound&name=audio.channels&value=8&isRequired=false)"
                         )
 
         # AAC sample rate cannot be less than 22050hz (HLS is capable).
@@ -506,7 +504,6 @@ class PlexPlayer(object):
 
         # Build the decision path now that we have build our stream url, and only if the server supports it.
         if server.supportsFeature("streamingBrain"):
-            util.TEST("TEST==========================")
             decisionPath = builder.getRelativeUrl().replace(obj.transcodeEndpoint, self.DECISION_ENDPOINT)
             if decisionPath.startswith(self.DECISION_ENDPOINT):
                 obj.decisionPath = decisionPath
@@ -601,13 +598,15 @@ class PlexPhotoPlayer(object):
         self.media = item.media()[0]
         self.metadata = None
 
-    def build(self):
-        if self.media.parts and self.media.parts[0]:
+    def build(self, item=None):
+        item = item or self.item
+        media = item.media()[0]
+        if media.parts and media.parts[0]:
             obj = util.AttributeDict()
 
-            part = self.media.parts[0]
+            part = media.parts[0]
             path = part.key or part.thumb
-            server = self.item.getServer()
+            server = item.getServer()
 
             obj.url = server.buildUrl(path, True)
             obj.enableBlur = server.supportsPhotoTranscoding

@@ -20,8 +20,12 @@ import playersettings
 import info
 import optionsdialog
 import preplayutils
+import pagination
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
+
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
 
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
@@ -38,12 +42,112 @@ class EpisodeReloadTask(backgroundthread.Task):
             return
 
         try:
-            self.episode.reload(checkFiles=1)
+            self.episode.reload(checkFiles=1, includeChapters=1)
             if self.isCanceled():
                 return
             self.callback(self.episode)
         except:
             util.ERROR()
+
+
+class EpisodesPaginator(pagination.MCLPaginator):
+    thumbFallback = 'script.plex/thumb_fallbacks/show.png'
+    _currentEpisode = None
+
+    def reset(self):
+        super(EpisodesPaginator, self).reset()
+        self._currentEpisode = None
+
+    def getData(self, offset, amount):
+        return self.parentWindow.season.episodes(offset=offset, limit=amount)
+
+    def createListItem(self, data):
+        mli = super(EpisodesPaginator, self).createListItem(data)
+        self.parentWindow.setItemInfo(data, mli)
+        return mli
+
+    def prepareListItem(self, data, mli):
+        if not mli.dataSource.isWatched:
+            mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
+        mli.setProperty('progress', util.getProgressImage(mli.dataSource))
+
+    @property
+    def initialPage(self):
+        episode = self.parentWindow.episode
+        offset = 0
+        amount = self.initialPageSize
+        if episode:
+            self._currentEpisode = episode
+            # try cutting the query short while not querying all episodes, to find the slice with the currently
+            # selected episode in it
+            episodes = []
+            _amount = self.initialPageSize + self.orphans
+            epSeasonIndex = int(episode.index) - 1  # .index is 1-based
+            if _amount < self.leafCount:
+                _amount = self.initialPageSize * 2
+                while episode not in episodes:
+                    offset = int(max(0, epSeasonIndex - _amount / 2))
+                    episodes = self.getData(offset, int(_amount))
+
+                    if _amount >= self.leafCount:
+                        # ep not found?
+                        break
+
+                    # in case the episode wasn't found inside the slice, increase the slice's size
+                    _amount *= 2
+            else:
+                # shortcut for short seasons
+                episodes = self.getData(offset, int(_amount))
+
+        else:
+            return super(EpisodesPaginator, self).initialPage
+
+        episodeFound = episode and episode in episodes
+        if episodeFound:
+            if self.initialPageSize + self.orphans < self.leafCount:
+                # slice around the episode
+                # Clamp the left side dynamically based on the item index and how many items are left in the season.
+                # The episodes list might be longer than our limit, because the season doesn't necessarily have all the
+                # episodes in it and we're basing the initial load on the current episode's index, which is the actual
+                # index of the episode in the season, not what's physically there. To find the episode, we're
+                # dynamically increasing the window size above. Re-clamp to :amount:, adding slack to both sides if
+                # the remaining episodes would fit inside half of :amount:.
+                tmpEpIdx = episodes.index(episode)
+                leftBoundary = self.initialPageSize - len(episodes[tmpEpIdx:tmpEpIdx + self.orphans])
+
+                left = max(tmpEpIdx - leftBoundary, 0)
+                offset += left
+                epsLeft = self.leafCount - offset
+                #util.DEBUG_LOG("%s, %s, %s, %s, %s, %s" % (tmpEpIdx, leftBoundary, left, offset, self.leafCount, epsLeft))
+                # avoid short pages on the right end
+                if epsLeft <= self.initialPageSize + self.orphans:
+                    amount = epsLeft
+                    #util.DEBUG_LOG("PADDING RIGHT")
+
+                # avoid short pages on the left end
+                if offset < self.orphans and amount + offset < self.initialPageSize + self.orphans:
+                    amount += offset
+                    left = 0
+                    offset = 0
+                    #util.DEBUG_LOG("PADDING LEFT")
+
+                #util.DEBUG_LOG("AMOUNT: %s OFFSET: %s" % (amount, offset))
+                episodes = episodes[left:left + amount]
+
+        self.offset = offset
+        self._currentAmount = len(episodes)
+
+        return episodes
+
+    def selectItem(self, amount, more_left=False, more_right=False, items=None):
+        if not super(EpisodesPaginator, self).selectItem(amount, more_left):
+            if (self._currentEpisode and items) and self._currentEpisode in items:
+                self.control.selectItem(items.index(self._currentEpisode) + (1 if more_left else 0))
+
+
+class RelatedPaginator(pagination.BaseRelatedPaginator):
+    def getData(self, offset, amount):
+        return self.parentWindow.show_.getRelated(offset=offset, limit=amount)
 
 
 class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
@@ -85,19 +189,27 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         windowutils.UtilMixin.__init__(self)
         self.reset(kwargs.get('episode'), kwargs.get('season'), kwargs.get('show'))
+        self.initialEpisode = kwargs.get('episode')
         self.parentList = kwargs.get('parentList')
         self.lastItem = None
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
+        self.episodesPaginator = None
+        self.relatedPaginator = None
         self.tasks = backgroundthread.Tasks()
+        self.initialized = False
 
     def reset(self, episode, season=None, show=None):
         self.episode = episode
         self.season = season or self.episode.season()
-        self.show_ = show or self.season.show().reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.show_ = show or self.season.show().reload(includeExtras=1, includeExtrasCount=10)
         self.parentList = None
         self.seasons = None
+        self.initialized = False
 
     def doClose(self):
+        self.episodesPaginator = None
+        self.relatedPaginator = None
         kodigui.ControlledWindow.doClose(self)
         if not self.tasks:
             return
@@ -106,7 +218,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         player.PLAYER.off('new.video', self.onNewVideo)
 
     @busy.dialog()
-    def onFirstInit(self):
+    def _onFirstInit(self):
         self.episodeListControl = kodigui.ManagedControlList(self, self.EPISODE_LIST_ID, 5)
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
@@ -118,29 +230,55 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.postSetup()
 
     def doAutoPlay(self):
+        # First reload the video to get all the other info
+        self.initialEpisode.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         return self.playButtonClicked(force_episode=self.initialEpisode)
 
+    def onFirstInit(self):
+        self._onFirstInit()
+
+        # we've come from a home hub view, play the current item's show's theme song
+        if self.initialEpisode:
+            volume = self.initialEpisode.settings.getThemeMusicValue()
+            if volume > 0:
+                theme = self.initialEpisode.show().theme
+                if theme:
+                    player.PLAYER.playBackgroundMusic(theme.asURL(True), volume,
+                                                      self.initialEpisode.show().ratingKey)
+
     def onReInit(self):
+        if not self.tasks:
+            self.tasks = backgroundthread.Tasks()
+
         self.selectEpisode()
 
         mli = self.episodeListControl.getSelectedItem()
         if not mli:
             return
 
-        self.reloadItems(items=[mli])
+        self.fillEpisodes()
+        self.fillRelated()
 
     def postSetup(self, from_select_episode=False):
         self.selectEpisode(from_select_episode=from_select_episode)
         self.checkForHeaderFocus(xbmcgui.ACTION_MOVE_DOWN)
         self.setFocusId(self.PLAY_BUTTON_ID)
+        self.initialized = True
 
     @busy.dialog()
     def setup(self):
         self._setup()
 
-    def _setup(self):
+    def _setup(self, from_select_episode=False):
         player.PLAYER.on('new.video', self.onNewVideo)
-        self.season.reload(includeExtras=1, includeExtrasCount=10)
+        self.season.reload(checkFiles=1, **VIDEO_RELOAD_KW)
+        if not from_select_episode:
+            self.episodesPaginator = EpisodesPaginator(self.episodeListControl, leaf_count=int(self.season.leafCount),
+                                                       parent_window=self)
+
+            self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.show_.relatedCount),
+                                                     parent_window=self)
+
         self.updateProperties()
         self.fillEpisodes()
         hasPrev = self.fillExtras()
@@ -158,7 +296,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         else:
             if not from_select_episode:
                 self.reset(self.episode)
-                self._setup()
+                self._setup(from_select_episode=True)
                 self.postSetup(from_select_episode=True)
 
         self.episode = None
@@ -180,14 +318,28 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.prev()
 
             if controlID == self.EPISODE_LIST_ID:
-                self.checkForHeaderFocus(action)
+                if self.checkForHeaderFocus(action):
+                    return
+
+            elif controlID == self.RELATED_LIST_ID:
+                if self.relatedPaginator.boundaryHit:
+                    self.relatedPaginator.paginate()
+                    return
+
             if controlID == self.LIST_OPTIONS_BUTTON_ID and self.checkOptionsAction(action):
                 return
             elif action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.lastNonOptionsFocusID = self.lastFocusID
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
-            elif action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+                else:
+                    if self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
+            elif action == xbmcgui.ACTION_NAV_BACK:
                 if (not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
                         self.OPTIONS_GROUP_ID)) or not controlID) and \
                         not util.advancedSettings.fastBack:
@@ -217,7 +369,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def checkOptionsAction(self, action):
         if action == xbmcgui.ACTION_MOVE_UP:
             mli = self.episodeListControl.getSelectedItem()
-            if not mli:
+            if not mli or mli.getProperty("is.boundary"):
                 return False
             pos = mli.pos() - 1
             if self.episodeListControl.positionIsValid(pos):
@@ -226,7 +378,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             return True
         elif action == xbmcgui.ACTION_MOVE_DOWN:
             mli = self.episodeListControl.getSelectedItem()
-            if not mli:
+            if not mli or mli.getProperty("is.boundary"):
                 return False
             pos = mli.pos() + 1
             if self.episodeListControl.positionIsValid(pos):
@@ -267,11 +419,13 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if 399 < controlID < 500:
             self.setProperty('hub.focus', str(controlID - 400))
-
         if xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+        if player.PLAYER.bgmPlaying and player.PLAYER.handler.currentlyPlaying != self.season.show().ratingKey:
+            player.PLAYER.stopAndWait()
 
     def openItem(self, control=None, item=None):
         if not item:
@@ -408,22 +562,24 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def searchButtonClicked(self):
         self.processCommand(search.dialog(self, section_id=self.season.getLibrarySectionId() or None))
 
-    def playButtonClicked(self, shuffle=False):
+    def playButtonClicked(self, shuffle=False, force_episode=None):
         if shuffle:
             items = self.season.all()
             pl = playlist.LocalPlaylist(items, self.season.getServer())
 
             pl.shuffle(shuffle, first=True)
             videoplayer.play(play_queue=pl)
+            return True
+
         else:
-            self.episodeListClicked()
+            return self.episodeListClicked(force_episode=force_episode)
 
     def shuffleButtonClicked(self):
         self.playButtonClicked(shuffle=True)
 
     def settingsButtonClicked(self):
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         episode = mli.dataSource
@@ -436,7 +592,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def infoButtonClicked(self):
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         episode = mli.dataSource
@@ -457,12 +613,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             is_16x9=True
         )
 
-    def episodeListClicked(self, play_version=False):
-        mli = self.episodeListControl.getSelectedItem()
-        if not mli:
-            return
+    def episodeListClicked(self, play_version=False, force_episode=None):
+        if not force_episode:
+            mli = self.episodeListControl.getSelectedItem()
+            if not mli or mli.getProperty("is.boundary"):
+                return
 
-        episode = mli.dataSource
+            episode = mli.dataSource
+        else:
+            episode = force_episode
 
         if not episode.available():
             util.messageDialog(T(32312, 'unavailable'), T(32332, 'This item is currently unavailable.'))
@@ -492,23 +651,25 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if len(pl):  # Don't use playlist if it's only this video
             pl.setCurrent(episode)
             self.processCommand(videoplayer.play(play_queue=pl, resume=resume))
-            return
+            return True
 
         self.processCommand(videoplayer.play(video=episode, resume=resume))
+        return True
 
     def optionsButtonClicked(self, from_item=False):
         options = []
 
         mli = self.episodeListControl.getSelectedItem()
 
-        if mli:
+        if mli and not mli.getProperty("is.boundary"):
             if len(mli.dataSource.media) > 1:
                 options.append({'key': 'play_version', 'display': T(32451, 'Play Version...')})
 
-            if mli.dataSource.isWatched and not mli.dataSource.viewOffset.asInt():
-                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
-            else:
-                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
+            inProgress = mli.dataSource.viewOffset.asInt()
+            if not mli.dataSource.isWatched or inProgress:
+                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Played')})
+            if mli.dataSource.isWatched or inProgress:
+                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unplayed')})
 
             # if True:
             #     options.append({'key': 'add_to_playlist', 'display': '[COLOR FF808080]Add To Playlist[/COLOR]'})
@@ -517,9 +678,9 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             options.append({'key': 'play_next', 'display': T(32325, 'Play Next')})
 
         if self.season.isWatched:
-            options.append({'key': 'mark_season_unwatched', 'display': T(32320, 'Mark Season Unwatched')})
+            options.append({'key': 'mark_season_unwatched', 'display': T(32320, 'Mark Season Unplayed')})
         else:
-            options.append({'key': 'mark_season_watched', 'display': T(32321, 'Mark Season Watched')})
+            options.append({'key': 'mark_season_watched', 'display': T(32321, 'Mark Season Played')})
 
         if mli.dataSource.server.allowsMediaDeletion:
             options.append({'key': 'delete', 'display': T(32322, 'Delete')})
@@ -545,7 +706,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 pos = (1490, 167 + (viewPos * 100))
                 bottom = False
             setDropdownProp = True
-        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='top', set_dropdown_prop=setDropdownProp)
+        choice = dropdown.showDropdown(options, pos, pos_is_bottom=bottom, close_direction='left', set_dropdown_prop=setDropdownProp)
         if not choice:
             return
 
@@ -570,21 +731,23 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.updateItems()
             util.MONITOR.watchStatusChanged()
         elif choice['key'] == 'to_show':
-            self.processCommand(opener.open(self.season.parentRatingKey))
+            self.processCommand(opener.open(
+                self.season.parentRatingKey,
+                came_from=self.season.parentRatingKey)
+            )
         elif choice['key'] == 'to_section':
             self.goHome(self.season.getLibrarySectionId())
         elif choice['key'] == 'delete':
             self.delete()
 
     def delete(self):
-        # Delete disabled by mark
-        return		
         button = optionsdialog.show(
             T(32326, 'Really delete?'),
             T(32327, 'Are you sure you really want to delete this media?'),
             T(32328, 'Yes'),
             T(32329, 'No')
         )
+
         if button != 0:
             return
 
@@ -594,7 +757,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     @busy.dialog()
     def _delete(self):
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
 
         video = mli.dataSource
@@ -610,9 +773,23 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return success
 
     def checkForHeaderFocus(self, action):
+        if self.episodesPaginator.boundaryHit:
+            items = self.episodesPaginator.paginate()
+            self.reloadItems(items)
+            return True
+
         mli = self.episodeListControl.getSelectedItem()
-        if not mli:
+        if not mli or mli.getProperty("is.boundary"):
             return
+
+        lastItem = self.lastItem
+
+        if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
+            items = self.episodesPaginator.wrap(mli, lastItem, action)
+            mli = self.episodeListControl.getSelectedItem()
+            if items:
+                self.reloadItems(items)
+                return True
 
         if mli != self.lastItem:
             self.lastItem = mli
@@ -630,7 +807,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         self.setProperty(
             'background',
-            (self.show_ or self.season.show()).art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt((self.show_ or self.season.show()).art, width=self.width, height=self.height)
         )
         self.setProperty('season.thumb', self.season.thumb.asTranscodedImageURL(*self.POSTER_DIM))
         self.setProperty('show.title', showTitle)
@@ -654,7 +831,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def setItemInfo(self, video, mli):
         # video.reload(checkFiles=1)
-        mli.setProperty('background', video.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        mli.setProperty('background', util.backgroundFromArt(video.art, width=self.width, height=self.height))
         mli.setProperty('title', video.title)
         mli.setProperty('show.title', video.grandparentTitle or (self.show_.title if self.show_ else ''))
         mli.setProperty('duration', util.durationToText(video.duration.asInt()))
@@ -700,7 +877,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def setPostReloadItemInfo(self, video, mli):
         self.setItemAudioAndSubtitleInfo(video, mli)
         mli.setProperty('unwatched', not video.isWatched and '1' or '')
-        mli.setProperty('video.codec', video.videoCodecString())
         mli.setProperty('video.res', video.resolutionString())
         mli.setProperty('audio.codec', video.audioCodecString())
         mli.setProperty('audio.channels', video.audioChannelsString(metadata.apiTranslate))
@@ -745,7 +921,6 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             thumbnailImage=episode.thumb.asTranscodedImageURL(*self.THUMB_AR16X9_DIM),
             data_source=episode
         )
-        mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/show.png')
         mli.setProperty('episode.number', str(episode.index) or '')
         mli.setProperty('episode.duration', util.durationToText(episode.duration.asInt()))
         mli.setProperty('unwatched', not episode.isWatched and '1' or '')
@@ -753,32 +928,15 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return mli
 
     def fillEpisodes(self, update=False):
-        items = []
-        idx = 0
-
-        episodes = self.season.episodes()
-        self.episodeListControl.addItems(
-            [kodigui.ManagedListItem(properties={'thumb.fallback': 'script.plex/thumb_fallbacks/show.png'}) for x in range(len(episodes))]
-        )
-
-        if self.episode and self.episode in episodes:
-            self.episodeListControl.selectItem(episodes.index(self.episode))
-
-        for episode in episodes:
-            mli = self.createListItem(episode)
-            self.setItemInfo(episode, mli)
-            if mli:
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                idx += 1
-
-        self.episodeListControl.replaceItems(items)
-
+        items = self.episodesPaginator.paginate()
         self.reloadItems(items)
 
     def reloadItems(self, items):
         tasks = []
         for mli in items:
+            if not mli.dataSource:
+                continue
+
             task = EpisodeReloadTask().setup(mli.dataSource, self.reloadItemCallback)
             self.tasks.add(task)
             tasks.append(task)
@@ -827,29 +985,16 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return True
 
     def fillRelated(self, has_prev=False):
-        items = []
-        idx = 0
-
-        if not self.show_.related:
+        if not self.relatedPaginator.leafCount:
             self.relatedListControl.reset()
             return has_prev
 
+        items = self.relatedPaginator.paginate()
+        if not items:
+            return False
+
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
-        for rel in self.show_.related()[0].items:
-            mli = kodigui.ManagedListItem(
-                rel.title or '',
-                thumbnailImage=rel.defaultThumb.asTranscodedImageURL(*self.RELATED_DIM),
-                data_source=rel
-            )
-            if mli:
-                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                idx += 1
-
-        self.relatedListControl.reset()
-        self.relatedListControl.addItems(items)
         return True
 
     def fillRoles(self, has_prev=False):

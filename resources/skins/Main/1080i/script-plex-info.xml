@@ -16,6 +16,14 @@
                 <height>1080</height>
                 <texture>script.plex/home/background-fallback.png</texture>
             </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <fadetime>1000</fadetime>
+                <texture background="true">$INFO[Window.Property(background)]</texture>
+            </control>
         </control>
 
         <control type="group" id="50">
@@ -143,11 +151,11 @@
             <height>135</height>
 
             <control type="group">
-                <visible>Player.HasAudio</visible>
+                <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
                 <posx>438</posx>
                 <posy>0</posy>
                 <control type="button" id="204">
-                    <visible>Player.HasAudio</visible>
+                    <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
                     <posx>-10</posx>
                     <posy>38</posy>
                     <width>260</width>

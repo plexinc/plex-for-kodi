@@ -226,3 +226,14 @@ class Similar(MediaTag):
 class Writer(MediaTag):
     TYPE = 'Writer'
     FILTER = 'writer'
+
+
+class Chapter(MediaTag):
+    TYPE = 'Chapter'
+    
+    def startTime(self):
+        return self.get('startTimeOffset', -1).asInt()
+
+
+class Bandwidth(plexobjects.PlexObject):
+    TYPE = 'Bandwidth'

@@ -7,6 +7,7 @@ import kodigui
 from lib import colors
 from lib import util
 from lib import metadata
+from lib import player
 
 from plexnet import playlist
 
@@ -20,8 +21,15 @@ import videoplayer
 import dropdown
 import windowutils
 import search
+import pagination
 
 from lib.util import T
+from lib.windows.home import MOVE_SET
+
+
+class RelatedPaginator(pagination.BaseRelatedPaginator):
+    def getData(self, offset, amount):
+        return self.parentWindow.mediaItem.getRelated(offset=offset, limit=amount)
 
 
 class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
@@ -74,9 +82,17 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         kodigui.ControlledWindow.__init__(self, *args, **kwargs)
         self.mediaItem = kwargs.get('media_item')
         self.parentList = kwargs.get('parent_list')
+        self.cameFrom = kwargs.get('came_from')
         self.mediaItems = None
         self.exitCommand = None
         self.lastFocusID = None
+        self.lastNonOptionsFocusID = None
+        self.initialized = False
+        self.relatedPaginator = None
+
+    def doClose(self):
+        self.relatedPaginator = None
+        kodigui.ControlledWindow.doClose(self)
 
     def onFirstInit(self):
         self.subItemListControl = kodigui.ManagedControlList(self, self.SUB_ITEM_LIST_ID, 5)
@@ -86,11 +102,24 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.progressImageControl = self.getControl(self.PROGRESS_IMAGE_ID)
 
         self.setup()
+        self.initialized = True
 
         self.setFocusId(self.PLAY_BUTTON_ID)
 
+    def onInit(self):
+        super(ShowWindow, self).onInit()
+        if self.mediaItem.theme and (not self.cameFrom or self.cameFrom != self.mediaItem.ratingKey):
+            self.cameFrom = self.mediaItem.ratingKey
+            volume = self.mediaItem.settings.getThemeMusicValue()
+            if volume > 0:
+                player.PLAYER.playBackgroundMusic(self.mediaItem.theme.asURL(True), volume,
+                                                  self.mediaItem.ratingKey)
+
     def setup(self):
-        self.mediaItem.reload(includeRelated=1, includeRelatedCount=10, includeExtras=1, includeExtrasCount=10)
+        self.mediaItem.reload(includeExtras=1, includeExtrasCount=10)
+
+        self.relatedPaginator = RelatedPaginator(self.relatedListControl, leaf_count=int(self.mediaItem.relatedCount),
+                                                 parent_window=self)
 
         self.updateProperties()
         self.fill()
@@ -104,7 +133,7 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
-            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt(self.mediaItem.art, width=self.width, height=self.height)
         )
         self.setProperty('duration', util.durationToText(self.mediaItem.fixedDuration()))
         self.setProperty('info', '')
@@ -167,8 +196,15 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
             if action == xbmcgui.ACTION_CONTEXT_MENU:
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)):
+                    self.lastNonOptionsFocusID = self.lastFocusID
                     self.setFocusId(self.OPTIONS_GROUP_ID)
                     return
+                else:
+                    if self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
             elif action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
                 if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(
                         self.OPTIONS_GROUP_ID)) and \
@@ -187,6 +223,11 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             elif action == xbmcgui.ACTION_PREV_ITEM:
                 self.setFocusId(300)
                 self.prev()
+
+            if controlID == self.RELATED_LIST_ID:
+                if self.relatedPaginator.boundaryHit:
+                    self.relatedPaginator.paginate()
+                    return
 
         except:
             util.ERROR()
@@ -227,6 +268,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             self.setProperty('on.extras', '')
         elif xbmc.getCondVisibility('ControlGroup(50).HasFocus(0) + !ControlGroup(300).HasFocus(0)'):
             self.setProperty('on.extras', '1')
+
+        if player.PLAYER.bgmPlaying and player.PLAYER.handler.currentlyPlaying != self.mediaItem.ratingKey:
+            player.PLAYER.stopAndWait()
 
     def getMediaItems(self):
         return False
@@ -323,6 +367,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif self.mediaItem.type == 'artist':
             w = tracks.AlbumWindow.open(album=mli.dataSource, parent_list=self.subItemListControl)
 
+        if not mli:
+            return
+
         if not mli.dataSource.exists():
             self.subItemListControl.removeItem(mli.pos())
 
@@ -380,9 +427,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if self.mediaItem.type != 'artist':
             if self.mediaItem.isWatched:
-                options.append({'key': 'mark_unwatched', 'display': 'Mark Unwatched'})
+                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unplayed')})
             else:
-                options.append({'key': 'mark_watched', 'display': 'Mark Watched'})
+                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Played')})
 
         # if xbmc.getCondVisibility('Player.HasAudio') and self.section.TYPE == 'artist':
         #     options.append({'key': 'add_to_queue', 'display': 'Add To Queue'})
@@ -523,28 +570,17 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         return True
 
     def fillRelated(self, has_prev=False):
-        items = []
-        idx = 0
-        if not self.mediaItem.related:
+        if not self.relatedPaginator.leafCount:
             self.relatedListControl.reset()
             return has_prev
 
         self.setProperty('divider.{0}'.format(self.RELATED_LIST_ID), has_prev and '1' or '')
 
-        for rel in self.mediaItem.related()[0].items:
-            mli = kodigui.ManagedListItem(
-                rel.title or '',
-                thumbnailImage=rel.defaultThumb.asTranscodedImageURL(*self.RELATED_DIM),
-                data_source=rel
-            )
-            if mli:
-                mli.setProperty('thumb.fallback', 'script.plex/thumb_fallbacks/{0}.png'.format(rel.type in ('show', 'season', 'episode') and 'show' or 'movie'))
-                mli.setProperty('index', str(idx))
-                items.append(mli)
-                idx += 1
+        items = self.relatedPaginator.paginate()
 
-        self.relatedListControl.reset()
-        self.relatedListControl.addItems(items)
+        if not items:
+            return False
+
         return True
 
     def fillRoles(self, has_prev=False):
@@ -594,7 +630,7 @@ class ArtistWindow(ShowWindow):
         self.setProperty('thumb', self.mediaItem.defaultThumb.asTranscodedImageURL(*self.THUMB_DIMS[self.mediaItem.type]['main.thumb']))
         self.setProperty(
             'background',
-            self.mediaItem.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt(self.mediaItem.art, width=self.width, height=self.height)
         )
 
     @busy.dialog()

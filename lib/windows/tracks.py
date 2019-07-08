@@ -216,9 +216,9 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if item:
             if item.dataSource.isWatched:
-                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unwatched')})
+                options.append({'key': 'mark_unwatched', 'display': T(32318, 'Mark Unplayed')})
             else:
-                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Watched')})
+                options.append({'key': 'mark_watched', 'display': T(32319, 'Mark Played')})
 
             # if False:
             #     options.append({'key': 'add_to_playlist', 'display': '[COLOR FF808080]Add To Playlist[/COLOR]'})
@@ -298,7 +298,7 @@ class AlbumWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
     def updateProperties(self):
         self.setProperty(
             'background',
-            self.album.art.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background)
+            util.backgroundFromArt(self.album.art, width=self.width, height=self.height)
         )
         self.setProperty('album.thumb', self.album.thumb.asTranscodedImageURL(*self.THUMB_SQUARE_DIM))
         self.setProperty('artist.title', self.album.parentTitle or '')

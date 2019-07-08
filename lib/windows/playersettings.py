@@ -1,4 +1,5 @@
 import xbmc
+import xbmcgui
 import kodigui
 
 from lib import util
@@ -23,6 +24,9 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         self.video = kwargs.get('video')
         self.viaOSD = kwargs.get('via_osd')
         self.nonPlayback = kwargs.get('non_playback')
+        self.parent = kwargs.get('parent')
+        self.roundRobin = kwargs.get('round_robin', True)
+        self.lastSelectedItem = 0
 
         if not self.video.mediaChoice:
             playerObject = plexnet.plexplayer.PlexPlayer(self.video)
@@ -43,6 +47,24 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
                 return
         except:
             util.ERROR()
+
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.SETTINGS_LIST_ID:
+            to_pos = None
+            last_index = self.settingsList.size() - 1
+            if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.settingsList.topHasFocus():
+                to_pos = last_index
+
+            elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                    and self.settingsList.bottomHasFocus():
+                to_pos = 0
+
+            if to_pos is not None:
+                self.settingsList.setSelectedItemByPos(to_pos)
+                self.lastSelectedItem = to_pos
+                return
+
+            self.lastSelectedItem = self.settingsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 
@@ -84,13 +106,20 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         if not self.nonPlayback:
             options += [
                 ('kodi_video', T(32398, 'Kodi Video Settings'), ''),
-                ('kodi_audio', T(32399, 'Kodi Audio Settings'), '')
+                ('kodi_audio', T(32399, 'Kodi Audio Settings'), ''),
             ]
+            if util.KODI_VERSION_MAJOR >= 18:
+                options.append(('kodi_subtitle', T(32492, 'Kodi Subtitle Settings'), ''))
 
         if self.viaOSD:
-            options += [
-                ('stream_info', T(32483, 'Stream Info'), ''),
-            ]
+            if self.parent.getProperty("show.PPI"):
+                options += [
+                    ('stream_info', T(32483, 'Hide Stream Info'), ''),
+                ]
+            else:
+                options += [
+                    ('stream_info', T(32484, 'Show Stream Info'), ''),
+                ]
 
         items = []
         for o in options:
@@ -143,8 +172,17 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
             xbmc.executebuiltin('ActivateWindow(OSDVideoSettings)')
         elif result == 'kodi_audio':
             xbmc.executebuiltin('ActivateWindow(OSDAudioSettings)')
+        elif result == 'kodi_subtitle':
+            xbmc.executebuiltin('ActivateWindow(OSDSubtitleSettings)')
         elif result == "stream_info":
-            xbmc.executebuiltin('ActivateWindow(PlayerProcessInfo)')
+            if self.parent:
+                if self.parent.getProperty("show.PPI"):
+                    self.parent.hidePPIDialog()
+                else:
+                    #xbmc.executebuiltin('Action(PlayerProcessInfo)')
+                    self.parent.showPPIDialog()
+            self.doClose()
+            return
 
         self.showSettings()
 
@@ -166,6 +204,8 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.selectedIdx = kwargs.get('selected_idx')
         self.choice = None
         self.nonPlayback = kwargs.get('non_playback')
+        self.lastSelectedItem = self.selectedIdx if self.selectedIdx is not None else 0
+        self.roundRobin = kwargs.get('round_robin', True)
 
     def onFirstInit(self):
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
@@ -180,6 +220,26 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
                 return
         except:
             util.ERROR()
+
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.OPTIONS_LIST_ID:
+            to_pos = None
+            last_index = self.optionsList.size() - 1
+
+            if last_index > 0:
+                if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.optionsList.topHasFocus():
+                    to_pos = last_index
+
+                elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                        and self.optionsList.bottomHasFocus():
+                    to_pos = 0
+
+                if to_pos is not None:
+                    self.optionsList.setSelectedItemByPos(to_pos)
+                    self.lastSelectedItem = to_pos
+                    return
+
+                self.lastSelectedItem = self.optionsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 
@@ -259,7 +319,8 @@ def showSubtitlesDialog(video, non_playback=False):
 
 
 def showQualityDialog(video, non_playback=False, selected_idx=None):
-    options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009, 32010, 32011, 32012, 32013, 32014))]
+    options = [(13 - i, T(l)) for (i, l) in enumerate((32001, 32002, 32003, 32004, 32005, 32006, 32007, 32008, 32009,
+                                                       32010, 32011))]
 
     choice = showOptionsDialog('Quality', options, non_playback=non_playback, selected_idx=selected_idx)
     if choice is None:
@@ -270,7 +331,7 @@ def showQualityDialog(video, non_playback=False, selected_idx=None):
     video.settings.setPrefOverride('online_quality', choice)
 
 
-def showDialog(video, non_playback=False, via_osd=False):
-    w = VideoSettingsDialog.open(video=video, non_playback=non_playback, via_osd=via_osd)
+def showDialog(video, non_playback=False, via_osd=False, parent=None):
+    w = VideoSettingsDialog.open(video=video, non_playback=non_playback, via_osd=via_osd, parent=parent)
     del w
     util.garbageCollect()

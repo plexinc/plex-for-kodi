@@ -1,0 +1,951 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2013-12-12 22:56+0000\n"
+"PO-Revision-Date: 2017-05-25 10:52+0200\n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"X-Generator: Poedit 2.0.2\n"
+
+msgctxt "#32000"
+msgid "Main"
+msgstr "Allgemein"
+
+msgctxt "#32001"
+msgid "Original"
+msgstr "Original"
+
+msgctxt "#32002"
+msgid "20 Mbps 1080p"
+msgstr "20 Mbps 1080p"
+
+msgctxt "#32003"
+msgid "12 Mbps 1080p"
+msgstr "12 Mbps 1080p"
+
+msgctxt "#32004"
+msgid "10 Mbps 1080p"
+msgstr "10 Mbps 1080p"
+
+msgctxt "#32005"
+msgid "8 Mbps 1080p"
+msgstr "8 Mbps 1080p"
+
+msgctxt "#32006"
+msgid "4 Mbps 720p"
+msgstr "4 Mbps 720p"
+
+msgctxt "#32007"
+msgid "3 Mbps 720p"
+msgstr "3 Mbps 720p"
+
+msgctxt "#32008"
+msgid "2 Mbps 720p"
+msgstr "2 Mbps 720p"
+
+msgctxt "#32009"
+msgid "1.5 Mbps 480p"
+msgstr "1.5 Mbps 480p"
+
+msgctxt "#32010"
+msgid "720 kbps"
+msgstr "720 kbps"
+
+msgctxt "#32011"
+msgid "320 kbps"
+msgstr "320 kbps"
+
+msgctxt "#32012"
+msgid "208 kbps"
+msgstr "208 kbps"
+
+msgctxt "#32013"
+msgid "96 kbps"
+msgstr "96 kbps"
+
+msgctxt "#32014"
+msgid "64 kbps"
+msgstr "64 kbps"
+
+msgctxt "#32020"
+msgid "Local Quality"
+msgstr "Qualität für lokale Geräte"
+
+msgctxt "#32021"
+msgid "Remote Quality"
+msgstr "Qualität für entfernte Geräte"
+
+msgctxt "#32022"
+msgid "Online Quality"
+msgstr "Online Quality"
+
+msgctxt "#32023"
+msgid "Transcode Format"
+msgstr "Transkodierungsformat"
+
+msgctxt "#32024"
+msgid "Debug Logging"
+msgstr "Debug-Protokollierung"
+
+msgctxt "#32025"
+msgid "Allow Direct Play"
+msgstr "Direkte Wiedergabe erlauben"
+
+msgctxt "#32026"
+msgid "Allow Direct Stream"
+msgstr "Direktes streamen erlauben"
+
+msgctxt "#32027"
+msgid "Force"
+msgstr "Erzwingen"
+
+msgctxt "#32028"
+msgid "Always"
+msgstr "Immer"
+
+msgctxt "#32029"
+msgid "Only Image Formats"
+msgstr "nur Bildformate"
+
+msgctxt "#32030"
+msgid "Auto"
+msgstr "Automatisch"
+
+msgctxt "#32031"
+msgid "Burn Subtitles (Direct Play Only)"
+msgstr "Untertitel einbrennen (bei direkter Wiedergabe)"
+
+msgctxt "#32032"
+msgid "Allow Insecure Connections"
+msgstr "Unsichere Verbindung erlauben"
+
+msgctxt "#32033"
+msgid "Never"
+msgstr "Nie"
+
+msgctxt "#32034"
+msgid "On Same network"
+msgstr "Im selben Netzwerk"
+
+msgctxt "#32035"
+msgid "Always"
+msgstr "Immer"
+
+msgctxt "#32036"
+msgid "Allow 4K"
+msgstr "4K erlauben"
+
+msgctxt "#32037"
+msgid "Allow HEVC (h265)"
+msgstr "HEVC erlauben (h265)"
+
+msgctxt "#32038"
+msgid "Automatically Sign In"
+msgstr "Automatisch anmelden"
+
+msgctxt "#32039"
+msgid "Post Play Auto Play"
+msgstr "Automatisch nächsten Titel abspielen"
+
+msgctxt "#32040"
+msgid "Enable Subtitle Downloading"
+msgstr "Untertitel download aktivieren"
+
+msgctxt "#32041"
+msgid "Enable Subtitle Downloading"
+msgstr "Untertitel download aktivieren"
+
+msgctxt "#32042"
+msgid "Server Discovery (GDM)"
+msgstr "Server Erkennung (GDM)"
+
+msgctxt "#32043"
+msgid "Start Plex On Kodi Startup"
+msgstr "Plex mit Kodi starten"
+
+msgctxt "#32044"
+msgid "Connection 1 IP"
+msgstr "Verbindung 1 IP"
+
+msgctxt "#32045"
+msgid "Connection 1 Port"
+msgstr "Verbindung 1 Port"
+
+msgctxt "#32046"
+msgid "Connection 2 IP"
+msgstr "Verbindung 2 IP"
+
+msgctxt "#32047"
+msgid "Connection 2 Port"
+msgstr "Verbindung 2 Port"
+
+msgctxt "#32048"
+msgid "Audio"
+msgstr "Ton"
+
+msgctxt "#32049"
+msgid "Advanced"
+msgstr "Erweitert"
+
+msgctxt "#32050"
+msgid "Manual Servers"
+msgstr "Manuelle Server"
+
+msgctxt "#32051"
+msgid "Privacy"
+msgstr "Datenschutz"
+
+msgctxt "#32052"
+msgid "About"
+msgstr "Über"
+
+msgctxt "#32053"
+msgid "Video"
+msgstr "Video"
+
+msgctxt "#32054"
+msgid "Addon Version"
+msgstr "Erweiterung Version"
+
+msgctxt "#32055"
+msgid "Kodi Version"
+msgstr "Kodi Version"
+
+msgctxt "#32056"
+msgid "Screen Resolution"
+msgstr "Bilschirmauflösung"
+
+msgctxt "#32057"
+msgid "Current Server Version"
+msgstr "Aktuelle Server Version"
+
+msgctxt "#32100"
+msgid "Skip user selection and pin entry on startup."
+msgstr "Benutzerauswahl und Pin-Eingabe beim Start überspringen."
+
+msgctxt "#32101"
+msgid "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+msgstr "Falls aktiviert wird, sofern verfügbar, nachdem die Wiedergabe endet ein 'nächster Titel' automatisch nach 15 Sekunden gestartet."
+
+msgctxt "#32102"
+msgid "Enable this if your hardware can handle 4K playback. Disable it to force transcoding."
+msgstr "Aktiviert 4K Wiedergabe per Hardware. Deaktivierung erzwingt Transcodierung."
+
+msgctxt "#32103"
+msgid "Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding."
+msgstr "Aktiviert HEVC/h265 Wiedergabe per Hardware. Deaktivierung erzwingt Transcodierung."
+
+msgctxt "#32104"
+msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
+msgstr "Wann soll zu Servern ohne 'sichere Verbindung' verbunden werden[CR]* [B]Nie[/B]: Niemals unsicher zu eine Server verbinden.[CR]* [B]Im selben Netzwerk[/B]: Im selben Netzwerk erlauben[CR]* [B]Immer[/B]: Im selben Netzwerk und bei entfernter Verbindung erlauben"
+
+msgctxt "#32201"
+msgid "Trailer"
+msgstr "Trailer"
+
+msgctxt "#32202"
+msgid "Deleted Scene"
+msgstr "Entfernte Szene"
+
+msgctxt "#32203"
+msgid "Interview"
+msgstr "Interview"
+
+msgctxt "#32204"
+msgid "Music Video"
+msgstr "Musik-Video"
+
+msgctxt "#32205"
+msgid "Behind the Scenes"
+msgstr "Hinter den Kulissen"
+
+msgctxt "#32206"
+msgid "Scene"
+msgstr "Szene"
+
+msgctxt "#32207"
+msgid "Live Music Video"
+msgstr "Live Musikvideo"
+
+msgctxt "#32208"
+msgid "Lyric Music Video"
+msgstr "Musikvideo mit Lyrics"
+
+msgctxt "#32209"
+msgid "Concert"
+msgstr "Konzert"
+
+msgctxt "#32210"
+msgid "Featurette"
+msgstr "Featurette"
+
+msgctxt "#32211"
+msgid "Short"
+msgstr "Kurzfilm"
+
+msgctxt "#32212"
+msgid "Other"
+msgstr "Sonstige"
+
+msgctxt "#32300"
+msgid "Go to Album"
+msgstr "Gehe zu Album"
+
+msgctxt "#32301"
+msgid "Go to Artist"
+msgstr "Gehe zu Künstler(in)"
+
+msgctxt "#32302"
+msgid "Go to {0}"
+msgstr "Gehe zu {0}"
+
+msgctxt "#32303"
+msgid "Season"
+msgstr "Staffel"
+
+msgctxt "#32304"
+msgid "Episode"
+msgstr "Folge"
+
+msgctxt "#32305"
+msgid "Extras"
+msgstr "Extras"
+
+msgctxt "#32306"
+msgid "Related Shows"
+msgstr "Ähnliche Serien"
+
+msgctxt "#32307"
+msgid "More"
+msgstr "Film"
+
+msgctxt "#32308"
+msgid "Available"
+msgstr "Verfügbar"
+
+msgctxt "#32309"
+msgid "None"
+msgstr "Ohne"
+
+msgctxt "#32310"
+msgid "S"
+msgstr "S"
+
+msgctxt "#32311"
+msgid "E"
+msgstr "E"
+
+msgctxt "#32312"
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
+
+msgctxt "#32313"
+msgid "This item is currently unavailable."
+msgstr "Dieser Eintrag ist aktuell nicht verfügbar."
+
+msgctxt "#32314"
+msgid "In Progress"
+msgstr "in Bearbeitung"
+
+msgctxt "#32315"
+msgid "Resume playback?"
+msgstr "Wiedergabe fortsetzen?"
+
+msgctxt "#32316"
+msgid "Resume"
+msgstr "Fortsetzen"
+
+msgctxt "#32317"
+msgid "Play from beginning"
+msgstr "Von vorne wiedergeben"
+
+msgctxt "#32318"
+msgid "Mark Unwatched"
+msgstr "Als ungesehen markieren"
+
+msgctxt "#32319"
+msgid "Mark Watched"
+msgstr "Als gesehen markieren"
+
+msgctxt "#32320"
+msgid "Mark Season Unwatched"
+msgstr "Staffel als ungesehen markieren"
+
+msgctxt "#32321"
+msgid "Mark Season Watched"
+msgstr "Staffel als gesehen markieren"
+
+msgctxt "#32322"
+msgid "Delete"
+msgstr "Löschen"
+
+msgctxt "#32323"
+msgid "Go To Show"
+msgstr "Gehe zu Serie"
+
+msgctxt "#32324"
+msgid "Go To {0}"
+msgstr "Gehe zu {0}"
+
+msgctxt "#32325"
+msgid "Play Next"
+msgstr "Nächster Titel"
+
+msgctxt "#32326"
+msgid "Really Delete?"
+msgstr "Wirklich löschen?"
+
+msgctxt "#32327"
+msgid "Are you sure you really want to delete this media?"
+msgstr "Soll diese Mediandatei wirklich gelöscht werden?"
+
+msgctxt "#32328"
+msgid "Yes"
+msgstr "Ja"
+
+msgctxt "#32329"
+msgid "No"
+msgstr "Nein"
+
+msgctxt "#32330"
+msgid "Message"
+msgstr "Nachricht"
+
+msgctxt "#32331"
+msgid "There was a problem while attempting to delete the media."
+msgstr "Es gab einen Fehler beim Löschversuch dieser Mediendatei."
+
+msgctxt "#32332"
+msgid "Home"
+msgstr "Start"
+
+msgctxt "#32333"
+msgid "Playlists"
+msgstr "Wiedergabelisten"
+
+msgctxt "#32334"
+msgid "Confirm Exit"
+msgstr "Beenden bestätigen"
+
+msgctxt "#32335"
+msgid "Are you ready to exit Plex?"
+msgstr "Bereit um Plex zu beenden?"
+
+msgctxt "#32336"
+msgid "Exit"
+msgstr "Beenden"
+
+msgctxt "#32337"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgctxt "#32338"
+msgid "No Servers Found"
+msgstr "Keine Server gefunden"
+
+msgctxt "#32339"
+msgid "Server is not accessible"
+msgstr "Server ist nicht erreichbar"
+
+msgctxt "#32340"
+msgid "Connection tests are in progress. Please wait."
+msgstr "Verbindungstests laufen. Bitte warten."
+
+msgctxt "#32341"
+msgid "Server is not accessible. Please sign into your server and check your connection."
+msgstr "Der Server ist nicht erreichbar. Bitte einloggen und Verbindung prüfen."
+
+msgctxt "#32342"
+msgid "Switch User"
+msgstr "Benutzer wechseln"
+
+msgctxt "#32343"
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgctxt "#32344"
+msgid "Sign Out"
+msgstr "Abmelden"
+
+msgctxt "#32345"
+msgid "All"
+msgstr "Alle"
+
+msgctxt "#32346"
+msgid "By Name"
+msgstr "Nach Name"
+
+msgctxt "#32347"
+msgid "Artists"
+msgstr "Künstler"
+
+msgctxt "#32348"
+msgid "movies"
+msgstr "Filme"
+
+msgctxt "#32349"
+msgid "photos"
+msgstr "Fotos"
+
+msgctxt "#32350"
+msgid "Shows"
+msgstr "Serien"
+
+msgctxt "#32351"
+msgid "By Date Added"
+msgstr "Nach 'Hinzugefügt am'"
+
+msgctxt "#32352"
+msgid "Date Added"
+msgstr "Hinzugefügt am"
+
+msgctxt "#32353"
+msgid "By Release Date"
+msgstr "Nach Erscheinungsdatum"
+
+msgctxt "#32354"
+msgid "Release Date"
+msgstr "Erscheinungsdatum"
+
+msgctxt "#32355"
+msgid "By Date Viewed"
+msgstr "Nach 'Gesehen am'"
+
+msgctxt "#32356"
+msgid "Date Viewed"
+msgstr "Gesehen am"
+
+msgctxt "#32357"
+msgid "By Name"
+msgstr "Nach Name"
+
+msgctxt "#32358"
+msgid "Name"
+msgstr "Name"
+
+msgctxt "#32359"
+msgid "By Rating"
+msgstr "Nach Bewertung"
+
+msgctxt "#32360"
+msgid "Rating"
+msgstr "Bewertung"
+
+msgctxt "#32361"
+msgid "By Resolution"
+msgstr "Nach Auflösung"
+
+msgctxt "#32362"
+msgid "Resolution"
+msgstr "Auflösung"
+
+msgctxt "#32363"
+msgid "By Duration"
+msgstr "Nach Dauer"
+
+msgctxt "#32364"
+msgid "Duration"
+msgstr "Dauer"
+
+msgctxt "#32365"
+msgid "By First Aired"
+msgstr "Nach Erstausstrahlung"
+
+msgctxt "#32366"
+msgid "First Aired"
+msgstr "Erstausstrahlung"
+
+msgctxt "#32367"
+msgid "By Unwatched"
+msgstr "Nach Ungesehen"
+
+msgctxt "#32368"
+msgid "Unwatched"
+msgstr "Ungesehen"
+
+msgctxt "#32369"
+msgid "By Date Played"
+msgstr "Nach 'Abgespielt am'"
+
+msgctxt "#32370"
+msgid "Date Played"
+msgstr "Abgespielt am"
+
+msgctxt "#32371"
+msgid "By Play Count"
+msgstr "Nach Wiedergabe-Zähler"
+
+msgctxt "#32372"
+msgid "Play Count"
+msgstr "Wiedergabe-Zähler"
+
+msgctxt "#32373"
+msgid "By Date Taken"
+msgstr "Nach Aufnahmedatum"
+
+msgctxt "#32374"
+msgid "Date Taken"
+msgstr "Aufnahmedatum"
+
+msgctxt "#32375"
+msgid "No filters available"
+msgstr "Keine Filter verfügbar"
+
+msgctxt "#32376"
+msgid "Clear Filter"
+msgstr "Filter bereinigen"
+
+msgctxt "#32377"
+msgid "Year"
+msgstr "Jahr"
+
+msgctxt "#32378"
+msgid "Decade"
+msgstr "Jahrzent"
+
+msgctxt "#32379"
+msgid "Genre"
+msgstr "Genre"
+
+msgctxt "#32380"
+msgid "Content Rating"
+msgstr "Jugendfreigabe"
+
+msgctxt "#32381"
+msgid "Network"
+msgstr "Netzwerk"
+
+msgctxt "#32382"
+msgid "Collection"
+msgstr "Sammlung"
+
+msgctxt "#32383"
+msgid "Director"
+msgstr "Regisseur(in)"
+
+msgctxt "#32384"
+msgid "Actor"
+msgstr "Schauspieler(in)"
+
+msgctxt "#32385"
+msgid "Country"
+msgstr "Land"
+
+msgctxt "#32386"
+msgid "Studio"
+msgstr "Studio"
+
+msgctxt "#32387"
+msgid "Labels"
+msgstr "Labels"
+
+msgctxt "#32388"
+msgid "Camera Make"
+msgstr "Kamerahersteller"
+
+msgctxt "#32389"
+msgid "Camera Model"
+msgstr "Kameramodell"
+
+msgctxt "#32390"
+msgid "Aperture"
+msgstr "Blendenöffnung"
+
+msgctxt "#32391"
+msgid "Shutter Speed"
+msgstr "Verschlusszeit"
+
+msgctxt "#32392"
+msgid "Lens"
+msgstr "Linse"
+
+msgctxt "#32393"
+msgid "TV Shows"
+msgstr "Fernsehserien"
+
+msgctxt "#32394"
+msgid "Music"
+msgstr "Musik"
+
+msgctxt "#32395"
+msgid "Audio"
+msgstr "Ton"
+
+msgctxt "#32396"
+msgid "Subtitles"
+msgstr "Untertitel"
+
+msgctxt "#32397"
+msgid "Quality"
+msgstr "Qualität"
+
+msgctxt "#32398"
+msgid "Kodi Video Settings"
+msgstr "Kodi Bild Einstellungen"
+
+msgctxt "#32399"
+msgid "Kodi Audio Settings"
+msgstr "Kodi Ton Einstellungen"
+
+msgctxt "#32400"
+msgid "Go To Season"
+msgstr "Gehe zu Staffel"
+
+msgctxt "#32401"
+msgid "Directors"
+msgstr "Regisseure"
+
+msgctxt "#32402"
+msgid "Writer"
+msgstr "Autor(in)"
+
+msgctxt "#32403"
+msgid "Writers"
+msgstr "Autoren"
+
+msgctxt "#32404"
+msgid "Related Movies"
+msgstr "Ähnliche Filme"
+
+msgctxt "#32405"
+msgid "Download Subtitles"
+msgstr "Untertitel downloaden"
+
+msgctxt "#32406"
+msgid "Subtitle Delay"
+msgstr "Untertitel Verzögerung"
+
+msgctxt "#32407"
+msgid "Next Subtitle"
+msgstr "Nächster Untertitel"
+
+msgctxt "#32408"
+msgid "Disable Subtitles"
+msgstr "Untertitel deaktiviren"
+
+msgctxt "#32409"
+msgid "Enable Subtitles"
+msgstr "Untertitel aktivieren"
+
+msgctxt "#32410"
+msgid "Platform Version"
+msgstr "Platform Version"
+
+msgctxt "#32411"
+msgid "Unknown"
+msgstr "Unbekannt"
+
+msgctxt "#32412"
+msgid "Edit Or Clear"
+msgstr "Bearbeiten oder bereinigen"
+
+msgctxt "#32413"
+msgid "Edit IP address or clear the current setting?"
+msgstr "IP Adresse bearbeiten oder die aktuellen Einstellungen bereinigen?"
+
+msgctxt "#32414"
+msgid "Clear"
+msgstr "Bereinigen"
+
+msgctxt "#32415"
+msgid "Edit"
+msgstr "Ändern"
+
+msgctxt "#32416"
+msgid "Enter IP Address"
+msgstr "IP Adresse eingeben"
+
+msgctxt "#32417"
+msgid "Enter Port Number"
+msgstr "Port Nummer eingeben"
+
+msgctxt "#32418"
+msgid "Creator"
+msgstr "Urheber(in)"
+
+msgctxt "#32419"
+msgid "Cast"
+msgstr "Besetzung"
+
+msgctxt "#32420"
+msgid "Disc"
+msgstr "Disk"
+
+msgctxt "#32421"
+msgid "Sign Out"
+msgstr "Abmelden"
+
+msgctxt "#32422"
+msgid "Exit"
+msgstr "Beenden"
+
+msgctxt "#32423"
+msgid "Shutdown"
+msgstr "Herunterfahren"
+
+msgctxt "#32424"
+msgid "Suspend"
+msgstr "Energie sparen"
+
+msgctxt "#32425"
+msgid "Hibernate"
+msgstr "Ruhezustand"
+
+msgctxt "#32426"
+msgid "Reboot"
+msgstr "Neustart"
+
+msgctxt "#32427"
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+msgctxt "#32428"
+msgid "Login failed!"
+msgstr "Anmeldung fehlgeschlagen!"
+
+msgctxt "#32429"
+msgid "Resume from {0}"
+msgstr "Fortsetzen ab {0}"
+
+msgctxt "#32430"
+msgid "Discovery"
+msgstr "Entdecken"
+
+msgctxt "#32431"
+msgid "Search"
+msgstr "Suche"
+
+msgctxt "#32432"
+msgid "Space"
+msgstr "Leerzeichen"
+
+msgctxt "#32433"
+msgid "Clear"
+msgstr "Bereinigen"
+
+msgctxt "#32434"
+msgid "Searching..."
+msgstr "Suche..."
+
+msgctxt "#32435"
+msgid "No Results"
+msgstr "Keine Ergebnisse"
+
+msgctxt "#32436"
+msgid "Paused"
+msgstr "Pausiert"
+
+msgctxt "#32437"
+msgid "Welcome"
+msgstr "Wilkommen"
+
+msgctxt "#32438"
+msgid "Previous"
+msgstr "Vorheriger Titel"
+
+msgctxt "#32439"
+msgid "Playing Next"
+msgstr "Nächster Titel"
+
+msgctxt "#32440"
+msgid "On Deck"
+msgstr "Aktuell"
+
+msgctxt "#32441"
+msgid "Unknown"
+msgstr "Unbekannt"
+
+msgctxt "#32442"
+msgid "Embedded"
+msgstr "Eingebettet"
+
+msgctxt "#32443"
+msgid "Forced"
+msgstr "Zwangsuntertitel"
+
+msgctxt "#32444"
+msgid "Lyrics"
+msgstr "Lyrics"
+
+msgctxt "#32445"
+msgid "Mono"
+msgstr "Mono"
+
+msgctxt "#32446"
+msgid "Stereo"
+msgstr "Stereo"
+
+msgctxt "#32447"
+msgid "None"
+msgstr "Nichts"
+
+msgctxt "#32448"
+msgid "Playback Failed!"
+msgstr "Wiedergabe fehlgeschlagen!"
+
+msgctxt "#32449"
+msgid "Can't connect to plex.tv[CR]Check your internet connection and try again."
+msgstr "Keine Verbindung zu plex.tv[CR]Internetverbindung prüfen und erneut versuchen."
+
+msgctxt "#32450"
+msgid "Choose Version"
+msgstr "Version auswählen"
+
+msgctxt "#32451"
+msgid "Play Version..."
+msgstr "Version abspielen..."
+
+msgctxt "#32452"
+msgid "No Content available in this library"
+msgstr "In dieser Bibliothek ist nichts vorhanden"
+
+msgctxt "#32453"
+msgid "Please add content and/or check that 'Include in dashboard' is enabled."
+msgstr "Bitte Inhalte ergänzen und/oder prüfen ob 'In Dashboard anzeigen' aktiv ist."
+
+msgctxt "#32454"
+msgid "No Content available for this filter"
+msgstr "Mit diesem Filter ist kein Inhalt verfügbar"
+
+msgctxt "#32455"
+msgid "Please change change or remove the current filter"
+msgstr "Bitte aktuellen Filter ändern oder entfernen"
+
+msgctxt "#32456"
+msgid "Show"
+msgstr "Serie"
+
+msgctxt "#32457"
+msgid "By Show"
+msgstr "Nach Serie"
+
+msgctxt "#32458"
+msgid "Episodes"
+msgstr "Episoden"
+
+msgctxt "#32459"
+msgid "Offline Mode"
+msgstr "Offline-Modus"
+
+msgctxt "#32460"
+msgid "Sign In"
+msgstr "Anmelden"
+
+msgctxt "#32461"
+msgid "Albums"
+msgstr "Alben"
+
+msgctxt "#32462"
+msgid "Artist"
+msgstr "Künstler(in)"
+
+msgctxt "#32463"
+msgid "By Artist"
+msgstr "Nach Künstler(in)"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+
+  <!-- General -->
+  <category label="32000">
+    <!-- <setting id="transcode_format" label="32023" type="labelenum" values="mkv|hls" default="mkv" /> -->
+
+    <!-- <setting id="playback_directplay_force" type="bool" label="32027" default="false" enable="eq(-1,true)" subsetting="true" /> -->
+    <setting id="debug" type="bool" label="32024" default="false" />
+  </category>
+
+</settings>

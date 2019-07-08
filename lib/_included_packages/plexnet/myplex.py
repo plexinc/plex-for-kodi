@@ -10,7 +10,6 @@ import exceptions
 import video
 import audio
 import photo
-import plexobjects
 
 video, audio, photo  # Hides warning message
 

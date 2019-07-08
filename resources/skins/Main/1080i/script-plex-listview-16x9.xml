@@ -16,39 +16,93 @@
                 <height>1080</height>
                 <texture>script.plex/home/background-fallback.png</texture>
             </control>
-            <control type="image">
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>1920</width>
-                <height>1080</height>
-                <fadetime>1000</fadetime>
-                <texture background="true">$INFO[Window.Property(background)]</texture>
-            </control>
         </control>
 
         <control type="group">
             <posx>60</posx>
             <posy>248</posy>
             <control type="image">
-                <visible>!String.IsEqual(Window.Property(media),show) + !String.IsEqual(Window.Property(media),movie)</visible>
                 <posx>0</posx>
                 <posy>0</posy>
-                <width>630</width>
+                <width>236</width>
                 <height>355</height>
                 <fadetime>500</fadetime>
-                <texture background="true" fallback="script.plex/thumb_fallbacks/movie.png">$INFO[Container(101).ListItem.Property(art)]</texture>
+                <texture background="true" fallback="script.plex/thumb_fallbacks/show.png">$INFO[Container(101).ListItem.Thumb]</texture>
                 <aspectratio>scale</aspectratio>
             </control>
             <control type="image">
-                <visible>String.IsEqual(Window.Property(media),show) | String.IsEqual(Window.Property(media),movie)</visible>
-                <posx>0</posx>
+                <posx>266</posx>
                 <posy>0</posy>
-                <width>630</width>
-                <height>355</height>
+                <width>380</width>
+                <height>210</height>
                 <fadetime>500</fadetime>
                 <texture background="true" fallback="script.plex/thumb_fallbacks/show.png">$INFO[Container(101).ListItem.Property(art)]</texture>
                 <aspectratio>scale</aspectratio>
             </control>
+			<control type="label">
+                <posx>266</posx>
+                <posy>220</posy>
+				<width>380</width>
+				<height>34</height>
+				<font>font12</font>
+				<align>center</align>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[Container(101).ListItem.Property(year)]</label>
+			</control>
+			<control type="label">
+                <posx>266</posx>
+                <posy>250</posy>
+				<width>380</width>
+				<height>34</height>
+				<font>font12</font>
+				<align>center</align>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[Container(101).ListItem.Property(genres)]</label>
+			</control>
+			<control type="label">
+                <visible>StringCompare(Window.Property(media),show)</visible>
+                <posx>266</posx>
+                <posy>280</posy>
+				<width>380</width>
+				<height>34</height>
+				<font>font12</font>
+				<align>center</align>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[Container(101).ListItem.Property(seasons)] Seasons &#8226; $INFO[Container(101).ListItem.Property(episodes)] Episodes</label>
+			</control>
+			<control type="label">
+                <visible>!StringCompare(Window.Property(media),show)</visible>
+                <posx>266</posx>
+                <posy>280</posy>
+				<width>380</width>
+				<height>34</height>
+				<font>font12</font>
+				<align>center</align>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[Container(101).ListItem.Property(mediainfo)]</label>
+			</control>
+			<control type="label">
+                <visible>!StringCompare(Window.Property(media),show)</visible>
+                <posx>266</posx>
+                <posy>310</posy>
+				<width>380</width>
+				<height>34</height>
+				<font>font12</font>
+				<align>center</align>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[Container(101).ListItem.Property(rating)]</label>
+			</control>
+			<control type="label">
+                <visible>StringCompare(Window.Property(media),show)</visible>
+                <posx>266</posx>
+                <posy>310</posy>
+				<width>380</width>
+				<height>34</height>
+				<font>font12</font>
+				<align>center</align>
+				<textcolor>FFFFFFFF</textcolor>
+				<label>$INFO[Container(101).ListItem.Property(studio)]</label>
+			</control>
             <control type="label">
                 <posx>0</posx>
                 <posy>355</posy>
@@ -420,7 +474,7 @@
         </control>
 
         <control type="group" id="150">
-            <visible>String.IsEqual(Window(10000).Property(script.plex.sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
+            <visible>StringCompare(Window(10000).Property(script.plex.sort),titleSort) + Integer.IsGreater(Container(101).NumItems,0) + String.IsEmpty(Window.Property(drawing))</visible>
             <defaultcontrol>151</defaultcontrol>
             <posx>1830</posx>
             <posy>150</posy>
@@ -444,7 +498,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="label">
-                                <visible>!String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
+                                <visible>!StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>34</width>
@@ -456,7 +510,7 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                             <control type="group">
-                                <visible>String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
+                                <visible>StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -490,7 +544,7 @@
                             <posx>0</posx>
                             <posy>0</posy>
                             <control type="label">
-                                <visible>!String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
+                                <visible>!StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(letter))</visible>
                                 <posx>0</posx>
                                 <posy>0</posy>
                                 <width>34</width>
@@ -502,7 +556,7 @@
                                 <label>$INFO[ListItem.Label]</label>
                             </control>
                             <control type="group">
-                                <visible>String.IsEqual(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
+                                <visible>StringCompare(Window(10000).Property(script.plex.key), ListItem.Property(key))</visible>
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
@@ -605,11 +659,11 @@
                 </control>
             </control>
             <control type="group">
-                <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
+                <visible>Player.HasAudio</visible>
                 <posx>438</posx>
                 <posy>0</posy>
                 <control type="button" id="204">
-                    <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
+                    <visible>Player.HasAudio</visible>
                     <posx>-10</posx>
                     <posy>38</posy>
                     <width>260</width>
@@ -715,7 +769,6 @@
                 <onright>210</onright>
                 <ondown>50</ondown>
                 <control type="button" id="311">
-                	<visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
@@ -732,7 +785,6 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter2.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="211">
-                	<visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
                     <width max="500">auto</width>
                     <height>65</height>
                     <font>font12</font>
@@ -747,7 +799,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(filter1.display)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="310">
-                    <visible>!String.IsEqual(Window.Property(media),show) + !String.IsEqual(Window.Property(media),movie)</visible>
+                    <visible>!StringCompare(Window.Property(media),show)</visible>
                     <enable>false</enable>
                     <width max="300">auto</width>
                     <height>65</height>
@@ -764,7 +816,7 @@
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="312">
-                    <visible>String.IsEqual(Window.Property(media),show) | String.IsEqual(Window.Property(media),movie)</visible>
+                    <visible>StringCompare(Window.Property(media),show)</visible>
                     <width max="300">auto</width>
                     <height>65</height>
                     <font>font12</font>
@@ -780,7 +832,6 @@
                     <label>[UPPERCASE]$INFO[Window.Property(media.type)][/UPPERCASE]</label>
                 </control>
                 <control type="button" id="210">
-                	<visible>!String.IsEqual(Window.Property(media.itemType),folder)</visible>
                     <width max="300">auto</width>
                     <height>65</height>
                     <font>font12</font>

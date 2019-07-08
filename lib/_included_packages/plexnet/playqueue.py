@@ -481,37 +481,11 @@ class PlayQueue(signalsmixin.SignalsMixin):
         return self.items().index(self.current()) > 0
 
     def next(self):
-        if self.isRepeatOne:
-            return self.current()
-
-        item = self.getNext()
-        if not item:
-            return None
-
-        self.selectedId = item.playQueueItemID.asInt()
-        return item
-
-    def prev(self):
-        if self.isRepeatOne:
-            return self.current()
-
-        item = self.getPrev()
-        if not item:
-            return None
-
-        self.selectedId = item.playQueueItemID.asInt()
-        return item
-
-    def getPrev(self):
-        if not self.hasPrev():
-            return None
-
-        pos = self.items().index(self.current()) - 1
-        return self.items()[pos]
-
-    def getNext(self):
         if not self.hasNext():
             return None
+
+        if self.isRepeatOne:
+            return self.current()
 
         pos = self.items().index(self.current()) + 1
         if pos >= len(self.items()):
@@ -519,8 +493,19 @@ class PlayQueue(signalsmixin.SignalsMixin):
                 return None
             pos = 0
 
-        return self.items()[pos]
+        item = self.items()[pos]
+        self.selectedId = item.playQueueItemID.asInt()
+        return item
 
+    def prev(self):
+        if not self.hasPrev():
+            return None
+        if self.isRepeatOne:
+            return self.current()
+        pos = self.items().index(self.current()) - 1
+        item = self.items()[pos]
+        self.selectedId = item.playQueueItemID.asInt()
+        return item
 
     def setCurrent(self, pos):
         if pos < 0 or pos >= len(self.items()):

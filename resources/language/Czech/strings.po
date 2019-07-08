@@ -367,19 +367,19 @@ msgid "Play from beginning"
 msgstr "Přehrát od začátku"
 
 msgctxt "#32318"
-msgid "Mark Unplayed"
+msgid "Mark Unwatched"
 msgstr "Označit jako neshlédnuté"
 
 msgctxt "#32319"
-msgid "Mark Played"
+msgid "Mark Watched"
 msgstr "Označit jako shlédnuté"
 
 msgctxt "#32320"
-msgid "Mark Season Unplayed"
+msgid "Mark Season Unwatched"
 msgstr "Označit sezónu jako neshlédnutou"
 
 msgctxt "#32321"
-msgid "Mark Season Played"
+msgid "Mark Season Watched"
 msgstr "Označit sezónu jako shlédnutou"
 
 msgctxt "#32322"
@@ -563,11 +563,11 @@ msgid "First Aired"
 msgstr "První vysílání"
 
 msgctxt "#32367"
-msgid "By Unplayed"
+msgid "By Unwatched"
 msgstr "Podle neshlédnutí"
 
 msgctxt "#32368"
-msgid "Unplayed"
+msgid "Unwatched"
 msgstr "Neshlédnuté"
 
 msgctxt "#32369"

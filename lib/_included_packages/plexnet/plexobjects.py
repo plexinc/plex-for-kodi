@@ -64,8 +64,8 @@ class PlexValue(unicode):
 
         return dt.strftime(format_)
 
-    def asURL(self, includeToken=False):
-        return self.parent.server.buildUrl(self, includeToken)
+    def asURL(self):
+        return self.parent.server.url(self)
 
     def asTranscodedImageURL(self, w, h, **extras):
         return self.parent.server.getImageTranscodeURL(self, w, h, **extras)
@@ -146,7 +146,6 @@ class PlexObject(object, Checks):
         self.titleSort = PlexValue('')
         self.deleted = False
         self._reloaded = False
-        self.data = data
 
         if data is None:
             return
@@ -161,9 +160,6 @@ class PlexObject(object, Checks):
 
         self.name = data.tag
         for k, v in data.attrib.items():
-            if k in ("container",):
-                k = "attrib_%s" % k
-
             setattr(self, k, PlexValue(v, self))
 
     def __getattr__(self, attr):
@@ -299,33 +295,22 @@ class PlexObject(object, Checks):
     def _findPlayer(self, data):
         elem = data.find('Player')
         if elem is not None:
-            return PlexObject(elem, server=self.server)
+            from plexapi.client import Client
+            return Client(self.server, elem)
         return None
 
     def _findTranscodeSession(self, data):
         elem = data.find('TranscodeSession')
         if elem is not None:
-            import media
-            return media.TranscodeSession(elem, server=self.server)
+            from plexapi import media
+            return media.TranscodeSession(self.server, elem)
         return None
-
-    def _findBandwidths(self, data):
-        elem = data.find("Bandwidths")
-        if elem is not None:
-            import media
-            return PlexItemList(elem, media.Bandwidth, media.Bandwidth.TYPE, server=self.server)
-        return []
 
     def _findUser(self, data):
         elem = data.find('User')
         if elem is not None:
-            return PlexObject(elem, self.initpath)
-        return None
-
-    def _findSession(self, data):
-        elem = data.find('Session')
-        if elem is not None:
-            return PlexObject(elem, self.initpath, server=self.server)
+            from plexapi.myplex import MyPlexUser
+            return MyPlexUser(elem, self.initpath)
         return None
 
     def getAbsolutePath(self, attr):
@@ -527,9 +512,8 @@ class ItemContainer(list):
         return self
 
 
-def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None, offset=None,
-              limit=None, tag_fallback=False, **kwargs):
-    data = data if data is not None else server.query(path, offset=offset, limit=limit, **kwargs)
+def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, container=None):
+    data = data if data is not None else server.query(path)
     container = container or PlexContainer(data, path, server, path)
     items = ItemContainer().init(container)
 
@@ -541,7 +525,7 @@ def listItems(server, path, libtype=None, watched=None, bytag=False, data=None, 
         if watched is False and elem.attrib.get('viewCount', 0) >= 1:
             continue
         try:
-            items.append(buildItem(server, elem, path, bytag, container, tag_fallback))
+            items.append(buildItem(server, elem, path, bytag, container))
         except exceptions.UnknownType:
             pass
 

@@ -115,7 +115,7 @@ def now(local=False):
         return time.mktime(time.gmtime())
 
 
-def joinArgs(args, includeQuestion=True):
+def joinArgs(args):
     if not args:
         return ''
 
@@ -124,7 +124,7 @@ def joinArgs(args, includeQuestion=True):
         value = str(args[key])
         arglist.append('{0}={1}'.format(key, compat.quote(value)))
 
-    return '{0}{1}'.format(includeQuestion and '?' or '&', '&'.join(arglist))
+    return '?{0}'.format('&'.join(arglist))
 
 
 def addPlexHeaders(transferObj, token=None):

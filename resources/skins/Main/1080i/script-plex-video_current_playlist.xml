@@ -43,19 +43,19 @@
                             <posy>24</posy>
                             <control type="label">
                                 <visible>String.IsEmpty(ListItem.Property(playing))</visible>
-                                <posx>-10</posx>
+                                <posx>0</posx>
                                 <posy>0</posy>
-                                <width>60</width>
+                                <width>50</width>
                                 <height>100</height>
                                 <font>font10</font>
-                                <align>center</align>
+                                <align>left</align>
                                 <aligny>center</aligny>
                                 <textcolor>D8FFFFFF</textcolor>
                                 <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                             </control>
                             <control type="image">
                                 <visible>!String.IsEmpty(ListItem.Property(playing))</visible>
-                                <posx>2</posx>
+                                <posx>0</posx>
                                 <posy>32.5</posy>
                                 <width>35</width>
                                 <height>35</height>
@@ -176,12 +176,12 @@
                                 <posy>24</posy>
                                 <control type="label">
                                     <visible>String.IsEmpty(ListItem.Property(playing))</visible>
-                                    <posx>-10</posx>
+                                    <posx>0</posx>
                                     <posy>0</posy>
-                                    <width>60</width>
+                                    <width>50</width>
                                     <height>100</height>
                                     <font>font10</font>
-                                    <align>center</align>
+                                    <align>left</align>
                                     <aligny>center</aligny>
                                     <textcolor>D8FFFFFF</textcolor>
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
@@ -278,7 +278,7 @@
                                     </control>
                                 </control>
                                 <control type="label">
-                                    <posx>756</posx>
+                                    <posx>730</posx>
                                     <posy>0</posy>
                                     <width>200</width>
                                     <height>100</height>
@@ -313,15 +313,6 @@
                                 <control type="image">
                                     <posx>0</posx>
                                     <posy>0</posy>
-                                    <width>1044</width>
-                                    <height>100</height>
-                                    <texture border="12">script.plex/white-square-rounded.png</texture>
-                                    <colordiffuse>FFE5A00D</colordiffuse>
-                                </control>
-                                <!-- comment the previous and uncomment the following for re-enabling options button -->
-                                <!--<control type="image">
-                                    <posx>0</posx>
-                                    <posy>0</posy>
                                     <width>999</width>
                                     <height>100</height>
                                     <texture border="12">script.plex/white-square-left-rounded.png</texture>
@@ -334,22 +325,22 @@
                                     <height>100</height>
                                     <texture>script.plex/buttons/more-vertical.png</texture>
                                     <colordiffuse>99FFFFFF</colordiffuse>
-                                </control>-->
+                                </control>
                                 <control type="label">
                                     <visible>String.IsEmpty(ListItem.Property(playing))</visible>
-                                    <posx>24</posx>
+                                    <posx>48</posx>
                                     <posy>0</posy>
-                                    <width>60</width>
+                                    <width>50</width>
                                     <height>100</height>
                                     <font>font12</font>
-                                    <align>center</align>
+                                    <align>left</align>
                                     <aligny>center</aligny>
                                     <textcolor>B8000000</textcolor>
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
                                     <visible>!String.IsEmpty(ListItem.Property(playing))</visible>
-                                    <posx>36</posx>
+                                    <posx>48</posx>
                                     <posy>32.5</posy>
                                     <width>35</width>
                                     <height>35</height>
@@ -440,7 +431,7 @@
                                     </control>
                                 </control>
                                 <control type="label">
-                                    <posx>802</posx>
+                                    <posx>776</posx>
                                     <posy>0</posy>
                                     <width>200</width>
                                     <height>100</height>

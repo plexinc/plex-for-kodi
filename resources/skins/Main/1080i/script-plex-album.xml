@@ -156,20 +156,20 @@
                             <posx>120</posx>
                             <posy>24</posy>
                             <control type="label">
-                                <visible>!String.IsEqual(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                <posx>-10</posx>
+                                <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
+                                <posx>0</posx>
                                 <posy>0</posy>
-                                <width>60</width>
+                                <width>50</width>
                                 <height>76</height>
                                 <font>font10</font>
-                                <align>center</align>
+                                <align>left</align>
                                 <aligny>center</aligny>
                                 <textcolor>D8FFFFFF</textcolor>
                                 <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                             </control>
                             <control type="image">
-                                <visible>String.IsEqual(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                <posx>2</posx>
+                                <visible>StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
+                                <posx>0</posx>
                                 <posy>21</posy>
                                 <width>35</width>
                                 <height>35</height>
@@ -237,20 +237,20 @@
                                 <posx>120</posx>
                                 <posy>24</posy>
                                 <control type="label">
-                                    <visible>!String.IsEqual(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                    <posx>-10</posx>
+                                    <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
+                                    <posx>0</posx>
                                     <posy>0</posy>
-                                    <width>60</width>
+                                    <width>50</width>
                                     <height>76</height>
                                     <font>font10</font>
-                                    <align>center</align>
+                                    <align>left</align>
                                     <aligny>center</aligny>
                                     <textcolor>D8FFFFFF</textcolor>
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>String.IsEqual(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                    <posx>2</posx>
+                                    <visible>StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
+                                    <posx>0</posx>
                                     <posy>21</posy>
                                     <width>35</width>
                                     <height>35</height>
@@ -314,7 +314,7 @@
                                     <colordiffuse>FFE5A00D</colordiffuse>
                                 </control>
                                 <control type="label">
-                                    <visible>!String.IsEqual(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
+                                    <visible>!StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
                                     <posx>48</posx>
                                     <posy>0</posy>
                                     <width>50</width>
@@ -326,8 +326,8 @@
                                     <label>[B]$INFO[ListItem.Property(track.number)][/B]</label>
                                 </control>
                                 <control type="image">
-                                    <visible>String.IsEqual(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
-                                    <posx>36</posx>
+                                    <visible>StringCompare(ListItem.Property(track.ID),Window(10000).Property(script.plex.track.ID))</visible>
+                                    <posx>48</posx>
                                     <posy>21</posy>
                                     <width>35</width>
                                     <height>35</height>
@@ -470,11 +470,11 @@
                 </control>
             </control>
             <control type="group">
-                <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
+                <visible>Player.HasAudio</visible>
                 <posx>438</posx>
                 <posy>0</posy>
                 <control type="button" id="204">
-                    <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
+                    <visible>Player.HasAudio</visible>
                     <posx>-10</posx>
                     <posy>38</posy>
                     <width>260</width>

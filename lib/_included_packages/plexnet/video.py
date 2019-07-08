@@ -91,15 +91,15 @@ class Video(media.MediaItem):
         """
         self.server.query('/%s/analyze' % self.key)
 
-    def markWatched(self, **kwargs):
+    def markWatched(self):
         path = '/:/scrobble?key=%s&identifier=com.plexapp.plugins.library' % self.ratingKey
         self.server.query(path)
-        self.reload(**kwargs)
+        self.reload()
 
-    def markUnwatched(self, **kwargs):
+    def markUnwatched(self):
         path = '/:/unscrobble?key=%s&identifier=com.plexapp.plugins.library' % self.ratingKey
         self.server.query(path)
-        self.reload(**kwargs)
+        self.reload()
 
     # def play(self, client):
     #     client.playMedia(self)
@@ -141,6 +141,13 @@ class Video(media.MediaItem):
         return server.buildUrl('/{0}/:/transcode/universal/start.m3u8?{1}'.format(streamtype, compat.urlencode(final)), includeToken=True)
         # path = "/video/:/transcode/universal/" + command + "?session=" + AppSettings().GetGlobal("clientIdentifier")
 
+    def videoCodecString(self):
+        res = self.media[0].videoCodec
+        if not res:
+            return ''
+        else:
+            return res.upper()
+		
     def resolutionString(self):
         res = self.media[0].videoResolution
         if not res:
@@ -150,6 +157,33 @@ class Video(media.MediaItem):
             return '{0}p'.format(self.media[0].videoResolution)
         else:
             return res.upper()
+
+    def durationString(self):
+        res = self.media[0].duration
+        if not res:
+            return ''
+
+        if res.isdigit():
+            mins = int(res) / 60000
+            return '{0} min'.format(mins)
+        else:
+            return res.upper()
+
+    def framerateString(self):
+        res = self.media[0].videoFrameRate
+        if not res:
+            return ''
+        return res.upper()
+
+    def aspectratioString(self):
+        AspectRatio = self.media[0].aspectRatio
+        if AspectRatio == "1.78":
+            AspectRatioString = "16x9"
+        elif AspectRatio == "1.33":
+            AspectRatioString = "4x3"
+        else:
+		    AspectRatioString = AspectRatio + ":1"
+        return AspectRatioString
 
     def audioCodecString(self):
         codec = (self.media[0].audioCodec or '').lower()
@@ -173,52 +207,31 @@ class Video(media.MediaItem):
         else:
             return ""
 
+    def summaryString(self):
+        summary = self.summary
+        return summary
+
+    def titleString(self):
+        title = self.title
+        return title
+
+    def airdateString(self):
+        if self.originallyAvailableAt == '':
+            return ''
+        else:	
+            return 'Aired: ' + self.originallyAvailableAt
+
     def available(self):
         return self.media()[0].isAccessible()
 
 
-class RelatedMixin(object):
-    _relatedCount = None
-
-    @property
-    def relatedCount(self):
-        if self._relatedCount is None:
-            self._relatedCount = self.getRelated(0, 0).totalSize
-
-        return self._relatedCount
-
-    @property
-    def related(self):
-        return self.getRelated(0, 8)
-
-    def getRelated(self, offset=None, limit=None, _max=36):
-        path = '/library/metadata/%s/similar' % self.ratingKey
-        return plexobjects.listItems(self.server, path, offset=offset, limit=limit, params={"count": _max})
-
-
-class SectionOnDeckMixin(object):
-    _sectionOnDeckCount = None
-
-    def sectionOnDeck(self, offset=None, limit=None):
-        query = '/library/sections/{0}/onDeck'.format(self.getLibrarySectionId())
-        return plexobjects.listItems(self.server, query, offset=offset, limit=limit)
-
-    @property
-    def sectionOnDeckCount(self):
-        if self._sectionOnDeckCount is None:
-            self._sectionOnDeckCount = self.sectionOnDeck(0, 0).totalSize
-
-        return self._sectionOnDeckCount
-
-
-class PlayableVideo(Video, RelatedMixin):
+class PlayableVideo(Video):
     TYPE = None
 
     def _setData(self, data):
         Video._setData(self, data)
         if self.isFullObject():
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
-            self.chapters = plexobjects.PlexItemList(data, media.Chapter, media.Chapter.TYPE)
 
     def reload(self, *args, **kwargs):
         if not kwargs.get('_soft'):
@@ -247,16 +260,17 @@ class Movie(PlayableVideo):
 
     def _setData(self, data):
         PlayableVideo._setData(self, data)
+        # Mark: added to get genre on series grandparent item which is not a fullobject.
+        self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
         if self.isFullObject():
             self.collections = plexobjects.PlexItemList(data, media.Collection, media.Collection.TYPE, server=self.server)
             self.countries = plexobjects.PlexItemList(data, media.Country, media.Country.TYPE, server=self.server)
             self.directors = plexobjects.PlexItemList(data, media.Director, media.Director.TYPE, server=self.server)
-            self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
             self.producers = plexobjects.PlexItemList(data, media.Producer, media.Producer.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
             self.writers = plexobjects.PlexItemList(data, media.Writer, media.Writer.TYPE, server=self.server)
-            #self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
+            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
         else:
             if data.find(media.Media.TYPE) is not None:
                 self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
@@ -269,7 +283,6 @@ class Movie(PlayableVideo):
         self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''), self)
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
-        self.session = self._findSession(data)
         self.transcodeSession = self._findTranscodeSession(data)
 
     @property
@@ -311,15 +324,16 @@ class Movie(PlayableVideo):
 
 
 @plexobjects.registerLibType
-class Show(Video, RelatedMixin, SectionOnDeckMixin):
+class Show(Video):
     TYPE = 'show'
 
     def _setData(self, data):
         Video._setData(self, data)
+        # Mark: added to get genre on series grandparent item which is not a fullobject.
+        self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
         if self.isFullObject():
-            self.genres = plexobjects.PlexItemList(data, media.Genre, media.Genre.TYPE, server=self.server)
             self.roles = plexobjects.PlexItemList(data, media.Role, media.Role.TYPE, server=self.server, container=self.container)
-            #self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
+            self.related = plexobjects.PlexItemList(data.find('Related'), plexlibrary.Hub, plexlibrary.Hub.TYPE, server=self.server, container=self)
             self.extras = PlexVideoItemList(data.find('Extras'), initpath=self.initpath, server=self.server, container=self)
 
     @property
@@ -358,6 +372,10 @@ class Show(Video, RelatedMixin, SectionOnDeckMixin):
     def refresh(self):
         self.server.query('/library/metadata/%s/refresh' % self.ratingKey)
 
+    def sectionOnDeck(self):
+        query = '/library/sections/{0}/onDeck'.format(self.getLibrarySectionId())
+        return plexobjects.listItems(self.server, query)
+
 
 @plexobjects.registerLibType
 class Season(Video):
@@ -380,9 +398,9 @@ class Season(Video):
     def isWatched(self):
         return self.viewedLeafCount == self.leafCount
 
-    def episodes(self, watched=None, offset=None, limit=None):
+    def episodes(self, watched=None):
         path = self.key
-        return plexobjects.listItems(self.server, path, watched=watched, offset=offset, limit=limit)
+        return plexobjects.listItems(self.server, path, watched=watched)
 
     def episode(self, title):
         path = self.key
@@ -402,7 +420,7 @@ class Season(Video):
 
 
 @plexobjects.registerLibType
-class Episode(PlayableVideo, SectionOnDeckMixin):
+class Episode(PlayableVideo):
     TYPE = 'episode'
 
     def init(self, data):
@@ -427,7 +445,6 @@ class Episode(PlayableVideo, SectionOnDeckMixin):
         self.sessionKey = plexobjects.PlexValue(data.attrib.get('sessionKey', ''), self)
         self.user = self._findUser(data)
         self.player = self._findPlayer(data)
-        self.session = self._findSession(data)
         self.transcodeSession = self._findTranscodeSession(data)
 
     @property
@@ -481,8 +498,10 @@ class Episode(PlayableVideo, SectionOnDeckMixin):
     def roles(self):
         return self.show().roles
 
-    def getRelated(self, offset=None, limit=None, _max=36):
-        return self.show().getRelated(offset=offset, limit=limit, _max=_max)
+    @property
+    def related(self):
+        self.show().reload(_soft=True, includeRelated=1, includeRelatedCount=10)
+        return self.show().related
 
 
 @plexobjects.registerLibType

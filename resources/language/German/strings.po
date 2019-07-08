@@ -367,19 +367,19 @@ msgid "Play from beginning"
 msgstr "Von vorne wiedergeben"
 
 msgctxt "#32318"
-msgid "Mark Unplayed"
+msgid "Mark Unwatched"
 msgstr "Als ungesehen markieren"
 
 msgctxt "#32319"
-msgid "Mark Played"
+msgid "Mark Watched"
 msgstr "Als gesehen markieren"
 
 msgctxt "#32320"
-msgid "Mark Season Unplayed"
+msgid "Mark Season Unwatched"
 msgstr "Staffel als ungesehen markieren"
 
 msgctxt "#32321"
-msgid "Mark Season Played"
+msgid "Mark Season Watched"
 msgstr "Staffel als gesehen markieren"
 
 msgctxt "#32322"
@@ -563,11 +563,11 @@ msgid "First Aired"
 msgstr "Erstausstrahlung"
 
 msgctxt "#32367"
-msgid "By Unplayed"
+msgid "By Unwatched"
 msgstr "Nach Ungesehen"
 
 msgctxt "#32368"
-msgid "Unplayed"
+msgid "Unwatched"
 msgstr "Ungesehen"
 
 msgctxt "#32369"
@@ -949,59 +949,3 @@ msgstr "Künstler(in)"
 msgctxt "#32463"
 msgid "By Artist"
 msgstr "Nach Künstler(in)"
-
-msgctxt "#32464"
-msgid "Player"
-msgstr "Wiedergabe"
-
-msgctxt "#32465"
-msgid "Use skip step settings from Kodi"
-msgstr "Skip-Schritte-Einstellung von Kodi benutzen"
-
-msgctxt "#32466"
-msgid "Automatically seek to the selected timeline position after a second"
-msgstr "Nach Verzögerung automatisch zur aktuell gewählten Position springen"
-
-msgctxt "#32467"
-msgid "User Interface"
-msgstr "Benutzeroberfläche"
-
-msgctxt "#32468"
-msgid "Show dynamic background art"
-msgstr "Dynamische Hintergrundbilder aktivieren"
-
-msgctxt "#32469"
-msgid "Background art blur amount"
-msgstr "Unschärfe der Hintergrundbilder"
-
-msgctxt "#32470"
-msgid "Background art opacity"
-msgstr "Deckkraft der Hintergrundbilder"
-
-msgctxt "#32471"
-msgid "Use Plex/Kodi steps for timeline"
-msgstr "Plex/Kodi-Skip-Schritte für die Zeitachse verwenden"
-
-msgctxt "#32480"
-msgid "Theme music"
-msgstr "Titelmusik"
-
-msgctxt "#32481"
-msgid "Off"
-msgstr "Aus"
-
-msgctxt "#32482"
-msgid "%(percentage)s %%"
-msgstr "%(percentage)s %%"
-
-msgctxt "#32483"
-msgid "Hide Stream Info"
-msgstr "Stream Info nicht anzeigen"
-
-msgctxt "#32484"
-msgid "Show Stream Info"
-msgstr "Stream Info anzeigen"
-
-msgctxt "#32485"
-msgid "Go back instantly with the previous menu action in scrolled views"
-msgstr "Mit der Previous-Menu-Aktion In gescrollten Ansichten sofort zurückgehen"

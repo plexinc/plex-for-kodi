@@ -75,9 +75,6 @@ class Library(plexobjects.PlexObject):
 
     def refresh(self):
         self.server.query('/library/sections/all/refresh')
-    
-    def randomArts(self):
-        return plexobjects.listItems(self.server, '/library/arts?sort=random&type=1%2c2%2c8&X-Plex-Container-Start=0&X-Plex-Container-Size=50')
 
 
 class LibrarySection(plexobjects.PlexObject):
@@ -135,21 +132,6 @@ class LibrarySection(plexobjects.PlexObject):
             path = '{0}/all'.format(self.key)
         else:
             path = '/library/sections/{0}/all'.format(self.key)
-        
-        return self.items(path, start, size, filter_, sort, unwatched, type_, False)
-    
-    def folder(self, start=None, size=None, subDir=False):
-        if self.key.startswith('/'):
-            path = self.key
-        else:
-            path = '/library/sections/{0}'.format(self.key)
-        
-        if not subDir:
-            path = '{0}/folder'.format(path)
-        
-        return self.items(path, start, size, None, None, False, None, True)
-
-    def items(self, path, start, size, filter_, sort, unwatched, type_, tag_fallback):
 
         args = {}
 
@@ -170,9 +152,9 @@ class LibrarySection(plexobjects.PlexObject):
             args[self.TYPE == 'movie' and 'unwatched' or 'unwatchedLeaves'] = 1
 
         if args:
-            path += util.joinArgs(args, '?' not in path)
+            path += util.joinArgs(args)
 
-        return plexobjects.listItems(self.server, path, tag_fallback=tag_fallback)
+        return plexobjects.listItems(self.server, path)
 
     def jumpList(self, filter_=None, sort=None, unwatched=False, type_=None):
         if self.key.startswith('/'):
@@ -387,9 +369,6 @@ class Generic(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
-@plexobjects.registerLibType
-class Collection(Generic):
-    TYPE = 'collection'
 
 @plexobjects.registerLibType
 class Playlist(playlist.BasePlaylist, signalsmixin.SignalsMixin):

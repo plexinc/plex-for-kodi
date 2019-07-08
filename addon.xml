@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.plex"
+       name="Plex"
+       version="0.1.7a2"
+       provider-name="Plex">
+    <requires>
+        <import addon="xbmc.python" version="2.25.0"/>
+        <import addon="script.module.requests" version="2.3.0"/>
+    </requires>
+    <extension point="xbmc.python.script" library="default.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.python.pluginsource" library="plugin.py">
+        <provides>executable</provides>
+    </extension>
+	<extension point="xbmc.ui.screensaver" library="screensaver.py"/>
+    <extension point="xbmc.service" library="service.py" start="startup"></extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en">Plex for Kodi</summary>
+        <summary lang="de">Plex für Kodi</summary>
+        <summary lang="hu">Plex for Kodi</summary>
+        <summary lang="it">Plex per Kodi</summary>
+        <summary lang="ru">Plex for Kodi</summary>
+        <description lang="en">Official Plex for Kodi add-on</description>
+        <description lang="de">Offizielles Plex für Kodi Addon</description>
+        <description lang="hu">Hivatalos Plex for Kodi add-on</description>
+        <description lang="it">Addon ufficiale Plex per Kodi</description>
+        <description lang="fr">Add-on Officiel Plex pour Kodi</description>
+        <description lang="ru">Официальный аддон Plex for Kodi</description>
+        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+        <forum>https://forums.plex.tv/categories/plex-for-kodi</forum>
+        <website>https://www.plex.tv</website>
+        <source>https://github.com/plexinc/plex-for-kodi</source>
+        <platform>all</platform>
+        <news>
+Add Italian translations (thanks to iz8mbw)
+Use Kodi time format setting (Issue #90) (thanks to pannal)
+Restore last window when starting the add-on while it is running (Issue #126)
+Add Portuguese (Brazil) translations (thanks to DiogoAbu)
+Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal
+Only play unwatched media when pressing play or shuffle and filtering for unwatched (thanks to tlt21)
+Fix issue with duplicated icons whe fast-scrolling a hub (Issue #177) (thanks to pannal)
+Fixed GUI not responding after public IP renewal (thanks to pannal and mkliche)
+Advanced setting: Automatically seek selected position after a delay (Issue #172) (thanks to pannal)
+Advanced setting: Use skip step settings from Kodi (Issue #133) (thanks to pannal)
+Advanced setting: Use Plex/Kodi steps for timeline (Issue #133) (thanks to pannal)
+OSD-Autohide improvements (thanks to pannal)
+Show post play on user stop when item is considered played (thanks to pannal)
+Use Unplayed/Played instead of Unwatched/Watched (thanks to pannal)
+Fix issue with cast popup displaying partially offscreen (thanks to pannal)
+Various fixes for incorrectly transcoded playback (Issue #201) (thanks to pannal)
+        </news>
+    </extension>
+</addon>

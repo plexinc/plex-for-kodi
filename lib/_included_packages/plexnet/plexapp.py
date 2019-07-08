@@ -159,7 +159,7 @@ class AppInterface(object):
             maxResolution = "1080p"
 
         self._globals['qualities'] = [
-            simpleobjects.AttributeDict({'title': "Original", 'index': 13, 'maxBitrate': 200000}),
+            simpleobjects.AttributeDict({'title': "Original", 'index': 13, 'maxBitrate': 1000000}),
             simpleobjects.AttributeDict({'title': "20 Mbps " + maxResolution, 'index': 12, 'maxBitrate': 20000}),
             simpleobjects.AttributeDict({'title': "12 Mbps " + maxResolution, 'index': 11, 'maxBitrate': 12000}),
             simpleobjects.AttributeDict({'title': "10 Mbps " + maxResolution, 'index': 10, 'maxBitrate': 10000}),
@@ -294,6 +294,16 @@ class PlayerSettingsInterface(object):
             return 480
         else:
             return 360
+
+    def getMaxBitrate(self, qualityType):
+        qualityIndex = self.getQualityIndex(qualityType)
+
+        qualities = self.getGlobal("qualities", [])
+        for quality in qualities:
+            if quality.index == qualityIndex:
+                return util.validInt(quality.maxBitrate)
+
+        return 0
 
 
 class DumbInterface(AppInterface):

@@ -13,7 +13,15 @@
                 <posy>0</posy>
                 <width>1920</width>
                 <height>1080</height>
-                <texture background="true">script.plex/home/background-fallback.png</texture>
+                <texture>script.plex/home/background-fallback.png</texture>
+            </control>
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1920</width>
+                <height>1080</height>
+                <fadetime>1000</fadetime>
+                <texture  background="true">$INFO[Window.Property(background)]</texture>
             </control>
         </control>
 
@@ -487,24 +495,12 @@
                                         <posx>0</posx>
                                         <posy>180</posy>
                                         <width>299</width>
-                                        <height>50</height>
+                                        <height>60</height>
                                         <font>font10</font>
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
                                     </control>
-									<!-- 
-                                    <control type="textbox">
-                                        <posx>0</posx>
-                                        <posy>230</posy>
-                                        <width>299</width>
-                                        <height>30</height>
-                                        <font>font08</font>
-                                        <align>center</align>
-                                        <textcolor>FFFFFFFF</textcolor>
-                                        <label>$INFO[ListItem.Property(ExtLabel)]</label>
-                                    </control>
-									-->
                                 </control>
                             </control>
                         </itemlayout>
@@ -603,6 +599,8 @@
                         <height>520</height>
                         <onup>400</onup>
                         <ondown>403</ondown>
+                        <onleft>false</onleft>
+                        <onright>false</onright>
                         <scrolltime>200</scrolltime>
                         <orientation>horizontal</orientation>
                         <preloaditems>4</preloaditems>
@@ -650,6 +648,44 @@
                                             <colordiffuse>FFCC7B19</colordiffuse>
                                         </control>
                                     </control>
+                                    <control type="image">
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
+                                        <posx>196</posx>
+                                        <posy>0</posy>
+                                        <width>48</width>
+                                        <height>48</height>
+                                        <texture>script.plex/indicators/unwatched.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                        <control type="image">
+                                            <posx>193</posx>
+                                            <posy>0</posy>
+                                            <width>51</width>
+                                            <height>39</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>FF000000</colordiffuse>
+                                        </control>
+                                        <control type="image">
+                                            <posx>194</posx>
+                                            <posy>0</posy>
+                                            <width>50</width>
+                                            <height>38</height>
+                                            <texture>script.plex/white-square.png</texture>
+                                            <colordiffuse>FFCC7B19</colordiffuse>
+                                        </control>
+                                        <control type="label">
+                                            <posx>194</posx>
+                                            <posy>0</posy>
+                                            <width>50</width>
+                                            <height>38</height>
+                                            <font>font12</font>
+                                            <align>center</align>
+                                            <aligny>center</aligny>
+                                            <textcolor>FF000000</textcolor>
+                                            <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                        </control>
+                                    </control>
                                     <control type="label">
                                         <scroll>false</scroll>
                                         <posx>0</posx>
@@ -660,6 +696,40 @@
                                         <align>center</align>
                                         <textcolor>FFFFFFFF</textcolor>
                                         <label>$INFO[ListItem.Label]</label>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
                                     </control>
                                 </control>
                             </control>
@@ -722,8 +792,46 @@
                                                 <colordiffuse>FFCC7B19</colordiffuse>
                                             </control>
                                         </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
+                                            <posx>196</posx>
+                                            <posy>0</posy>
+                                            <width>48</width>
+                                            <height>48</height>
+                                            <texture>script.plex/indicators/unwatched.png</texture>
+                                        </control>
+                                        <control type="group">
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched.count))</visible>
+                                            <control type="image">
+                                                <posx>193</posx>
+                                                <posy>0</posy>
+                                                <width>51</width>
+                                                <height>39</height>
+                                                <texture>script.plex/white-square.png</texture>
+                                                <colordiffuse>FF000000</colordiffuse>
+                                            </control>
+                                            <control type="image">
+                                                <posx>194</posx>
+                                                <posy>0</posy>
+                                                <width>50</width>
+                                                <height>38</height>
+                                                <texture>script.plex/white-square.png</texture>
+                                                <colordiffuse>FFCC7B19</colordiffuse>
+                                            </control>
+                                            <control type="label">
+                                                <posx>194</posx>
+                                                <posy>0</posy>
+                                                <width>50</width>
+                                                <height>38</height>
+                                                <font>font12</font>
+                                                <align>center</align>
+                                                <aligny>center</aligny>
+                                                <textcolor>FF000000</textcolor>
+                                                <label>$INFO[ListItem.Property(unwatched.count)]</label>
+                                            </control>
+                                        </control>
                                         <control type="label">
-                                            <scroll>false</scroll>
+                                            <scroll>Control.HasFocus(401)</scroll>
                                             <posx>0</posx>
                                             <posy>369</posy>
                                             <width>244</width>
@@ -741,6 +849,40 @@
                                         <width>254</width>
                                         <height>371</height>
                                         <texture border="10">script.plex/home/selected.png</texture>
+                                    </control>
+                                    <control type="group">
+                                        <visible>!String.IsEmpty(ListItem.Property(is.boundary))</visible>
+                                        <control type="image">
+                                            <posx>0</posx>
+                                            <posy>0</posy>
+                                            <width>244</width>
+                                            <height>361</height>
+                                            <texture colordiffuse="FF404040">script.plex/white-square.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(right.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>String.IsEmpty(ListItem.Property(is.updating)) + !String.IsEmpty(ListItem.Property(left.boundary))</visible>
+                                            <posx>91.5</posx>
+                                            <posy>130.5</posy>
+                                            <width>61</width>
+                                            <height>100</height>
+                                            <texture colordiffuse="40000000">script.plex/indicators/chevron-white-l.png</texture>
+                                        </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(is.updating))</visible>
+                                            <posx>58</posx>
+                                            <posy>116.5</posy>
+                                            <width>128</width>
+                                            <height>128</height>
+                                            <texture>script.plex/home/busy.gif</texture>
+                                        </control>
                                     </control>
                                 </control>
                             </control>
@@ -876,7 +1018,7 @@
                                             <posx>0</posx>
                                             <posy>253</posy>
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(403)</scroll>
                                                 <posx>0</posx>
                                                 <posy>0</posy>
                                                 <width>244</width>
@@ -887,7 +1029,7 @@
                                                 <label>$INFO[ListItem.Label]</label>
                                             </control>
                                             <control type="label">
-                                                <scroll>false</scroll>
+                                                <scroll>Control.HasFocus(403)</scroll>
                                                 <posx>0</posx>
                                                 <posy>30</posy>
                                                 <width>244</width>
@@ -978,11 +1120,11 @@
                 </control>
             </control>
             <control type="group">
-                <visible>Player.HasAudio</visible>
+                <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
                 <posx>438</posx>
                 <posy>0</posy>
                 <control type="button" id="204">
-                    <visible>Player.HasAudio</visible>
+                    <visible>Player.HasAudio + String.IsEmpty(Window(10000).Property(script.plex.theme_playing))</visible>
                     <posx>-10</posx>
                     <posy>38</posy>
                     <width>260</width>

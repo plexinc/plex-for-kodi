@@ -14,6 +14,7 @@ import plexobjects
 import plexresource
 import plexlibrary
 import plexapp
+import asyncadapter
 # from plexapi.client import Client
 # from plexapi.playqueue import PlayQueue
 
@@ -157,6 +158,17 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         else:
             return plexlibrary.Library(self.query('/library/'), server=self)
 
+    @property
+    def sessions(self):
+        if self.owned:
+            return plexobjects.listItems(self, '/status/sessions')
+        raise exceptions.ServerNotOwned
+
+    def findVideoSession(self, client_id, rating_key):
+        for item in self.sessions:
+            if item.session and item.session.id == client_id and item.ratingKey == rating_key:
+                return item
+
     def buildUrl(self, path, includeToken=False):
         if self.activeConnection:
             return self.activeConnection.buildUrl(self, path, includeToken)
@@ -167,6 +179,21 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     def query(self, path, method=None, **kwargs):
         method = method or self.session.get
         url = self.buildUrl(path, includeToken=True)
+
+        # If URL is empty, try refresh resources and return empty set for now
+        if not url:
+            util.WARN_LOG("Empty server url, returning None and refreshing resources")
+            plexapp.MANAGER.refreshResources(True)
+            return None
+
+        # add offset/limit
+        offset = kwargs.pop("offset", None)
+        limit = kwargs.pop("limit", None)
+        if offset is not None:
+            url = http.addUrlParam(url, "X-Plex-Container-Start=%s" % offset)
+        if limit is not None:
+            url = http.addUrlParam(url, "X-Plex-Container-Size=%s" % limit)
+
         util.LOG('{0} {1}'.format(method.__name__.upper(), re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', url)))
         try:
             response = method(url, **kwargs)
@@ -174,6 +201,10 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
                 codename = http.status_codes.get(response.status_code, ['Unknown'])[0]
                 raise exceptions.BadRequest('({0}) {1}'.format(response.status_code, codename))
             data = response.text.encode('utf8')
+        except asyncadapter.TimeoutException:
+            util.ERROR()
+            plexapp.MANAGER.refreshResources(True)
+            return None
         except http.requests.ConnectionError:
             util.ERROR()
             return None

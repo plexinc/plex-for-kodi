@@ -1,0 +1,927 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2013-12-12 22:56+0000\n"
+"PO-Revision-Date: 2017-02-04 14:36+0100\n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Michal Kuncl <michal.kuncl@gmail.com>\n"
+"X-Generator: Poedit 2.0beta2\n"
+
+msgctxt "#32000"
+msgid "Main"
+msgstr "Hlavní"
+
+msgctxt "#32001"
+msgid "Original"
+msgstr "Originální"
+
+msgctxt "#32002"
+msgid "20 Mbps 1080p"
+msgstr "20 Mb/s 1080p"
+
+msgctxt "#32003"
+msgid "12 Mbps 1080p"
+msgstr "12 Mb/s 1080p"
+
+msgctxt "#32004"
+msgid "10 Mbps 1080p"
+msgstr "10 Mb/s 1080p"
+
+msgctxt "#32005"
+msgid "8 Mbps 1080p"
+msgstr "8 Mb/s 1080p"
+
+msgctxt "#32006"
+msgid "4 Mbps 720p"
+msgstr "4 Mb/s 720p"
+
+msgctxt "#32007"
+msgid "3 Mbps 720p"
+msgstr "3 Mb/s 720p"
+
+msgctxt "#32008"
+msgid "2 Mbps 720p"
+msgstr "2 Mb/s 720p"
+
+msgctxt "#32009"
+msgid "1.5 Mbps 480p"
+msgstr "1.5 Mb/s 480p"
+
+msgctxt "#32010"
+msgid "720 kbps"
+msgstr "720 kb/s"
+
+msgctxt "#32011"
+msgid "320 kbps"
+msgstr "320 kb/s"
+
+msgctxt "#32012"
+msgid "208 kbps"
+msgstr "208 kb/s"
+
+msgctxt "#32013"
+msgid "96 kbps"
+msgstr "96 kb/s"
+
+msgctxt "#32014"
+msgid "64 kbps"
+msgstr "64 kb/s"
+
+msgctxt "#32020"
+msgid "Local Quality"
+msgstr "Místní kvalita"
+
+msgctxt "#32021"
+msgid "Remote Quality"
+msgstr "Vzdálená kvalita"
+
+msgctxt "#32022"
+msgid "Online Quality"
+msgstr "Online kvalita"
+
+msgctxt "#32023"
+msgid "Transcode Format"
+msgstr "Formát překódování"
+
+msgctxt "#32024"
+msgid "Debug Logging"
+msgstr "Ladící záznamy"
+
+msgctxt "#32025"
+msgid "Allow Direct Play"
+msgstr "Povolit přímé přehrávání"
+
+msgctxt "#32026"
+msgid "Allow Direct Stream"
+msgstr "Povolit přímé streamování"
+
+msgctxt "#32027"
+msgid "Force"
+msgstr "Vynutit"
+
+msgctxt "#32028"
+msgid "Always"
+msgstr "Vždy"
+
+msgctxt "#32029"
+msgid "Only Image Formats"
+msgstr "Pouze obrázkové formáty"
+
+msgctxt "#32030"
+msgid "Auto"
+msgstr "Automaticky"
+
+msgctxt "#32031"
+msgid "Burn Subtitles (Direct Play Only)"
+msgstr "Vpálit titulky (pouze přímá přehrávání)"
+
+msgctxt "#32032"
+msgid "Allow Insecure Connections"
+msgstr "Povolit nezabezpečené připojení"
+
+msgctxt "#32033"
+msgid "Never"
+msgstr "Nikdy"
+
+msgctxt "#32034"
+msgid "On Same network"
+msgstr "Pouze na stejné síti"
+
+msgctxt "#32035"
+msgid "Always"
+msgstr "Vždy"
+
+msgctxt "#32036"
+msgid "Allow 4K"
+msgstr "Povolit 4K"
+
+msgctxt "#32037"
+msgid "Allow HEVC (h265)"
+msgstr "Povolit HEVC (H265)"
+
+msgctxt "#32038"
+msgid "Automatically Sign In"
+msgstr "Automaticky přihlašovat"
+
+msgctxt "#32039"
+msgid "Post Play Auto Play"
+msgstr "Automatické přehrání po skončení"
+
+msgctxt "#32040"
+msgid "Enable Subtitle Downloading"
+msgstr "Povolit stahování titulků"
+
+msgctxt "#32041"
+msgid "Enable Subtitle Downloading"
+msgstr "Povolit stahování titulků"
+
+msgctxt "#32042"
+msgid "Server Discovery (GDM)"
+msgstr "Objevení serveru (GDM)"
+
+msgctxt "#32043"
+msgid "Start Plex On Kodi Startup"
+msgstr "Spustit plex při spuštění Kodi"
+
+msgctxt "#32044"
+msgid "Connection 1 IP"
+msgstr "IP připojení 1"
+
+msgctxt "#32045"
+msgid "Connection 1 Port"
+msgstr "Port připojení 1"
+
+msgctxt "#32046"
+msgid "Connection 2 IP"
+msgstr "IP připojení 2"
+
+msgctxt "#32047"
+msgid "Connection 2 Port"
+msgstr "Port připojení 2"
+
+msgctxt "#32048"
+msgid "Audio"
+msgstr "Audio"
+
+msgctxt "#32049"
+msgid "Advanced"
+msgstr "Rozšířené"
+
+msgctxt "#32050"
+msgid "Manual Servers"
+msgstr "Ruční servery"
+
+msgctxt "#32051"
+msgid "Privacy"
+msgstr "Soukromí"
+
+msgctxt "#32052"
+msgid "About"
+msgstr "O doplňku"
+
+msgctxt "#32053"
+msgid "Video"
+msgstr "Video"
+
+msgctxt "#32054"
+msgid "Addon Version"
+msgstr "Verze doplňku"
+
+msgctxt "#32055"
+msgid "Kodi Version"
+msgstr "Verze Kodi"
+
+msgctxt "#32056"
+msgid "Screen Resolution"
+msgstr "Rozlišení obrazovky"
+
+msgctxt "#32057"
+msgid "Current Server Version"
+msgstr "Verze serveru"
+
+msgctxt "#32100"
+msgid "Skip user selection and pin entry on startup."
+msgstr "Při spuštění přeskočit výběr uživatele a zadávání pinu."
+
+msgctxt "#32101"
+msgid "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+msgstr "Pokud povolíte, po zkončení přehrávání se automaticky přehraje položka ze seznamu 'Následující' po prodlevě 15 sekund."
+
+msgctxt "#32102"
+msgid "Enable this if your hardware can handle 4K playback. Disable it to force transcoding."
+msgstr "Povolte pokud váš hardware zvládne přehrávat 4K videa. Zakázáním vynutíte překódování."
+
+msgctxt "#32103"
+msgid "Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding."
+msgstr "Povolte pokud váš hardware zvládne přehrávat formát HEVC/H265. Zakázáním vynutíte překódování."
+
+msgctxt "#32104"
+msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
+msgstr "Kdy se připojovat k serverům přes nezabezpečené připojení.[CR][CR]* [B]Nikdy[/B]: Nepoužívat nezabezpečená připojení[CR]* [B]Na stejné síti[/B]: Povolte pokud jste na stejné síti jako server[CR]* [B]Vždy[/B]: Povolí na stejné síti a při vzdálených připojeních"
+
+msgctxt "#32201"
+msgid "Trailer"
+msgstr "Ukázka"
+
+msgctxt "#32202"
+msgid "Deleted Scene"
+msgstr "Smazaná scéna"
+
+msgctxt "#32203"
+msgid "Interview"
+msgstr "Rozhovor"
+
+msgctxt "#32204"
+msgid "Music Video"
+msgstr "Videoklip"
+
+msgctxt "#32205"
+msgid "Behind the Scenes"
+msgstr "Ze zákulisí"
+
+msgctxt "#32206"
+msgid "Scene"
+msgstr "Scéna"
+
+msgctxt "#32207"
+msgid "Live Music Video"
+msgstr "Živý videoklip"
+
+msgctxt "#32208"
+msgid "Lyric Music Video"
+msgstr "Videoklip s textem"
+
+msgctxt "#32209"
+msgid "Concert"
+msgstr "Koncert"
+
+msgctxt "#32210"
+msgid "Featurette"
+msgstr ""
+
+msgctxt "#32211"
+msgid "Short"
+msgstr "Krátký film"
+
+msgctxt "#32212"
+msgid "Other"
+msgstr "Jiný"
+
+msgctxt "#32300"
+msgid "Go to Album"
+msgstr "Přejít na album"
+
+msgctxt "#32301"
+msgid "Go to Artist"
+msgstr "Přejít na interpreta"
+
+msgctxt "#32302"
+msgid "Go to {0}"
+msgstr "Přejít na {0}"
+
+msgctxt "#32303"
+msgid "Season"
+msgstr "Sezóna"
+
+msgctxt "#32304"
+msgid "Episode"
+msgstr "Epizoda"
+
+msgctxt "#32305"
+msgid "Extras"
+msgstr "Extra"
+
+msgctxt "#32306"
+msgid "Related Shows"
+msgstr "Podobné seriály"
+
+msgctxt "#32307"
+msgid "More"
+msgstr "Více"
+
+msgctxt "#32308"
+msgid "Available"
+msgstr "K dispozici"
+
+msgctxt "#32309"
+msgid "None"
+msgstr "Žádné"
+
+msgctxt "#32310"
+msgid "S"
+msgstr ""
+
+msgctxt "#32311"
+msgid "E"
+msgstr ""
+
+msgctxt "#32312"
+msgid "Unavailable"
+msgstr "Není k dispozici"
+
+msgctxt "#32313"
+msgid "This item is currently unavailable."
+msgstr "Tato položka momentálně není k dispozici"
+
+msgctxt "#32314"
+msgid "In Progress"
+msgstr "Rozkoukané"
+
+msgctxt "#32315"
+msgid "Resume playback?"
+msgstr "Pokračovat v přehrávání?"
+
+msgctxt "#32316"
+msgid "Resume"
+msgstr "Pokračovat"
+
+msgctxt "#32317"
+msgid "Play from beginning"
+msgstr "Přehrát od začátku"
+
+msgctxt "#32318"
+msgid "Mark Unwatched"
+msgstr "Označit jako neshlédnuté"
+
+msgctxt "#32319"
+msgid "Mark Watched"
+msgstr "Označit jako shlédnuté"
+
+msgctxt "#32320"
+msgid "Mark Season Unwatched"
+msgstr "Označit sezónu jako neshlédnutou"
+
+msgctxt "#32321"
+msgid "Mark Season Watched"
+msgstr "Označit sezónu jako shlédnutou"
+
+msgctxt "#32322"
+msgid "Delete"
+msgstr "Smazat"
+
+msgctxt "#32323"
+msgid "Go To Show"
+msgstr "Přejít na seriál"
+
+msgctxt "#32324"
+msgid "Go To {0}"
+msgstr "Přejít na {0}"
+
+msgctxt "#32325"
+msgid "Play Next"
+msgstr "Přehrát další"
+
+msgctxt "#32326"
+msgid "Really Delete?"
+msgstr "Opravdu smazat?"
+
+msgctxt "#32327"
+msgid "Are you sure you really want to delete this media?"
+msgstr "Opravdu chcete smazat tyto média?"
+
+msgctxt "#32328"
+msgid "Yes"
+msgstr "Ano"
+
+msgctxt "#32329"
+msgid "No"
+msgstr "Ne"
+
+msgctxt "#32330"
+msgid "Message"
+msgstr "Zpráva"
+
+msgctxt "#32331"
+msgid "There was a problem while attempting to delete the media."
+msgstr "Při mazání média se vyskytla chyba."
+
+msgctxt "#32332"
+msgid "Home"
+msgstr "Domů"
+
+msgctxt "#32333"
+msgid "Playlists"
+msgstr "Playlisty"
+
+msgctxt "#32334"
+msgid "Confirm Exit"
+msgstr "Potvrdit odchod"
+
+msgctxt "#32335"
+msgid "Are you ready to exit Plex?"
+msgstr "Opravdu chcete odejít z Plexu?"
+
+msgctxt "#32336"
+msgid "Exit"
+msgstr "Odejít"
+
+msgctxt "#32337"
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgctxt "#32338"
+msgid "No Servers Found"
+msgstr "Nenalezeny žádné servery"
+
+msgctxt "#32339"
+msgid "Server is not accessible"
+msgstr "Server je nedostupný"
+
+msgctxt "#32340"
+msgid "Connection tests are in progress. Please wait."
+msgstr "Probíhají zkoušky připojení. Prosím počkejte."
+
+msgctxt "#32341"
+msgid "Server is not accessible. Please sign into your server and check your connection."
+msgstr "Server je nedostupný. Prosím přihlašte se ke svému serveru a zkontrolujte připojení."
+
+msgctxt "#32342"
+msgid "Switch User"
+msgstr "Přepnout uživatele"
+
+msgctxt "#32343"
+msgid "Settings"
+msgstr "Nastavení"
+
+msgctxt "#32344"
+msgid "Sign Out"
+msgstr "Odhlásit"
+
+msgctxt "#32345"
+msgid "All"
+msgstr "Všechno"
+
+msgctxt "#32346"
+msgid "By Name"
+msgstr "Podle názvu"
+
+msgctxt "#32347"
+msgid "artists"
+msgstr "interpreti"
+
+msgctxt "#32348"
+msgid "movies"
+msgstr "filmy"
+
+msgctxt "#32349"
+msgid "photos"
+msgstr "fotky"
+
+msgctxt "#32350"
+msgid "shows"
+msgstr "seriály"
+
+msgctxt "#32351"
+msgid "By Date Added"
+msgstr "Podle data přidání"
+
+msgctxt "#32352"
+msgid "Date Added"
+msgstr "Datum přidání"
+
+msgctxt "#32353"
+msgid "By Release Date"
+msgstr "Podle data vydání"
+
+msgctxt "#32354"
+msgid "Release Date"
+msgstr "Datum vydání"
+
+msgctxt "#32355"
+msgid "By Date Viewed"
+msgstr "Podle data shlédnutí"
+
+msgctxt "#32356"
+msgid "Date Viewed"
+msgstr "Datum shlédnutí"
+
+msgctxt "#32357"
+msgid "By Name"
+msgstr "Podle názvu"
+
+msgctxt "#32358"
+msgid "Name"
+msgstr "Název"
+
+msgctxt "#32359"
+msgid "By Rating"
+msgstr "Podle hodnocení"
+
+msgctxt "#32360"
+msgid "Rating"
+msgstr "Hodnocení"
+
+msgctxt "#32361"
+msgid "By Resolution"
+msgstr "Podle rozlišení"
+
+msgctxt "#32362"
+msgid "Resolution"
+msgstr "Rozlišení"
+
+msgctxt "#32363"
+msgid "By Duration"
+msgstr "Podle délky"
+
+msgctxt "#32364"
+msgid "Duration"
+msgstr "Délka"
+
+msgctxt "#32365"
+msgid "By First Aired"
+msgstr "Podle prvního vysílání"
+
+msgctxt "#32366"
+msgid "First Aired"
+msgstr "První vysílání"
+
+msgctxt "#32367"
+msgid "By Unwatched"
+msgstr "Podle neshlédnutí"
+
+msgctxt "#32368"
+msgid "Unwatched"
+msgstr "Neshlédnuté"
+
+msgctxt "#32369"
+msgid "By Date Played"
+msgstr "Podle data přehrání"
+
+msgctxt "#32370"
+msgid "Date Played"
+msgstr "Datum přehrání"
+
+msgctxt "#32371"
+msgid "By Play Count"
+msgstr "Podle počtu přehrání"
+
+msgctxt "#32372"
+msgid "Play Count"
+msgstr "Počet přehrání"
+
+msgctxt "#32373"
+msgid "By Date Taken"
+msgstr "Podle data pořízení"
+
+msgctxt "#32374"
+msgid "Date Taken"
+msgstr "Datum pořízení"
+
+msgctxt "#32375"
+msgid "No filters available"
+msgstr "Filtry nejsou k dispozici"
+
+msgctxt "#32376"
+msgid "Clear Filter"
+msgstr "Odstranit filtr"
+
+msgctxt "#32377"
+msgid "Year"
+msgstr "Rok"
+
+msgctxt "#32378"
+msgid "Decade"
+msgstr "Desetiletí"
+
+msgctxt "#32379"
+msgid "Genre"
+msgstr "Žánr"
+
+msgctxt "#32380"
+msgid "Content Rating"
+msgstr "Hodnocení obsahu"
+
+msgctxt "#32381"
+msgid "Network"
+msgstr "Stanice"
+
+msgctxt "#32382"
+msgid "Collection"
+msgstr "Kolekce"
+
+msgctxt "#32383"
+msgid "Director"
+msgstr "Režie"
+
+msgctxt "#32384"
+msgid "Actor"
+msgstr "Herci"
+
+msgctxt "#32385"
+msgid "Country"
+msgstr "Země"
+
+msgctxt "#32386"
+msgid "Studio"
+msgstr "Studio"
+
+msgctxt "#32387"
+msgid "Labels"
+msgstr "Popisky"
+
+msgctxt "#32388"
+msgid "Camera Make"
+msgstr "Výrobce kamery"
+
+msgctxt "#32389"
+msgid "Camera Model"
+msgstr "Model kamery"
+
+msgctxt "#32390"
+msgid "Aperture"
+msgstr "Clona"
+
+msgctxt "#32391"
+msgid "Shutter Speed"
+msgstr "Rychlost závěrky"
+
+msgctxt "#32392"
+msgid "Lens"
+msgstr "Čočka"
+
+msgctxt "#32393"
+msgid "TV Shows"
+msgstr "Seriály"
+
+msgctxt "#32394"
+msgid "Music"
+msgstr "Hudba"
+
+msgctxt "#32395"
+msgid "Audio"
+msgstr "Zvuková stopa"
+
+msgctxt "#32396"
+msgid "Subtitles"
+msgstr "Titulky"
+
+msgctxt "#32397"
+msgid "Quality"
+msgstr "Kvalita"
+
+msgctxt "#32398"
+msgid "Kodi Video Settings"
+msgstr "Video nastavení Kodi"
+
+msgctxt "#32399"
+msgid "Kodi Audio Settings"
+msgstr "Audio nastavení Kodi"
+
+msgctxt "#32400"
+msgid "Go To Season"
+msgstr "Přejít na sezónu"
+
+msgctxt "#32401"
+msgid "Directors"
+msgstr "Režiséři"
+
+msgctxt "#32402"
+msgid "Writer"
+msgstr "Autor"
+
+msgctxt "#32403"
+msgid "Writers"
+msgstr "Autoři"
+
+msgctxt "#32404"
+msgid "Related Movies"
+msgstr "Podobné filmy"
+
+msgctxt "#32405"
+msgid "Download Subtitles"
+msgstr "Stáhnout titulky"
+
+msgctxt "#32406"
+msgid "Subtitle Delay"
+msgstr "Zpoždění titulků"
+
+msgctxt "#32407"
+msgid "Next Subtitle"
+msgstr "Další titulky"
+
+msgctxt "#32408"
+msgid "Disable Subtitles"
+msgstr "Vypnout titulky"
+
+msgctxt "#32409"
+msgid "Enable Subtitles"
+msgstr "Zapnout titulky"
+
+msgctxt "#32410"
+msgid "Platform Version"
+msgstr "Verze platformy"
+
+msgctxt "#32411"
+msgid "Unknown"
+msgstr "Neznámá"
+
+msgctxt "#32412"
+msgid "Edit Or Clear"
+msgstr "Upravit nebo smazat"
+
+msgctxt "#32413"
+msgid "Edit IP address or clear the current setting?"
+msgstr "Upravit IP adresu nebo smazat nastavení?"
+
+msgctxt "#32414"
+msgid "Clear"
+msgstr "Smazat"
+
+msgctxt "#32415"
+msgid "Edit"
+msgstr "Upravit"
+
+msgctxt "#32416"
+msgid "Enter IP Address"
+msgstr "Zadejte IP adresu"
+
+msgctxt "#32417"
+msgid "Enter Port Number"
+msgstr "Zadejte číslo portu"
+
+msgctxt "#32418"
+msgid "Creator"
+msgstr "Tvůrce"
+
+msgctxt "#32419"
+msgid "Cast"
+msgstr "Hrají"
+
+msgctxt "#32420"
+msgid "Disc"
+msgstr "Disk"
+
+msgctxt "#32421"
+msgid "Sign Out"
+msgstr "Odhlásit"
+
+msgctxt "#32422"
+msgid "Exit"
+msgstr "Odejít"
+
+msgctxt "#32423"
+msgid "Shutdown"
+msgstr "Vypnout"
+
+msgctxt "#32424"
+msgid "Suspend"
+msgstr "Uspat"
+
+msgctxt "#32425"
+msgid "Hibernate"
+msgstr "Hibernovat"
+
+msgctxt "#32426"
+msgid "Reboot"
+msgstr "Restartovat"
+
+msgctxt "#32427"
+msgid "Failed"
+msgstr "Neuspělo"
+
+msgctxt "#32428"
+msgid "Login failed!"
+msgstr "Přihlášení neuspělo!"
+
+msgctxt "#32429"
+msgid "Resume from {0}"
+msgstr "Pokračovat od {0}"
+
+msgctxt "#32430"
+msgid "Discovery"
+msgstr "Objevit"
+
+msgctxt "#32431"
+msgid "Search"
+msgstr "Vyhledat"
+
+msgctxt "#32432"
+msgid "Space"
+msgstr "Mezera"
+
+msgctxt "#32433"
+msgid "Clear"
+msgstr "Smazat"
+
+msgctxt "#32434"
+msgid "Searching..."
+msgstr "Vyhledávám..."
+
+msgctxt "#32435"
+msgid "No Results"
+msgstr "Žádné výsledky"
+
+msgctxt "#32436"
+msgid "Paused"
+msgstr "Pozastaveno"
+
+msgctxt "#32437"
+msgid "Welcome"
+msgstr "Vítáme vás"
+
+msgctxt "#32438"
+msgid "Previous"
+msgstr "Předchozí"
+
+msgctxt "#32439"
+msgid "Playing Next"
+msgstr "Přehrávám další"
+
+msgctxt "#32440"
+msgid "On Deck"
+msgstr "Aktuální"
+
+msgctxt "#32441"
+msgid "Unknown"
+msgstr "Neznámý"
+
+msgctxt "#32442"
+msgid "Embedded"
+msgstr "Vestavěné"
+
+msgctxt "#32443"
+msgid "Forced"
+msgstr "Vynucené"
+
+msgctxt "#32444"
+msgid "Lyrics"
+msgstr "Text skladby"
+
+msgctxt "#32445"
+msgid "Mono"
+msgstr "Mono"
+
+msgctxt "#32446"
+msgid "Stereo"
+msgstr "Stereo"
+
+msgctxt "#32447"
+msgid "None"
+msgstr "Žádné"
+
+msgctxt "#32448"
+msgid "Playback Failed!"
+msgstr "Přehrávání neuspělo!"
+
+msgctxt "#32449"
+msgid "Can't connect to plex.tv[CR]Check your internet connection and try again."
+msgstr "Nemohu se připojit k plex.tv[CR]Zkontrolujte připojení k internetu a zkuste to znovu."
+
+msgctxt "#32450"
+msgid "Choose Version"
+msgstr "Zvolte verzi"
+
+msgctxt "#32451"
+msgid "Play Version..."
+msgstr "Přehrávám verzi..."
+
+msgctxt "#32452"
+msgid "No Content available in this library"
+msgstr "V této knihovně není žádný obsah"
+
+msgctxt "#32453"
+msgid "Please add content and/or check that 'Include in dashboard' is enabled."
+msgstr "Prosím přidejte obsah a nebo zkontrolujte, že je povolené nastavení 'přidat na nástěnku'."
+
+msgctxt "#32454"
+msgid "No Content available for this filter"
+msgstr "Pro tento filtr není k dispozici žádný obsah"
+
+msgctxt "#32455"
+msgid "Please change change or remove the current filter"
+msgstr "Prosím změňte nebo odstraňte filtr"
+
+msgctxt "#32456"
+msgid "Offline Mode"
+msgstr "Režim offline"
+
+msgctxt "#32457"
+msgid "Sign In"
+msgstr "Přihlásit"

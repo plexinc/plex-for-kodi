@@ -1,0 +1,928 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2013-12-12 22:56+0000\n"
+"PO-Revision-Date: 2017-04-21 19:23+0100\n"
+"Last-Translator: Norbert Suto <suto.norbert@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: hu\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgctxt "#32000"
+msgid "Main"
+msgstr "Főoldal"
+
+msgctxt "#32001"
+msgid "Original"
+msgstr "Eredeti"
+
+msgctxt "#32002"
+msgid "20 Mbps 1080p"
+msgstr "20 Mbps 1080p"
+
+msgctxt "#32003"
+msgid "12 Mbps 1080p"
+msgstr "12 Mbps 1080p"
+
+msgctxt "#32004"
+msgid "10 Mbps 1080p"
+msgstr "10 Mbps 1080p"
+
+msgctxt "#32005"
+msgid "8 Mbps 1080p"
+msgstr "8 Mbps 1080p"
+
+msgctxt "#32006"
+msgid "4 Mbps 720p"
+msgstr "4 Mbps 720p"
+
+msgctxt "#32007"
+msgid "3 Mbps 720p"
+msgstr "3 Mbps 720p"
+
+msgctxt "#32008"
+msgid "2 Mbps 720p"
+msgstr "2 Mbps 720p"
+
+msgctxt "#32009"
+msgid "1.5 Mbps 480p"
+msgstr "1.5 Mbps 480p"
+
+msgctxt "#32010"
+msgid "720 kbps"
+msgstr "720 kbps"
+
+msgctxt "#32011"
+msgid "320 kbps"
+msgstr "320 kbps"
+
+msgctxt "#32012"
+msgid "208 kbps"
+msgstr "208 kbps"
+
+msgctxt "#32013"
+msgid "96 kbps"
+msgstr "96 kbps"
+
+msgctxt "#32014"
+msgid "64 kbps"
+msgstr "64 kbps"
+
+msgctxt "#32020"
+msgid "Local Quality"
+msgstr "Helyi minőség"
+
+msgctxt "#32021"
+msgid "Remote Quality"
+msgstr "Távoli minőség"
+
+msgctxt "#32022"
+msgid "Online Quality"
+msgstr "Online minőség"
+
+msgctxt "#32023"
+msgid "Transcode Format"
+msgstr "Átkódolási formátum"
+
+msgctxt "#32024"
+msgid "Debug Logging"
+msgstr "Hibakeresési naplózás"
+
+msgctxt "#32025"
+msgid "Allow Direct Play"
+msgstr "Közvetlen lejátszás engedélyezése"
+
+msgctxt "#32026"
+msgid "Allow Direct Stream"
+msgstr "Közvetlen adatfolyam engedélyezése"
+
+msgctxt "#32027"
+msgid "Force"
+msgstr "Kényszerítés"
+
+msgctxt "#32028"
+msgid "Always"
+msgstr "Mindig"
+
+msgctxt "#32029"
+msgid "Only Image Formats"
+msgstr "Csak képformátumok esetében"
+
+msgctxt "#32030"
+msgid "Auto"
+msgstr "Automatikus"
+
+msgctxt "#32031"
+msgid "Burn Subtitles (Direct Play Only)"
+msgstr "Feliratok égetése (Csak közvetlen lejátszás esetén)"
+
+msgctxt "#32032"
+msgid "Allow Insecure Connections"
+msgstr "Nem biztonságos kapcsolatok engedélyezése"
+
+msgctxt "#32033"
+msgid "Never"
+msgstr "Soha"
+
+msgctxt "#32034"
+msgid "On Same network"
+msgstr "Ugyanazon a hálózaton"
+
+msgctxt "#32035"
+msgid "Always"
+msgstr "Mindig"
+
+msgctxt "#32036"
+msgid "Allow 4K"
+msgstr "4K engedélyezése"
+
+msgctxt "#32037"
+msgid "Allow HEVC (h265)"
+msgstr "HEVC (h265) engedélyezése"
+
+msgctxt "#32038"
+msgid "Automatically Sign In"
+msgstr "Automatikus bejelentkezés"
+
+msgctxt "#32039"
+msgid "Post Play Auto Play"
+msgstr "Post Play Auto Play"
+
+msgctxt "#32040"
+msgid "Enable Subtitle Downloading"
+msgstr "Felirat letöltés engedélyezése"
+
+msgctxt "#32041"
+msgid "Enable Subtitle Downloading"
+msgstr "Felirat letöltés engedélyezése"
+
+msgctxt "#32042"
+msgid "Server Discovery (GDM)"
+msgstr "Szerver felderítés"
+
+msgctxt "#32043"
+msgid "Start Plex On Kodi Startup"
+msgstr "Indítsa el a Plexet a Kodi indításakor"
+
+msgctxt "#32044"
+msgid "Connection 1 IP"
+msgstr "1. Kapcsolat IP"
+
+msgctxt "#32045"
+msgid "Connection 1 Port"
+msgstr "1. Kapcsolat Port"
+
+msgctxt "#32046"
+msgid "Connection 2 IP"
+msgstr "2. Kapcsolat IP"
+
+msgctxt "#32047"
+msgid "Connection 2 Port"
+msgstr "2. Kapcsolat Port"
+
+msgctxt "#32048"
+msgid "Audio"
+msgstr "Audió"
+
+msgctxt "#32049"
+msgid "Advanced"
+msgstr "Fejlett beállítások"
+
+msgctxt "#32050"
+msgid "Manual Servers"
+msgstr "Kézi szerverek"
+
+msgctxt "#32051"
+msgid "Privacy"
+msgstr "Adatvédelem"
+
+msgctxt "#32052"
+msgid "About"
+msgstr "Rólunk"
+
+msgctxt "#32053"
+msgid "Video"
+msgstr "Videó"
+
+msgctxt "#32054"
+msgid "Addon Version"
+msgstr "Addon verzió"
+
+msgctxt "#32055"
+msgid "Kodi Version"
+msgstr "Kodi verzió"
+
+msgctxt "#32056"
+msgid "Screen Resolution"
+msgstr "Képernyőfelbontás"
+
+msgctxt "#32057"
+msgid "Current Server Version"
+msgstr "Jelenlegi szerver verzió"
+
+
+msgctxt "#32100"
+msgid "Skip user selection and pin entry on startup."
+msgstr "Felhasználó kiválasztás és a PIN kód megadás átugrása indításkor."
+
+msgctxt "#32101"
+msgid "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+msgstr "Ha engedélyezi, akkor a lejátszás befejezése után, amennyiben rendelkezésre áll egy "következő" elem, az 15 másodperces késleltetés után automatikusan lejátszásra kerül."
+
+msgctxt "#32102"
+msgid "Enable this if your hardware can handle 4K playback. Disable it to force transcoding."
+msgstr "Engedélyezze ezt, ha a hardver képes a 4K lejátszásra. Kapcsolja ki, amennyiben kényszeríteni szeretné az átkódolást."
+
+msgctxt "#32103"
+msgid "Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding."
+msgstr "Engedélyezze ezt, ha a hardver képes a HEVC/h265 lejátszásra. Kapcsolja ki, amennyiben kényszeríteni szeretné az átkódolást."
+
+msgctxt "#32104"
+msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
+msgstr "Mikor kapcsolódhat nem biztonságosan a szerverekhez.[CR][CR]* [B]Soha[/B]: Soha ne kapcsolódjon[CR]* [B]Azonos hálózat[/B]: Azonos hálózat esetén engedélyezze[CR]* [B]Mindig[/B]: Engedélyezze helyi és távoli kapcsolat esetén is"
+
+
+msgctxt "#32201"
+msgid "Trailer"
+msgstr "Előzetes"
+
+msgctxt "#32202"
+msgid "Deleted Scene"
+msgstr "Törölt jelenet"
+
+msgctxt "#32203"
+msgid "Interview"
+msgstr "Interjú"
+
+msgctxt "#32204"
+msgid "Music Video"
+msgstr "Videóklip"
+
+msgctxt "#32205"
+msgid "Behind the Scenes"
+msgstr "A kulisszák mögött"
+
+msgctxt "#32206"
+msgid "Scene"
+msgstr "Jelenet"
+
+msgctxt "#32207"
+msgid "Live Music Video"
+msgstr "Élő zenei videó"
+
+msgctxt "#32208"
+msgid "Lyric Music Video"
+msgstr "Zenei videó dalszöveggel"
+
+msgctxt "#32209"
+msgid "Concert"
+msgstr "Koncert"
+
+msgctxt "#32210"
+msgid "Featurette"
+msgstr "Kísérő film"
+
+msgctxt "#32211"
+msgid "Short"
+msgstr "Rövidfilm"
+
+msgctxt "#32212"
+msgid "Other"
+msgstr "Egyéb"
+
+msgctxt "#32300"
+msgid "Go to Album"
+msgstr "Ugrás az Albumra"
+
+msgctxt "#32301"
+msgid "Go to Artist"
+msgstr "Ugrás az előadóra"
+
+msgctxt "#32302"
+msgid "Go to {0}"
+msgstr "Ugrás ide {0}"
+
+msgctxt "#32303"
+msgid "Season"
+msgstr "Évad"
+
+msgctxt "#32304"
+msgid "Episode"
+msgstr "Epizód"
+
+msgctxt "#32305"
+msgid "Extras"
+msgstr "Extrák"
+
+msgctxt "#32306"
+msgid "Related Shows"
+msgstr "Kapcsolódó műsorok"
+
+msgctxt "#32307"
+msgid "More"
+msgstr "Egyéb"
+
+msgctxt "#32308"
+msgid "Available"
+msgstr "Elérhető"
+
+msgctxt "#32309"
+msgid "None"
+msgstr "Nincs"
+
+msgctxt "#32310"
+msgid "S"
+msgstr ""
+
+msgctxt "#32311"
+msgid "E"
+msgstr ""
+
+msgctxt "#32312"
+msgid "Unavailable"
+msgstr "Nem elérhető"
+
+msgctxt "#32313"
+msgid "This item is currently unavailable."
+msgstr "Ez az elem jelenleg nem érhető el."
+
+msgctxt "#32314"
+msgid "In Progress"
+msgstr "Folyamatban"
+
+msgctxt "#32315"
+msgid "Resume playback?"
+msgstr "Folytatja a lejátszást?"
+
+msgctxt "#32316"
+msgid "Resume"
+msgstr "Folytat"
+
+msgctxt "#32317"
+msgid "Play from beginning"
+msgstr "Lejátszás az elejétől"
+
+msgctxt "#32318"
+msgid "Mark Unwatched"
+msgstr "Nem nézettnek jelölés"
+
+msgctxt "#32319"
+msgid "Mark Watched"
+msgstr "Nézettnek jelölés"
+
+msgctxt "#32320"
+msgid "Mark Season Unwatched"
+msgstr "Az évad nem nézettnek jelölése"
+
+msgctxt "#32321"
+msgid "Mark Season Watched"
+msgstr "Az évad nézettnek jelölése"
+
+msgctxt "#32322"
+msgid "Delete"
+msgstr "Törlés"
+
+msgctxt "#32323"
+msgid "Go To Show"
+msgstr "Ugrás a műsorra"
+
+msgctxt "#32324"
+msgid "Go To {0}"
+msgstr "Ugrás {0}"
+
+msgctxt "#32325"
+msgid "Play Next"
+msgstr "Következő lejátszása"
+
+msgctxt "#32326"
+msgid "Really Delete?"
+msgstr "Tényleg törli?"
+
+msgctxt "#32327"
+msgid "Are you sure you really want to delete this media?"
+msgstr "Biztos benne, hogy törli az alábbi tartalmat?"
+
+msgctxt "#32328"
+msgid "Yes"
+msgstr "Igen"
+
+msgctxt "#32329"
+msgid "No"
+msgstr "Nem"
+
+msgctxt "#32330"
+msgid "Message"
+msgstr "Üzenet"
+
+msgctxt "#32331"
+msgid "There was a problem while attempting to delete the media."
+msgstr "Probléma történt a tartalom törlése közben."
+
+msgctxt "#32332"
+msgid "Home"
+msgstr "Kezdőoldal"
+
+msgctxt "#32333"
+msgid "Playlists"
+msgstr "Lejátszási listák"
+
+msgctxt "#32334"
+msgid "Confirm Exit"
+msgstr "Kilépés megerősítése"
+
+msgctxt "#32335"
+msgid "Are you ready to exit Plex?"
+msgstr "Készen áll arra, hogy kilépjen a Plexből?"
+
+msgctxt "#32336"
+msgid "Exit"
+msgstr "Kilépés"
+
+msgctxt "#32337"
+msgid "Cancel"
+msgstr "Mégse"
+
+msgctxt "#32338"
+msgid "No Servers Found"
+msgstr "Nem található szerver"
+
+msgctxt "#32339"
+msgid "Server is not accessible"
+msgstr "A szerver nem elérhető"
+
+msgctxt "#32340"
+msgid "Connection tests are in progress. Please wait."
+msgstr "A kapcsolat tesztelése folyamatban. Kérem várjon."
+
+msgctxt "#32341"
+msgid "Server is not accessible. Please sign into your server and check your connection."
+msgstr "A szerver nem elérhető. Kérem jelentkezzen be a szerverébe és ellenőrizze a hálózati kapcsolatot."
+
+msgctxt "#32342"
+msgid "Switch User"
+msgstr "Felhasználóváltás"
+
+msgctxt "#32343"
+msgid "Settings"
+msgstr "Beállítások"
+
+msgctxt "#32344"
+msgid "Sign Out"
+msgstr "Kijelentkezés"
+
+msgctxt "#32345"
+msgid "All"
+msgstr "Összes"
+
+msgctxt "#32346"
+msgid "By Name"
+msgstr "Név szerint"
+
+msgctxt "#32347"
+msgid "artists"
+msgstr "előadók"
+
+msgctxt "#32348"
+msgid "movies"
+msgstr "filmek"
+
+msgctxt "#32349"
+msgid "photos"
+msgstr "fényképek"
+
+msgctxt "#32350"
+msgid "shows"
+msgstr "műsorok"
+
+msgctxt "#32351"
+msgid "By Date Added"
+msgstr "Hozzáadás dátuma szerint"
+
+msgctxt "#32352"
+msgid "Date Added"
+msgstr "Dátum szerint"
+
+msgctxt "#32353"
+msgid "By Release Date"
+msgstr "Megjelenés dátuma szerint"
+
+msgctxt "#32354"
+msgid "Release Date"
+msgstr "Megjelenés dátuma"
+
+msgctxt "#32355"
+msgid "By Date Viewed"
+msgstr "Megtekintés dátuma szerint"
+
+msgctxt "#32356"
+msgid "Date Viewed"
+msgstr "Megtekintés dátuma"
+
+msgctxt "#32357"
+msgid "By Name"
+msgstr "Név szerint"
+
+msgctxt "#32358"
+msgid "Name"
+msgstr "Név"
+
+msgctxt "#32359"
+msgid "By Rating"
+msgstr "Értékelés szerint"
+
+msgctxt "#32360"
+msgid "Rating"
+msgstr "Értékelés"
+
+msgctxt "#32361"
+msgid "By Resolution"
+msgstr "Felbontás szerint"
+
+msgctxt "#32362"
+msgid "Resolution"
+msgstr "Felbontás"
+
+msgctxt "#32363"
+msgid "By Duration"
+msgstr "Időtartam szerint"
+
+msgctxt "#32364"
+msgid "Duration"
+msgstr "Időtartam"
+
+msgctxt "#32365"
+msgid "By First Aired"
+msgstr "Első sugárzás dátuma szerint"
+
+msgctxt "#32366"
+msgid "First Aired"
+msgstr "Első sugárzás dátuma"
+
+msgctxt "#32367"
+msgid "By Unwatched"
+msgstr "Nem megtekintettek szerint"
+
+msgctxt "#32368"
+msgid "Unwatched"
+msgstr "Nem megtekintettek"
+
+msgctxt "#32369"
+msgid "By Date Played"
+msgstr "Lejátszás dátuma szerint"
+
+msgctxt "#32370"
+msgid "Date Played"
+msgstr "Lejátszás dátuma"
+
+msgctxt "#32371"
+msgid "By Play Count"
+msgstr "Lájátszások száma szerint"
+
+msgctxt "#32372"
+msgid "Play Count"
+msgstr "Lejátszások száma"
+
+msgctxt "#32373"
+msgid "By Date Taken"
+msgstr "Készítés dátuma szerint"
+
+msgctxt "#32374"
+msgid "Date Taken"
+msgstr "Készítés dátuma"
+
+msgctxt "#32375"
+msgid "No filters available"
+msgstr "Nincs elérhető szűrő"
+
+msgctxt "#32376"
+msgid "Clear Filter"
+msgstr "Szűrők eltávolítása"
+
+msgctxt "#32377"
+msgid "Year"
+msgstr "Év"
+
+msgctxt "#32378"
+msgid "Decade"
+msgstr "Évtized"
+
+msgctxt "#32379"
+msgid "Genre"
+msgstr "Műfaj"
+
+msgctxt "#32380"
+msgid "Content Rating"
+msgstr "Értékelés"
+
+msgctxt "#32381"
+msgid "Network"
+msgstr "Csatorna"
+
+msgctxt "#32382"
+msgid "Collection"
+msgstr "Nyűjtemény"
+
+msgctxt "#32383"
+msgid "Director"
+msgstr "Rendező"
+
+msgctxt "#32384"
+msgid "Actor"
+msgstr "Színész"
+
+msgctxt "#32385"
+msgid "Country"
+msgstr "Ország"
+
+msgctxt "#32386"
+msgid "Studio"
+msgstr "Stúdió"
+
+msgctxt "#32387"
+msgid "Labels"
+msgstr "Cimkék"
+
+msgctxt "#32388"
+msgid "Camera Make"
+msgstr "Fényképezőgép gyártmánya"
+
+msgctxt "#32389"
+msgid "Camera Model"
+msgstr "Fényképezőgép Modell"
+
+msgctxt "#32390"
+msgid "Aperture"
+msgstr "Rekesz"
+
+msgctxt "#32391"
+msgid "Shutter Speed"
+msgstr "Zár sebesség"
+
+msgctxt "#32392"
+msgid "Lens"
+msgstr "Lencsék"
+
+msgctxt "#32393"
+msgid "TV Shows"
+msgstr "Sorozatok"
+
+msgctxt "#32394"
+msgid "Music"
+msgstr "Zene"
+
+msgctxt "#32395"
+msgid "Audio"
+msgstr "Audió"
+
+msgctxt "#32396"
+msgid "Subtitles"
+msgstr "Feliratok"
+
+msgctxt "#32397"
+msgid "Quality"
+msgstr "Minőség"
+
+msgctxt "#32398"
+msgid "Kodi Video Settings"
+msgstr "Kodi videó beállitások"
+
+msgctxt "#32399"
+msgid "Kodi Audio Settings"
+msgstr "Kodi audió beállitások"
+
+msgctxt "#32400"
+msgid "Go To Season"
+msgstr "Ugrás az évadra"
+
+msgctxt "#32401"
+msgid "Directors"
+msgstr "Rendezők"
+
+msgctxt "#32402"
+msgid "Writer"
+msgstr "Szerző"
+
+msgctxt "#32403"
+msgid "Writers"
+msgstr "Szerzők"
+
+msgctxt "#32404"
+msgid "Related Movies"
+msgstr "Kapcsolódó filmek"
+
+msgctxt "#32405"
+msgid "Download Subtitles"
+msgstr "Feliratok letöltése"
+
+msgctxt "#32406"
+msgid "Subtitle Delay"
+msgstr "Felirat késleltetés"
+
+msgctxt "#32407"
+msgid "Next Subtitle"
+msgstr "Következő felirat"
+
+msgctxt "#32408"
+msgid "Disable Subtitles"
+msgstr "Feliratok letiltása"
+
+msgctxt "#32409"
+msgid "Enable Subtitles"
+msgstr "Feliratok engedélyezése"
+
+msgctxt "#32410"
+msgid "Platform Version"
+msgstr "Platform verzió"
+
+msgctxt "#32411"
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+msgctxt "#32412"
+msgid "Edit Or Clear"
+msgstr "Szerkesztés vagy törlés"
+
+msgctxt "#32413"
+msgid "Edit IP address or clear the current setting?"
+msgstr "Módosíthatja az IP-címet, vagy törli az aktuális beállítást?"
+
+msgctxt "#32414"
+msgid "Clear"
+msgstr "Törlés"
+
+msgctxt "#32415"
+msgid "Edit"
+msgstr "Módositás"
+
+msgctxt "#32416"
+msgid "Enter IP Address"
+msgstr "Adja meg az IP-címet"
+
+msgctxt "#32417"
+msgid "Enter Port Number"
+msgstr "Adja meg a port számát"
+
+msgctxt "#32418"
+msgid "Creator"
+msgstr "Alkotó"
+
+msgctxt "#32419"
+msgid "Cast"
+msgstr "Szereplők"
+
+msgctxt "#32420"
+msgid "Disc"
+msgstr "Lemez"
+
+msgctxt "#32421"
+msgid "Sign Out"
+msgstr "Kijelentkezés"
+
+msgctxt "#32422"
+msgid "Exit"
+msgstr "Kilépés"
+
+msgctxt "#32423"
+msgid "Shutdown"
+msgstr "Leállítás"
+
+msgctxt "#32424"
+msgid "Suspend"
+msgstr "Felfüggesztés"
+
+msgctxt "#32425"
+msgid "Hibernate"
+msgstr "Hibernálás"
+
+msgctxt "#32426"
+msgid "Reboot"
+msgstr "Újraindítás"
+
+msgctxt "#32427"
+msgid "Failed"
+msgstr "Sikertelen"
+
+msgctxt "#32428"
+msgid "Login failed!"
+msgstr "Bejelentkezés sikertelen"
+
+msgctxt "#32429"
+msgid "Resume from {0}"
+msgstr "Folytatás innen {0}"
+
+msgctxt "#32430"
+msgid "Discovery"
+msgstr "Felfedezés"
+
+msgctxt "#32431"
+msgid "Search"
+msgstr "Keresés"
+
+msgctxt "#32432"
+msgid "Space"
+msgstr "Space"
+
+msgctxt "#32433"
+msgid "Clear"
+msgstr "Törlés mind"
+
+msgctxt "#32434"
+msgid "Searching..."
+msgstr "Keresés..."
+
+msgctxt "#32435"
+msgid "No Results"
+msgstr "Nincs találat"
+
+msgctxt "#32436"
+msgid "Paused"
+msgstr "Szünetelve"
+
+msgctxt "#32437"
+msgid "Welcome"
+msgstr "Üdvözöljük"
+
+msgctxt "#32438"
+msgid "Previous"
+msgstr "Előző"
+
+msgctxt "#32439"
+msgid "Playing Next"
+msgstr "Következő lejátszása"
+
+msgctxt "#32440"
+msgid "On Deck"
+msgstr "Jelenlegi"
+
+msgctxt "#32441"
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+msgctxt "#32442"
+msgid "Embedded"
+msgstr "Beágyazott"
+
+msgctxt "#32443"
+msgid "Forced"
+msgstr "Kényszerített"
+
+msgctxt "#32444"
+msgid "Lyrics"
+msgstr "Dalszöveg"
+
+msgctxt "#32445"
+msgid "Mono"
+msgstr "Monó"
+
+msgctxt "#32446"
+msgid "Stereo"
+msgstr "Sztereó"
+
+msgctxt "#32447"
+msgid "None"
+msgstr "Nincs"
+
+msgctxt "#32448"
+msgid "Playback Failed!"
+msgstr "A lejátszás sikertelen!"
+
+msgctxt "#32449"
+msgid "Can't connect to plex.tv[CR]Check your internet connection and try again."
+msgstr "Nem lehet csatlakozni a plex.tv-hez[CR]Ellenőrizze az internetkapcsolatot, és próbálja újra."
+
+msgctxt "#32450"
+msgid "Choose Version"
+msgstr "Verzió választása"
+
+msgctxt "#32451"
+msgid "Play Version..."
+msgstr "Verzió lejátszása..."
+
+msgctxt "#32452"
+msgid "No Content available in this library"
+msgstr "Nincs elérhető tartalom ebben a könyvtárban"
+
+msgctxt "#32453"
+msgid "Please add content and/or check that 'Include in dashboard' is enabled."
+msgstr "Kérem adjon hozzá tartalmat és/vagy ellenőrizze, hogy a 'Hozzáadás az irányítópulthoz' opció be van kapcsolva"
+
+msgctxt "#32454"
+msgid "No Content available for this filter"
+msgstr "Nincs elérhető tartalom ezzel a szűrővel"
+
+msgctxt "#32455"
+msgid "Please change change or remove the current filter"
+msgstr "Kérem változtassa meg, vagy távolítsa el a jelenlegi szűrőt"
+
+msgctxt "#32456"
+msgid "Offline Mode"
+msgstr "Offline mód"
+
+msgctxt "#32457"
+msgid "Sign In"
+msgstr "Bejelentkezés"

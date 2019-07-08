@@ -1,0 +1,187 @@
+[- 0.1.6 -]
+
+Fix issues when selecting subtitles for users of certain languages (Issue #188)
+
+[- 0.1.5 -]
+
+Allow direct playback of episodes and movies using the play button on hub screen (thanks to pannal)
+In progress watched items had the 'Mark unwatched' option instead of 'Mark watched'
+Fix an issue causing the home window to start slightly scrolled down if it was closed scolled down
+Fix an issue causing an error when sort was sort was "BY UNWATCHED" and the filtering "UNWATCHED" (Issue #187)
+Fix issue with letter shortcuts sometimes being shown/not shown incorrectly
+Fix a bug causing crash and reboot on startup on Raspberry Pi (LibreElec specific?) - Reverts "Fix autostart to work with profiles"
+
+[- 0.1.4 -]
+
+Kodi v18: Fix skin compatability issues
+Kodi v18: Fix incompatibility with requests module update
+Kodi v18: Fix issue with playback not resuming properly when direct playing
+Kodi v18: Fix issue with progress bar not moving on music player/music playlist screens
+Fix album display on artist screen
+Fix bug causing failure to show audio player when clicking the mini player from some screens
+Show original artist when available (Issue #143)
+Improve centering over label backgrounds on pre-play screens
+Fix some spots where tokens could still be logged
+Play correct track when playing a multi-disc album (Issue #148)
+Improve headers for better identification in 'Now Playing' and future server profile
+Updated German language strings (thanks to coffinbearer)
+Fix French translations file (thanks to coffinbearer)
+Fix some Hungarian translations (thanks to vampywiz17)
+Add Russion translations (thanks to shady2k)
+Fix autostart to work with profiles (thanks to pannal)
+Fix focus loss on home screen due to error (Issue #169)
+Fix "No Servers Found" when preferred server is unavailable (Issue #159)
+Fix system keyboard not working for search (Kodi 17+)(Issue #165)
+Fix issue causing hubs to scroll up when settings were opened
+Fix failure to sign in when signed off externally (Issue #110 & #117)
+
+[- 0.1.3 -]
+
+Fix incompatibility with requests module update
+
+[- 0.1.2 -]
+
+Fix issue with hubs not showing with (newer?) server versions
+
+[- 0.1.1 -]
+
+Remove PlexPass disclaimer from add-on info
+
+[- 0.1.0 -]
+
+Improved hub vertical scrolling animation
+Fix (#87): Switching between managed users causes Kodi to crash
+Fix (#119): Occasional crashes when exiting the add-on
+Remove PlexPass requirement
+
+[- 0.0.102 -]
+
+Handle connection errors on link screen polling
+Handle skip next/prev when playing video playlists
+Home Screen: Navigating to the 'More' button now causes an update for all movement
+Add ability to view episodes/albums in library view
+Add German translation (thanks to coffinbearer)
+Add Czech translation (thanks to Pavuucek)
+Add Hungarian translation (thanks to vampywiz17)
+Add French translation (thanks to raffoul/rlimbach)
+Fix issue #64 (multi part movies won't playback)
+Improve timeline reporting
+Friendly name now includes hostname to differentiate Kodi devices
+Possible fix for issue #102
+Fix a bug causing an error on server decisions
+Fix errors caused by localization on episodes and pre-play screens
+Fix some errors caused when no internet
+
+[- 0.0.101 -]
+
+Fix (Issue #68): Artist screen options button was showing Mark Unwatched
+Fix (Issue #65): When returning from playback episode pre-play did not update the selected episode
+Fix: Codec info button ('o') handling on Krypton+
+Remove mkv/hls testing option in add-on Kodi settings
+Add Debug Logging option to Advanced Settings
+Fix: Post-play after the last item in the playlist was replaying the last item instead of the displayed up next item
+
+[- 0.0.100 -]
+
+Fix some stability issues
+Fix encoding error on startup
+Improve fallbaack background quality
+Fix an error causing opening of photo directories to fail
+Disable debug logging by default
+Make Home hub square items smaller
+Improve startup and shutdown times
+Fix some server reachability testing bugs and improve performance
+Possible fix for crashing when shutting down Kodi while the add-on is running
+Add workaround to allow launching from My Add-ons and shortcuts
+Fix text cutoff for post-play in Estuary
+Prevent the add-on from starting another instance on update
+Skip user select in offline mode
+Show 'Offline Mode' item in user options when in offline mode - selecting attempts going online
+
+[- 0.0.99 -]
+
+Fix: Episodes were not resuming
+
+[- 0.0.98 -]
+
+Fix: Was allowing non-Plex-Pass users
+Fix: Some videos failed to play with certain audio stream selections
+Fix: Some videos failed to play due to a logging error
+
+[- 0.0.97 -]
+
+Add 'Play Version...' to the pre-play options (Issue #34)
+Added spring loaded playlists to Playlist section on Home screen (Issue #28)
+Fix playlist composite images
+Fix: Extending a hub again after a section change was starting where the previous extension left off
+Handle no content and 404 for section hubs on Home screen (Issue #52)
+Handle no content or no content for filter on library screen
+Handle videos without duration set
+Some Home screen hub loading optimization
+
+[- 0.0.96 -]
+
+Remove PIL usage
+Use plex.tv instead of my.plexapp.com when requesting pin (Issue #50)
+
+[- 0.0.95 -]
+
+Now remembers unwatched filter state and sorting selection on library views (Issue #44)
+Fix: Local media was being treated as remote media for playback decisions
+Added a dialog to search for when selected playlists are not accessible by the current user (Issue #42)
+Fixed font issues on episode/movie pre-plays and settings screens (Issue #45)
+
+[- 0.0.94 -]
+
+Fix: Filtering for unwatched movies was causing nothing to be displayed (regression)
+Fix (Issue #41): Incorrect strings were being displayed on the episode pre-play delete dialog
+Playlists now load in progressively in the background (Issue #35)
+Added a dialog on failure to connect when getting sign-in pin (Issue #32)
+Change posters view so that two rows are always visible
+
+[- 0.0.93 -]
+
+Fix: (Issue #20) Filtering by unwatched still showed watched items
+Fix: (Issue #33) Photo directories were failing to open from the Home screen
+Fix: (Issue #33) Some photos failed to open from the Home screen
+Fix: Disabling the 'Allow HEVC' setting had no effect
+Added a busy indicator while photos are loading
+Fixes for DVR episodes without episode numbers
+
+[- 0.0.92 -]
+
+Official Kodi repo submission
+Only change audio streams when necessary
+
+[- 0.0.91 -]
+
+Fix (Issue #23): Pressing a play on a show was not starting on the first unwatched or in progress episode
+Implement (Issue #30): Decision endpoint handling for proper interaaction with streaming brain - fixes related failed playback issues
+Various minor bug fixes causing fanart screen stalls, etc
+
+[- 0.0.90 -]
+
+Fix: (Issue #13) Errors caused by encoding issues in episodes pre-play and track playback
+Fix: Player settings dialog would sometimes not close without some user input
+Fix: (Issue #25) Increased music playback thumbnail resolution - affects add-on player screen and skin views outside the addon
+Fix: (Issue #24) Items in movie playlists were not playable
+Change: Player settings dialog now puts focus on the selected setting when displaying setting lists
+Change: (Issue #21) Now back button only jumps to top bar when top bar is off screen
+
+[- 0.0.89 -]
+
+Fix: Selecting non plex pass not managed users caused sign out on addon restart
+Fix: Playlists view showed empty space when no audio playlists were present and prevented focus
+
+[- 0.0.88 -]
+
+Fix: Starting a video while audio was playing triggered an error causing issues with OSD/control
+Fix: Selected audio track was not being played with direct play
+
+[- 0.0.87 -]
+
+Initial public beta
+
+[- 0.0.1 -]
+
+Initial development

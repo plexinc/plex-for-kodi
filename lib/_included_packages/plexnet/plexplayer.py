@@ -330,9 +330,9 @@ class PlexPlayer(object):
         # Augment the server's profile for things that depend on the Roku's configuration.
         if self.item.settings.supportsSurroundSound():
             if self.choice.audioStream is not None:
-                numChannels = self.choice.audioStream.channels.asInt(6)
+                numChannels = self.choice.audioStream.channels.asInt(8)
             else:
-                numChannels = 6
+                numChannels = 8
 
             for codec in ("ac3", "eac3", "dca"):
                 if self.item.settings.supportsAudioStream(codec, numChannels):
@@ -340,7 +340,7 @@ class PlexPlayer(object):
                     builder.extras.append("add-direct-play-profile(type=videoProfile&container=matroska&videoCodec=*&audioCodec=" + codec + ")")
                     if codec == "dca":
                         builder.extras.append(
-                            "add-limitation(scope=videoAudioCodec&scopeName=dca&type=upperBound&name=audio.channels&value=6&isRequired=false)"
+                            "add-limitation(scope=videoAudioCodec&scopeName=dca&type=upperBound&name=audio.channels&value=8&isRequired=false)"
                         )
 
         # AAC sample rate cannot be less than 22050hz (HLS is capable).

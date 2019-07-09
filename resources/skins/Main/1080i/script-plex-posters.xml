@@ -101,11 +101,11 @@
                 <width>1920</width>
                 <height>1080</height>
                 <control type="panel" id="101">
-                    <hitrect x="0" y="95" w="1780" h="1185" />
+                    <hitrect x="0" y="95" w="1780" h="1075" />
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>1800</width>
-                    <height>1190</height>
+                    <height>1080</height>
                     <onup>300</onup>
                     <onright>151</onright>
                     <scrolltime>200</scrolltime>

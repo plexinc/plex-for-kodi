@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.plex"
-       name="Plex"
-       version="0.1.6"
-       provider-name="Plex">
+<addon id="script.plex.mod"
+       name="Plex MOD"
+       version="0.1.6a1"
+       provider-name="Plex-MOD">
     <requires>
         <import addon="xbmc.python" version="2.25.0"/>
         <import addon="script.module.requests" version="2.3.0"/>

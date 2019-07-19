@@ -501,6 +501,26 @@ class Cron(threading.Thread):
             self._receivers.pop(self._receivers.index(receiver))
 
 
+class AdvancedSettings(object):
+    """
+    @DynamicAttrs
+    """
+    _proxiedSettings = (
+        ("debug", False),
+        ("kodi_skip_stepping", False),
+        ("auto_seek", True),
+        ("dynamic_timeline_seek", False),
+        ("fast_back", False),
+    )
+
+    def __init__(self):
+        # register every known setting camelCased as an attribute to this instance
+        for setting, default in self._proxiedSettings:
+            name_split = setting.split("_")
+            setattr(self, name_split[0] + ''.join(x.capitalize() or '_' for x in name_split[1:]),
+                    getSetting(setting, default))
+advancedSettings = AdvancedSettings()
+
 
 def getTimeFormat():
     """

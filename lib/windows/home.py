@@ -433,20 +433,37 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                     self.hubItemClicked(controlID, auto_play=True)
                     return
 
-            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
-                if not xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID)) and self.getProperty('off.sections'):
-                    self.setFocusId(self.OPTIONS_GROUP_ID)
-                    return
+            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_CONTEXT_MENU):
+                optionsFocused = xbmc.getCondVisibility('ControlGroup({0}).HasFocus(0)'.format(self.OPTIONS_GROUP_ID))
+                offSections = util.getGlobalProperty('off.sections')
+                if action in (xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
+                    if self.getFocusId() == self.USER_LIST_ID:
+                        self.setFocusId(self.USER_BUTTON_ID)
+                        return
+                    elif self.getFocusId() == self.SERVER_LIST_ID:
+                        self.setFocusId(self.SERVER_BUTTON_ID)
+                        return
 
-            if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU):
-                if self.getFocusId() == self.USER_LIST_ID:
-                    self.setFocusId(self.USER_BUTTON_ID)
-                    return
-                elif self.getFocusId() == self.SERVER_LIST_ID:
-                    self.setFocusId(self.SERVER_BUTTON_ID)
-                    return
+                    if util.advancedSettings.fastBack and not optionsFocused and offSections \
+                            and self.lastFocusID not in (self.USER_BUTTON_ID, self.SERVER_BUTTON_ID,
+                                                         self.SEARCH_BUTTON_ID, self.SECTION_LIST_ID):
+                        self.setProperty('hub.focus', '0')
+                        self.setFocusId(self.SECTION_LIST_ID)
+                        return
 
-                if not self.confirmExit():
+                if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_CONTEXT_MENU):
+                    if not optionsFocused and offSections \
+                            and (not util.advancedSettings.fastBack or action == xbmcgui.ACTION_CONTEXT_MENU):
+                        self.lastNonOptionsFocusID = self.lastFocusID
+                        self.setFocusId(self.OPTIONS_GROUP_ID)
+                        return
+                    elif action == xbmcgui.ACTION_CONTEXT_MENU and optionsFocused and offSections \
+                            and self.lastNonOptionsFocusID:
+                        self.setFocusId(self.lastNonOptionsFocusID)
+                        self.lastNonOptionsFocusID = None
+                        return
+
+                if action in(xbmcgui.ACTION_NAV_BACK, xbmcgui.ACTION_PREVIOUS_MENU) and not self.confirmExit():
                     return
         except:
             util.ERROR()

@@ -331,6 +331,9 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         elif self.mediaItem.type == 'artist':
             w = tracks.AlbumWindow.open(album=mli.dataSource, parent_list=self.subItemListControl)
 
+        if not mli:
+            return
+
         if not mli.dataSource.exists():
             self.subItemListControl.removeItem(mli.pos())
 

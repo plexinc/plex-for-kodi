@@ -258,6 +258,9 @@ class SeekPlayerHandler(BasePlayerHandler):
                 util.garbageCollect()
 
     def seek(self, offset, settings_changed=False, seeking=SEEK_IN_PROGRESS):
+        if offset is None:
+            return
+
         self.offset = offset
 
         if self.mode == self.MODE_ABSOLUTE and not settings_changed:
@@ -287,15 +290,19 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.seek(max(self.trueTime - 30, 0) * 1000, seeking=self.SEEK_REWIND)
 
     def seekAbsolute(self, seek=None):
-        self.seekOnStart = seek or self.seekOnStart
+        self.seekOnStart = seek or (self.seekOnStart if self.seekOnStart else None)
         if self.seekOnStart is not None:
             seekSeconds = self.seekOnStart / 1000.0
             try:
                 if seekSeconds >= self.player.getTotalTime():
+                    util.DEBUG_LOG("SeekAbsolute: Bad offset: {0}".format(seekSeconds))
                     return False
             except RuntimeError:  # Not playing a file
+                util.DEBUG_LOG("SeekAbsolute: runtime error")
                 return False
             self.updateNowPlaying(state=self.player.STATE_PAUSED)  # To for update after seek
+
+            util.DEBUG_LOG("SeekAbsolute: Seeking to {0}".format(self.seekOnStart))
             self.player.seekTime(self.seekOnStart / 1000.0)
         return True
 
@@ -353,9 +360,13 @@ class SeekPlayerHandler(BasePlayerHandler):
 
     def onPlayBackSeek(self, stime, offset):
         if self.seekOnStart:
+            seeked = False
             if self.dialog:
-                self.dialog.tick(stime)
-            self.seekOnStart = 0
+                seeked = self.dialog.tick(stime)
+
+            if seeked:
+                util.DEBUG_LOG("OnPlayBackSeek: Seeked on start")
+                self.seekOnStart = 0
             return
 
         self.updateOffset()
@@ -921,7 +932,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.handler.onPlayBackEnded()
 
     def onPlayBackSeek(self, time, offset):
-        util.DEBUG_LOG('Player - SEEK')
+        util.DEBUG_LOG('Player - SEEK: %i' % offset)
         if not self.handler:
             return
         self.handler.onPlayBackSeek(time, offset)

@@ -436,6 +436,9 @@ class SeekPlayerHandler(BasePlayerHandler):
             self.seekAbsolute()
 
     def onPlayBackFailed(self):
+        if self.ended:
+            return False
+
         util.DEBUG_LOG('SeekHandler: onPlayBackFailed - Seeking={0}'.format(self.seeking))
         if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
             self.sessionEnded()

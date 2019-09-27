@@ -479,6 +479,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 self.setProperty('prev.info.date', self.prev.year)
 
     def fillOnDeck(self):
+        if not self.onDeckPaginator:
+            return False
+
         if not self.onDeckPaginator.leafCount:
             self.onDeckPaginator.reset()
             return False

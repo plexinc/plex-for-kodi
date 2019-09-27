@@ -98,7 +98,6 @@ class BasePlayerHandler(object):
             return
 
         item = self.getCurrentItem()
-
         if not item:
             return
 
@@ -351,11 +350,12 @@ class SeekPlayerHandler(BasePlayerHandler):
         if self.next(on_end=True):
             return
 
-        if self.seeking != self.SEEK_PLAYLIST:
-            self.hideOSD()
+        if not self.ended:
+            if self.seeking != self.SEEK_PLAYLIST:
+                self.hideOSD()
 
-        if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
-            self.sessionEnded()
+            if self.seeking not in (self.SEEK_IN_PROGRESS, self.SEEK_PLAYLIST):
+                self.sessionEnded()
 
     def onPlayBackPaused(self):
         self.updateNowPlaying()

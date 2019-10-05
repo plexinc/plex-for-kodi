@@ -1029,7 +1029,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
             self.currentTime = self.getTime()
             util.MONITOR.waitForAbort(0.1)
-            if xbmc.getCondVisibility('Window.IsActive(videoosd) | Player.ShowInfo'):
+            if xbmc.getCondVisibility('Window.IsActive(videoosd)'):
                 if not self.hasOSD:
                     self.hasOSD = True
                     self.onVideoOSD()

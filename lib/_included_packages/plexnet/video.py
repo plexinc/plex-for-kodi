@@ -426,13 +426,16 @@ class Episode(PlayableVideo):
     @property
     def isWatched(self):
         return self.get('viewCount').asInt() > 0
-
     def getStreamURL(self, **params):
         return self._getStreamURL(**params)
 
     def season(self):
-        if not self._season:
-            self._season = plexobjects.listItems(self.server, self.parentKey)[0]
+        if not self._season and not self.get('skipParent').asBool():
+            items = plexobjects.listItems(self.server, self.parentKey)
+
+            if items:
+                self._season = items[0]
+
         return self._season
 
     def show(self):

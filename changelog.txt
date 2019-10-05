@@ -6,7 +6,7 @@ Restore last window when starting the add-on while it is running (Issue #126)
 Add Portuguese (Brazil) translations (thanks to DiogoAbu)
 Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal
 Only play unwatched media when pressing play or shuffle and filtering for unwatched (thanks to tlt21)
-Fix issue with duplicated icons whe fast-scrolling a hub (Issue #177) (thanks to pannal)
+Fix issue with duplicated icons when fast-scrolling a hub (Issue #177) (thanks to pannal)
 Fixed GUI not responding after public IP renewal (thanks to pannal and mkliche)
 Advanced setting: Automatically seek selected position after a delay (Issue #172) (thanks to pannal)
 Advanced setting: Use skip step settings from Kodi (Issue #133) (thanks to pannal)
@@ -16,6 +16,25 @@ Show post play on user stop when item is considered played (thanks to pannal)
 Use Unplayed/Played instead of Unwatched/Watched (thanks to pannal)
 Fix issue with cast popup displaying partially offscreen (thanks to pannal)
 Various fixes for incorrectly transcoded playback (Issue #201) (thanks to pannal)
+Support new subtitles menu in playback for Leia (thanks to pannal)
+Make sure progress bar is visible on items with less than 2% watched (thanks to pannal)
+Fix focus issues caused when hubs are removed, i.e. On Deck, Continue Watching (thanks to pannal)
+Fix issues with flattened seasons
+Allow Kodi info display to be visible when hitting the info button
+Fixes hubs not updating and some crash issues
+More fixes for Kodi 18, ex. missing letters list (Issue #265)
+Fix resume behavior with DSPlayer (thanks to pannal)
+Add Polish translations (thanks to Zachar2)
+Playlist and album view tweaks (thanks to pannal)
+Quality selection clean up and fixes (thanks to pannal)
+Fix to allow 3D mode selection
+Add advanced option to skip the header when going back (thanks to pannal)
+Ensure paused state is retained after seeking or changing video settings (thanks to pannal)
+Allow closing of the options header in scrolled views using context menu button (thanks to pannal)
+Some direct playback fixes (thanks to pannal)
+Some shutdown fixes (thanks to pannal)
+Show play state indicators to related items in preplays and On Deck in postplay (thanks to pannal)
+Fix some resume issues (thanks to pannal)
 
 [- 0.1.6 -]
 

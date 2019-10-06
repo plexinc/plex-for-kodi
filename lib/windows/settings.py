@@ -193,8 +193,9 @@ class Settings(object):
             )
         ),
         'audio': (
-            T(32048, 'Audio'),
-            ()
+            T(32048, 'Audio'), (
+                BoolSetting('allow_hd_audio', T(32058, 'Allow HD Audio'), False),
+            )
         ),
         'video': (
             T(32053, 'Video'), (
@@ -257,7 +258,7 @@ class Settings(object):
         ),
     }
 
-    SECTION_IDS = ('main', 'video', 'subtitles', 'advanced', 'manual', 'about')
+    SECTION_IDS = ('main', 'video', 'audio', 'subtitles', 'advanced', 'manual', 'about')
 
     def __getitem__(self, key):
         return self.SETTINGS[key]

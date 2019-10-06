@@ -225,6 +225,9 @@ msgctxt "#32057"
 msgid "Current Server Version"
 msgstr ""
 
+msgctxt "#32058"
+msgid "Allow HD Audio"
+msgstr ""
 
 msgctxt "#32100"
 msgid "Skip user selection and pin entry on startup."

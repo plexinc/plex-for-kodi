@@ -1,4 +1,5 @@
 import xbmc
+import xbmcgui
 import kodigui
 
 from lib import util
@@ -23,6 +24,8 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
         self.video = kwargs.get('video')
         self.viaOSD = kwargs.get('via_osd')
         self.nonPlayback = kwargs.get('non_playback')
+        self.roundRobin = kwargs.get('round_robin', True)
+        self.lastSelectedItem = 0
 
         if not self.video.mediaChoice:
             playerObject = plexnet.plexplayer.PlexPlayer(self.video)
@@ -43,6 +46,24 @@ class VideoSettingsDialog(kodigui.BaseDialog, util.CronReceiver):
                 return
         except:
             util.ERROR()
+
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.SETTINGS_LIST_ID:
+            to_pos = None
+            last_index = self.settingsList.size() - 1
+            if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.settingsList.topHasFocus():
+                to_pos = last_index
+
+            elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                    and self.settingsList.bottomHasFocus():
+                to_pos = 0
+
+            if to_pos is not None:
+                self.settingsList.setSelectedItemByPos(to_pos)
+                self.lastSelectedItem = to_pos
+                return
+
+            self.lastSelectedItem = self.settingsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 
@@ -163,6 +184,8 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
         self.selectedIdx = kwargs.get('selected_idx')
         self.choice = None
         self.nonPlayback = kwargs.get('non_playback')
+        self.lastSelectedItem = self.selectedIdx if self.selectedIdx is not None else 0
+        self.roundRobin = kwargs.get('round_robin', True)
 
     def onFirstInit(self):
         self.optionsList = kodigui.ManagedControlList(self, self.OPTIONS_LIST_ID, 8)
@@ -177,6 +200,26 @@ class SelectDialog(kodigui.BaseDialog, util.CronReceiver):
                 return
         except:
             util.ERROR()
+
+        if self.roundRobin and action in (xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN) and \
+                self.getFocusId() == self.OPTIONS_LIST_ID:
+            to_pos = None
+            last_index = self.optionsList.size() - 1
+
+            if last_index > 0:
+                if action == xbmcgui.ACTION_MOVE_UP and self.lastSelectedItem == 0 and self.optionsList.topHasFocus():
+                    to_pos = last_index
+
+                elif action == xbmcgui.ACTION_MOVE_DOWN and self.lastSelectedItem == last_index \
+                        and self.optionsList.bottomHasFocus():
+                    to_pos = 0
+
+                if to_pos is not None:
+                    self.optionsList.setSelectedItemByPos(to_pos)
+                    self.lastSelectedItem = to_pos
+                    return
+
+                self.lastSelectedItem = self.optionsList.control.getSelectedPosition()
 
         kodigui.BaseDialog.onAction(self, action)
 

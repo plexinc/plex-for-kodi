@@ -132,7 +132,7 @@ class PlexStream(plexobjects.PlexObject):
         if self.__class__ != other.__class__:
             return False
 
-        for attr in ("streamType", "language", "codec", "channels", "index"):
+        for attr in ("streamType", "language", "codec", "channels", "index", "key"):
             if getattr(self, attr) != getattr(other, attr):
                 return False
 

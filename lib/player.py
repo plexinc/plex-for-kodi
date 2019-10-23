@@ -373,7 +373,8 @@ class SeekPlayerHandler(BasePlayerHandler):
         # self.showOSD(from_seek=True)
 
     def setSubtitles(self):
-        subs = self.player.video.selectedSubtitleStream()
+        subs = self.player.video.selectedSubtitleStream(
+            forced_subtitles_override=util.advancedSettings.forcedSubtitlesOverride)
         if subs:
             xbmc.sleep(100)
             self.player.showSubtitles(False)

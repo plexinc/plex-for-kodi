@@ -510,8 +510,12 @@ class SeekDialog(kodigui.BaseDialog):
             self.initialAudioStream = self.player.video.selectedAudioStream()
             changed = True
 
-        if self.player.video.selectedSubtitleStream() != self.initialSubtitleStream:
-            self.initialSubtitleStream = self.player.video.selectedSubtitleStream()
+        if self.player.video.selectedSubtitleStream(
+                forced_subtitles_override=util.advancedSettings.forcedSubtitlesOverride
+        ) != self.initialSubtitleStream:
+            self.initialSubtitleStream = \
+                self.player.video.selectedSubtitleStream(
+                    forced_subtitles_override=util.advancedSettings.forcedSubtitlesOverride)
             if changed or self.handler.mode == self.handler.MODE_RELATIVE:
                 return True
             else:

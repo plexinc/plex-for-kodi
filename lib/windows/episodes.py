@@ -25,6 +25,7 @@ import pagination
 from lib.util import T
 
 
+
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
         self.episode = episode
@@ -83,16 +84,33 @@ class EpisodesPaginator(pagination.MCLPaginator):
             epSeasonIndex = int(episode.index) - 1  # .index is 1-based
             if _amount < self.leafCount:
                 _amount = self.initialPageSize * 2
+                notFound = False
                 while episode not in episodes:
                     offset = int(max(0, epSeasonIndex - _amount / 2))
                     episodes = self.getData(offset, int(_amount))
 
                     if _amount >= self.leafCount:
                         # ep not found?
+                        notFound = True
                         break
 
                     # in case the episode wasn't found inside the slice, increase the slice's size
                     _amount *= 2
+
+                if notFound:
+                    # search conservatively
+                    util.DEBUG_LOG("Episode not found with intelligent index-based search, re-trying conservatively")
+                    _amount = self.initialPageSize * 2
+                    offset = 0
+                    episodes = self.getData(offset, int(_amount))
+                    while episode not in episodes:
+                        offset = _amount
+                        episodes = self.getData(offset, int(_amount))
+
+                        if _amount >= self.leafCount:
+                            break
+
+                        _amount *= 2
             else:
                 # shortcut for short seasons
                 episodes = self.getData(offset, int(_amount))
@@ -199,7 +217,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def reset(self, episode, season=None, show=None):
         self.episode = episode
-        self.season = season or self.episode.season()
+        self.season = season if season is not None else self.episode.season()
         self.show_ = show or self.season.show().reload(includeExtras=1, includeExtrasCount=10)
         self.parentList = None
         self.seasons = None

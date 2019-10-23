@@ -549,7 +549,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         sas = self.video.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle(metadata.apiTranslate) or T(32309, 'None'))
 
-        sss = self.video.selectedSubtitleStream()
+        sss = self.video.selectedSubtitleStream(
+            forced_subtitles_override=util.advancedSettings.forcedSubtitlesOverride)
         if sss:
             if len(self.video.subtitleStreams) > 1:
                 self.setProperty(

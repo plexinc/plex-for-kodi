@@ -13,6 +13,7 @@
     <setting id="auto_seek_delay" subsetting="true" enable="eq(-1,true)" type="slider" label="32487" default="1" range="0,.1,5" option="float" />
     <setting id="kodi_skip_stepping" type="bool" label="32465" default="false" />
     <setting id="dynamic_timeline_seek" type="bool" label="32471" default="false" />
+    <setting id="forced_subtitles_override" type="bool" label="32493" default="false" />
   </category>
   <category label="32467">
     <setting id="fast_back" type="bool" label="32485" default="false" />

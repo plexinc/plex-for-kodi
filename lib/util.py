@@ -90,6 +90,7 @@ class AdvancedSettings(object):
         ("auto_seek", True),
         ("auto_seek_delay", 0),
         ("dynamic_timeline_seek", False),
+        ("forced_subtitles_override", False),
         ("fast_back", False),
         ("dynamic_backgrounds", False),
         ("background_art_blur_amount", 128),

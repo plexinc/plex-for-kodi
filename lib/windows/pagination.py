@@ -208,24 +208,34 @@ class MCLPaginator(object):
         last_mli_index = int(last_mli.getProperty("index"))
 
         # _lastAmount is used to immediately wrap again after a wrap has happened; potentially an issue
-        if last_mli_index not in (0, self._currentAmount - 1, (self._lastAmount - 1) if self._lastAmount else None):
+        if last_mli_index not in (0, self._currentAmount - 1, (self._lastAmount - 1) if self._lastAmount else None) \
+                or self._currentAmount < 2:
             return
+
+        onlyTwo = self._currentAmount == 2
 
         items = None
         if action == xbmcgui.ACTION_MOVE_LEFT and index == 0:
+            if onlyTwo and last_mli_index == self._currentAmount - 1:
+                return
+
             if not self.canSimpleWrap:
-                self.offset = self.leafCount - self.orphans - self.pageSize
                 self._direction = "right"
+                self.offset = self.leafCount - self.orphans - self.pageSize
                 items = self.paginate(force_page=True)
                 self.control.selectItem(self._currentAmount)
             else:
                 self.control.selectItem(self.leafCount - 1)
         elif action == xbmcgui.ACTION_MOVE_RIGHT and index == self._currentAmount - 1:
+            if onlyTwo and last_mli_index == 0:
+                return
+
             if not self.canSimpleWrap:
-                self.offset = 0
                 self._direction = "left"
+                self.offset = 0
                 items = self.paginate()
             self.control.selectItem(0)
+
         if items:
             return items
 

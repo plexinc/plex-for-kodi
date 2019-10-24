@@ -27,6 +27,7 @@ from lib.util import T
 VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
 
 
+
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
         self.episode = episode
@@ -803,6 +804,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
             items = self.episodesPaginator.wrap(mli, lastItem, action)
+            xbmc.sleep(100)
             mli = self.episodeListControl.getSelectedItem()
             if items:
                 self.reloadItems(items)

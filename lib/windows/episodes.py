@@ -734,7 +734,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         sas = video.selectedAudioStream()
         mli.setProperty('audio', sas and sas.getTitle(metadata.apiTranslate) or T(32309, 'None'))
 
-        sss = video.selectedSubtitleStream()
+        sss = video.selectedSubtitleStream(forced_subtitles_override=util.advancedSettings.forcedSubtitlesOverride)
         if sss:
             if len(video.subtitleStreams) > 1:
                 mli.setProperty(

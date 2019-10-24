@@ -29,6 +29,7 @@ class PlexVideoItemList(plexobjects.PlexItemList):
 
 class Video(media.MediaItem):
     TYPE = None
+    manually_selected_sub_stream = False
 
     def __init__(self, *args, **kwargs):
         self._settings = None
@@ -59,10 +60,28 @@ class Video(media.MediaItem):
                     return stream
         return None
 
-    def selectedSubtitleStream(self):
+    def selectedSubtitleStream(self, forced_subtitles_override=False):
         if self.subtitleStreams:
             for stream in self.subtitleStreams:
                 if stream.isSelected():
+                    if forced_subtitles_override and \
+                            stream.forced.asBool() and self.manually_selected_sub_stream != stream.id:
+                        # try finding a non-forced variant of this stream
+                        possible_alt = None
+                        for alt_stream in self.subtitleStreams:
+                            if alt_stream.language == stream.language and alt_stream != stream \
+                                    and not alt_stream.forced.asBool():
+                                if possible_alt and not possible_alt.key and alt_stream.key:
+                                    possible_alt = alt_stream
+                                    break
+                                if not possible_alt:
+                                    possible_alt = alt_stream
+                        if possible_alt:
+                            util.DEBUG_LOG("Selecting stream %s instead of %s" %
+                                           (possible_alt, stream))
+                            stream.setSelected(False)
+                            possible_alt.setSelected(True)
+                            return possible_alt
                     return stream
         return None
 

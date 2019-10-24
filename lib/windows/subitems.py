@@ -151,7 +151,8 @@ class ShowWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         sas = self.mediaItem.selectedAudioStream()
         self.setProperty('audio', sas and sas.getTitle() or 'None')
 
-        sss = self.mediaItem.selectedSubtitleStream()
+        sss = self.mediaItem.selectedSubtitleStream(
+            forced_subtitles_override=util.advancedSettings.forcedSubtitlesOverride)
         self.setProperty('subtitles', sss and sss.getTitle() or 'None')
 
         leafcount = self.mediaItem.leafCount.asFloat()

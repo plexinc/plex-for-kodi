@@ -40,6 +40,8 @@ class OnDeckPaginator(pagination.MCLPaginator):
 
     def prepareListItem(self, data, mli):
         mli.setProperty('progress', util.getProgressImage(mli.dataSource))
+        mli.setProperty('unwatched', not mli.dataSource.isWatched and '1' or '')
+
         if data.type in 'episode':
             mli.setLabel2(
                 u'{0}{1} \u2022 {2}{3}'.format(T(32310, 'S'), data.parentIndex, T(32311, 'E'), data.index))

@@ -781,6 +781,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
         if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_MOVE_LEFT):
             items = self.episodesPaginator.wrap(mli, lastItem, action)
+            xbmc.sleep(100)
             mli = self.episodeListControl.getSelectedItem()
             if items:
                 self.reloadItems(items)

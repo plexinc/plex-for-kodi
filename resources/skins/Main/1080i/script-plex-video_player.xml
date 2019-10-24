@@ -440,6 +440,14 @@
                                                 <colordiffuse>FFCC7B19</colordiffuse>
                                             </control>
                                         </control>
+                                        <control type="image">
+                                            <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
+                                            <posx>264</posx>
+                                            <posy>0</posy>
+                                            <width>35</width>
+                                            <height>35</height>
+                                            <texture>script.plex/indicators/unwatched.png</texture>
+                                        </control>
                                         <control type="label">
                                             <scroll>false</scroll>
                                             <posx>0</posx>
@@ -557,6 +565,14 @@
                                                     <texture>$INFO[ListItem.Property(progress)]</texture>
                                                     <colordiffuse>FFCC7B19</colordiffuse>
                                                 </control>
+                                            </control>
+                                            <control type="image">
+                                                <visible>!String.IsEmpty(ListItem.Property(unwatched))</visible>
+                                                <posx>264</posx>
+                                                <posy>0</posy>
+                                                <width>35</width>
+                                                <height>35</height>
+                                                <texture>script.plex/indicators/unwatched.png</texture>
                                             </control>
                                             <control type="label">
                                                 <scroll>false</scroll>

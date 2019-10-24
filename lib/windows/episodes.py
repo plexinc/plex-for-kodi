@@ -72,13 +72,16 @@ class EpisodesPaginator(pagination.MCLPaginator):
             mli.setProperty('unwatched.count', str(mli.dataSource.unViewedLeafCount))
         mli.setProperty('progress', util.getProgressImage(mli.dataSource))
 
+    def setEpisode(self, ep):
+        self._currentEpisode = ep
+
     @property
     def initialPage(self):
         episode = self.parentWindow.episode
         offset = 0
         amount = self.initialPageSize
         if episode:
-            self._currentEpisode = episode
+            self.setEpisode(episode)
             # try cutting the query short while not querying all episodes, to find the slice with the currently
             # selected episode in it
             episodes = []
@@ -310,6 +313,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         for mli in self.episodeListControl:
             if mli.dataSource == self.episode:
                 self.episodeListControl.selectItem(mli.pos())
+                self.episodesPaginator.setEpisode(self.episode)
                 break
         else:
             if not from_select_episode:
@@ -841,6 +845,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         if item:
             item.setProperty('unwatched', not item.dataSource.isWatched and '1' or '')
             self.setProgress(item)
+            item.setProperty('progress', util.getProgressImage(item.dataSource))
             self.season.reload()
         else:
             self.fillEpisodes(update=True)

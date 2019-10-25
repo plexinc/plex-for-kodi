@@ -5,7 +5,6 @@ from . import http
 from . import plexconnection
 from . import plexresource
 from . import plexserver
-from . import myplexserver
 from . import signalsmixin
 from . import callback
 from . import plexapp
@@ -74,6 +73,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         if uuid is None:
             return None
         elif uuid == "myplex":
+            from . import myplexserver
             return myplexserver.MyPlexServer()
         else:
             return self.serversByUuid[uuid]

@@ -12,9 +12,9 @@ from . import verlib
 from . import compat
 
 if six.PY2:
-    _Event = threading._Event
+    Event = threading._Event
 else:
-    _Event = threading.Event
+    Event = threading.Event
 
 BASE_HEADERS = ''
 
@@ -208,9 +208,9 @@ def normalizedVersion(ver):
         return verlib.NormalizedVersion(verlib.suggest_normalized_version('0.0.0'))
 
 
-class CompatEvent(_Event):
+class CompatEvent(Event):
     def wait(self, timeout):
-        _Event.wait(self, timeout)
+        Event.wait(self, timeout)
         return self.isSet()
 
 

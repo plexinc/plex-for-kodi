@@ -7,15 +7,10 @@ import sys
 from . import callback
 from . import signalsmixin
 from . import simpleobjects
-from . import nowplayingmanager
 from . import util
+import six
 
 Res = simpleobjects.Res
-
-APP = None
-INTERFACE = None
-
-MANAGER = None
 SERVERMANAGER = None
 ACCOUNT = None
 
@@ -28,7 +23,7 @@ def init():
     from . import plexservermanager
     SERVERMANAGER = plexservermanager.MANAGER
     from . import myplexmanager
-    MANAGER = myplexmanager.MANAGER
+    util.MANAGER = myplexmanager.MANAGER
     ACCOUNT.init()
 
 
@@ -38,6 +33,7 @@ class App(signalsmixin.SignalsMixin):
         self.pendingRequests = {}
         self.initializers = {}
         self.timers = []
+        from . import nowplayingmanager
         self.nowplayingmanager = nowplayingmanager.NowPlayingManager()
 
     def addTimer(self, timer):
@@ -104,7 +100,8 @@ class App(signalsmixin.SignalsMixin):
         http.HttpRequest._cancel = True
         if self.pendingRequests:
             util.DEBUG_LOG('Closing down {0} App() requests...'.format(len(self.pendingRequests)))
-            for p in self.pendingRequests.values():
+            for k in list(self.pendingRequests.keys()):
+                p = self.pendingRequests.get(k)
                 if p:
                     p.request.cancel()
 
@@ -175,7 +172,7 @@ class AppInterface(object):
         ]
 
         for quality in self._globals['qualities']:
-            if quality.index >= 9:
+            if quality.index is not None and quality.index >= 9:
                 quality.update(maxQuality)
 
     def getPreference(self, pref, default=None):
@@ -262,7 +259,7 @@ class PlayerSettingsInterface(object):
         self.prefOverrides = {}
 
     def __getattr__(self, name):
-        return getattr(INTERFACE, name)
+        return getattr(util.INTERFACE, name)
 
     def setPrefOverride(self, key, val):
         self.prefOverrides[key] = val
@@ -271,9 +268,9 @@ class PlayerSettingsInterface(object):
         return self.prefOverrides.get(key, default)
 
     def getQualityIndex(self, qualityType):
-        if qualityType == INTERFACE.QUALITY_LOCAL:
+        if qualityType == util.INTERFACE.QUALITY_LOCAL:
             return self.getPreference("local_quality", 13)
-        elif qualityType == INTERFACE.QUALITY_ONLINE:
+        elif qualityType == util.INTERFACE.QUALITY_ONLINE:
             return self.getPreference("online_quality", 8)
         else:
             return self.getPreference("remote_quality", 13)
@@ -282,7 +279,7 @@ class PlayerSettingsInterface(object):
         if key in self.prefOverrides:
             return self.prefOverrides[key]
         else:
-            return INTERFACE.getPreference(key, default)
+            return util.INTERFACE.getPreference(key, default)
 
     def getMaxResolution(self, quality_type, allow4k=False):
         qualityIndex = self.getQualityIndex(quality_type)
@@ -372,95 +369,14 @@ class DumbInterface(AppInterface):
             traceback.print_exc()
 
 
-class CompatEvent(threading._Event):
-    def wait(self, timeout):
-        threading._Event.wait(self, timeout)
-        return self.isSet()
-
-
-class Timer(object):
-    def __init__(self, timeout, function, repeat=False, *args, **kwargs):
-        self.function = function
-        self.timeout = timeout
-        self.repeat = repeat
-        self.args = args
-        self.kwargs = kwargs
-        self._reset = False
-        self.event = CompatEvent()
-        self.start()
-
-    def start(self):
-        self.event.clear()
-        self.thread = threading.Thread(target=self.run, name='TIMER:{0}'.format(self.function), *self.args, **self.kwargs)
-        self.thread.start()
-
-    def run(self):
-        util.DEBUG_LOG('Timer {0}: {1}'.format(repr(self.function), self._reset and 'RESET'or 'STARTED'))
-        try:
-            while not self.event.isSet() and not self.shouldAbort():
-                while not self.event.wait(self.timeout) and not self.shouldAbort():
-                    if self._reset:
-                        return
-
-                    self.function(*self.args, **self.kwargs)
-                    if not self.repeat:
-                        return
-        finally:
-            if not self._reset:
-                if self in APP.timers:
-                    APP.timers.remove(self)
-
-                util.DEBUG_LOG('Timer {0}: FINISHED'.format(repr(self.function)))
-
-            self._reset = False
-
-    def cancel(self):
-        self.event.set()
-
-    def reset(self):
-        self._reset = True
-        self.cancel()
-        if self.thread and self.thread.isAlive():
-            self.thread.join()
-        self.start()
-
-    def shouldAbort(self):
-        return False
-
-    def join(self):
-        if self.thread.isAlive():
-            self.thread.join()
-
-    def isExpired(self):
-        return self.event.isSet()
-
-
-TIMER = Timer
-
-
 def createTimer(timeout, function, repeat=False, *args, **kwargs):
-    if isinstance(function, basestring):
+    if isinstance(function, six.string_types):
         def dummy(*args, **kwargs):
             pass
         dummy.__name__ = function
         function = dummy
-    timer = TIMER(timeout / 1000.0, function, repeat=repeat, *args, **kwargs)
+    timer = util.TIMER(timeout / 1000.0, function, repeat=repeat, *args, **kwargs)
     return timer
-
-
-def setTimer(timer):
-    global TIMER
-    TIMER = timer
-
-
-def setInterface(interface):
-    global INTERFACE
-    INTERFACE = interface
-
-
-def setApp(app):
-    global APP
-    APP = app
 
 
 def setUserAgent(agent):
@@ -476,9 +392,9 @@ def setAbortFlagFunction(func):
 def refreshResources(force=False):
     from . import gdm
     gdm.DISCOVERY.discover()
-    MANAGER.refreshResources(force)
+    util.MANAGER.refreshResources(force)
     SERVERMANAGER.refreshManualConnections()
 
 
-setApp(App())
-setInterface(DumbInterface())
+util.setApp(App())
+util.setInterface(DumbInterface())

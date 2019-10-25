@@ -1,9 +1,12 @@
-import locks
-import http
-import plexobjects
-import plexpart
-import plexrequest
-import util
+from __future__ import absolute_import
+from . import locks
+from . import http
+from . import plexobjects
+from . import plexpart
+from . import plexrequest
+from . import util
+from six.moves import filter
+import six
 
 
 class PlexMedia(plexobjects.PlexObject):
@@ -118,7 +121,7 @@ class PlexMedia(plexobjects.PlexObject):
             details.append(util.bitrateToString(self.bitrate.asInt() * 1000))
 
         detailString = ', '.join(details)
-        return (log_safe and ' * ' or u" \u2022 ").join(filter(None, [self.title, detailString]))
+        return (log_safe and ' * ' or u" \u2022 ").join([_f for _f in [self.title, detailString] if _f])
 
     def __eq__(self, other):
         if not other:
@@ -138,7 +141,7 @@ class PlexMedia(plexobjects.PlexObject):
     def getVideoResolution(self):
         if self.videoResolution:
             standardDefinitionHeight = 480
-            if str(util.validInt(filter(unicode.isdigit, self.videoResolution))) != self.videoResolution:
+            if str(util.validInt(list(filter(six.text_type.isdigit, self.videoResolution)))) != self.videoResolution:
                 return self.height.asInt() > standardDefinitionHeight and self.height.asInt() or standardDefinitionHeight
             else:
                 return self.videoResolution.asInt(standardDefinitionHeight)
@@ -146,14 +149,14 @@ class PlexMedia(plexobjects.PlexObject):
         return self.height.asInt()
 
     def getVideoResolutionString(self):
-        resNumber = util.validInt(filter(unicode.isdigit, self.videoResolution))
+        resNumber = util.validInt(list(filter(six.text_type.isdigit, self.videoResolution)))
         if resNumber > 0 and str(resNumber) == self.videoResolution:
             return self.videoResolution + "p"
 
         return self.videoResolution.upper()
 
     def isSelected(self):
-        import plexapp
-        return self.selected.asBool() or self.id == plexapp.INTERFACE.getPreference("local_mediaId")
+        from . import plexapp
+        return self.selected.asBool() or self.id == util.INTERFACE.getPreference("local_mediaId")
 
     # TODO(schuyler): getParts

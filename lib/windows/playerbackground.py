@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 import contextlib
-import kodigui
+from . import kodigui
 from lib import util
 
 

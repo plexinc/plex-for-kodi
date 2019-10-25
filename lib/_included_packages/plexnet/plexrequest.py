@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 from xml.etree import ElementTree
 
-import plexserver
-import plexresult
-import http
-import util
+from . import plexserver
+from . import plexresult
+from . import http
+from . import util
 
 
 class PlexRequest(http.HttpRequest):

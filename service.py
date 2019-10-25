@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import xbmc
-import xbmcgui
-import xbmcaddon
+from __future__ import absolute_import
+from kodi_six import xbmc
+from kodi_six import xbmcgui
+from kodi_six import xbmcaddon
 
 
 def main():

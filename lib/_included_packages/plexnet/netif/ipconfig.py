@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import print_function
 import subprocess
 
 def parse(data=None):
@@ -34,7 +36,7 @@ def parse(data=None):
                 v = d.replace('(Preferred)','')
                 sections[-1][k] += ',' + v.strip()
         except:
-            print d
+            print(d)
             raise
 
     return sections[1:]

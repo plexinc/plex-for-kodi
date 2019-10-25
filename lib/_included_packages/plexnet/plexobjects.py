@@ -1,9 +1,10 @@
+from __future__ import absolute_import
 from datetime import datetime
 
-import exceptions
-import util
-import plexapp
+from . import exceptions
+from . import util
 import json
+import six
 
 # Search Types - Plex uses these to filter specific media types when searching.
 SEARCHTYPES = {
@@ -31,7 +32,7 @@ def registerLibFactory(ftype):
     return wrap
 
 
-class PlexValue(unicode):
+class PlexValue(six.text_type):
     def __new__(cls, value, parent=None):
         self = super(PlexValue, cls).__new__(cls, value)
         self.parent = parent
@@ -88,7 +89,7 @@ def asFullObject(func):
     return wrap
 
 
-class Checks:
+class Checks(object):
     def isLibraryItem(self):
         return "/library/metadata" in self.get('key', '') or ("/playlists/" in self.get('key', '') and self.get("type", "") == "playlist")
 
@@ -136,7 +137,7 @@ class Checks:
         return False
 
 
-class PlexObject(object, Checks):
+class PlexObject(Checks):
     def __init__(self, data, initpath=None, server=None, container=None):
         self.initpath = initpath
         self.key = None
@@ -182,7 +183,7 @@ class PlexObject(object, Checks):
         return ret is not None and ret or PlexValue(default, self)
 
     def set(self, attr, value):
-        setattr(self, attr, PlexValue(unicode(value), self))
+        setattr(self, attr, PlexValue(six.text_type(value), self))
 
     def init(self, data):
         pass
@@ -220,7 +221,7 @@ class PlexObject(object, Checks):
             else:
                 data = self.server.query(self.key, params=kwargs)
             self._reloaded = True
-        except Exception, e:
+        except Exception as e:
             import traceback
             traceback.print_exc()
             util.ERROR(err=e)
@@ -346,7 +347,8 @@ class PlexObject(object, Checks):
         server = self.server
 
         # If the server is myPlex, try to use a different PMS for transcoding
-        import myplexserver
+        from . import myplexserver
+        from . import plexapp
         if server == myplexserver.MyPlexServer:
             fallbackServer = plexapp.SERVERMANAGER.getChannelServer()
 
@@ -359,7 +361,7 @@ class PlexObject(object, Checks):
 
     @classmethod
     def deSerialize(cls, jstring):
-        import plexserver
+        from . import plexserver
         obj = json.loads(jstring)
         server = plexserver.PlexServer.deSerialize(obj['server'])
         server.identifier = None
@@ -414,7 +416,7 @@ class PlexContainer(PlexObject):
 class PlexServerContainer(PlexContainer):
     def __init__(self, data, initpath=None, server=None, address=None):
         PlexContainer.__init__(self, data, initpath, server, address)
-        import plexserver
+        from . import plexserver
         self.resources = [plexserver.PlexServer(elem) for elem in data]
 
     def __getitem__(self, idx):

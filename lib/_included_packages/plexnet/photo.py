@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import media
-import plexobjects
-import plexmedia
+from __future__ import absolute_import
+from . import media
+from . import plexobjects
+from . import plexmedia
 
 
 class Photo(media.MediaItem):

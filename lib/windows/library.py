@@ -1,30 +1,33 @@
+from __future__ import absolute_import
 import os
 import random
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import json
 import time
 import threading
 
-import xbmc
-import xbmcgui
-import kodigui
+from kodi_six import xbmc
+from kodi_six import xbmcgui
+from . import kodigui
 
 from lib import colors
 from lib import util
 from lib import backgroundthread
 
-import busy
-import subitems
-import preplay
-import search
+from . import busy
+from . import subitems
+from . import preplay
+from . import search
 import plexnet
-import dropdown
-import opener
-import windowutils
+from . import dropdown
+from . import opener
+from . import windowutils
 
 from plexnet import playqueue
 
 from lib.util import T
+import six
+from six.moves import range
 
 CHUNK_SIZE = 200
 # CHUNK_SIZE = 30
@@ -190,7 +193,7 @@ class PhotoPropertiesTask(backgroundthread.Task):
 
 class LibrarySettings(object):
     def __init__(self, section_or_server_id):
-        if isinstance(section_or_server_id, basestring):
+        if isinstance(section_or_server_id, six.string_types):
             self.serverID = section_or_server_id
             self.sectionID = None
         else:
@@ -1257,7 +1260,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             util.DEBUG_LOG('Filter missing sub-filter data')
             return None
 
-        return (self.filter['type'], urllib.unquote_plus(self.filter['sub']['val']))
+        return (self.filter['type'], six.moves.urllib.parse.unquote_plus(self.filter['sub']['val']))
 
     def getSortOpts(self):
         if not self.sort:

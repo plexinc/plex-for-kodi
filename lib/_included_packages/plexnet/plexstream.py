@@ -1,5 +1,6 @@
-import plexobjects
-import util
+from __future__ import absolute_import
+from . import plexobjects
+from . import util
 
 
 class PlexStream(plexobjects.PlexObject):

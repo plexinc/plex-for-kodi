@@ -1,7 +1,7 @@
-import plexobjects
-import plexstream
-import plexrequest
-import util
+from __future__ import absolute_import
+from . import plexobjects
+from . import plexstream
+from . import util
 
 METADATA_RELATED_TRAILER = 1
 METADATA_RELATED_DELETED_SCENE = 2
@@ -50,6 +50,7 @@ class MediaItem(plexobjects.PlexObject):
         if not self.ratingKey:
             return
 
+        from . import plexrequest
         req = plexrequest.PlexRequest(self.server, '/library/metadata/{0}'.format(self.ratingKey), method='DELETE')
         req.getToStringWithTimeout(10)
         self.deleted = req.wasOK()
@@ -97,8 +98,8 @@ class MediaPart(plexobjects.PlexObject):
         return '<%s:%s>' % (self.__class__.__name__, self.id)
 
     def selectedStream(self, stream_type):
-        streams = filter(lambda x: stream_type == x.type, self.streams)
-        selected = list(filter(lambda x: x.selected is True, streams))
+        streams = [x for x in self.streams if stream_type == x.type]
+        selected = list([x for x in streams if x.selected is True])
         if len(selected) == 0:
             return None
         return selected[0]

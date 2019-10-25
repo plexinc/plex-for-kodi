@@ -1,19 +1,20 @@
+from __future__ import absolute_import
 import sys
 import os
 import re
 import traceback
 import requests
 import socket
-import threadutils
-import urllib
+from . import threadutils
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import mimetypes
-import plexobjects
+from . import plexobjects
 from xml.etree import ElementTree
 
-import asyncadapter
+from . import asyncadapter
 
-import callback
-import util
+from . import callback
+from . import util
 
 
 codes = requests.codes
@@ -71,8 +72,8 @@ class HttpRequest(object):
         #         self.session.cert = os.path.join(certsPath, 'ca-bundle.crt')
 
     def removeAsPending(self):
-        import plexapp
-        plexapp.APP.delRequest(self)
+        from . import plexapp
+        util.APP.delRequest(self)
 
     def startAsync(self, *args, **kwargs):
         self.thread = threadutils.KillableThread(target=self._startAsync, args=args, kwargs=kwargs, name='HTTP-ASYNC:{0}'.format(self.url))
@@ -105,11 +106,11 @@ class HttpRequest(object):
             if self._cancel:
                 return
         except asyncadapter.TimeoutException:
-            import plexapp
-            plexapp.APP.onRequestTimeout(context)
+            from . import plexapp
+            plexapp.util.APP.onRequestTimeout(context)
             self.removeAsPending()
             return
-        except Exception, e:
+        except Exception as e:
             util.ERROR('Request failed {0}'.format(util.cleanToken(self.url)), e)
             if not hasattr(e, 'response'):
                 return
@@ -164,7 +165,7 @@ class HttpRequest(object):
             util.LOG("Got a {0} from {1}".format(res.status_code, util.cleanToken(self.url)))
             # self.event = msg
             return res
-        except Exception, e:
+        except Exception as e:
             info = traceback.extract_tb(sys.exc_info()[2])[-1]
             util.WARN_LOG(
                 "Request errored out - URL: {0} File: {1} Line: {2} Msg: {3}".format(util.cleanToken(self.url), os.path.basename(info[0]), info[1], e.message)
@@ -200,14 +201,14 @@ class HttpRequest(object):
             return
         except AttributeError:
             pass
-        except Exception, e:
+        except Exception as e:
             util.ERROR(err=e)
 
         try:
             self.currentResponse.raw._fp.fp._sock.shutdown(socket.SHUT_RDWR)
         except AttributeError:
             pass
-        except Exception, e:
+        except Exception as e:
             util.ERROR(err=e)
 
     def cancel(self):
@@ -218,10 +219,10 @@ class HttpRequest(object):
 
     def addParam(self, encodedName, value):
         if self.hasParams:
-            self.url += "&" + encodedName + "=" + urllib.quote_plus(value)
+            self.url += "&" + encodedName + "=" + six.moves.urllib.parse.quote_plus(value)
         else:
             self.hasParams = True
-            self.url += "?" + encodedName + "=" + urllib.quote_plus(value)
+            self.url += "?" + encodedName + "=" + six.moves.urllib.parse.quote_plus(value)
 
     def addHeader(self, name, value):
         self.session.headers[name] = value
@@ -243,13 +244,14 @@ class HttpRequest(object):
             response = HttpResponse(event)
             context.completionCallback(self, response, context)
 
-    def logRequest(self, body, timeout=None, async=True):
+    def logRequest(self, body, timeout=None, _async=True):
         # Log the real request method
         method = self.method
         if not method:
             method = body is not None and "POST" or "GET"
         util.LOG(
-            "Starting request: {0} {1} (async={2} timeout={3})".format(method, util.cleanToken(self.url), async, timeout)
+            "Starting request: {0} {1} (async={2} timeout={3})".format(method, util.cleanToken(self.url),
+                                                                       _async, timeout)
         )
 
 

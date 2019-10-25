@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
-import xbmc
-import xbmcgui
+from __future__ import absolute_import
+from kodi_six import xbmc
+from kodi_six import xbmcgui
 import time
 import threading
 import traceback
+import six
+from six.moves import range
+from six.moves import zip
 
 MONITOR = None
 
@@ -227,6 +231,8 @@ class DummyDataSource(object):
     def __nonzero__(self):
         return False
 
+    __bool__ = __nonzero__
+
     def exists(self):
         return False
 
@@ -236,7 +242,8 @@ DUMMY_DATA_SOURCE = DummyDataSource()
 
 class ManagedListItem(object):
     def __init__(self, label='', label2='', iconImage='', thumbnailImage='', path='', data_source=None, properties=None):
-        self._listItem = xbmcgui.ListItem(label, label2, iconImage, thumbnailImage, path)
+        self._listItem = xbmcgui.ListItem(label, label2, path=path)
+        self._listItem.setArt({"thumb": thumbnailImage, "icon": iconImage})
         self.dataSource = data_source
         self.properties = {}
         self.label = label
@@ -285,8 +292,7 @@ class ManagedListItem(object):
         self.listItem.setProperty('__ID__', self._ID)
         self.listItem.setLabel(self.label)
         self.listItem.setLabel2(self.label2)
-        self.listItem.setIconImage(self.iconImage)
-        self.listItem.setThumbnailImage(self.thumbnailImage)
+        self.listItem.setArt({"thumb": self.thumbnailImage, "icon": self.iconImage})
         self.listItem.setPath(self.path)
         for k in self._manager._properties.keys():
             self.listItem.setProperty(k, self.properties.get(k) or '')
@@ -341,7 +347,7 @@ class ManagedListItem(object):
 
     def setIconImage(self, icon):
         self.iconImage = icon
-        return self.listItem.setIconImage(icon)
+        return self.listItem.setArt({"icon": self.iconImage})
 
     def setInfo(self, itype, infoLabels):
         return self.listItem.setInfo(itype, infoLabels)
@@ -376,7 +382,7 @@ class ManagedListItem(object):
 
     def setThumbnailImage(self, thumb):
         self.thumbnailImage = thumb
-        return self.listItem.setThumbnailImage(thumb)
+        return self.listItem.setArt({"thumb": self.thumbnailImage})
 
     def onDestroy(self):
         pass
@@ -622,7 +628,7 @@ class ManagedControlList(object):
     def getViewRange(self):
         viewPosition = self.getViewPosition()
         selected = self.getSelectedPosition()
-        return range(max(selected - viewPosition, 0), min(selected + (self._maxViewIndex - viewPosition) + 1, self.size() - 1))
+        return list(range(max(selected - viewPosition, 0), min(selected + (self._maxViewIndex - viewPosition) + 1, self.size() - 1)))
 
     def positionIsValid(self, pos):
         return 0 <= pos < self.size()
@@ -999,7 +1005,7 @@ class WindowProperty():
 
 class GlobalProperty():
     def __init__(self, prop, val='1', end=None):
-        import xbmcaddon
+        from kodi_six import xbmcaddon
         self._addonID = xbmcaddon.Addon().getAddonInfo('id')
         self.prop = prop
         self.val = val

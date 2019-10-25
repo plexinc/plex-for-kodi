@@ -1,8 +1,10 @@
-import Queue
+from __future__ import absolute_import
+import six.moves.queue
 import heapq
-import xbmc
-import util
+from kodi_six import xbmc
+from . import util
 from plexnet import threadutils
+from six.moves import range
 
 
 class Tasks(list):
@@ -30,6 +32,12 @@ class Task:
     def __cmp__(self, other):
         return self._priority - other._priority
 
+    def __le__(self, other):
+        return self._priority < other._priority
+
+    def __gt__(self, other):
+        return self._priority > other._priority
+
     def start(self):
         BGThreader.addTask(self)
 
@@ -50,7 +58,7 @@ class Task:
         return not self.finished and not self._canceled
 
 
-class MutablePriorityQueue(Queue.PriorityQueue):
+class MutablePriorityQueue(six.moves.queue.PriorityQueue):
     def _get(self, heappop=heapq.heappop):
             self.queue.sort()
             return heappop(self.queue)
@@ -109,7 +117,7 @@ class BackgroundWorker:
                 self._runTask(self._task)
                 self._queue.task_done()
                 self._task = None
-        except Queue.Empty:
+        except six.moves.queue.Empty:
             util.DEBUG_LOG('BGThreader ({0}): Idle'.format(self.name))
 
     def shutdown(self):

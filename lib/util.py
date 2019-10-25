@@ -34,6 +34,10 @@ KODI_VERSION_MAJOR, KODI_VERSION_MINOR = int(_splitver[0].split("-")[0]), int(_s
 
 
 class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
+    def __init__(self, *args, **kwargs):
+        xbmc.Monitor.__init__(self, *args, **kwargs)
+        signalsmixin.SignalsMixin.__init__(self)
+
     def watchStatusChanged(self):
         self.trigger('changed.watchstatus')
 

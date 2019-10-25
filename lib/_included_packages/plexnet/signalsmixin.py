@@ -1,4 +1,5 @@
-import signalslot
+from __future__ import absolute_import
+from . import signalslot
 
 
 class SignalsMixin(object):

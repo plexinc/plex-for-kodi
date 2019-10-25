@@ -1,13 +1,14 @@
+from __future__ import print_function, absolute_import
 import threading
 import platform
 import uuid
 import sys
-import callback
 
-import signalsmixin
-import simpleobjects
-import nowplayingmanager
-import util
+from . import callback
+from . import signalsmixin
+from . import simpleobjects
+from . import nowplayingmanager
+from . import util
 
 Res = simpleobjects.Res
 
@@ -22,11 +23,11 @@ PLATFORM = util.X_PLEX_DEVICE
 
 def init():
     global MANAGER, SERVERMANAGER, ACCOUNT
-    import myplexaccount
+    from . import myplexaccount
     ACCOUNT = myplexaccount.ACCOUNT
-    import plexservermanager
+    from . import plexservermanager
     SERVERMANAGER = plexservermanager.MANAGER
-    import myplexmanager
+    from . import myplexmanager
     MANAGER = myplexmanager.MANAGER
     ACCOUNT.init()
 
@@ -99,7 +100,7 @@ class App(signalsmixin.SignalsMixin):
             timer.cancel()
 
     def preShutdown(self):
-        import http
+        from . import http
         http.HttpRequest._cancel = True
         if self.pendingRequests:
             util.DEBUG_LOG('Closing down {0} App() requests...'.format(len(self.pendingRequests)))
@@ -352,7 +353,7 @@ class DumbInterface(AppInterface):
         return ''
 
     def LOG(self, msg):
-        print 'PlexNet.API: {0}'.format(msg)
+        print('PlexNet.API: {0}'.format(msg))
 
     def DEBUG_LOG(self, msg):
         self.LOG('DEBUG: {0}'.format(msg))
@@ -468,12 +469,12 @@ def setUserAgent(agent):
 
 
 def setAbortFlagFunction(func):
-    import asyncadapter
+    from . import asyncadapter
     asyncadapter.ABORT_FLAG_FUNCTION = func
 
 
 def refreshResources(force=False):
-    import gdm
+    from . import gdm
     gdm.DISCOVERY.discover()
     MANAGER.refreshResources(force)
     SERVERMANAGER.refreshManualConnections()

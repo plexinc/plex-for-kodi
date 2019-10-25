@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import xbmc
 
 if xbmc.getInfoLabel('Window(10000).Property(script.plex.running)') == "1":
@@ -9,14 +10,14 @@ import gc
 import atexit
 import threading
 
-import plex
+from . import plex
 
 from plexnet import plexapp
 from plexnet import threadutils
-from windows import background, userselect, home, windowutils
-import player
-import backgroundthread
-import util
+from .windows import background, userselect, home, windowutils
+from . import player
+from . import backgroundthread
+from . import util
 
 
 BACKGROUND = None

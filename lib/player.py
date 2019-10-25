@@ -636,6 +636,10 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     STATE_PAUSED = "paused"
     STATE_BUFFERING = "buffering"
 
+    def __init__(self, *args, **kwargs):
+        xbmc.Player.__init__(self, *args, **kwargs)
+        signalsmixin.SignalsMixin.__init__(self)
+
     def init(self):
         self._closed = False
         self._nextItem = None

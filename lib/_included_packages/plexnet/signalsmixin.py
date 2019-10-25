@@ -3,8 +3,6 @@ from . import signalslot
 
 
 class SignalsMixin(object):
-    _signals = {}
-
     def __init__(self):
         self._signals = {}
 

@@ -286,7 +286,7 @@ def timeDisplay(ms):
     h = ms / 3600000
     m = (ms % 3600000) / 60000
     s = (ms % 60000) / 1000
-    return '{0:0>2}:{1:0>2}:{2:0>2}'.format(h, m, s)
+    return '{0:0>2}:{1:0>2}:{2:0>2}'.format(int(h), int(m), int(s))
 
 
 def simplifiedTimeDisplay(ms):

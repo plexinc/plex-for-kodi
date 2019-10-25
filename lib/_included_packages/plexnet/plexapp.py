@@ -103,7 +103,8 @@ class App(signalsmixin.SignalsMixin):
         http.HttpRequest._cancel = True
         if self.pendingRequests:
             util.DEBUG_LOG('Closing down {0} App() requests...'.format(len(self.pendingRequests)))
-            for p in self.pendingRequests.values():
+            for k in list(self.pendingRequests.keys()):
+                p = self.pendingRequests.get(k)
                 if p:
                     p.request.cancel()
 

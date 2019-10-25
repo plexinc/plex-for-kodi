@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.plex"
        name="Plex"
-       version="0.1.7a4"
+       version="0.1.7a3"
        provider-name="Plex">
     <requires>
         <import addon="xbmc.python" version="2.25.0"/>

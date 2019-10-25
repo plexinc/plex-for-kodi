@@ -10,14 +10,9 @@ import six
 
 from kodi_six import xbmc
 
-from plexnet import plexapp, myplex
+from plexnet import plexapp, myplex, util as plexnet_util
 from . import util
 from six.moves import range
-
-if six.PY2:
-    _Event = threading._Event
-else:
-    _Event = threading.Event
 
 
 class PlexTimer(plexapp.util.Timer):
@@ -232,7 +227,7 @@ plexapp.setUserAgent(defaultUserAgent())
 
 class CallbackEvent(plexapp.util.CompatEvent):
     def __init__(self, context, signal, timeout=15, *args, **kwargs):
-        _Event.__init__(self, *args, **kwargs)
+        plexnet_util.Event.__init__(self, *args, **kwargs)
         self.start = time.time()
         self.context = context
         self.signal = signal
@@ -249,10 +244,10 @@ class CallbackEvent(plexapp.util.CompatEvent):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.signal)
 
     def set(self, **kwargs):
-        _Event.set(self)
+        plexnet_util.Event.set(self)
 
     def wait(self):
-        if not _Event.wait(self, self.timeout):
+        if not plexnet_util.Event.wait(self, self.timeout):
             util.DEBUG_LOG('{0}: TIMED-OUT'.format(self))
         self.close()
 
@@ -263,7 +258,7 @@ class CallbackEvent(plexapp.util.CompatEvent):
                 return True
 
             if timeout:
-                _Event.wait(self, timeout)
+                plexnet_util.Event.wait(self, timeout)
         finally:
             return self.isSet()
 

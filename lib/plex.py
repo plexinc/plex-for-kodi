@@ -14,6 +14,10 @@ from plexnet import plexapp, myplex, util as plexnet_util
 from . import util
 from six.moves import range
 
+if six.PY2:
+    _Event = threading._Event
+else:
+    _Event = threading.Event
 
 class PlexTimer(plexapp.util.Timer):
     def shouldAbort(self):

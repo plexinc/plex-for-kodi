@@ -1,4 +1,5 @@
-import xbmc
+from __future__ import absolute_import
+from kodi_six import xbmc
 import json
 
 

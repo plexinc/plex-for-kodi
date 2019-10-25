@@ -1,13 +1,20 @@
-import simpleobjects
+from __future__ import absolute_import
+from . import simpleobjects
 import re
 import sys
 import time
 import platform
 import uuid
+import threading
+import six
 
-import verlib
-import compat
-import plexapp
+from . import verlib
+from . import compat
+
+if six.PY2:
+    _Event = threading._Event
+else:
+    _Event = threading.Event
 
 BASE_HEADERS = ''
 
@@ -40,6 +47,11 @@ X_PLEX_PRODUCT = PROJECT                       # Plex application name, eg Laika
 X_PLEX_VERSION = VERSION                       # Plex application version number
 USER_AGENT = '{0}/{1}'.format(PROJECT, VERSION)
 
+INTERFACE = None
+TIMER = None
+APP = None
+MANAGER = None
+
 try:
     _platform = platform.system()
 except:
@@ -61,36 +73,51 @@ Res = simpleobjects.Res
 AttributeDict = simpleobjects.AttributeDict
 
 
+def setInterface(interface):
+    global INTERFACE
+    INTERFACE = interface
+
+
+def setTimer(timer):
+    global TIMER
+    TIMER = timer
+
+
+def setApp(app):
+    global APP
+    APP = app
+
+
 def LOG(msg):
-    plexapp.INTERFACE.LOG(msg)
+    INTERFACE.LOG(msg)
 
 
 def DEBUG_LOG(msg):
-    plexapp.INTERFACE.DEBUG_LOG(msg)
+    INTERFACE.DEBUG_LOG(msg)
 
 
 def ERROR_LOG(msg):
-    plexapp.INTERFACE.ERROR_LOG(msg)
+    INTERFACE.ERROR_LOG(msg)
 
 
 def WARN_LOG(msg):
-    plexapp.INTERFACE.WARN_LOG(msg)
+    INTERFACE.WARN_LOG(msg)
 
 
 def ERROR(msg=None, err=None):
-    plexapp.INTERFACE.ERROR(msg, err)
+    INTERFACE.ERROR(msg, err)
 
 
 def FATAL(msg=None):
-    plexapp.INTERFACE.FATAL(msg)
+    INTERFACE.FATAL(msg)
 
 
 def TEST(msg):
-    plexapp.INTERFACE.LOG(' ---TEST: {0}'.format(msg))
+    INTERFACE.LOG(' ---TEST: {0}'.format(msg))
 
 
 def userAgent():
-    return plexapp.INTERFACE.getGlobal("userAgent")
+    return INTERFACE.getGlobal("userAgent")
 
 
 def dummyTranslate(string):
@@ -128,19 +155,19 @@ def joinArgs(args):
 
 
 def addPlexHeaders(transferObj, token=None):
-    transferObj.addHeader("X-Plex-Platform", plexapp.INTERFACE.getGlobal("platform"))
-    transferObj.addHeader("X-Plex-Version", plexapp.INTERFACE.getGlobal("appVersionStr"))
-    transferObj.addHeader("X-Plex-Client-Identifier", plexapp.INTERFACE.getGlobal("clientIdentifier"))
-    transferObj.addHeader("X-Plex-Platform-Version", plexapp.INTERFACE.getGlobal("platformVersion", "unknown"))
-    transferObj.addHeader("X-Plex-Product", plexapp.INTERFACE.getGlobal("product"))
-    transferObj.addHeader("X-Plex-Provides", not plexapp.INTERFACE.getPreference("remotecontrol", False) and 'player' or '')
-    transferObj.addHeader("X-Plex-Device", plexapp.INTERFACE.getGlobal("device"))
-    transferObj.addHeader("X-Plex-Model", plexapp.INTERFACE.getGlobal("model"))
-    transferObj.addHeader("X-Plex-Device-Name", plexapp.INTERFACE.getGlobal("friendlyName"))
+    transferObj.addHeader("X-Plex-Platform", INTERFACE.getGlobal("platform"))
+    transferObj.addHeader("X-Plex-Version", INTERFACE.getGlobal("appVersionStr"))
+    transferObj.addHeader("X-Plex-Client-Identifier", INTERFACE.getGlobal("clientIdentifier"))
+    transferObj.addHeader("X-Plex-Platform-Version", INTERFACE.getGlobal("platformVersion", "unknown"))
+    transferObj.addHeader("X-Plex-Product", INTERFACE.getGlobal("product"))
+    transferObj.addHeader("X-Plex-Provides", not INTERFACE.getPreference("remotecontrol", False) and 'player' or '')
+    transferObj.addHeader("X-Plex-Device", INTERFACE.getGlobal("device"))
+    transferObj.addHeader("X-Plex-Model", INTERFACE.getGlobal("model"))
+    transferObj.addHeader("X-Plex-Device-Name", INTERFACE.getGlobal("friendlyName"))
 
     # Adding the X-Plex-Client-Capabilities header causes node.plexapp.com to 500
     if not type(transferObj) == "roUrlTransfer" or 'node.plexapp.com' not in transferObj.getUrl():
-        transferObj.addHeader("X-Plex-Client-Capabilities", plexapp.INTERFACE.getCapabilities())
+        transferObj.addHeader("X-Plex-Client-Capabilities", INTERFACE.getCapabilities())
 
     addAccountHeaders(transferObj, token)
 
@@ -179,3 +206,69 @@ def normalizedVersion(ver):
         if ver:
             ERROR()
         return verlib.NormalizedVersion(verlib.suggest_normalized_version('0.0.0'))
+
+
+class CompatEvent(_Event):
+    def wait(self, timeout):
+        _Event.wait(self, timeout)
+        return self.isSet()
+
+
+class Timer(object):
+    def __init__(self, timeout, function, repeat=False, *args, **kwargs):
+        self.function = function
+        self.timeout = timeout
+        self.repeat = repeat
+        self.args = args
+        self.kwargs = kwargs
+        self._reset = False
+        self.event = CompatEvent()
+        self.start()
+
+    def start(self):
+        self.event.clear()
+        self.thread = threading.Thread(target=self.run, name='TIMER:{0}'.format(self.function), *self.args, **self.kwargs)
+        self.thread.start()
+
+    def run(self):
+        DEBUG_LOG('Timer {0}: {1}'.format(repr(self.function), self._reset and 'RESET'or 'STARTED'))
+        try:
+            while not self.event.isSet() and not self.shouldAbort():
+                while not self.event.wait(self.timeout) and not self.shouldAbort():
+                    if self._reset:
+                        return
+
+                    self.function(*self.args, **self.kwargs)
+                    if not self.repeat:
+                        return
+        finally:
+            if not self._reset:
+                if self in APP.timers:
+                    APP.timers.remove(self)
+
+                DEBUG_LOG('Timer {0}: FINISHED'.format(repr(self.function)))
+
+            self._reset = False
+
+    def cancel(self):
+        self.event.set()
+
+    def reset(self):
+        self._reset = True
+        self.cancel()
+        if self.thread and self.thread.isAlive():
+            self.thread.join()
+        self.start()
+
+    def shouldAbort(self):
+        return False
+
+    def join(self):
+        if self.thread.isAlive():
+            self.thread.join()
+
+    def isExpired(self):
+        return self.event.isSet()
+
+
+TIMER = Timer

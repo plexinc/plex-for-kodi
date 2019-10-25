@@ -1,11 +1,12 @@
-import xbmc
-import xbmcgui
-import kodigui
+from __future__ import absolute_import
+from kodi_six import xbmc
+from kodi_six import xbmcgui
+from . import kodigui
 
-import busy
-import playlist
-import windowutils
-import search
+from . import busy
+from . import playlist
+from . import windowutils
+from . import search
 
 from lib import util
 from lib import colors

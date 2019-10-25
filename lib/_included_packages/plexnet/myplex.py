@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-import util
-import http
+from __future__ import absolute_import
+from . import util
+from . import http
 from threading import Thread
 from xml.etree import ElementTree
 import time
 
-import exceptions
+from . import exceptions
 
-import video
-import audio
-import photo
+from . import video
+from . import audio
+from . import photo
 
 video, audio, photo  # Hides warning message
 
@@ -44,7 +45,7 @@ class PinLogin(object):
             while not self._abort and time.time() - start < 300:
                 try:
                     response = http.GET(self.POLL.format(self.id))
-                except Exception, e:
+                except Exception as e:
                     util.ERROR('PinLogin connection error: {0}'.format(e.__class__), err=e)
                     time.sleep(self.POLL_INTERVAL)
                     continue
@@ -54,7 +55,7 @@ class PinLogin(object):
                     break
                 try:
                     data = ElementTree.fromstring(response.text.encode('utf-8'))
-                except Exception, e:
+                except Exception as e:
                     util.ERROR('PinLogin data error: {0}'.format(e.__class__), err=e)
                     time.sleep(self.POLL_INTERVAL)
                     continue

@@ -2,6 +2,7 @@
 Module defining the Slot class.
 """
 
+from __future__ import absolute_import
 import types
 import weakref
 import sys

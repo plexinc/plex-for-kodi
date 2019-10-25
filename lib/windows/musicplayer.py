@@ -1,7 +1,8 @@
-import xbmc
-import kodigui
-import currentplaylist
-import opener
+from __future__ import absolute_import
+from kodi_six import xbmc
+from . import kodigui
+from . import currentplaylist
+from . import opener
 
 from lib import player
 from lib import util
@@ -148,6 +149,6 @@ class MusicPlayerWindow(currentplaylist.CurrentPlaylistWindow):
                     index = i
             player.PLAYER.playAlbum(self.album, startpos=index, fanart=fanart)
         elif self.playlist:
-            player.PLAYER.playAudioPlaylist(self.playlist, startpos=self.playlist.items().index(self.track), fanart=fanart)
+            player.PLAYER.playAudioPlaylist(self.playlist, startpos=list(self.playlist.items()).index(self.track), fanart=fanart)
         else:
             player.PLAYER.playAudio(self.track)

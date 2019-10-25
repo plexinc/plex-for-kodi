@@ -1,11 +1,12 @@
-import plexobjects
-import media
-import plexmedia
-import plexstream
-import exceptions
-import compat
-import plexlibrary
-import util
+from __future__ import absolute_import
+from . import plexobjects
+from . import media
+from . import plexmedia
+from . import plexstream
+from . import exceptions
+from . import compat
+from . import plexlibrary
+from . import util
 
 
 class PlexVideoItemList(plexobjects.PlexItemList):
@@ -43,7 +44,7 @@ class Video(media.MediaItem):
     @property
     def settings(self):
         if not self._settings:
-            import plexapp
+            from . import plexapp
             self._settings = plexapp.PlayerSettingsInterface()
 
         return self._settings
@@ -66,8 +67,8 @@ class Video(media.MediaItem):
                     return stream
         return None
 
-    def selectStream(self, stream, async=True):
-        self.mediaChoice.part.setSelectedStream(stream.streamType.asInt(), stream.id, async)
+    def selectStream(self, stream, _async=True):
+        self.mediaChoice.part.setSelectedStream(stream.streamType.asInt(), stream.id, _async)
 
     def isVideoItem(self):
         return True
@@ -124,7 +125,7 @@ class Video(media.MediaItem):
             'directStream': '1',
             'directPlay': '0',
             'X-Plex-Platform': params.get('platform', ''),
-            # 'X-Plex-Platform': params.get('platform', plexapp.INTERFACE.getGlobal('platform')),
+            # 'X-Plex-Platform': params.get('platform', util.INTERFACE.getGlobal('platform')),
             'maxVideoBitrate': max(mvb, 64) if mvb else None,
             'videoResolution': '{0}x{1}'.format(*vr) if vr else None
         }

@@ -1,7 +1,8 @@
-import xbmc
-import xbmcgui
-import kodigui
-import windowutils
+from __future__ import absolute_import
+from kodi_six import xbmc
+from kodi_six import xbmcgui
+from . import kodigui
+from . import windowutils
 
 from lib import util
 from lib.util import T
@@ -26,7 +27,7 @@ class Setting(object):
         old = self.get()
         if old != val:
             util.DEBUG_LOG('Setting: {0} - changed from [{1}] to [{2}]'.format(self.ID, old, val))
-            plexnet.plexapp.APP.trigger('change:{0}'.format(self.ID))
+            plexnet.util.APP.trigger('change:{0}'.format(self.ID))
         return util.setSetting(self.ID, val)
 
     def valueLabel(self):

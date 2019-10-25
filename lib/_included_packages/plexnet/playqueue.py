@@ -1,13 +1,15 @@
+from __future__ import absolute_import
 import re
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import time
 
-import plexapp
-import plexrequest
-import callback
-import plexobjects
-import util
-import signalsmixin
+from . import plexapp
+from . import plexrequest
+from . import callback
+from . import plexobjects
+from . import util
+from . import signalsmixin
+from six.moves import range
 
 
 class AudioUsage(object):
@@ -262,12 +264,12 @@ class PlayQueue(signalsmixin.SignalsMixin):
 
                 if not self.refreshTimer:
                     self.refreshTimer = plexapp.createTimer(5000, self.onRefreshTimer)
-                    plexapp.APP.addTimer(self.refreshTimer)
+                    util.APP.addTimer(self.refreshTimer)
             else:
                 request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id))
                 self.addRequestOptions(request)
                 context = request.createRequestContext("refresh", callback.Callable(self.onResponse))
-                plexapp.APP.startRequest(request, context)
+                util.APP.startRequest(request, context)
 
         if wait:
             return self.waitForInitialization()
@@ -292,7 +294,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id) + command, "PUT")
         self.addRequestOptions(request)
         context = request.createRequestContext("shuffle", callback.Callable(self.onResponse))
-        plexapp.APP.startRequest(request, context)
+        util.APP.startRequest(request, context)
 
     def setRepeat(self, repeat, one=False):
         if self.isRepeat == repeat and self.isRepeatOne == one:
@@ -335,7 +337,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id) + "/items/" + item.get("playQueueItemID", "-1") + "/move" + query, "PUT")
         self.addRequestOptions(request)
         context = request.createRequestContext("move", callback.Callable(self.onResponse))
-        plexapp.APP.startRequest(request, context)
+        util.APP.startRequest(request, context)
 
     def swapItem(self, index, delta=1):
         before = self._items[index]
@@ -348,7 +350,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id) + "/items/" + item.get("playQueueItemID", "-1"), "DELETE")
         self.addRequestOptions(request)
         context = request.createRequestContext("delete", callback.Callable(self.onResponse))
-        plexapp.APP.startRequest(request, context)
+        util.APP.startRequest(request, context)
 
     def addItem(self, item, addNext=False, excludeSeedItem=False):
         request = plexrequest.PlexRequest(self.server, "/playQueues/" + str(self.id), "PUT")
@@ -357,7 +359,7 @@ class PlayQueue(signalsmixin.SignalsMixin):
         request.addParam("excludeSeedItem", excludeSeedItem and "1" or "0")
         self.addRequestOptions(request)
         context = request.createRequestContext("add", callback.Callable(self.onResponse))
-        plexapp.APP.startRequest(request, context)
+        util.APP.startRequest(request, context)
 
     def onResponse(self, request, response, context):
         # Close any loading modal regardless of response status
@@ -471,14 +473,14 @@ class PlayQueue(signalsmixin.SignalsMixin):
         if self.isRepeatOne:
             return True
 
-        if not self.allowSkipNext and -1 < self.items().index(self.current()) < (len(self.items()) - 1):  # TODO: Was 'or' - did change cause issues?
+        if not self.allowSkipNext and -1 < list(self.items()).index(self.current()) < (len(list(self.items())) - 1):  # TODO: Was 'or' - did change cause issues?
             return self.isRepeat and not self.isWindowed()
 
         return True
 
     def hasPrev(self):
         # return self.allowSkipPrev or self.items().index(self.current()) > 0
-        return self.items().index(self.current()) > 0
+        return list(self.items()).index(self.current()) > 0
 
     def next(self):
         if not self.hasNext():
@@ -487,13 +489,13 @@ class PlayQueue(signalsmixin.SignalsMixin):
         if self.isRepeatOne:
             return self.current()
 
-        pos = self.items().index(self.current()) + 1
-        if pos >= len(self.items()):
+        pos = list(self.items()).index(self.current()) + 1
+        if pos >= len(list(self.items())):
             if not self.isRepeat or self.isWindowed():
                 return None
             pos = 0
 
-        item = self.items()[pos]
+        item = list(self.items())[pos]
         self.selectedId = item.playQueueItemID.asInt()
         return item
 
@@ -502,16 +504,16 @@ class PlayQueue(signalsmixin.SignalsMixin):
             return None
         if self.isRepeatOne:
             return self.current()
-        pos = self.items().index(self.current()) - 1
-        item = self.items()[pos]
+        pos = list(self.items()).index(self.current()) - 1
+        item = list(self.items())[pos]
         self.selectedId = item.playQueueItemID.asInt()
         return item
 
     def setCurrent(self, pos):
-        if pos < 0 or pos >= len(self.items()):
+        if pos < 0 or pos >= len(list(self.items())):
             return False
 
-        item = self.items()[pos]
+        item = list(self.items())[pos]
         self.selectedId = item.playQueueItemID.asInt()
         return item
 
@@ -619,7 +621,7 @@ def createRemotePlayQueue(item, contentType, options, args):
         options.context = options.CONTEXT_SELF
     elif item.type == "movie":
         if not options.extrasPrefixCount and not options.resume:
-            options.extrasPrefixCount = plexapp.INTERFACE.getPreference("cinema_trailers", 0)
+            options.extrasPrefixCount = util.INTERFACE.getPreference("cinema_trailers", 0)
 
     # How exactly to construct the item URI depends on the metadata type, though
     # whenever possible we simply use /library/metadata/:id.
@@ -678,7 +680,7 @@ def createRemotePlayQueue(item, contentType, options, args):
                 path = regex.sub("\1" + convert[key] + "=", path)
 
         util.DEBUG_LOG("playQueue path: " + str(path))
-        uri = uri + itemType + "/" + urllib.quote_plus(path)
+        uri = uri + itemType + "/" + six.moves.urllib.parse.quote_plus(path)
 
     util.DEBUG_LOG("playQueue uri: " + str(uri))
 
@@ -687,7 +689,7 @@ def createRemotePlayQueue(item, contentType, options, args):
 
     request.addParam(not options.isPlaylist and "uri" or "playlistID", uri)
     request.addParam("type", contentType)
-    # request.addParam('X-Plex-Client-Identifier', plexapp.INTERFACE.getGlobal('clientIdentifier'))
+    # request.addParam('X-Plex-Client-Identifier', util.INTERFACE.getGlobal('clientIdentifier'))
 
     # Add options we pass once during PQ creation
     if options.shuffle:
@@ -704,7 +706,7 @@ def createRemotePlayQueue(item, contentType, options, args):
 
     util.DEBUG_LOG('Initial playQueue request started...')
     context = request.createRequestContext("create", callback.Callable(obj.onResponse))
-    plexapp.APP.startRequest(request, context, body='')
+    util.APP.startRequest(request, context, body='')
 
     return obj
 
@@ -717,7 +719,7 @@ def createPlayQueueForId(id, server=None, contentType=None):
     request.addParam("own", "1")
     obj.addRequestOptions(request)
     context = request.createRequestContext("own", callback.Callable(obj.onResponse))
-    plexapp.APP.startRequest(request, context)
+    util.APP.startRequest(request, context)
 
     return obj
 

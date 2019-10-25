@@ -1,16 +1,19 @@
+from __future__ import absolute_import
 import base64
 import threading
 
-import xbmc
-import xbmcgui
-import kodijsonrpc
-import colors
-from windows import seekdialog
-import util
+from kodi_six import xbmc
+from kodi_six import xbmcgui
+from . import kodijsonrpc
+from . import colors
+from .windows import seekdialog
+from . import util
 from plexnet import plexplayer
 from plexnet import plexapp
 from plexnet import signalsmixin
 from plexnet import util as plexnetUtil
+import six
+from six.moves import range
 
 FIVE_MINUTES_MILLIS = 300000
 
@@ -119,7 +122,7 @@ class BasePlayerHandler(object):
         if refreshQueue and self.playQueue:
             self.playQueue.refreshOnTimeline = True
 
-        plexapp.APP.nowplayingmanager.updatePlaybackState(
+        plexapp.util.APP.nowplayingmanager.updatePlaybackState(
             self.timelineType, self.player.playerObject, state, time, self.playQueue, duration=self.currentDuration()
         )
 
@@ -203,7 +206,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         return True
 
     def next(self, on_end=False):
-        if self.playlist and self.playlist.next():
+        if self.playlist and next(self.playlist):
             self.seeking = self.SEEK_PLAYLIST
 
         if on_end:
@@ -736,7 +739,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
                 self.playerObject = plexplayer.PlexPlayer(self.video, offset, forceUpdate=force_update)
                 self.playerObject.build()
             self.playerObject = self.playerObject.getServerDecision()
-        except plexplayer.DecisionFailure, e:
+        except plexplayer.DecisionFailure as e:
             util.showNotification(e.reason, header=util.T(32448, 'Playback Failed!'))
             return
         except:
@@ -762,9 +765,9 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         url = util.addURLParams(url, {
             'X-Plex-Client-Profile-Name': 'Chrome',
-            'X-Plex-Client-Identifier': plexapp.INTERFACE.getGlobal('clientIdentifier')
+            'X-Plex-Client-Identifier': plexapp.util.INTERFACE.getGlobal('clientIdentifier')
         })
-        li = xbmcgui.ListItem(self.video.title, path=url, thumbnailImage=self.video.defaultThumb.asTranscodedImageURL(256, 256))
+        li = xbmcgui.ListItem(self.video.title, path=url)
         vtype = self.video.type if self.video.type in ('movie', 'episode', 'musicvideo') else 'video'
         li.setInfo('video', {
             'mediatype': vtype,
@@ -779,6 +782,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         li.setArt({
             'poster': self.video.defaultThumb.asTranscodedImageURL(347, 518),
             'fanart': self.video.defaultArt.asTranscodedImageURL(1920, 1080),
+            'thumb': self.video.defaultThumb.asTranscodedImageURL(256, 256),
         })
 
         self.play(url, li)
@@ -861,11 +865,11 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
     def createTrackListItem(self, track, fanart=None, index=0):
         data = base64.urlsafe_b64encode(track.serialize())
         url = 'plugin://script.plex/play?{0}'.format(data)
-        li = xbmcgui.ListItem(track.title, path=url, thumbnailImage=track.defaultThumb.asTranscodedImageURL(800, 800))
+        li = xbmcgui.ListItem(track.title, path=url)
         li.setInfo('music', {
-            'artist': unicode(track.originalTitle or track.grandparentTitle),
-            'title': unicode(track.title),
-            'album': unicode(track.parentTitle),
+            'artist': six.text_type(track.originalTitle or track.grandparentTitle),
+            'title': six.text_type(track.title),
+            'album': six.text_type(track.parentTitle),
             'discnumber': track.parentIndex.asInt(),
             'tracknumber': track.get('index').asInt(),
             'duration': int(track.duration.asInt() / 1000),
@@ -875,7 +879,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         art = fanart or track.defaultArt
         li.setArt({
             'fanart': art.asTranscodedImageURL(1920, 1080),
-            'landscape': art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background)
+            'landscape': art.asTranscodedImageURL(1920, 1080, blur=128, opacity=60, background=colors.noAlpha.Background),
+            'thumb': track.defaultThumb.asTranscodedImageURL(800, 800),
         })
         if fanart:
             li.setArt({'fanart': fanart})

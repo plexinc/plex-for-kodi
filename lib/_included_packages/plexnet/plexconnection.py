@@ -1,9 +1,9 @@
+from __future__ import absolute_import
 import random
 
-import http
-import plexapp
-import callback
-import util
+from . import http
+from . import callback
+from . import util
 
 
 class ConnectionSource(int):
@@ -110,7 +110,7 @@ class PlexConnection(object):
 
         allowConnectionTest = not self.isFallback
         if not allowConnectionTest:
-            insecurePolicy = plexapp.INTERFACE.getPreference("allow_insecure")
+            insecurePolicy = util.INTERFACE.getPreference("allow_insecure")
             if insecurePolicy == "always" or (insecurePolicy == "same_network" and server.sameNetwork and self.isLocal):
                 allowConnectionTest = allowFallback
                 server.hasFallback = not allowConnectionTest
@@ -139,7 +139,7 @@ class PlexConnection(object):
             context = self.request.createRequestContext("reachability", callback.Callable(self.onReachabilityResponse))
             context.server = server
             util.addPlexHeaders(self.request, server.getToken())
-            self.hasPendingRequest = plexapp.APP.startRequest(self.request, context)
+            self.hasPendingRequest = util.APP.startRequest(self.request, context)
             return True
 
         return False

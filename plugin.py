@@ -1,6 +1,7 @@
-import xbmc
-import xbmcplugin
-import xbmcgui
+from __future__ import absolute_import
+from kodi_six import xbmc
+from kodi_six import xbmcplugin
+from kodi_six import xbmcgui
 import sys
 import base64
 from lib import _included_packages, plex, util
@@ -25,7 +26,7 @@ def playTrack(track):
     url = apobj.build()['url']
     url = util.addURLParams(url, {
         'X-Plex-Client-Profile-Name': 'Chrome',
-        'X-Plex-Client-Identifier': plexapp.INTERFACE.getGlobal('clientIdentifier')
+        'X-Plex-Client-Identifier': plexapp.util.INTERFACE.getGlobal('clientIdentifier')
     })
     LOG('Playing URL: {0}'.format(url))
 

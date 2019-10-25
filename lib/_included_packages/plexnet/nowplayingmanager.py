@@ -1,14 +1,15 @@
 # Most of this is ported from Roku code and much of it is currently unused
 # TODO: Perhaps remove unnecessary code
+from __future__ import absolute_import
 import time
 
-import util
-import urllib
-import urlparse
-import plexapp
-import plexrequest
-import callback
-import http
+from . import util
+from six import moves
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
+import six.moves.urllib.parse
+from . import plexrequest
+from . import callback
+from . import http
 
 
 class ServerTimeline(util.AttributeDict):
@@ -87,7 +88,7 @@ class TimelineData(util.AttributeDict):
                 elem.attrib["machineIdentifier"] = server.uuid
 
                 if server.activeConnection:
-                    parts = urlparse.uslparse(server.activeConnection.address)
+                    parts = six.moves.urllib.parse.uslparse(server.activeConnection.address)
                     elem.attrib["protocol"] = parts.scheme
                     elem.attrib["address"] = parts.netloc.split(':', 1)[0]
                     if ':' in parts.netloc:
@@ -186,12 +187,13 @@ class NowPlayingManager(object):
         path = "/:/timeline"
         for paramKey in params:
             if params[paramKey]:
-                path = http.addUrlParam(path, paramKey + "=" + urllib.quote(str(params[paramKey])))
+                path = http.addUrlParam(path, paramKey + "=" + six.moves.urllib.parse.quote(str(params[paramKey])))
 
         request = plexrequest.PlexRequest(timeline.item.getServer(), path)
         context = request.createRequestContext("timelineUpdate", callback.Callable(self.onTimelineResponse))
         context.playQueue = timeline.playQueue
-        plexapp.APP.startRequest(request, context)
+        from . import plexapp
+        util.APP.startRequest(request, context)
 
     def getServerTimeline(self, timelineType):
         if not self.serverTimelines.get(timelineType):

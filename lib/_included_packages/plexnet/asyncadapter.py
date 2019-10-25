@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import time
 import socket
 
@@ -8,7 +9,7 @@ from requests.packages.urllib3.connectionpool import VerifiedHTTPSConnection
 from requests.adapters import HTTPAdapter
 from requests.compat import urlparse
 
-from httplib import HTTPConnection
+from six.moves.http_client import HTTPConnection
 import errno
 
 DEFAULT_POOLBLOCK = False

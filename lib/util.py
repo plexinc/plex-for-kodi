@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import gc
 import sys
 import re
@@ -9,21 +10,22 @@ import math
 import time
 import datetime
 import contextlib
-import urllib
+import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 
-from kodijsonrpc import rpc
-import xbmc
-import xbmcgui
-import xbmcaddon
+from .kodijsonrpc import rpc
+from kodi_six import xbmc
+from kodi_six import xbmcgui
+from kodi_six import xbmcaddon
 
 from plexnet import signalsmixin
+import six
 
 DEBUG = True
 _SHUTDOWN = False
 
 ADDON = xbmcaddon.Addon()
 
-PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile')).decode('utf-8')
+PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
 
 SETTINGS_LOCK = threading.Lock()
 
@@ -37,7 +39,7 @@ class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
 
     def onNotification(self, sender, method, data):
         if sender == 'script.plex' and method.endswith('RESTORE'):
-            from windows import kodigui
+            from .windows import kodigui
             getAdvancedSettings()
             populateTimeFormat()
             xbmc.executebuiltin('ActivateWindow({0})'.format(kodigui.BaseFunctions.lastWinID))
@@ -119,8 +121,6 @@ def DEBUG_LOG(msg):
 
 
 def ERROR(txt='', hide_tb=False, notify=False):
-    if isinstance(txt, str):
-        txt = txt.decode("utf-8")
     short = str(sys.exc_info()[1])
     if hide_tb:
         xbmc.log('script.plex: ERROR: {0} - {1}'.format(txt, short), xbmc.LOGERROR)
@@ -182,7 +182,7 @@ def videoIsPlaying():
 
 
 def messageDialog(heading='Message', msg=''):
-    from windows import optionsdialog
+    from .windows import optionsdialog
     optionsdialog.show(heading, msg, 'OK')
 
 
@@ -516,7 +516,7 @@ def getTimeFormat():
     # Checking for %H%H or %I%I only would be the obvious way here to determine whether the hour should be padded,
     # but the formats returned for regional settings with padding only have %H in them. This seems like a Kodi bug.
     # Use a fallback.
-    currentTime = unicode(xbmc.getInfoLabel('System.Time'), encoding="utf-8")
+    currentTime = xbmc.getInfoLabel('System.Time')
     padHour = "%H%H" in origFmt or "%I%I" in origFmt or (currentTime[0] == "0" and currentTime[1] != ":")
     return fmt, padHour
 
@@ -562,7 +562,7 @@ def addURLParams(url, params):
             url += '&'
         else:
             url += '?'
-        url += urllib.urlencode(params)
+        url += six.moves.urllib.parse.urlencode(params)
         return url
 
 

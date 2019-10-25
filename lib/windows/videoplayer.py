@@ -1,15 +1,16 @@
+from __future__ import absolute_import
 import time
 import threading
 
-import xbmc
-import xbmcgui
+from kodi_six import xbmc
+from kodi_six import xbmcgui
 
-import kodigui
-import windowutils
-import opener
-import busy
-import search
-import dropdown
+from . import kodigui
+from . import windowutils
+from . import opener
+from . import busy
+from . import search
+from . import dropdown
 
 from lib import util
 from lib import player

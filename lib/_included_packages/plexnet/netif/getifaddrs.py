@@ -2,11 +2,14 @@
 Wrapper for getifaddrs(3).
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import socket
 import sys
 
 from collections import namedtuple
 from ctypes import *
+from six.moves import map
 
 class sockaddr_in(Structure):
     _fields_ = [
@@ -88,8 +91,8 @@ class sockaddr(Union):
         elif family == 18:  # AF_LINK
             return str(self.sa_sdl)
         else:
-            print family
-            raise NotImplementedError, "address family %d not supported" % family
+            print(family)
+            raise NotImplementedError("address family %d not supported" % family)
 
 
 class ifaddrs(Structure):

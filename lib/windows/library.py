@@ -1219,7 +1219,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 self.librarySettings.setItemType(self.librarySettings.getItemType())
             else:
                 self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=datasource, parent_list=self.showPanelControl))
-            updateWatched = True
+                updateWatched = True
         elif self.section.TYPE == 'artist':
             if ITEM_TYPE == 'album':
                 self.openItem(mli.dataSource)
@@ -1652,7 +1652,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                             if not obj.isDirectory():
                                 mli.setLabel2(util.durationToText(obj.fixedDuration()))
                             mli.setProperty('art', obj.defaultArt.asTranscodedImageURL(*artDim))
-                            if not obj.isWatched:
+                            if not obj.isWatched and obj.TYPE != "Directory":
                                 if self.section.TYPE == 'show':
                                     mli.setProperty('unwatched.count', str(obj.unViewedLeafCount))
                                 else:

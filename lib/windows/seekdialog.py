@@ -888,7 +888,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.updateProgress(set_to_current=False)
             self.setProperty('button.seek', '1')
 
-    def setup(self, duration, offset=0, bif_url=None, title='', title2='', chapters=[]):
+    def setup(self, duration, offset=0, bif_url=None, title='', title2='', chapters=None):
         self.title = title
         self.title2 = title2
         self.setProperty('video.title', title)
@@ -898,7 +898,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.baseOffset = offset
         self.offset = 0
         self._duration = duration
-        self.chapters = chapters
+        self.chapters = chapters or []
         self.bifURL = bif_url
         self.hasBif = bool(self.bifURL)
         if self.hasBif:

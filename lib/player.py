@@ -155,7 +155,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.mode = self.MODE_RELATIVE
         self.ended = False
 
-    def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK, chapters=[]):
+    def setup(self, duration, offset, bif_url, title='', title2='', seeking=NO_SEEK, chapters=None):
         self.ended = False
         self.baseOffset = offset / 1000.0
         self.seeking = seeking
@@ -163,7 +163,7 @@ class SeekPlayerHandler(BasePlayerHandler):
         self.bifURL = bif_url
         self.title = title
         self.title2 = title2
-        self.chapters = chapters
+        self.chapters = chapters or []
         self.getDialog(setup=True)
         self.dialog.setup(self.duration, int(self.baseOffset * 1000), self.bifURL, self.title, self.title2, chapters=self.chapters)
 

@@ -37,9 +37,28 @@
                 <posy>0</posy>
                 <width>1920</width>
                 <height>1080</height>
-                <fadetime>200</fadetime>
+                <fadetime>1000</fadetime>
                 <texture fallback="script.plex/thumb_fallbacks/broken-photo.png" background="true">$INFO[Window.Property(photo)]</texture>
                 <aspectratio>keep</aspectratio>
+            </control>
+            <control type="group">
+                <visible>!String.IsEmpty(Window.Property(is.updating))</visible>
+                <animation effect="fade" time="500">VisibleChange</animation>
+                <control type="image">
+                    <posx>840</posx>
+                    <posy>465</posy>
+                    <width>240</width>
+                    <height>150</height>
+                    <texture>script.plex/busy-back.png</texture>
+                    <colordiffuse>A0FFFFFF</colordiffuse>
+                </control>
+                <control type="image">
+                    <posx>915</posx>
+                    <posy>521</posy>
+                    <width>90</width>
+                    <height>38</height>
+                    <texture diffuse="script.plex/busy-diffuse.png">script.plex/busy.gif</texture>
+                </control>
             </control>
         </control>
         <control type="togglebutton" id="250">

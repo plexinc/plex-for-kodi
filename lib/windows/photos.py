@@ -2,10 +2,14 @@ import threading
 import time
 import os
 
+import xbmc
 import xbmcgui
-
 import kodigui
 import busy
+import tempfile
+import shutil
+import hashlib
+import requests
 
 from lib import util, colors
 from plexnet import plexapp, plexplayer, playqueue
@@ -37,6 +41,9 @@ class PhotoWindow(kodigui.BaseWindow):
 
     SLIDESHOW_INTERVAL = 3
 
+    PHOTO_STACK_SIZE = 10
+    tempSubFolder = ("p4k", "photos")
+
     def __init__(self, *args, **kwargs):
         kodigui.BaseWindow.__init__(self, *args, **kwargs)
         self.photo = kwargs.get('photo')
@@ -54,8 +61,20 @@ class PhotoWindow(kodigui.BaseWindow):
         self.showPhotoThread = None
         self.showPhotoTimeout = 0
         self.rotate = 0
+        self.tempFolder = None
+        self.photoStack = []
+        self.initialLoad = True
 
     def onFirstInit(self):
+        self.tempFolder = os.path.join(tempfile.gettempdir(), *self.tempSubFolder)
+        #self.tempFolder = os.path.join(xbmc.translatePath("special://temp/"), *self.tempSubFolder)
+        if not os.path.exists(self.tempFolder):
+            try:
+                os.makedirs(self.tempFolder)
+            except OSError:
+                if not os.path.isdir(self.tempFolder):
+                    util.ERROR()
+
         self.pqueueList = kodigui.ManagedControlList(self, self.PQUEUE_LIST_ID, 14)
         self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
         self.getPlayQueue()
@@ -212,40 +231,128 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def updatePqueueListSelection(self, current=None):
         selected = self.pqueueList.getListItemByDataSource(current or self.playQueue.current())
-        if not selected:
+        if not selected or not selected.pos():
             return
 
         self.pqueueList.selectItem(selected.pos())
 
-    def showPhoto(self, **kwargs):
+    def showPhoto(self, trigger=None, **kwargs):
         self.slideshowNext = 0
 
-        photo = self.playQueue.current()
-        self.updatePqueueListSelection(photo)
-
-        self.showPhotoTimeout = time.time() + 0.2
         if not self.showPhotoThread or not self.showPhotoThread.isAlive():
+            # if trigger is given, trigger it. trigger loads the next or prev item, depending on what was requested
+            # doing this here, this late prevents erratic behaviour when multiple next/prev calls were made but we were
+            # still loading images
+            if trigger:
+                trigger()
+                self.updateProperties()
+
+            photo = self.playQueue.current()
+            self.updatePqueueListSelection(photo)
+
             self.showPhotoThread = threading.Thread(target=self._showPhoto, name="showphoto")
             self.showPhotoThread.start()
 
+        # wait for the current thread to end, which might still be loading the surrounding images, for 10 seconds
+        elif self.showPhotoThread.isAlive():
+            waitedFor = 0
+            self.setBoolProperty('is.updating', True)
+            while waitedFor < 10:
+                if not self.showPhotoThread.isAlive() and not xbmc.abortRequested:
+                    return self.showPhoto(**kwargs)
+                elif xbmc.abortRequested:
+                    self.setBoolProperty('is.updating', False)
+                    return
+
+                util.MONITOR.waitForAbort(0.1)
+                waitedFor += 0.1
+
+            # fixme raise error here
+
     def _showPhoto(self):
-        while not util.MONITOR.waitForAbort(0.1):
-            if time.time() >= self.showPhotoTimeout:
-                break
-
-        self._reallyShowPhoto()
-
-    @busy.dialog()
-    def _reallyShowPhoto(self):
-        self.setProperty('photo', 'script.plex/indicators/busy-photo.gif')
+        """
+        load the current photo, preload the previous and the next one
+        :return:
+        """
         photo = self.playQueue.current()
-        photo.softReload()
+        next = self.playQueue.getNext()
+        loadItems = (photo, next, self.playQueue.getPrev())
+        for item in loadItems:
+            item.softReload()
+
         self.playerObject = plexplayer.PlexPhotoPlayer(photo)
-        meta = self.playerObject.build()
-        url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)
+
+        addToStack = []
+        try:
+            for item in loadItems:
+                if not item:
+                    continue
+
+                meta = self.playerObject.build(item=item)
+                url = photo.server.getImageTranscodeURL(meta.get('url', ''), self.width, self.height)
+                bgURL = item.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60,
+                                                        background=colors.noAlpha.Background)
+
+                isCurrent = item == photo
+                if isCurrent and not self.initialLoad:
+                    self.setBoolProperty('is.updating', True)
+
+                path, background = self.getCachedPhotoData(url, bgURL)
+                if not (path and background):
+                    return
+
+                if (path, background) not in self.photoStack:
+                    if item == next:
+                        # move the next image to the top of the stack
+                        addToStack.insert(0, (path, background))
+                    else:
+                        addToStack.append((path, background))
+
+                if isCurrent:
+                    self._reallyShowPhoto(item, path, background)
+                    self.setBoolProperty('is.updating', False)
+                    self.initialLoad = False
+
+            # maintain cache folder
+            self.photoStack = addToStack + self.photoStack
+            if len(self.photoStack) > self.PHOTO_STACK_SIZE:
+                clean = self.photoStack[self.PHOTO_STACK_SIZE:]
+                self.photoStack = self.photoStack[:self.PHOTO_STACK_SIZE]
+                for remList in clean:
+                    for rem in remList:
+                        try:
+                            os.remove(rem)
+                        except:
+                            pass
+        finally:
+            self.setBoolProperty('is.updating', False)
+
+    def getCachedPhotoData(self, url, bgURL):
+        if not url:
+            return
+
+        basename = hashlib.sha1(url).hexdigest()
+        tmpPath = os.path.join(self.tempFolder, basename)
+        tmpBgPath = os.path.join(self.tempFolder, "%s_bg" % basename)
+
+        for p, url in ((tmpPath, url), (tmpBgPath, bgURL)):
+            if not os.path.exists(p):# and not xbmc.getCacheThumbName(tmpFn):
+                try:
+                    r = requests.get(url, allow_redirects=True, timeout=10.0)
+                    r.raise_for_status()
+                except Exception, e:
+                    util.ERROR("Couldn't load image: %s" % e, notify=True)
+                    return None, None
+                else:
+                    with open(p, 'wb') as f:
+                        f.write(r.content)
+
+        return tmpPath, tmpBgPath
+
+    def _reallyShowPhoto(self, photo, path, background):
         self.setRotation(0)
-        self.setProperty('photo', url)
-        self.setProperty('background', photo.thumb.asTranscodedImageURL(self.width, self.height, blur=128, opacity=60, background=colors.noAlpha.Background))
+        self.setProperty('photo', path)
+        self.setProperty('background', background)
 
         self.setProperty('photo.title', photo.title)
         self.setProperty('photo.date', util.cleanLeadingZeros(photo.originallyAvailableAt.asDatetime('%d %B %Y')))
@@ -316,16 +423,14 @@ class PhotoWindow(kodigui.BaseWindow):
         self.setFocusId(self.OVERLAY_BUTTON_ID)
 
     def prev(self):
-        if not self.playQueue.prev():
+        if not self.playQueue.getPrev():
             return
-        self.updateProperties()
-        self.showPhoto()
+        self.showPhoto(trigger=lambda: self.playQueue.prev())
 
     def next(self):
-        if not self.playQueue.next():
+        if not self.playQueue.getNext():
             return
-        self.updateProperties()
-        self.showPhoto()
+        self.showPhoto(trigger=lambda: self.playQueue.next())
 
     def play(self):
         self.setProperty('playing', '1')
@@ -344,6 +449,8 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def doClose(self):
         self.pause()
+        shutil.rmtree(self.tempFolder, ignore_errors=True)
+
         kodigui.BaseWindow.doClose(self)
 
     def getCurrentItem(self):

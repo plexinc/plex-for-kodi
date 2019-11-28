@@ -99,6 +99,9 @@ class PlexInterface(plexapp.AppInterface):
         ],
         'deviceInfo': plexapp.DeviceInfo()
     }
+    FRIENDLY_NAME = util.getSetting('friendly_name')      
+    if (FRIENDLY_NAME != ""):  
+        _globals['friendly_name'] = FRIENDLY_NAME
 
     def getPreference(self, pref, default=None):
         if pref == 'manual_connections':

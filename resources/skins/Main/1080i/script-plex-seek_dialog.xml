@@ -36,6 +36,119 @@
                     <colordiffuse>FF080808</colordiffuse>
                 </control>
             </control>
+          <control type="image">
+					<left>28</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD0.9x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,0.90)</visible>
+				</control>
+				<control type="image">
+					<left>25</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD0.8x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,0.80)</visible>
+				</control>
+				<control type="image">
+					<left>34</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.1x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.10)</visible>
+				</control>
+				<control type="image">
+					<left>37</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.2x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.20)</visible>
+				</control>
+				<control type="image">
+					<left>40</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.3x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.30)</visible>
+				</control>
+				<control type="image">
+					<left>43</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.4x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.40)</visible>
+				</control>
+				<control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.5x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.50)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.6x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.60)</visible>
+        </control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.7x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.70)</visible>
+        </control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.8x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.80)</visible>
+        </control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.9x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.90)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD2x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,2.00)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD2x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,2.10)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.00)</visible>
+				</control>
+
 
             <control type="group">
                 <posx>0</posx>
@@ -57,6 +170,119 @@
                     <colordiffuse>A0000000</colordiffuse>
                 </control>
             </control>
+               <control type="image">
+					<left>28</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD0.9x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,0.90)</visible>
+				</control>
+				<control type="image">
+					<left>25</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD0.8x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,0.80)</visible>
+				</control>
+				<control type="image">
+					<left>34</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.1x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.10)</visible>
+				</control>
+				<control type="image">
+					<left>37</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.2x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.20)</visible>
+				</control>
+				<control type="image">
+					<left>40</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.3x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.30)</visible>
+				</control>
+				<control type="image">
+					<left>43</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.4x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.40)</visible>
+				</control>
+				<control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.5x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.50)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.6x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.60)</visible>
+        </control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.7x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.70)</visible>
+        </control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.8x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.80)</visible>
+        </control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1.9x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.90)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD2x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,2.00)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD2x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,2.10)</visible>
+				</control>
+        <control type="image">
+					<left>45</left>
+					<top>4</top>
+					<width>40</width>
+					<height>40</height>
+					<texture>script.plex/OSD1x.png</texture>
+					<visible>String.IsEqual(Player.PlaySpeed,1.00)</visible>
+				</control>
+
 
             <control type="group">
                 <posx>0</posx>

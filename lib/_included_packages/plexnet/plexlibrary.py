@@ -132,6 +132,21 @@ class LibrarySection(plexobjects.PlexObject):
             path = '{0}/all'.format(self.key)
         else:
             path = '/library/sections/{0}/all'.format(self.key)
+        
+        return self.items(path, start, size, filter_, sort, unwatched, type_, False)
+    
+    def folder(self, start=None, size=None, subDir=False):
+        if self.key.startswith('/'):
+            path = self.key
+        else:
+            path = '/library/sections/{0}'.format(self.key)
+        
+        if not subDir:
+            path = '{0}/folder'.format(path)
+        
+        return self.items(path, start, size, None, None, False, None, True)
+
+    def items(self, path, start, size, filter_, sort, unwatched, type_, tag_fallback):
 
         args = {}
 
@@ -152,9 +167,9 @@ class LibrarySection(plexobjects.PlexObject):
             args[self.TYPE == 'movie' and 'unwatched' or 'unwatchedLeaves'] = 1
 
         if args:
-            path += util.joinArgs(args)
+            path += util.joinArgs(args, '?' not in path)
 
-        return plexobjects.listItems(self.server, path)
+        return plexobjects.listItems(self.server, path, tag_fallback=tag_fallback)
 
     def jumpList(self, filter_=None, sort=None, unwatched=False, type_=None):
         if self.key.startswith('/'):
@@ -369,6 +384,9 @@ class Generic(plexobjects.PlexObject):
         title = self.title.replace(' ', '.')[0:20]
         return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
 
+@plexobjects.registerLibType
+class Collection(Generic):
+    TYPE = 'collection'
 
 @plexobjects.registerLibType
 class Playlist(playlist.BasePlaylist, signalsmixin.SignalsMixin):

@@ -75,6 +75,9 @@ class Library(plexobjects.PlexObject):
 
     def refresh(self):
         self.server.query('/library/sections/all/refresh')
+    
+    def randomArts(self):
+        return plexobjects.listItems(self.server, '/library/arts?sort=random&type=1%2c2%2c8&X-Plex-Container-Start=0&X-Plex-Container-Size=50')
 
 
 class LibrarySection(plexobjects.PlexObject):

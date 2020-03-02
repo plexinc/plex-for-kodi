@@ -64,7 +64,6 @@ class SeekDialog(kodigui.BaseDialog):
 
     HIDE_DELAY = 4  # This uses the Cron tick so is +/- 1 second accurate
     OSD_HIDE_ANIMATION_DURATION = 0.2
-    AUTO_SEEK_DELAY = 1
     SKIP_STEPS = {"negative": [-10000], "positive": [30000]}
 
     def __init__(self, *args, **kwargs):
@@ -101,7 +100,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._osdHideAnimationTimeout = 0
         self._osdHideFast = False
         self._hideDelay = self.HIDE_DELAY
-        self._autoSeekDelay = self.AUTO_SEEK_DELAY
+        self._autoSeekDelay = util.advancedSettings.autoSeekDelay
         self._atSkipStep = -1
         self._lastSkipDirection = None
         self._forcedLastSkipAmount = None
@@ -472,11 +471,18 @@ class SeekDialog(kodigui.BaseDialog):
 
     def delayedSeek(self):
         self.setProperty('button.seek', '1')
-        self._delayedSeekTimeout = time.time() + 1.0
+        delay = self._autoSeekDelay;
+        
+        if delay > 0:
+            self._delayedSeekTimeout = time.time() + delay
 
-        if not self._delayedSeekThread or not self._delayedSeekThread.isAlive():
-            self._delayedSeekThread = threading.Thread(target=self._delayedSeek)
-            self._delayedSeekThread.start()
+            if not self._delayedSeekThread or not self._delayedSeekThread.isAlive():
+                self._delayedSeekThread = threading.Thread(target=self._delayedSeek)
+                self._delayedSeekThread.start()
+        else:
+            # Do seek now
+            self._performSeek()
+            self.resetSeeking()
 
     def _delayedSeek(self):
         try:
@@ -485,11 +491,16 @@ class SeekDialog(kodigui.BaseDialog):
                     break
 
             if not xbmc.abortRequested and self._delayedSeekTimeout is not None:
-                self._lastSkipDirection = None
-                self._forcedLastSkipAmount = None
-                self.doSeek()
+                self._performSeek()
         except:
             util.ERROR()
+        finally:
+            self.resetSeeking()
+
+    def _performSeek(self):
+        self._lastSkipDirection = None
+        self._forcedLastSkipAmount = None
+        self.doSeek()
 
     def handleDialog(self, func):
         self.hasDialog = True

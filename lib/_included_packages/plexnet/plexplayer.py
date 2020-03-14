@@ -251,7 +251,7 @@ class PlexPlayer(object):
             # Global variables for all decisions
             decisionPath = http.addUrlParam(decisionPath, "mediaBufferSize=20971") # Kodi default is 20971520 (20MB)
             decisionPath = http.addUrlParam(decisionPath, "hasMDE=1")
-            decisionPath = http.addUrlParam(decisionPath, 'X-Plex-Platform=Chrome')
+            decisionPath = http.addUrlParam(decisionPath, 'X-Plex-Client-Profile-Name=Chrome')
 
         return decisionPath
 
@@ -279,6 +279,9 @@ class PlexPlayer(object):
         builder.extras = []
         builder.addParam("protocol", "hls")
 
+        # TODO: This should be Generic, but will need to re-evaluate the augmentations with that change
+        builder.addParam("X-Plex-Client-Profile-Name", "Chrome")
+
         if self.choice.subtitleDecision == self.choice.SUBTITLES_SOFT_ANY:
             builder.addParam("skipSubtitles", "1")
         else:  # elif self.choice.hasBurnedInSubtitles is True:  # Must burn transcoded because we can't set offset
@@ -301,8 +304,11 @@ class PlexPlayer(object):
 
         builder = http.HttpRequest(obj.transcodeServer.buildUrl(obj.transcodeEndpoint, True))
         builder.extras = []
-        # builder.addParam("protocol", "http")
+        builder.addParam("protocol", "http")
         builder.addParam("copyts", "1")
+
+        # TODO: This should be Generic, but will need to re-evaluate the augmentations with that change
+        builder.addParam("X-Plex-Client-Profile-Name", "Chrome")
 
         obj.subtitleUrl = None
         if True:  # if self.choice.subtitleDecision == self.choice.SUBTITLES_BURN:  # Must burn transcoded because we can't set offset

@@ -181,8 +181,11 @@ class ServerListItem(kodigui.ManagedListItem):
         self.safeSetLabel(self.dataSource.name)
 
     def onDestroy(self):
-        self.dataSource.off('completed:reachability', self.onUpdate)
-        self.dataSource.off('started:reachability', self.onUpdate)
+        try:
+            self.dataSource.off('completed:reachability', self.onUpdate)
+            self.dataSource.off('started:reachability', self.onUpdate)
+        except AttributeError:
+            util.DEBUG_LOG('Destroying invalidated ServerListItem')
 
 
 class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
@@ -586,7 +589,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
             if not plexapp.SERVERMANAGER.selectedServer:
                 self.setFocusId(self.USER_BUTTON_ID)
                 return False
-    
+
             self.showSections()
             self.backgroundSet = False
             self.showHubs(HomeSection)
@@ -717,7 +720,7 @@ class HomeWindow(kodigui.BaseWindow, util.CronReceiver):
                 section = mli.dataSource
                 if not section:
                     continue
-    
+
                 hubs = self.sectionHubs.get(section.key, ())
                 for idx, ihub in enumerate(hubs):
                     if ihub == hub:

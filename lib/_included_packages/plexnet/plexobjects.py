@@ -220,7 +220,7 @@ class PlexObject(object, Checks):
             else:
                 data = self.server.query(self.key, params=kwargs)
             self._reloaded = True
-        except Exception, e:
+        except Exception as e:
             import traceback
             traceback.print_exc()
             util.ERROR(err=e)

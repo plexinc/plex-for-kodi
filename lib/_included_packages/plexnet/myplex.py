@@ -44,7 +44,7 @@ class PinLogin(object):
             while not self._abort and time.time() - start < 300:
                 try:
                     response = http.GET(self.POLL.format(self.id))
-                except Exception, e:
+                except Exception as e:
                     util.ERROR('PinLogin connection error: {0}'.format(e.__class__), err=e)
                     time.sleep(self.POLL_INTERVAL)
                     continue
@@ -54,7 +54,7 @@ class PinLogin(object):
                     break
                 try:
                     data = ElementTree.fromstring(response.text.encode('utf-8'))
-                except Exception, e:
+                except Exception as e:
                     util.ERROR('PinLogin data error: {0}'.format(e.__class__), err=e)
                     time.sleep(self.POLL_INTERVAL)
                     continue

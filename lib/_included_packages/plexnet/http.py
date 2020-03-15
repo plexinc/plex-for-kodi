@@ -109,7 +109,7 @@ class HttpRequest(object):
             plexapp.APP.onRequestTimeout(context)
             self.removeAsPending()
             return
-        except Exception, e:
+        except Exception as e:
             util.ERROR('Request failed {0}'.format(util.cleanToken(self.url)), e)
             if not hasattr(e, 'response'):
                 return
@@ -164,7 +164,7 @@ class HttpRequest(object):
             util.LOG("Got a {0} from {1}".format(res.status_code, util.cleanToken(self.url)))
             # self.event = msg
             return res
-        except Exception, e:
+        except Exception as e:
             info = traceback.extract_tb(sys.exc_info()[2])[-1]
             util.WARN_LOG(
                 "Request errored out - URL: {0} File: {1} Line: {2} Msg: {3}".format(util.cleanToken(self.url), os.path.basename(info[0]), info[1], e.message)
@@ -200,14 +200,14 @@ class HttpRequest(object):
             return
         except AttributeError:
             pass
-        except Exception, e:
+        except Exception as e:
             util.ERROR(err=e)
 
         try:
             self.currentResponse.raw._fp.fp._sock.shutdown(socket.SHUT_RDWR)
         except AttributeError:
             pass
-        except Exception, e:
+        except Exception as e:
             util.ERROR(err=e)
 
     def cancel(self):

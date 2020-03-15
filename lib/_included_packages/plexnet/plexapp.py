@@ -352,7 +352,7 @@ class DumbInterface(AppInterface):
         return ''
 
     def LOG(self, msg):
-        print 'PlexNet.API: {0}'.format(msg)
+        print('PlexNet.API: {0}'.format(msg))
 
     def DEBUG_LOG(self, msg):
         self.LOG('DEBUG: {0}'.format(msg))

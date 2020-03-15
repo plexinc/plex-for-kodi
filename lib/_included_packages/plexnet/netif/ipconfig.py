@@ -34,7 +34,6 @@ def parse(data=None):
                 v = d.replace('(Preferred)','')
                 sections[-1][k] += ',' + v.strip()
         except:
-            print d
             raise
 
     return sections[1:]

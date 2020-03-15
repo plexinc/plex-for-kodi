@@ -105,7 +105,7 @@ class LibrarySection(plexobjects.PlexObject):
         key = self.key
         try:
             data = self.server.query(initpath, params=kwargs)
-        except Exception, e:
+        except Exception as e:
             import traceback
             traceback.print_exc()
             util.ERROR(err=e)
@@ -483,7 +483,7 @@ class Hub(BaseHub):
         """ Reload the data for this object from PlexServer XML. """
         try:
             data = self.server.query(self.key, params=kwargs)
-        except Exception, e:
+        except Exception as e:
             import traceback
             traceback.print_exc()
             util.ERROR(err=e)

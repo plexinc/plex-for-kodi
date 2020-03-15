@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="script.plex"
        name="Plex"
-       version="0.1.7a2"
+       version="0.1.7"
        provider-name="Plex">
     <requires>
         <import addon="xbmc.python" version="2.25.0"/>
@@ -13,42 +13,62 @@
     <extension point="xbmc.python.pluginsource" library="plugin.py">
         <provides>executable</provides>
     </extension>
-	<extension point="xbmc.ui.screensaver" library="screensaver.py"/>
     <extension point="xbmc.service" library="service.py" start="startup"></extension>
     <extension point="xbmc.addon.metadata">
         <summary lang="en">Plex for Kodi</summary>
         <summary lang="de">Plex für Kodi</summary>
         <summary lang="hu">Plex for Kodi</summary>
         <summary lang="it">Plex per Kodi</summary>
+        <summary lang="es">Plex para Kodi</summary>
         <summary lang="ru">Plex for Kodi</summary>
         <description lang="en">Official Plex for Kodi add-on</description>
         <description lang="de">Offizielles Plex für Kodi Addon</description>
         <description lang="hu">Hivatalos Plex for Kodi add-on</description>
         <description lang="it">Addon ufficiale Plex per Kodi</description>
+        <description lang="it">Add-on oficial Plex para Kodi</description>
         <description lang="fr">Add-on Officiel Plex pour Kodi</description>
         <description lang="ru">Официальный аддон Plex for Kodi</description>
         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
-        <forum>https://forums.plex.tv/categories/plex-for-kodi</forum>
+        <forum>https://forums.plex.tv/tags/plex-for-kodi</forum>
         <website>https://www.plex.tv</website>
         <source>https://github.com/plexinc/plex-for-kodi</source>
         <platform>all</platform>
         <news>
-Add Italian translations (thanks to iz8mbw)
-Use Kodi time format setting (Issue #90) (thanks to pannal)
-Restore last window when starting the add-on while it is running (Issue #126)
-Add Portuguese (Brazil) translations (thanks to DiogoAbu)
-Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal
-Only play unwatched media when pressing play or shuffle and filtering for unwatched (thanks to tlt21)
-Fix issue with duplicated icons whe fast-scrolling a hub (Issue #177) (thanks to pannal)
-Fixed GUI not responding after public IP renewal (thanks to pannal and mkliche)
-Advanced setting: Automatically seek selected position after a delay (Issue #172) (thanks to pannal)
-Advanced setting: Use skip step settings from Kodi (Issue #133) (thanks to pannal)
-Advanced setting: Use Plex/Kodi steps for timeline (Issue #133) (thanks to pannal)
-OSD-Autohide improvements (thanks to pannal)
-Show post play on user stop when item is considered played (thanks to pannal)
-Use Unplayed/Played instead of Unwatched/Watched (thanks to pannal)
-Fix issue with cast popup displaying partially offscreen (thanks to pannal)
-Various fixes for incorrectly transcoded playback (Issue #201) (thanks to pannal)
+Fix transcode failures on some platforms
+Use Kodi time format setting
+Restore last window when starting the add-on while it is running
+Add Portuguese (Brazil), Italian, Spanish, Polish translations
+Add ability to exit search edit box with previous menu button
+Only play unwatched media on play/shuffle when filtering for unwatched
+Fix duplicated icons when fast-scrolling a hub
+Fixed GUI not responding after public IP renewal
+Advanced settings:
+- Automatically seek selected position after a delay
+- Use skip step settings from Kodi for timeline
+OSD-Autohide improvements
+Show post play on user stop when item considered played
+Use Unplayed/Played instead of Unwatched/Watched
+Fix cast popup displaying partially offscreen
+Various fixes for incorrectly transcoded playback
+Support new subtitles menu in playback for Leia
+Make sure progress bar is visible on items with less than 2% watched
+Fix focus issues caused when hubs disappear
+Fix flattened seasons issues
+Allow Kodi info display to be visible on info button
+Fixes hubs not updating and some crashes
+More fixes for Kodi 18, ex. missing letters list
+Fix resume behavior with DSPlayer
+Fix to allow 3D mode selection
+Add advanced option to skip the header when going back
+Ensure paused state is kept after seeking or changing video settings
+Allow closing of the options header in scrolled views using context menu button
+Some direct playback and resume fixes
+Shutdown fixes
+Show play state on related items in preplays + On Deck in postplay
         </news>
+        <assets>
+            <icon>icon.png</icon>
+            <fanart>fanart.jpg</fanart>
+        </assets>
     </extension>
 </addon>

@@ -5,7 +5,7 @@ class Res(tuple):
     @classmethod
     def fromString(cls, res_string):
         try:
-            return cls(map(lambda n: int(n), res_string.split('x')))
+            return cls([int(n) for n in res_string.split('x')])
         except:
             return None
 

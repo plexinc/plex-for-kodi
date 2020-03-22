@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-import util
-import http
+from __future__ import absolute_import
+from . import util
+from . import http
 from threading import Thread
 from xml.etree import ElementTree
 import time
 
-import exceptions
+from . import exceptions
 
-import video
-import audio
-import photo
+from . import video
+from . import audio
+from . import photo
 
 video, audio, photo  # Hides warning message
 

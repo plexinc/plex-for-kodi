@@ -1,8 +1,9 @@
-import xbmc
-import xbmcgui
+from __future__ import absolute_import
+from kodi_six import xbmc
+from kodi_six import xbmcgui
 
-import kodigui
-import dropdown
+from . import kodigui
+from . import dropdown
 
 from lib import util, image, backgroundthread
 from plexnet import plexapp
@@ -188,7 +189,7 @@ class UserSelectWindow(kodigui.BaseWindow):
         util.DEBUG_LOG('Home user selected: {0}'.format(user))
 
         from lib import plex
-        with plex.CallbackEvent(plexapp.APP, 'account:response') as e:
+        with plex.CallbackEvent(plexapp.util.APP, 'account:response') as e:
             if plexapp.ACCOUNT.switchHomeUser(user.id, pin) and plexapp.ACCOUNT.switchUser:
                 util.DEBUG_LOG('Waiting for user change...')
             else:

@@ -1,6 +1,7 @@
-import http
-import mediadecisionengine
-import util
+from __future__ import absolute_import
+from . import http
+from . import mediadecisionengine
+from . import util
 
 
 class AudioObjectClass(object):

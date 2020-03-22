@@ -1,7 +1,9 @@
+from __future__ import absolute_import
 import random
 
-import plexobjects
-import signalsmixin
+from . import plexobjects
+from . import signalsmixin
+from six.moves import range
 
 
 class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
@@ -80,6 +82,8 @@ class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
 
         return True
 
+    __next__ = next
+
     def prev(self):
         if not self.hasPrev():
             return False
@@ -127,7 +131,7 @@ class BasePlaylist(plexobjects.PlexObject, signalsmixin.SignalsMixin):
 
     def shuffle(self, on=True, first=False):
         if on and self._items:
-            self._shuffle = range(len(self._items))
+            self._shuffle = list(range(len(self._items)))
             random.shuffle(self._shuffle)
             if not first:
                 self.pos = self._shuffle.index(self.pos)

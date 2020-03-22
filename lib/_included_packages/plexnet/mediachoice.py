@@ -1,5 +1,6 @@
-import plexstream
-import util
+from __future__ import absolute_import
+from . import plexstream
+from . import util
 
 
 class MediaChoice(object):

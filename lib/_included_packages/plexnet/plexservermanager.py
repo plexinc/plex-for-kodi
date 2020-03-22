@@ -1,15 +1,16 @@
+from __future__ import absolute_import
 import json
 
-import http
-import plexconnection
-import plexresource
-import plexserver
-import myplexserver
-import signalsmixin
-import callback
-import plexapp
-import gdm
-import util
+from . import http
+from . import plexconnection
+from . import plexresource
+from . import plexserver
+from . import signalsmixin
+from . import callback
+from . import plexapp
+from . import gdm
+from . import util
+from six.moves import range
 
 
 class SearchContext(dict):
@@ -33,9 +34,9 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         self.startSelectedServerSearch()
         self.loadState()
 
-        plexapp.APP.on("change:user", callback.Callable(self.onAccountChange))
-        plexapp.APP.on("change:allow_insecure", callback.Callable(self.onSecurityChange))
-        plexapp.APP.on("change:manual_connections", callback.Callable(self.onManualConnectionChange))
+        plexapp.util.APP.on("change:user", callback.Callable(self.onAccountChange))
+        plexapp.util.APP.on("change:allow_insecure", callback.Callable(self.onSecurityChange))
+        plexapp.util.APP.on("change:manual_connections", callback.Callable(self.onManualConnectionChange))
 
     def getSelectedServer(self):
         return self.selectedServer
@@ -62,7 +63,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             self.saveState()
 
             # Notify anyone who might care.
-            plexapp.APP.trigger("change:selectedServer", server=server)
+            util.APP.trigger("change:selectedServer", server=server)
 
             return True
 
@@ -72,6 +73,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         if uuid is None:
             return None
         elif uuid == "myplex":
+            from . import myplexserver
             return myplexserver.MyPlexServer()
         else:
             return self.serversByUuid[uuid]
@@ -304,7 +306,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             return 0
 
     def loadState(self):
-        jstring = plexapp.INTERFACE.getRegistry("PlexServerManager")
+        jstring = util.INTERFACE.getRegistry("PlexServerManager")
         if not jstring:
             return
 
@@ -381,12 +383,12 @@ class PlexServerManager(signalsmixin.SignalsMixin):
                 obj['servers'].append(serverObj)
 
         if self.selectedServer and not self.selectedServer.synced and not self.selectedServer.isSecondary():
-            plexapp.INTERFACE.setPreference("lastServerId", self.selectedServer.uuid)
+            util.INTERFACE.setPreference("lastServerId", self.selectedServer.uuid)
 
-        plexapp.INTERFACE.setRegistry("PlexServerManager", json.dumps(obj))
+        util.INTERFACE.setRegistry("PlexServerManager", json.dumps(obj))
 
     def clearState(self):
-        plexapp.INTERFACE.setRegistry("PlexServerManager", '')
+        util.INTERFACE.setRegistry("PlexServerManager", '')
 
     def isValidForTranscoding(self, server):
         return server and server.activeConnection and server.owned and not server.synced and not server.isSecondary()
@@ -449,7 +451,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
         # Keep track of some information during our search
         self.searchContext = SearchContext({
             'bestServer': None,
-            'preferredServer': plexapp.INTERFACE.getPreference('lastServerId', ''),
+            'preferredServer': util.INTERFACE.getPreference('lastServerId', ''),
             'waitingForResources': plexapp.ACCOUNT.isSignedIn
         })
 
@@ -491,7 +493,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
     def deferUpdateReachability(self, addTimer=True, logInfo=True):
         if addTimer and not self.deferReachabilityTimer:
             self.deferReachabilityTimer = plexapp.createTimer(1000, callback.Callable(self.onDeferUpdateReachabilityTimer), repeat=True)
-            plexapp.APP.addTimer(self.deferReachabilityTimer)
+            util.APP.addTimer(self.deferReachabilityTimer)
         else:
             if self.deferReachabilityTimer:
                 self.deferReachabilityTimer.reset()
@@ -574,7 +576,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
             context.address = conn.connection
             context.proto = proto
             context.port = port
-            plexapp.APP.startRequest(request, context)
+            util.APP.startRequest(request, context)
 
     def onManualConnectionsResponse(self, request, response, context):
         if not response.isSuccess():
@@ -601,7 +603,7 @@ class PlexServerManager(signalsmixin.SignalsMixin):
     def getManualConnections(self):
         manualConnections = []
 
-        jstring = plexapp.INTERFACE.getPreference('manual_connections')
+        jstring = util.INTERFACE.getPreference('manual_connections')
         if jstring:
             connections = json.loads(jstring)
             if isinstance(connections, list):

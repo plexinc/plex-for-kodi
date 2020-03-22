@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-import http
+from __future__ import absolute_import
+from . import http
 import time
-import util
-import exceptions
-import compat
-import verlib
+from . import util
+from . import exceptions
+from . import compat
+from . import verlib
 import re
 import json
 from xml.etree import ElementTree
 
-import signalsmixin
-import plexobjects
-import plexresource
-import plexlibrary
-import plexapp
-import asyncadapter
+from . import signalsmixin
+from . import plexobjects
+from . import plexresource
+from . import plexlibrary
+from . import asyncadapter
+from six.moves import range
 # from plexapi.client import Client
 # from plexapi.playqueue import PlayQueue
 
@@ -172,7 +173,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         # If URL is empty, try refresh resources and return empty set for now
         if not url:
             util.WARN_LOG("Empty server url, returning None and refreshing resources")
-            plexapp.MANAGER.refreshResources(True)
+            util.MANAGER.refreshResources(True)
             return None
 
         util.LOG('{0} {1}'.format(method.__name__.upper(), re.sub('X-Plex-Token=[^&]+', 'X-Plex-Token=****', url)))
@@ -184,7 +185,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             data = response.text.encode('utf8')
         except asyncadapter.TimeoutException:
             util.ERROR()
-            plexapp.MANAGER.refreshResources(True)
+            util.MANAGER.refreshResources(True)
             return None
         except http.requests.ConnectionError:
             util.ERROR()
@@ -207,7 +208,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
         # Try to use a better server to transcode for synced servers
         if self.synced:
-            import plexservermanager
+            from . import plexservermanager
             selectedServer = plexservermanager.MANAGER.getTranscodeServer("photo")
             if selectedServer:
                 return selectedServer.buildUrl(path, True)
@@ -296,7 +297,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             if util.normalizedVersion(v) <= self.versionNorm:
                 self.features[f] = True
 
-        appMinVer = plexapp.INTERFACE.getGlobal('minServerVersionArr', '0.0.0.0')
+        appMinVer = util.INTERFACE.getGlobal('minServerVersionArr', '0.0.0.0')
         self.isSupported = self.isSecondary() or util.normalizedVersion(appMinVer) <= self.versionNorm
 
         util.DEBUG_LOG("Server information updated from reachability check: {0}".format(self))
@@ -376,7 +377,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
 
         util.LOG("Active connection for {0} is {1}".format(repr(self.name), self.activeConnection))
 
-        import plexservermanager
+        from . import plexservermanager
         plexservermanager.MANAGER.updateReachabilityResult(self, bool(self.activeConnection))
 
     def markAsRefreshing(self):
@@ -481,7 +482,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
         self.librariesByUuid[uuid] = library
 
     def hasInsecureConnections(self):
-        if plexapp.INTERFACE.getPreference('allow_insecure') == 'always':
+        if util.INTERFACE.getPreference('allow_insecure') == 'always':
             return False
 
         # True if we have any insecure connections we have disallowed
@@ -544,7 +545,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
             util.ERROR_LOG("Failed to deserialize PlexServer JSON")
             return
 
-        import plexconnection
+        from . import plexconnection
 
         server = createPlexServerForName(serverObj['uuid'], serverObj['name'])
         server.owned = bool(serverObj.get('owned'))

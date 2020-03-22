@@ -1,7 +1,8 @@
-import plexobjects
-import plexstream
-import plexrequest
-import util
+from __future__ import absolute_import
+from . import plexobjects
+from . import plexstream
+from . import plexrequest
+from . import util
 
 
 class PlexPart(plexobjects.PlexObject):
@@ -100,7 +101,7 @@ class PlexPart(plexobjects.PlexObject):
 
         return default
 
-    def setSelectedStream(self, streamType, streamId, async):
+    def setSelectedStream(self, streamType, streamId, _async):
         if streamType == plexstream.PlexStream.TYPE_AUDIO:
             typeString = "audio"
         elif streamType == plexstream.PlexStream.TYPE_SUBTITLE:
@@ -117,10 +118,10 @@ class PlexPart(plexobjects.PlexObject):
 
         request = plexrequest.PlexRequest(self.getServer(), path, "PUT")
 
-        if async:
+        if _async:
             context = request.createRequestContext("ignored")
-            import plexapp
-            plexapp.APP.startRequest(request, context, "")
+            from . import plexapp
+            util.APP.startRequest(request, context, "")
         else:
             request.postToStringWithTimeout()
 

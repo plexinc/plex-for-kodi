@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import requests
 
 # Disable some warnings. These are not security issue warnings, but alerts to issues that may cause errors
@@ -8,5 +9,5 @@ except:
     import traceback
     traceback.print_exc()
 
-import compat
-import _included_packages
+from . import compat
+from . import _included_packages

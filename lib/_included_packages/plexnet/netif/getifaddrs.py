@@ -2,11 +2,14 @@
 Wrapper for getifaddrs(3).
 """
 
+from __future__ import absolute_import
+from __future__ import print_function
 import socket
 import sys
 
 from collections import namedtuple
 from ctypes import *
+from six.moves import map
 
 class sockaddr_in(Structure):
     _fields_ = [

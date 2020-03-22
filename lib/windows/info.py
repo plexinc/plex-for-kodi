@@ -1,5 +1,6 @@
-import kodigui
-import windowutils
+from __future__ import absolute_import
+from . import kodigui
+from . import windowutils
 from lib import util
 
 

@@ -24,6 +24,15 @@ KEY_MOVE_SET = frozenset(
     )
 )
 
+KEY_STEP_SEEK_SET = frozenset(
+    (
+        xbmcgui.ACTION_MOVE_LEFT,
+        xbmcgui.ACTION_MOVE_RIGHT,
+        xbmcgui.ACTION_STEP_FORWARD,
+        xbmcgui.ACTION_STEP_BACK
+    )
+)
+
 
 class SeekDialog(kodigui.BaseDialog):
     xmlFile = 'script-plex-seek_dialog.xml'
@@ -131,8 +140,11 @@ class SeekDialog(kodigui.BaseDialog):
     def resetTimeout(self):
         self.timeout = time.time() + self._hideDelay
 
-    def resetAutoSeekTimer(self, value="not_set"):
-        self.autoSeekTimeout = value if value != "not_set" else time.time() + self._autoSeekDelay
+    def resetAutoSeekTimer(self):
+        self.autoSeekTimeout = time.time() + self._autoSeekDelay
+
+    def clearAutoSeekTimer(self):
+        self.autoSeekTimeout = None
 
     def resetSeeking(self):
         self._seeking = False
@@ -142,7 +154,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.bigSeekChanged = False
         self.selectedOffset = None
         self.setProperty('button.seek', '')
-        self.resetAutoSeekTimer(None)
+        self.clearAutoSeekTimer()
         self.resetSkipSteps()
 
     def trueOffset(self):
@@ -214,7 +226,7 @@ class SeekDialog(kodigui.BaseDialog):
 
             if controlID == self.MAIN_BUTTON_ID:
                 # we're seeking from the timeline with the OSD open - do an actual timeline seek
-                if not self._seeking:
+                if not self._seeking and action.getId() in KEY_STEP_SEEK_SET:
                     self.selectedOffset = self.trueOffset()
 
                 if action in (xbmcgui.ACTION_MOVE_RIGHT, xbmcgui.ACTION_STEP_FORWARD):
@@ -353,7 +365,6 @@ class SeekDialog(kodigui.BaseDialog):
             # handled by onAction
             if self.getProperty('mouse.mode') != '1':
                 if controlID == self.MAIN_BUTTON_ID:
-                    self.resetAutoSeekTimer(None)
                     self.doSeek()
                 elif controlID == self.NO_OSD_BUTTON_ID:
                     if not self._seeking:
@@ -682,6 +693,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('time.end', val)
 
     def doSeek(self, offset=None, settings_changed=False):
+        self.clearAutoSeekTimer()
         self._applyingSeek = True
         offset = self.selectedOffset if offset is None else offset
         self.resetSkipSteps()
@@ -873,7 +885,6 @@ class SeekDialog(kodigui.BaseDialog):
 
         if offset or (self.autoSeekTimeout and time.time() >= self.autoSeekTimeout and
                       self.offset != self.selectedOffset):
-            self.resetAutoSeekTimer(None)
             self.doSeek()
             return True
 

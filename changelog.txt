@@ -1,6 +1,7 @@
 [- 0.1.8 -]
 Fix seek resetting when clicking select on seek bar with OSD visible
 Add Spanish translations (thanks to rdcalle)
+Add Portuguese (Portugal) translations (thanks to Generator)
 Make python 3 compatible (thanks to pannal)
 
 [- 0.1.7 -]

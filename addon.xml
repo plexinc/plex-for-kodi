@@ -36,37 +36,10 @@
         <source>https://github.com/plexinc/plex-for-kodi</source>
         <platform>all</platform>
         <news>
-Fix transcode failures on some platforms
-Use Kodi time format setting
-Restore last window when starting the add-on while it is running
-Add Portuguese (Brazil), Italian, Polish translations
-Add ability to exit search edit box with previous menu button
-Only play unwatched media on play/shuffle when filtering for unwatched
-Fix duplicated icons when fast-scrolling a hub
-Fixed GUI not responding after public IP renewal
-Advanced settings:
-- Automatically seek selected position after a delay
-- Use skip step settings from Kodi for timeline
-OSD-Autohide improvements
-Show post play on user stop when item considered played
-Use Unplayed/Played instead of Unwatched/Watched
-Fix cast popup displaying partially offscreen
-Various fixes for incorrectly transcoded playback
-Support new subtitles menu in playback for Leia
-Make sure progress bar is visible on items with less than 2% watched
-Fix focus issues caused when hubs disappear
-Fix flattened seasons issues
-Allow Kodi info display to be visible on info button
-Fixes hubs not updating and some crashes
-More fixes for Kodi 18, ex. missing letters list
-Fix resume behavior with DSPlayer
-Fix to allow 3D mode selection
-Add advanced option to skip the header when going back
-Ensure paused state is kept after seeking or changing video settings
-Allow closing of the options header in scrolled views using context menu button
-Some direct playback and resume fixes
-Shutdown fixes
-Show play state on related items in preplays + On Deck in postplay
+Fix seek resetting when clicking select on seek bar with OSD visible
+Add Spanish translations (thanks to rdcalle)
+Add Portuguese (Portugal) translations (thanks to Generator)
+Make python 3 compatible (thanks to pannal)
         </news>
         <assets>
             <icon>icon.png</icon>

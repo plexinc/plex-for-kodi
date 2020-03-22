@@ -1,3 +1,8 @@
+[- 0.1.8 -]
+Fix seek resetting when clicking select on seek bar with OSD visible
+Add Spanish translations (thanks to rdcalle)
+Make python 3 compatible (thanks to pannal)
+
 [- 0.1.7 -]
 
 Fix transcode failures on Windows (possibly other platforms)

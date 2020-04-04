@@ -17,20 +17,20 @@
     </extension>
     <extension point="xbmc.service" library="service.py" />
     <extension point="xbmc.addon.metadata">
-        <summary lang="en">Plex for Kodi</summary>
-        <summary lang="de">Plex für Kodi</summary>
-        <summary lang="hu">Plex for Kodi</summary>
-        <summary lang="it">Plex per Kodi</summary>
-        <summary lang="es">Plex para Kodi</summary>
-        <summary lang="ru">Plex for Kodi</summary>
-        <description lang="en">Official Plex for Kodi add-on</description>
-        <description lang="de">Offizielles Plex für Kodi Addon</description>
-        <description lang="hu">Hivatalos Plex for Kodi add-on</description>
-        <description lang="it">Addon ufficiale Plex per Kodi</description>
-        <description lang="es">Addon oficial Plex para Kodi</description>
-        <description lang="fr">Add-on Officiel Plex pour Kodi</description>
-        <description lang="ru">Официальный аддон Plex for Kodi</description>
-        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+        <summary lang="en_GB">Plex for Kodi</summary>
+        <summary lang="de_DE">Plex für Kodi</summary>
+        <summary lang="hu_HU">Plex for Kodi</summary>
+        <summary lang="it_IT">Plex per Kodi</summary>
+        <summary lang="es_ES">Plex para Kodi</summary>
+        <summary lang="ru_RU">Plex for Kodi</summary>
+        <description lang="en_GB">Official Plex for Kodi add-on</description>
+        <description lang="de_DE">Offizielles Plex für Kodi Addon</description>
+        <description lang="hu_HU">Hivatalos Plex for Kodi add-on</description>
+        <description lang="it_IT">Addon ufficiale Plex per Kodi</description>
+        <description lang="es_ES">Addon oficial Plex para Kodi</description>
+        <description lang="fr_FR">Add-on Officiel Plex pour Kodi</description>
+        <description lang="ru_RU">Официальный аддон Plex for Kodi</description>
+        <license>GPL-2.0-only</license>
         <forum>https://forums.plex.tv/tags/plex-for-kodi</forum>
         <website>https://www.plex.tv</website>
         <source>https://github.com/plexinc/plex-for-kodi</source>

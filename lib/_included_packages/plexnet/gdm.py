@@ -181,10 +181,10 @@ class GDMDiscovery(object):
 
         hostname = addr[0]  # socket.gethostbyaddr(addr[0])[0]
 
-        name = parseFieldValue(message, "Name: ")
-        port = parseFieldValue(message, "Port: ") or "32400"
-        machineID = parseFieldValue(message, "Resource-Identifier: ")
-        secureHost = parseFieldValue(message, "Host: ")
+        name = parseFieldValue(message, b"Name: ")
+        port = parseFieldValue(message, b"Port: ") or b"32400"
+        machineID = parseFieldValue(message, b"Resource-Identifier: ")
+        secureHost = parseFieldValue(message, b"Host: ")
 
         util.DEBUG_LOG("Received GDM response for " + repr(name) + " at http://" + hostname + ":" + port)
 

@@ -497,7 +497,7 @@ class SeekDialog(kodigui.BaseDialog):
                 if time.time() > self._delayedSeekTimeout or not self._delayedSeekTimeout:
                     break
 
-            if not xbmc.abortRequested and self._delayedSeekTimeout is not None:
+            if not util.MONITOR.abortRequested() and self._delayedSeekTimeout is not None:
                 self._lastSkipDirection = None
                 self._forcedLastSkipAmount = None
                 self.doSeek()

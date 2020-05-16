@@ -1000,11 +1000,11 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def _monitor(self):
         try:
-            while not xbmc.abortRequested and not self._closed:
+            while not util.MONITOR.abortRequested() and not self._closed:
                 if not self.isPlaying():
                     util.DEBUG_LOG('Player: Idling...')
 
-                while not self.isPlaying() and not xbmc.abortRequested and not self._closed:
+                while not self.isPlaying() and not util.MONITOR.abortRequested() and not self._closed:
                     util.MONITOR.waitForAbort(0.1)
 
                 if self.isPlayingVideo():
@@ -1025,7 +1025,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
     def _preplayMonitor(self):
         self.onPrePlayStarted()
-        while self.isPlaying() and not self.isPlayingVideo() and not self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
+        while self.isPlaying() and not self.isPlayingVideo() and not self.isPlayingAudio() and not util.MONITOR.abortRequested() and not self._closed:
             util.MONITOR.waitForAbort(0.1)
 
         if not self.isPlayingVideo() and not self.isPlayingAudio():
@@ -1035,7 +1035,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         hasFullScreened = False
 
         ct = 0
-        while self.isPlayingVideo() and not xbmc.abortRequested and not self._closed:
+        while self.isPlayingVideo() and not util.MONITOR.abortRequested() and not self._closed:
             self.currentTime = self.getTime()
             util.MONITOR.waitForAbort(0.1)
             if xbmc.getCondVisibility('Window.IsActive(videoosd)'):
@@ -1072,7 +1072,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
         self.started = True
         self.handler.onMonitorInit()
         ct = 0
-        while self.isPlayingAudio() and not xbmc.abortRequested and not self._closed:
+        while self.isPlayingAudio() and not util.MONITOR.abortRequested() and not self._closed:
             self.currentTime = self.getTime()
             util.MONITOR.waitForAbort(0.1)
 

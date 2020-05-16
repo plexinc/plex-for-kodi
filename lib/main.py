@@ -75,10 +75,10 @@ def _main():
     background.setSplash()
 
     try:
-        while not xbmc.abortRequested:
+        while not util.MONITOR.abortRequested():
             if plex.init():
                 background.setSplash(False)
-                while not xbmc.abortRequested:
+                while not util.MONITOR.abortRequested():
                     if (
                         not plexapp.ACCOUNT.isOffline and not
                         plexapp.ACCOUNT.isAuthenticated and

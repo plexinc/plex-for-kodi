@@ -8,17 +8,6 @@
     <zorder>100</zorder>
     <defaultcontrol>800</defaultcontrol>
     <controls>
-        <control type="button" id="800">
-            <visible allowhiddenfocus="true">String.IsEmpty(Window.Property(show.OSD))</visible>
-            <posx>0</posx>
-            <posy>0</posy>
-            <width>1920</width>
-            <height>1080</height>
-            <texturefocus>-</texturefocus>
-            <texturenofocus>-</texturenofocus>
-            <label> </label>
-            <onclick condition="String.IsEmpty(Window.Property(button.seek))">SetProperty(show.OSD,1)</onclick>
-        </control>
         <control type="group" id="802">
             <visible>[!String.IsEmpty(Window.Property(show.OSD)) | Window.IsVisible(seekbar) | !String.IsEmpty(Window.Property(button.seek))] + !Window.IsVisible(osdvideosettings) + !Window.IsVisible(osdaudiosettings) + !Window.IsVisible(osdsubtitlesettings) + !Window.IsVisible(subtitlesearch) + !Window.IsActive(playerprocessinfo) + !Window.IsActive(selectdialog)</visible>
             <animation effect="fade" time="200" delay="200" end="0">Hidden</animation>
@@ -177,6 +166,44 @@
                     <texture>script.plex/white-square.png</texture>
                     <colordiffuse>FFE5A00D</colordiffuse>
                 </control>
+            </control>
+        </control>
+        <control type="button" id="800">
+            <visible allowhiddenfocus="true">String.IsEmpty(Window.Property(show.OSD))</visible>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1920</width>
+            <height>1080</height>
+            <texturefocus>-</texturefocus>
+            <texturenofocus>-</texturenofocus>
+            <label> </label>
+            <onclick condition="String.IsEmpty(Window.Property(button.seek))">SetProperty(show.OSD,1)</onclick>
+        </control>
+
+        <control type="group" id="790">
+            <posx>0</posx>
+            <posy>797</posy>
+            <width>1670</width>
+            <height>143</height>
+            <align>right</align>
+            <control type="button" id="791">
+                <visible>!String.IsEmpty(Window.Property(show.introSkip)) + [String.IsEmpty(Window.Property(show.introSkipCond)) | [!String.IsEmpty(Window.Property(show.introSkipCond)) + !String.IsEmpty(Window.Property(show.OSD))]]</visible>
+                <animation effect="zoom" start="100" end="110,120" time="100" center="auto" reversible="false">Focus</animation>
+                <animation effect="zoom" start="110,120" end="100" time="100" center="auto" reversible="false">UnFocus</animation>
+                <animation type="Conditional" condition="String.IsEmpty(Window.Property(show.OSD)) + !Window.IsVisible(seekbar)" reversible="false">
+                    <effect type="slide" end="0,100" time="100" delay="100"></effect>
+                </animation>
+                <right>30</right>
+                <top>0</top>
+                <width min="200">auto</width>
+                <align>center</align>
+                <height>143</height>
+                <texturefocus colordiffuse="FFE5A00D" border="50">script.plex/buttons/blank-focus.png</texturefocus>
+                <texturenofocus colordiffuse="99FFFFFF" border="50">script.plex/buttons/blank.png</texturenofocus>
+                <textoffsetx>70</textoffsetx>
+                <textcolor>FF000000</textcolor>
+                <focusedcolor>FF000000</focusedcolor>
+                <label>Skip intro</label>
             </control>
         </control>
         <control type="group" id="801">

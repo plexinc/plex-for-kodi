@@ -227,3 +227,8 @@ class Similar(MediaTag):
 class Writer(MediaTag):
     TYPE = 'Writer'
     FILTER = 'writer'
+
+
+class Marker(MediaTag):
+    TYPE = 'Marker'
+    FILTER = 'Marker'

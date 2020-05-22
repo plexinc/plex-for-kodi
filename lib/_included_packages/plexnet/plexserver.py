@@ -113,7 +113,7 @@ class PlexServer(plexresource.PlexResource, signalsmixin.SignalsMixin):
     def hubs(self, section=None, count=None, search_query=None):
         hubs = []
 
-        params = {}
+        params = {"includeMarkers": 1}
         if search_query:
             q = '/hubs/search'
             params['query'] = search_query.lower()

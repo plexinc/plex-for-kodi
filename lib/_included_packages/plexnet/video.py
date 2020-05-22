@@ -192,6 +192,7 @@ class PlayableVideo(Video):
                 del self.viewCount
             if self.get('viewOffset'):
                 del self.viewOffset
+        kwargs["includeMarkers"] = 1
         Video.reload(self, *args, **kwargs)
         return self
 
@@ -377,6 +378,7 @@ class Episode(PlayableVideo):
     def init(self, data):
         self._show = None
         self._season = None
+        self._intro = None
 
     def _setData(self, data):
         PlayableVideo._setData(self, data)
@@ -387,6 +389,8 @@ class Episode(PlayableVideo):
         else:
             if data.find(media.Media.TYPE) is not None:
                 self.media = plexobjects.PlexMediaItemList(data, plexmedia.PlexMedia, media.Media.TYPE, initpath=self.initpath, server=self.server, media=self)
+
+        self.markers = plexobjects.PlexItemList(data, media.Marker, media.Marker.TYPE, server=self.server)
 
         self._videoStreams = None
         self._audioStreams = None
@@ -451,6 +455,12 @@ class Episode(PlayableVideo):
     @property
     def roles(self):
         return self.show().roles
+
+    @property
+    def intro(self):
+        if not self._intro:
+            self._intro = (filter(lambda x: x.type == "intro", self.markers) or [None])[0]
+        return self._intro
 
     @property
     def related(self):

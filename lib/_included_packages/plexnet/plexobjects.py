@@ -215,6 +215,8 @@ class PlexObject(Checks):
         if _soft and self._reloaded:
             return self
 
+        kwargs["includeMarkers"] = 1
+
         try:
             if self.get('ratingKey'):
                 data = self.server.query('/library/metadata/{0}'.format(self.ratingKey), params=kwargs)

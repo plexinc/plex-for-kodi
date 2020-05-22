@@ -120,6 +120,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._forcedLastSkipAmount = None
         self._enableIntroSkip = plexapp.ACCOUNT.adminHasPlexPass
         self.intro = self.handler.player.video.intro
+        self.showIntroSkipEarly = util.advancedSettings.introSkipEarly
         self.skipSteps = self.SKIP_STEPS
         self.useAutoSeek = util.advancedSettings.autoSeek
         self.useDynamicStepsForTimeline = util.advancedSettings.dynamicTimelineSeek
@@ -234,7 +235,7 @@ class SeekDialog(kodigui.BaseDialog):
             if controlID == self.SKIP_INTRO_BUTTON_ID:
                 if action == xbmcgui.ACTION_SELECT_ITEM:
                     self.doSeek(int(self.intro.endTimeOffset)+1000)
-                    self.shouldShowIntro()
+                    self.shouldShowIntroSkip()
                     return
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.setProperty('show.introSkipCond', '1')
@@ -775,9 +776,9 @@ class SeekDialog(kodigui.BaseDialog):
             self.updateProgress(set_to_current=False)
             self.setProperty('button.seek', '1')
 
-    def shouldShowIntro(self):
-        if self.intro and self._enableIntroSkip and \
-                int(self.intro.startTimeOffset) <= self.offset <= int(self.intro.endTimeOffset):
+    def shouldShowIntroSkip(self):
+        refMinOffset = 0 if self.showIntroSkipEarly else int(self.intro.startTimeOffset)
+        if self.intro and self._enableIntroSkip and refMinOffset <= self.offset <= int(self.intro.endTimeOffset):
             self.setProperty('show.introSkip', '1')
             return True
         self.setProperty('show.introSkip', '')
@@ -913,7 +914,7 @@ class SeekDialog(kodigui.BaseDialog):
             self.resetSeeking()
             return
 
-        intro = self.shouldShowIntro()
+        intro = self.shouldShowIntroSkip()
         if intro and not self.osdVisible() and self.lastFocusID != self.SKIP_INTRO_BUTTON_ID and \
                 not self.getProperty('show.introSkipCond'):
             self.setFocusId(self.SKIP_INTRO_BUTTON_ID)
@@ -947,7 +948,7 @@ class SeekDialog(kodigui.BaseDialog):
     def hideOSD(self):
         self.setProperty('show.OSD', '')
         self.setFocusId(self.NO_OSD_BUTTON_ID)
-        if self.shouldShowIntro() and not self.getProperty('show.introSkipCond'):
+        if self.shouldShowIntroSkip() and not self.getProperty('show.introSkipCond'):
             self.setFocusId(self.SKIP_INTRO_BUTTON_ID)
 
         self.resetSeeking()

@@ -95,6 +95,7 @@ class AdvancedSettings(object):
         ("auto_seek", True),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
+        ("intro_skip_early", False)
     )
 
     def __init__(self):

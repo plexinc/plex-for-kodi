@@ -777,11 +777,12 @@ class SeekDialog(kodigui.BaseDialog):
             self.setProperty('button.seek', '1')
 
     def shouldShowIntroSkip(self):
-        refMinOffset = 0 if self.showIntroSkipEarly else int(self.intro.startTimeOffset)
-        if self.intro and self._enableIntroSkip and refMinOffset <= self.offset <= int(self.intro.endTimeOffset):
-            self.setProperty('show.introSkip', '1')
-            return True
-        self.setProperty('show.introSkip', '')
+        if self.intro:
+            refMinOffset = 0 if self.showIntroSkipEarly else int(self.intro.startTimeOffset)
+            if self._enableIntroSkip and refMinOffset <= self.offset <= int(self.intro.endTimeOffset):
+                self.setProperty('show.introSkip', '1')
+                return True
+            self.setProperty('show.introSkip', '')
 
     def setup(self, duration, offset=0, bif_url=None, title='', title2=''):
         self.title = title

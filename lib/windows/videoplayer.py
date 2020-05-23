@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import time
 import threading
+import math
 
 from kodi_six import xbmc
 from kodi_six import xbmcgui
@@ -341,8 +342,9 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 # self.playVideo()
                 break
             elif self.timeout is not None:
-                self.setProperty('countdown', str(min(abs(util.advancedSettings.postplayTimeout-1),
-                                 int((self.timeout or now) - now))))
+                cd = min(abs(util.advancedSettings.postplayTimeout-1), int((self.timeout or now) - now))
+                base = 15 / float(util.advancedSettings.postplayTimeout-1)
+                self.setProperty('countdown', str(int(math.ceil(base*cd))))
 
     def getHubs(self):
         try:

@@ -12,10 +12,10 @@
     <setting id="auto_seek" type="bool" label="32466" default="true" />
     <setting id="kodi_skip_stepping" type="bool" label="32465" default="false" />
     <setting id="dynamic_timeline_seek" type="bool" label="32471" default="false" />
+    <setting id="postplay_always" type="bool" label="32500" default="false" />
+    <setting id="postplay_timeout" type="number" label="32501" default="16" />
   </category>
   <category label="32467">
     <setting id="fast_back" type="bool" label="32485" default="false" />
-    <setting id="postplay_always" type="bool" label="32500" default="false" />
-    <setting id="postplay_timeout" type="integer" label="32501" default="16" />
   </category>
 </settings>

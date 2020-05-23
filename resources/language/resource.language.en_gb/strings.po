@@ -978,3 +978,11 @@ msgstr ""
 msgctxt "#32492"
 msgid "Kodi Subtitle Settings"
 msgstr ""
+
+msgctxt "#32500"
+msgid "Always show post-play screen (even for short videos)"
+msgstr ""
+
+msgctxt "#32501"
+msgid "Time-to-wait between videos on post-play"
+msgstr ""

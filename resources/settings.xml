@@ -15,5 +15,7 @@
   </category>
   <category label="32467">
     <setting id="fast_back" type="bool" label="32485" default="false" />
+    <setting id="postplay_always" type="bool" label="32500" default="false" />
+    <setting id="postplay_timeout" type="integer" label="32501" default="16" />
   </category>
 </settings>

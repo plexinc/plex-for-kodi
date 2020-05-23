@@ -316,8 +316,8 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
             millis = (self.passoutProtection - time.time()) * 1000
             util.DEBUG_LOG('Post play auto-play: Passout protection in {0}'.format(util.durationToShortText(millis)))
 
-        util.DEBUG_LOG('Staring post-play timer')
-        self.timeout = time.time() + 16
+        util.DEBUG_LOG('Starting post-play timer')
+        self.timeout = time.time() + abs(util.advancedSettings.postplayTimeout)
         threading.Thread(target=self.countdown).start()
 
     def cancelTimer(self):
@@ -341,7 +341,8 @@ class VideoPlayerWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
                 # self.playVideo()
                 break
             elif self.timeout is not None:
-                self.setProperty('countdown', str(min(15, int((self.timeout or now) - now))))
+                self.setProperty('countdown', str(min(abs(util.advancedSettings.postplayTimeout-1),
+                                 int((self.timeout or now) - now))))
 
     def getHubs(self):
         try:

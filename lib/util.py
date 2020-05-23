@@ -95,6 +95,8 @@ class AdvancedSettings(object):
         ("auto_seek", True),
         ("dynamic_timeline_seek", False),
         ("fast_back", False),
+        ("postplay_always", False),
+        ("postplay_timeout", 16),
     )
 
     def __init__(self):

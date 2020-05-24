@@ -83,7 +83,7 @@ class PlexInterface(plexapp.AppInterface):
         'provides': 'player',
         'device': util.getPlatform() or plexapp.PLATFORM,
         'model': 'Unknown',
-        'friendlyName': 'Kodi Add-on ({0})'.format(platform.node()),
+        'friendlyName': util.rpc.Settings.GetSettingValue(setting='services.devicename').get('value') or 'Kodi',
         'supports1080p60': True,
         'vp9Support': True,
         'transcodeVideoQualities': [

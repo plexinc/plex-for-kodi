@@ -52,7 +52,7 @@ class Task:
         self._canceled = True
 
     def isCanceled(self):
-        return self._canceled or xbmc.abortRequested
+        return self._canceled or util.MONITOR.abortRequested()
 
     def isValid(self):
         return not self.finished and not self._canceled
@@ -97,7 +97,7 @@ class BackgroundWorker:
         return self
 
     def aborted(self):
-        return self._abort or xbmc.abortRequested
+        return self._abort or util.MONITOR.abortRequested()
 
     def start(self):
         if self._thread and self._thread.isAlive():
@@ -154,7 +154,7 @@ class BackgroundThreader:
         return self
 
     def aborted(self):
-        return self._abort or xbmc.abortRequested
+        return self._abort or util.MONITOR.abortRequested()
 
     def shutdown(self):
         self.abort()

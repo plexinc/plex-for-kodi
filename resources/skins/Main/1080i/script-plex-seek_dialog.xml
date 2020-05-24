@@ -203,7 +203,7 @@
                 <textoffsetx>70</textoffsetx>
                 <textcolor>FF000000</textcolor>
                 <focusedcolor>FF000000</focusedcolor>
-                <label>Skip intro</label>
+                <label>$INFO[Window.Property(introSkipText)]</label>
             </control>
         </control>
         <control type="group" id="801">

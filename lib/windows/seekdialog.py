@@ -179,7 +179,7 @@ class SeekDialog(kodigui.BaseDialog):
 
     def _onFirstInit(self):
         self.resetTimeout()
-
+        self.setProperty('introSkipText', T(32495, 'Skip intro'))
         self.bigSeekHideTimer = kodigui.PropertyTimer(self._winID, 0.5, 'hide.bigseek')
 
         if self.handler.playlist:

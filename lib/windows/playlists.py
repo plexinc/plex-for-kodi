@@ -93,7 +93,13 @@ class PlaylistsWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.openWindow(playlist.PlaylistWindow, playlist=mli.dataSource)
 
     def createListItem(self, obj):
-        w, h = self.THUMB_DIMS[obj.playlistType]['item.thumb']
+        dimensions = self.THUMB_DIMS.get(obj.playlistType)
+
+        if not dimensions:
+            return
+
+        w, h = dimensions['item.thumb']
+
         if obj.playlistType == 'audio':
             thumb = obj.buildComposite(width=w, height=h, media='thumb')
         else:

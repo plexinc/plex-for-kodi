@@ -3,6 +3,7 @@
 PlexLibrary
 """
 from __future__ import absolute_import
+import re
 from . import plexobjects
 from . import playlist
 from . import media
@@ -481,6 +482,9 @@ class Hub(BaseHub):
 
     def __repr__(self):
         return '<{0}:{1}>'.format(self.__class__.__name__, self.hubIdentifier)
+
+    def getCleanHubIdentifier(self):
+        return re.sub(r'\.\d+$', '', re.sub(r'\.\d+$', '', self.hubIdentifier))
 
     def reload(self, **kwargs):
         """ Reload the data for this object from PlexServer XML. """

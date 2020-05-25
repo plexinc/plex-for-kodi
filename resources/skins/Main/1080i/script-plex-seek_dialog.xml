@@ -113,6 +113,18 @@
                     <label>$INFO[Window.Property(time.current)]</label>
                 </control>
                 <control type="label">
+                    <visible>Player.IsTempo</visible>
+                    <posx>60</posx>
+                    <posy>40</posy>
+                    <width>1000</width>
+                    <height>60</height>
+                    <font>font13</font>
+                    <align>left</align>
+                    <aligny>center</aligny>
+                    <textcolor>A0FFFFFF</textcolor>
+                    <label>$INFO[Player.PlaySpeed]x</label>
+                </control>
+                <control type="label">
                     <posx>1860</posx>
                     <posy>0</posy>
                     <width>800</width>

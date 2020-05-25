@@ -288,6 +288,12 @@ class SeekDialog(kodigui.BaseDialog):
                 builtin.Action('CycleSubtitle')
             elif action.getButtonCode() == 61524:
                 builtin.Action('ShowSubtitles')
+            elif action.getButtonCode() == 323714:
+                # Alt-left
+                builtin.PlayerControl('tempodown')
+            elif action.getButtonCode() == 323715:
+                # Alt-right
+                builtin.PlayerControl('tempoup')
             elif action == xbmcgui.ACTION_NEXT_ITEM:
                 next(self.handler)
             elif action == xbmcgui.ACTION_PREV_ITEM:

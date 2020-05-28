@@ -25,6 +25,7 @@ from . import preplayutils
 from lib.util import T
 from six.moves import range
 
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
 
 class EpisodeReloadTask(backgroundthread.Task):
     def setup(self, episode, callback):
@@ -41,7 +42,7 @@ class EpisodeReloadTask(backgroundthread.Task):
             return
 
         try:
-            self.episode.reload(checkFiles=1)
+            self.episode.reload(checkFiles=1, includeChapters=1)
             if self.isCanceled():
                 return
             self.callback(self.episode)
@@ -123,6 +124,8 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.postSetup()
 
     def doAutoPlay(self):
+        # First reload the video to get all the other info
+        self.initialEpisode.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         return self.playButtonClicked(force_episode=self.initialEpisode)
 
     def onReInit(self):
@@ -146,7 +149,7 @@ class EpisodesWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
 
     def _setup(self):
         player.PLAYER.on('new.video', self.onNewVideo)
-        (self.season or self.show_).reload(includeExtras=1, includeExtrasCount=10)
+        (self.season or self.show_).reload(checkFiles=1, **VIDEO_RELOAD_KW)
 
         self.updateProperties()
         self.fillEpisodes()

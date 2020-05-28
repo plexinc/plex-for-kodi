@@ -22,7 +22,7 @@ from lib import metadata
 
 from lib.util import T
 
-VIDEO_RELOAD_KW = dict(includeRelated=1, includeRelatedCount=10)
+VIDEO_RELOAD_KW = dict(includeExtras=1, includeExtrasCount=10, includeChapters=1)
 
 
 class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
@@ -76,6 +76,8 @@ class PrePlayWindow(kodigui.ControlledWindow, windowutils.UtilMixin):
         self.setup()
 
     def doAutoPlay(self):
+        # First reload the video to get all the other info
+        self.video.reload(checkFiles=1, **VIDEO_RELOAD_KW)
         return self.playVideo()
 
     def onReInit(self):

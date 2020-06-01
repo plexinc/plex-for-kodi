@@ -979,10 +979,6 @@ msgctxt "#32492"
 msgid "Kodi Subtitle Settings"
 msgstr ""
 
-msgctxt "#32494"
-msgid "Show intro skip button from the beginning of the video (PlexPass)"
-msgstr ""
-
 msgctxt "#32495"
 msgid "Skip intro"
 msgstr ""

@@ -1190,7 +1190,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if not mli:
             return
 
-        if not mli.dataSource.exists():
+        if mli.dataSource and not mli.dataSource.exists():
             self.showPanelControl.removeItem(mli.pos())
             return
 

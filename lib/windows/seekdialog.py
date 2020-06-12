@@ -121,7 +121,7 @@ class SeekDialog(kodigui.BaseDialog):
         self._forcedLastSkipAmount = None
         self._enableIntroSkip = plexapp.ACCOUNT.hasPlexPass()
         self.intro = self.handler.player.video.intro
-        self._introSkipShownFor = 0
+        self._introSkipShownStarted = None
         self.skipSteps = self.SKIP_STEPS
         self.useAutoSeek = util.advancedSettings.autoSeek
         self.useDynamicStepsForTimeline = util.advancedSettings.dynamicTimelineSeek
@@ -235,8 +235,8 @@ class SeekDialog(kodigui.BaseDialog):
             passThroughMain = False
             if controlID == self.SKIP_INTRO_BUTTON_ID:
                 if action == xbmcgui.ACTION_SELECT_ITEM:
-                    self.doSeek(int(self.intro.endTimeOffset)+1000)
-                    self.shouldShowIntroSkip()
+                    self.setProperty('show.introSkip_OSDOnly', '1')
+                    self.doSeek(int(self.intro.endTimeOffset))
                     return
                 elif action == xbmcgui.ACTION_MOVE_DOWN:
                     self.setProperty('show.introSkip_OSDOnly', '1')
@@ -782,9 +782,13 @@ class SeekDialog(kodigui.BaseDialog):
             if self._enableIntroSkip and \
                     int(self.intro.startTimeOffset) <= self.offset <= int(self.intro.endTimeOffset):
                 self.setProperty('show.introSkip', '1')
-                if self._introSkipShownFor > self.SHOW_INTRO_SKIP_BUTTON_TIMEOUT:
-                    self.setProperty('show.introSkip_OSDOnly', '1')
-                self._introSkipShownFor += 1
+
+                if self._introSkipShownStarted is None:
+                    self._introSkipShownStarted = time.time()
+
+                else:
+                    if self._introSkipShownStarted + self.SHOW_INTRO_SKIP_BUTTON_TIMEOUT <= time.time():
+                        self.setProperty('show.introSkip_OSDOnly', '1')
                 return True
             self.setProperty('show.introSkip', '')
         return False

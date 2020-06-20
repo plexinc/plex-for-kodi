@@ -1,4 +1,18 @@
+[- 0.2.1 -]
+
+Added Skip Intro (thanks to pannal)
+Use device name for friendly name
+Fix some hubs not displaying
+Added title scrolling when focused on some items
+Show playback speed on OSD
+Fix possible error on playlists window
+
+[- 0.2.0 -]
+
+Bump version to 0.2.0 to differentiate from deprecated Kodi 17 0.1.x versions
+
 [- 0.1.8 -]
+
 Fix seek resetting when clicking select on seek bar with OSD visible
 Add Spanish translations (thanks to rdcalle)
 Add Portuguese (Portugal) translations (thanks to Generator)
@@ -11,7 +25,7 @@ Add Italian translations (thanks to iz8mbw)
 Use Kodi time format setting (Issue #90) (thanks to pannal)
 Restore last window when starting the add-on while it is running (Issue #126)
 Add Portuguese (Brazil) translations (thanks to DiogoAbu)
-Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal
+Add ability to exit search edit box with previous menu (escape) button (Issue #194) (thanks to pannal)
 Only play unwatched media when pressing play or shuffle and filtering for unwatched (thanks to tlt21)
 Fix issue with duplicated icons when fast-scrolling a hub (Issue #177) (thanks to pannal)
 Fixed GUI not responding after public IP renewal (thanks to pannal and mkliche)

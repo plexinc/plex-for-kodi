@@ -537,7 +537,7 @@ class PlaylistHub(BaseHub):
     def extend(self, start=None, size=None):
         path = '/playlists/all?playlistType={0}'.format(self.type)
 
-        args = {}
+        args = {"includeMarkers": 1}
 
         if size is not None:
             args['X-Plex-Container-Start'] = start

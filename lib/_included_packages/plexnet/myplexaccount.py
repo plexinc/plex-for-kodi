@@ -220,10 +220,7 @@ class MyPlexAccount(object):
         self.saveState()
 
     def hasPlexPass(self):
-        if self.isPlexPass or self.isManaged:
-            return True
-
-        return self.adminHasPlexPass
+        return self.isPlexPass or (self.isManaged and self.adminHasPlexPass)
 
     def validateToken(self, token, switchUser=False):
         self.authToken = token

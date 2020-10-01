@@ -48,7 +48,7 @@ def waitForThreads():
 
 @atexit.register
 def realExit():
-    xbmc.log('Main: script.plex: REALLY FINISHED', xbmc.LOGNOTICE)
+    xbmc.log('Main: script.plex: REALLY FINISHED', xbmc.LOGINFO)
 
 
 def signout():

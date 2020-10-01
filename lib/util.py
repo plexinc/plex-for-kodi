@@ -56,7 +56,7 @@ def T(ID, eng=''):
     return ADDON.getLocalizedString(ID)
 
 
-def LOG(msg, level=xbmc.LOGNOTICE):
+def LOG(msg, level=xbmc.LOGINFO):
     xbmc.log('script.plex: {0}'.format(msg), level)
 
 
@@ -145,7 +145,7 @@ def ERROR(txt='', hide_tb=False, notify=False):
 
 
 def TEST(msg):
-    xbmc.log('---TEST: {0}'.format(msg), xbmc.LOGNOTICE)
+    xbmc.log('---TEST: {0}'.format(msg), xbmc.LOGINFO)
 
 
 def setSetting(key, value):

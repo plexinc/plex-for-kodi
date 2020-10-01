@@ -70,7 +70,7 @@ class BuiltInMethod:
             else:
                 command = '{0}.{1}'.format(self.module, method)
 
-            xbmc.log(command, xbmc.LOGNOTICE)
+            xbmc.log(command, xbmc.LOGINFO)
 
             xbmc.executebuiltin(command)
 
@@ -86,7 +86,7 @@ class BuiltInMethod:
         else:
             command = '{0}'.format(self.module)
 
-        xbmc.log(command, xbmc.LOGNOTICE)
+        xbmc.log(command, xbmc.LOGINFO)
 
         xbmc.executebuiltin(command)
 

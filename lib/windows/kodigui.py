@@ -429,7 +429,7 @@ class ManagedControlList(object):
                 mli._listItem = li
                 mli._updateListItem()
         except RuntimeError:
-            xbmc.log('kodigui.ManagedControlList._updateItems: Runtime error', xbmc.LOGNOTICE)
+            xbmc.log('kodigui.ManagedControlList._updateItems: Runtime error', xbmc.LOGINFO)
             return False
 
         return True

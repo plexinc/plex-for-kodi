@@ -229,7 +229,7 @@ def parseFieldValue(message, label):
     if label not in message:
         return None
 
-    return message.split(label, 1)[-1].split(chr(13))[0]
+    return message.split(label, 1)[-1].split(chr(13).encode())[0].decode()
 
 
 DISCOVERY = GDMDiscovery()

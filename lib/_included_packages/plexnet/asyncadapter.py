@@ -178,7 +178,8 @@ class AsyncHTTPConnectionPool(HTTPConnectionPool):
         self.num_connections += 1
 
         extra_params = {}
-        extra_params['strict'] = self.strict
+        if six.PY2:
+            extra_params['strict'] = self.strict
 
         conn = AsyncHTTPConnection(host=self.host, port=self.port, timeout=self.timeout.connect_timeout, **extra_params)
 
@@ -218,7 +219,8 @@ class AsyncHTTPSConnectionPool(HTTPSConnectionPool):
         connection_class = AsyncVerifiedHTTPSConnection
 
         extra_params = {}
-        extra_params['strict'] = self.strict
+        if six.PY2:
+            extra_params['strict'] = self.strict
         connection = connection_class(host=actual_host, port=actual_port, timeout=self.timeout.connect_timeout, **extra_params)
 
         self.connections.append(connection)

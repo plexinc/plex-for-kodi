@@ -458,7 +458,7 @@ class Episode(PlayableVideo):
     @property
     def intro(self):
         if self._intro is None:
-            self._intro = (filter(lambda x: x.type == "intro", self.markers) or [False])[0]
+            self._intro = list((filter(lambda x: x.type == "intro", self.markers) or [False]))[0]
         return self._intro
 
     @property

@@ -74,6 +74,11 @@ TYPE_KEYS = {
         'thumb_dim': THUMB_POSTER_DIM,
         'art_dim': ART_AR16X9_DIM
     },
+    'collection': {
+        'fallback': 'movie',
+        'thumb_dim': THUMB_POSTER_DIM,
+        'art_dim': ART_AR16X9_DIM
+    },
     'album': {
         'fallback': 'music',
         'thumb_dim': THUMB_SQUARE_DIM
@@ -129,7 +134,8 @@ SORT_KEYS = {
     'photo': {
         'originallyAvailableAt': {'title': T(32373, 'By Date Taken'), 'display': T(32374, 'Date Taken')}
     },
-    'photodirectory': {}
+    'photodirectory': {},
+    'collection': {}
 }
 
 ITEM_TYPE = None
@@ -472,6 +478,9 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
                 self.showPanelControl = ChunkedWrapList(self, self.POSTERS_PANEL_ID, 5)
             else:
                 self.showPanelControl = kodigui.ManagedControlList(self, self.POSTERS_PANEL_ID, 5)
+
+            hideFilterOptions = self.section.TYPE == 'photodirectory' or self.section.TYPE == 'collection'
+
             self.keyListControl = kodigui.ManagedControlList(self, self.KEY_LIST_ID, 27)
             self.setProperty('no.options', self.section.TYPE != 'photodirectory' and '1' or '')
             self.setProperty('unwatched.hascount', self.section.TYPE == 'show' and '1' or '')
@@ -480,7 +489,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.setProperty('sort.display', SORT_KEYS[self.section.TYPE].get(self.sort, SORT_KEYS['movie'].get(self.sort))['title'])
             self.setProperty('media.type', TYPE_PLURAL.get(ITEM_TYPE or self.section.TYPE, self.section.TYPE))
             self.setProperty('media', self.section.TYPE)
-            self.setProperty('hide.filteroptions', self.section.TYPE == 'photodirectory' and '1' or '')
+            self.setProperty('hide.filteroptions', hideFilterOptions and '1' or '')
 
             self.setTitle()
             self.fill()
@@ -1169,22 +1178,30 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         if not mli or not mli.dataSource:
             return
 
+        sectionType = self.section.TYPE
+
+        if sectionType == 'collection':
+            sectionType = mli.dataSource.TYPE
+
         updateWatched = False
-        if self.section.TYPE == 'show':
+        if mli.dataSource.TYPE == 'collection':
+            self.processCommand(opener.open(mli.dataSource))
+            updateWatched = True
+        elif sectionType == 'show':
             if ITEM_TYPE == 'episode':
                 self.openItem(mli.dataSource)
             else:
                 self.processCommand(opener.handleOpen(subitems.ShowWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
-        elif self.section.TYPE == 'movie':
+        elif sectionType == 'movie':
             self.processCommand(opener.handleOpen(preplay.PrePlayWindow, video=mli.dataSource, parent_list=self.showPanelControl))
             updateWatched = True
-        elif self.section.TYPE == 'artist':
+        elif sectionType == 'artist':
             if ITEM_TYPE == 'album':
                 self.openItem(mli.dataSource)
             else:
                 self.processCommand(opener.handleOpen(subitems.ArtistWindow, media_item=mli.dataSource, parent_list=self.showPanelControl))
-        elif self.section.TYPE in ('photo', 'photodirectory'):
+        elif sectionType in ('photo', 'photodirectory'):
             self.showPhoto(mli.dataSource)
 
         if not mli:
@@ -1287,9 +1304,10 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
         idx = 0
         fallback = 'script.plex/thumb_fallbacks/{0}.png'.format(TYPE_KEYS.get(self.section.type, TYPE_KEYS['movie'])['fallback'])
 
-        if self.sort != 'titleSort':
+        if self.sort != 'titleSort' or self.section.TYPE == 'collection':
             sectionAll = self.section.all(0, 0, filter_=self.getFilterOpts(), sort=self.getSortOpts(), unwatched=self.filterUnwatched, type_=type_)
-            totalSize = sectionAll.totalSize.asInt()
+            totalSize = max(len(sectionAll), sectionAll.totalSize.asInt())
+
             if not self.chunkMode:
                 for x in range(totalSize):
                     mli = kodigui.ManagedListItem('')

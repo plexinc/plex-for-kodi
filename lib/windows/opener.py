@@ -47,6 +47,8 @@ def open(obj, auto_play=False):
     elif obj.TYPE in ('clip'):
         from . import videoplayer
         return videoplayer.play(video=obj)
+    elif obj.TYPE in ('collection'):
+        return collectionClicked(obj)
     elif obj.TYPE in ('Genre'):
         return genreClicked(obj)
     elif obj.TYPE in ('Director'):
@@ -122,6 +124,10 @@ def photoDirectoryClicked(photodirectory):
 def playlistClicked(pl):
     from . import playlist
     return handleOpen(playlist.PlaylistWindow, playlist=pl)
+
+
+def collectionClicked(collection):
+    return sectionClicked(collection)
 
 
 def sectionClicked(section, filter_=None):

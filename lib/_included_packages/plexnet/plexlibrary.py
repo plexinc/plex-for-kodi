@@ -136,7 +136,7 @@ class LibrarySection(plexobjects.PlexObject):
         else:
             path = '/library/sections/{0}/all'.format(self.key)
 
-        args = {}
+        args = {"includeCollections" : "1"}
 
         if size is not None:
             args['X-Plex-Container-Start'] = start
@@ -362,6 +362,24 @@ class PhotoSection(LibrarySection):
 
     def isPhotoOrDirectoryItem(self):
         return True
+
+
+@plexobjects.registerLibType
+class Collection(media.MediaItem):
+    TYPE = 'collection'
+
+    def __repr__(self):
+        title = self.title.replace(' ', '.')[0:20]
+        return '<{0}:{1}:{2}>'.format(self.__class__.__name__, self.key, title)
+
+    def all(self, *args, **kwargs):
+        return plexobjects.listItems(self.server, self.key)
+
+    def isMusicOrDirectoryItem(self):
+        return self.container.viewGroup in ('artist', 'album', 'track')
+
+    def isVideoOrDirectoryItem(self):
+        return self.container.viewGroup in ('movie', 'show', 'episode')
 
 
 @plexobjects.registerLibType

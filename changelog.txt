@@ -1,3 +1,10 @@
+[- 0.2.2 -]
+
+Added support for collections in library views
+Update Polish strings (thanks to Zachar)
+Fix GDM issue (thanks to MrPumo)
+Fix Python 3 issues (thanks to MrPumo and pannal)
+
 [- 0.2.1 -]
 
 Added Skip Intro (thanks to pannal)

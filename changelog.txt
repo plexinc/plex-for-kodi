@@ -1,3 +1,7 @@
+[- 0.2.3 -]
+
+Fix error causing playback to fail
+
 [- 0.2.2 -]
 
 Added support for collections in library views

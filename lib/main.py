@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 from kodi_six import xbmc
 
+from ._included_packages.plexnet.gdmClient import GDMClientDiscovery
+from ._included_packages.plexnet.httpServer import HttpServer
+
 if xbmc.getInfoLabel('Window(10000).Property(script.plex.running)') == "1":
     command = 'XBMC.NotifyAll({0},{1},{2})'.format('script.plex', 'RESTORE', None)
     xbmc.executebuiltin(command)
@@ -73,6 +76,11 @@ def _main():
     util.DEBUG_LOG('[ STARTED: {0} -------------------------------------------------------------------- ]'.format(util.ADDON.getAddonInfo('version')))
     util.DEBUG_LOG('USER-AGENT: {0}'.format(plex.defaultUserAgent()))
     background.setSplash()
+
+    gdmClient = GDMClientDiscovery()
+    gdmClient.discover()
+    httpServer = HttpServer()
+    httpServer.start()
 
     try:
         while not util.MONITOR.abortRequested():
@@ -150,6 +158,8 @@ def _main():
         waitForThreads()
         background.setBusy(False)
         background.setSplash(False)
+        gdmClient.close()
+        httpServer.close()
 
         util.DEBUG_LOG('FINISHED')
 

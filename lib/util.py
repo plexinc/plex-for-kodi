@@ -593,6 +593,6 @@ def getAttributes():
         "platform": "RaspberryPi",
         "platformVersion": "18.0.0",
         "protocolVersion": "3",
-        "protocolCapabilities": "timeline,playback,navigation,mirror,playqueues",
+        "protocolCapabilities": "timeline,playback",
         "deviceClass": "stb"
     }

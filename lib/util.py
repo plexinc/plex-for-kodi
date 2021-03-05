@@ -581,3 +581,18 @@ def shutdown():
     del MONITOR
     del T
     del ADDON
+
+
+def getAttributes():
+    # TODO replace source
+    return {
+        "title": "Kodi",
+        "machineIdentifier": "plex-kodi-plex-xxxxxx",
+        "product": "Plex for Kodi",
+        "version": "0.0.1",
+        "platform": "RaspberryPi",
+        "platformVersion": "18.0.0",
+        "protocolVersion": "3",
+        "protocolCapabilities": "timeline,playback,navigation,mirror,playqueues",
+        "deviceClass": "stb"
+    }

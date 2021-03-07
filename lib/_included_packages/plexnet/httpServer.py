@@ -3,6 +3,7 @@ from __future__ import print_function
 import threading
 import time
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+import requests
 from lxml import etree as ET
 from urlparse import urlparse, parse_qs
 
@@ -11,9 +12,12 @@ from gdmClient import GDMClientDiscovery
 
 
 class Subscription:
-    def __init__(self, client_id, command_id=0):
+    def __init__(self, client_id, protocol, remote_address, port, command_id=0):
         self.id = client_id  # id of the subscribed controller
         self.command_id = command_id  # id which increases for each send command from the controller
+        self.remote_address = remote_address
+        self.port = port
+        self.protocol = protocol
 
 
 class HttpServer:
@@ -91,43 +95,54 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         player = ET.SubElement(data, 'Player', attributes)
         return ET.tostring(data, xml_declaration=True)
 
-    def getTimelineXML(self, commandID):
-        # TODO implement dynamic data
-        data = ET.Element('MediaContainer', {
-            "location": "navigation",
-            "commandID": str(commandID),
-            "textFieldFocused": "field"
-        })
-        attributes = {
-            "type": "video",
-            "state": "stopped",
-            "controllable": "[volume,shuffle,repeat,audioStream,videoStream,subtitleStream,skipPrevious,skipNext,seekTo,stepBack,stepForward,stop,playPause]",
-        }
-        timeline = ET.SubElement(data, 'Timeline', attributes)
-        return ET.tostring(data, xml_declaration=True)
-
     def handleSubscribeRequest(self, parsed_url, params):
         command_id = int(params.get("commandID")[0])
         client_ident = self.getClientIdentifier()
         subscription = self.subscriptions.get(client_ident)
         if not subscription:
-            subscription = Subscription(client_ident, command_id)
+            subscription = Subscription(client_ident, params.get("protocol"), self.client_address, params.get("port"),  command_id)
             self.subscriptions[client_ident] = subscription
+
+        sendTimelineUpdate(subscription)
 
         self.send_response(200)
         self.addStandardHeader()
-        self.send_header("Content-type", "application/xml")
         self.end_headers()
-
-        response = self.getTimelineXML(command_id)
-
-        self.wfile.write(response)
 
     def handleUnsubscribeRequest(self, parsed_url, params):
         self.subscriptions[self.getClientIdentifier()] = None  # delete subscription
+
         self.send_response(200)
         self.addStandardHeader()
         self.end_headers()
+
+
+def getTimelineXML(subscription):
+    # TODO implement dynamic data
+    data = ET.Element('MediaContainer', {
+        "location": "navigation",
+        "commandID": str(subscription.command_id),
+        "textFieldFocused": "field"
+    })
+    attributes = {
+        "type": "video",
+        "state": "stopped",
+        "controllable": "[volume,shuffle,repeat,audioStream,videoStream,subtitleStream,skipPrevious,skipNext,seekTo,stepBack,stepForward,stop,playPause]",
+    }
+    timeline = ET.SubElement(data, 'Timeline', attributes)
+    return ET.tostring(data, xml_declaration=True)
+
+
+def sendTimelineUpdate(subscription):
+    response = getTimelineXML(subscription)
+    url = "{0}://{1}:{2}/:/timeline".format(subscription.protocol[0], subscription.remote_address[0], subscription.port[0])
+
+    headers = {
+        "Content-type": "application/xml",
+        "X-Plex-Client-Identifier": util.getAttributes().get("machineIdentifier")
+    }
+    request = requests.post(url=url, data=response, headers=headers)
+    print(request.content)
 
 
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ class KillableThread(threading.Thread):
     #     thread, to get the identity of the thread represented by this
     #     instance.
     #     """
-    #     if not self.isAlive():
+    #     if not self.is_alive():
     #         raise threading.ThreadError("the thread is not active")
 
     #     return self.ident
@@ -58,7 +58,7 @@ class KillableThread(threading.Thread):
     #         t = ThreadWithExc( ... )
     #         ...
     #         t.raiseExc( SomeException )
-    #         while t.isAlive():
+    #         while t.is_alive():
     #             time.sleep( 0.1 )
     #             t.raiseExc( SomeException )
 
@@ -78,7 +78,7 @@ class KillableThread(threading.Thread):
 
     #         if force_and_wait:
     #             time.sleep(0.1)
-    #             while self.isAlive():
+    #             while self.is_alive():
     #                 self._raiseExc(KillThreadException)
     #                 time.sleep(0.1)
     #     except threading.ThreadError:

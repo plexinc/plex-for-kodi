@@ -26,7 +26,7 @@ class GDMDiscovery(object):
 
     def isActive(self):
         from . import plexapp
-        return util.INTERFACE.getPreference("gdm_discovery", True) and self.thread and self.thread.isAlive()
+        return util.INTERFACE.getPreference("gdm_discovery", True) and self.thread and self.thread.is_alive()
 
     '''
     def discover(self):

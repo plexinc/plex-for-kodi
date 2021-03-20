@@ -35,7 +35,7 @@ def waitForThreads():
     while len(threading.enumerate()) > 1:
         for t in threading.enumerate():
             if t != threading.currentThread():
-                if t.isAlive():
+                if t.is_alive():
                     util.DEBUG_LOG('Main: Waiting on: {0}...'.format(t.name))
                     if isinstance(t, _Timer):
                         t.cancel()

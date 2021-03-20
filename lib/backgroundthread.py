@@ -100,7 +100,7 @@ class BackgroundWorker:
         return self._abort or util.MONITOR.abortRequested()
 
     def start(self):
-        if self._thread and self._thread.isAlive():
+        if self._thread and self._thread.is_alive():
             return
 
         self._thread = threadutils.KillableThread(target=self._queueLoop, name='BACKGROUND-WORKER({0})'.format(self.name))
@@ -126,13 +126,13 @@ class BackgroundWorker:
         if self._task:
             self._task.cancel()
 
-        if self._thread and self._thread.isAlive():
+        if self._thread and self._thread.is_alive():
             util.DEBUG_LOG('BGThreader: thread ({0}): Waiting...'.format(self.name))
             self._thread.join()
             util.DEBUG_LOG('BGThreader: thread ({0}): Done'.format(self.name))
 
     def working(self):
-        return self._thread and self._thread.isAlive()
+        return self._thread and self._thread.is_alive()
 
 
 class BackgroundThreader:

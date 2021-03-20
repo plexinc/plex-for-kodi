@@ -994,7 +994,7 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
             util.DEBUG_LOG('Player: Stopping and waiting...Done')
 
     def monitor(self):
-        if not self.thread or not self.thread.isAlive():
+        if not self.thread or not self.thread.is_alive():
             self.thread = threading.Thread(target=self._monitor, name='PLAYER:MONITOR')
             self.thread.start()
 

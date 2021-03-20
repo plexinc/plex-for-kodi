@@ -516,7 +516,7 @@ class SeekDialog(kodigui.BaseDialog):
         self.setProperty('button.seek', '1')
         self._delayedSeekTimeout = time.time() + 1.0
 
-        if not self._delayedSeekThread or not self._delayedSeekThread.isAlive():
+        if not self._delayedSeekThread or not self._delayedSeekThread.is_alive():
             self._delayedSeekThread = threading.Thread(target=self._delayedSeek)
             self._delayedSeekThread.start()
 

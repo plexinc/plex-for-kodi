@@ -768,7 +768,7 @@ class LibraryWindow(kodigui.MultiWindow, windowutils.UtilMixin):
             self.chunkCallback(None, None, clear=True)
         self.dcpjTimeout = time.time() + 0.5
         self.dcpjPos = pos
-        if not self.dcpjThread or not self.dcpjThread.isAlive():
+        if not self.dcpjThread or not self.dcpjThread.is_alive():
             self.dcpjThread = threading.Thread(target=self._chunkedPosJump)
             self.dcpjThread.start()
 

@@ -225,7 +225,7 @@ class PhotoWindow(kodigui.BaseWindow):
         self.updatePqueueListSelection(photo)
 
         self.showPhotoTimeout = time.time() + 0.2
-        if not self.showPhotoThread or not self.showPhotoThread.isAlive():
+        if not self.showPhotoThread or not self.showPhotoThread.is_alive():
             self.showPhotoThread = threading.Thread(target=self._showPhoto, name="showphoto")
             self.showPhotoThread.start()
 
@@ -330,7 +330,7 @@ class PhotoWindow(kodigui.BaseWindow):
 
     def play(self):
         self.setProperty('playing', '1')
-        if self.slideshowThread and self.slideshowThread.isAlive():
+        if self.slideshowThread and self.slideshowThread.is_alive():
             return
 
         self.slideshowThread = threading.Thread(target=self.slideshow, name='slideshow')

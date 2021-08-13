@@ -752,7 +752,11 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         meta = self.playerObject.metadata
 
-        url = meta.streamUrls[0]
+        # Kodi 19 will try to look for subtitles in the directory containing the file. '/' and `/file.mkv` both point
+        # to the file, and Kodi will happily try to read the whole file without recognizing it isn't a directory.
+        # To get around that, we omit the filename here since it is unnecessary.
+        url = meta.streamUrls[0].replace("file.mkv", "")
+
         bifURL = self.playerObject.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(plexnetUtil.cleanToken(url), offset, bifURL and ' - indexed' or ''))
 

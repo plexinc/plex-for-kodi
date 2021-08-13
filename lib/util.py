@@ -16,6 +16,7 @@ from .kodijsonrpc import rpc
 from kodi_six import xbmc
 from kodi_six import xbmcgui
 from kodi_six import xbmcaddon
+from kodi_six import xbmcvfs
 
 from plexnet import signalsmixin
 import six
@@ -25,7 +26,7 @@ _SHUTDOWN = False
 
 ADDON = xbmcaddon.Addon()
 
-PROFILE = xbmc.translatePath(ADDON.getAddonInfo('profile'))
+PROFILE = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 
 SETTINGS_LOCK = threading.Lock()
 
@@ -176,7 +177,7 @@ def getGlobalProperty(key):
 
 def showNotification(message, time_ms=3000, icon_path=None, header=ADDON.getAddonInfo('name')):
     try:
-        icon_path = icon_path or xbmc.translatePath(ADDON.getAddonInfo('icon')).decode('utf-8')
+        icon_path = icon_path or xbmcvfs.translatePath(ADDON.getAddonInfo('icon'))
         xbmc.executebuiltin('Notification({0},{1},{2},{3})'.format(header, message, time_ms, icon_path))
     except RuntimeError:  # Happens when disabling the addon
         LOG(message)

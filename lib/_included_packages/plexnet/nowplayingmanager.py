@@ -190,9 +190,9 @@ class NowPlayingManager(object):
                 path = http.addUrlParam(path, paramKey + "=" + six.moves.urllib.parse.quote(str(params[paramKey])))
 
         request = plexrequest.PlexRequest(timeline.item.getServer(), path)
+
         context = request.createRequestContext("timelineUpdate", callback.Callable(self.onTimelineResponse))
         context.playQueue = timeline.playQueue
-        from . import plexapp
         util.APP.startRequest(request, context)
 
     def getServerTimeline(self, timelineType):

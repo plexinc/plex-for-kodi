@@ -5,6 +5,7 @@ import re
 import traceback
 import requests
 import socket
+import urllib3
 from . import threadutils
 import six.moves.urllib.request, six.moves.urllib.parse, six.moves.urllib.error
 import mimetypes

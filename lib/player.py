@@ -752,7 +752,8 @@ class PlexPlayer(xbmc.Player, signalsmixin.SignalsMixin):
 
         meta = self.playerObject.metadata
 
-        url = meta.streamUrls[0]
+        url = meta.streamUrls[0].replace("file.mkv", "")
+
         bifURL = self.playerObject.getBifUrl()
         util.DEBUG_LOG('Playing URL(+{1}ms): {0}{2}'.format(plexnetUtil.cleanToken(url), offset, bifURL and ' - indexed' or ''))
 

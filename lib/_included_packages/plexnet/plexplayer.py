@@ -445,6 +445,7 @@ class PlexPlayer(object):
 
         part = self.media.parts[partIndex]
         seekOffset = int(self.seekValue / 1000)
+        startOffset = obj.get("startOffset", 0)
 
         # Disabled for HLS due to a Roku bug plexinc/roku-client-issues#776
         if True:  # obj.streamFormat == "mkv":
@@ -454,9 +455,9 @@ class PlexPlayer(object):
             # have a valid duration.
 
             if isCurrentPart or len(self.media.parts) <= 1 or (
-                seekOffset >= obj.startOffset and seekOffset <= obj.get('startOffset', 0) + int(part.duration.asInt() / 1000)
+                seekOffset >= startOffset and seekOffset <= startOffset + int(part.duration.asInt() / 1000)
             ):
-                startOffset = seekOffset - (obj.startOffset or 0)
+                startOffset = seekOffset - startOffset
 
                 # Avoid a perfect storm of PMS and Roku quirks. If we pass an offset to
                 # the transcoder,: it'll start transcoding from that point. But if

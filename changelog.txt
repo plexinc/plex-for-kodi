@@ -1,3 +1,7 @@
+[- 0.2.4 -]
+
+Add Simplified Chinese translations (thanks to lsl330)
+
 [- 0.2.3 -]
 
 Fix error causing playback to fail

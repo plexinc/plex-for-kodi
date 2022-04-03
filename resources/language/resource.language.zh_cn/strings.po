@@ -1,0 +1,985 @@
+# XBMC Media Center language file
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC-Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2020-3-4 22:56+0000\n"
+"PO-Revision-Date: 2020-04-10 11:12+0800\n"
+"Last-Translator: GARY LAU <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "#32000"
+msgid "Main"
+msgstr "一般"
+
+msgctxt "#32001"
+msgid "Original"
+msgstr "原始质量"
+
+msgctxt "#32002"
+msgid "20 Mbps 1080p"
+msgstr ""
+
+msgctxt "#32003"
+msgid "12 Mbps 1080p"
+msgstr ""
+
+msgctxt "#32004"
+msgid "10 Mbps 1080p"
+msgstr ""
+
+msgctxt "#32005"
+msgid "8 Mbps 1080p"
+msgstr ""
+
+msgctxt "#32006"
+msgid "4 Mbps 720p"
+msgstr ""
+
+msgctxt "#32007"
+msgid "3 Mbps 720p"
+msgstr ""
+
+msgctxt "#32008"
+msgid "2 Mbps 720p"
+msgstr ""
+
+msgctxt "#32009"
+msgid "1.5 Mbps 480p"
+msgstr ""
+
+msgctxt "#32010"
+msgid "720 kbps"
+msgstr ""
+
+msgctxt "#32011"
+msgid "320 kbps"
+msgstr ""
+
+msgctxt "#32012"
+msgid "208 kbps"
+msgstr ""
+
+msgctxt "#32013"
+msgid "96 kbps"
+msgstr ""
+
+msgctxt "#32014"
+msgid "64 kbps"
+msgstr ""
+
+msgctxt "#32020"
+msgid "Local Quality"
+msgstr "本地播放质量"
+
+msgctxt "#32021"
+msgid "Remote Quality"
+msgstr "远程播放质量"
+
+msgctxt "#32022"
+msgid "Online Quality"
+msgstr "在线播放质量"
+
+msgctxt "#32023"
+msgid "Transcode Format"
+msgstr "转码格式"
+
+msgctxt "#32024"
+msgid "Debug Logging"
+msgstr "调试日志"
+
+msgctxt "#32025"
+msgid "Allow Direct Play"
+msgstr "允许直接播放"
+
+msgctxt "#32026"
+msgid "Allow Direct Stream"
+msgstr "允许直连串流"
+
+msgctxt "#32027"
+msgid "Force"
+msgstr "强制"
+
+msgctxt "#32028"
+msgid "Always"
+msgstr "总是"
+
+msgctxt "#32029"
+msgid "Only Image Formats"
+msgstr "仅图像格式"
+
+msgctxt "#32030"
+msgid "Auto"
+msgstr "自动"
+
+msgctxt "#32031"
+msgid "Burn Subtitles (Direct Play Only)"
+msgstr "固化字幕(仅直接播放)"
+
+msgctxt "#32032"
+msgid "Allow Insecure Connections"
+msgstr "允许非加密连接"
+
+msgctxt "#32033"
+msgid "Never"
+msgstr "从不"
+
+msgctxt "#32034"
+msgid "On Same network"
+msgstr "在同一网络"
+
+msgctxt "#32035"
+msgid "Always"
+msgstr "总是"
+
+msgctxt "#32036"
+msgid "Allow 4K"
+msgstr "允许4K"
+
+msgctxt "#32037"
+msgid "Allow HEVC (h265)"
+msgstr "允许HEVC (h265)"
+
+msgctxt "#32038"
+msgid "Automatically Sign In"
+msgstr "自动登录"
+
+msgctxt "#32039"
+msgid "Post Play Auto Play"
+msgstr "点击海报自动播放"
+
+msgctxt "#32040"
+msgid "Enable Subtitle Downloading"
+msgstr "允许下载字幕"
+
+msgctxt "#32041"
+msgid "Enable Subtitle Downloading"
+msgstr "允许下载字幕"
+
+msgctxt "#32042"
+msgid "Server Discovery (GDM)"
+msgstr "发现服务器(GDM)"
+
+msgctxt "#32043"
+msgid "Start Plex On Kodi Startup"
+msgstr "打开Kodi时自动启动PLEX"
+
+msgctxt "#32044"
+msgid "Connection 1 IP"
+msgstr "服务器1的IP"
+
+msgctxt "#32045"
+msgid "Connection 1 Port"
+msgstr "服务器1的端口"
+
+msgctxt "#32046"
+msgid "Connection 2 IP"
+msgstr "服务器2的IP"
+
+msgctxt "#32047"
+msgid "Connection 2 Port"
+msgstr "服务器2的端口"
+
+msgctxt "#32048"
+msgid "Audio"
+msgstr "音频"
+
+msgctxt "#32049"
+msgid "Advanced"
+msgstr "高级"
+
+msgctxt "#32050"
+msgid "Manual Servers"
+msgstr "手动输入服务器地址"
+
+msgctxt "#32051"
+msgid "Privacy"
+msgstr "隐私"
+
+msgctxt "#32052"
+msgid "About"
+msgstr "关于"
+
+msgctxt "#32053"
+msgid "Video"
+msgstr "视频"
+
+msgctxt "#32054"
+msgid "Addon Version"
+msgstr "插件版本"
+
+msgctxt "#32055"
+msgid "Kodi Version"
+msgstr "Kodi版本"
+
+msgctxt "#32056"
+msgid "Screen Resolution"
+msgstr "屏幕分辨率"
+
+msgctxt "#32057"
+msgid "Current Server Version"
+msgstr "PLEX服务器版本"
+
+
+msgctxt "#32100"
+msgid "Skip user selection and pin entry on startup."
+msgstr "启动时跳过选择用户和图钉."
+
+msgctxt "#32101"
+msgid "If enabled, when playback ends and there is a 'Next Up' item available, it will be automatically be played after a 15 second delay."
+msgstr "如果启用,当播放结束并且有一个“Next Up”项目可用时,它将在15秒的延迟后自动播放."
+
+msgctxt "#32102"
+msgid "Enable this if your hardware can handle 4K playback. Disable it to force transcoding."
+msgstr "如果您的硬件可以处理4K播放,请启用此选项.禁用它以强制转码."
+
+msgctxt "#32103"
+msgid "Enable this if your hardware can handle HEVC/h265. Disable it to force transcoding."
+msgstr "如果您的硬件可以处理HEVC/h265,请启用此选项.禁用它以强制转码."
+
+msgctxt "#32104"
+msgid "When to connect to servers with no secure connections.[CR][CR]* [B]Never[/B]: Never connect to a server insecurely[CR]* [B]On Same Network[/B]: Allow if on the same network[CR]* [B]Always[/B]: Allow same network and remote connections"
+msgstr ""
+
+
+msgctxt "#32201"
+msgid "Trailer"
+msgstr "预告片"
+
+msgctxt "#32202"
+msgid "Deleted Scene"
+msgstr "删除的场景"
+
+msgctxt "#32203"
+msgid "Interview"
+msgstr "访问"
+
+msgctxt "#32204"
+msgid "Music Video"
+msgstr "MV"
+
+msgctxt "#32205"
+msgid "Behind the Scenes"
+msgstr "幕后花絮"
+
+msgctxt "#32206"
+msgid "Scene"
+msgstr "现场"
+
+msgctxt "#32207"
+msgid "Live Music Video"
+msgstr ""
+
+msgctxt "#32208"
+msgid "Lyric Music Video"
+msgstr ""
+
+msgctxt "#32209"
+msgid "Concert"
+msgstr "演奏会"
+
+msgctxt "#32210"
+msgid "Featurette"
+msgstr "电影短片"
+
+msgctxt "#32211"
+msgid "Short"
+msgstr ""
+
+msgctxt "#32212"
+msgid "Other"
+msgstr "其他"
+
+msgctxt "#32300"
+msgid "Go to Album"
+msgstr "跳转到相册"
+
+msgctxt "#32301"
+msgid "Go to Artist"
+msgstr "跳转到演员"
+
+msgctxt "#32302"
+msgid "Go to {0}"
+msgstr "跳转到 {0}"
+
+msgctxt "#32303"
+msgid "Season"
+msgstr "季数"
+
+msgctxt "#32304"
+msgid "Episode"
+msgstr "集数"
+
+msgctxt "#32305"
+msgid "Extras"
+msgstr "其他"
+
+msgctxt "#32306"
+msgid "Related Shows"
+msgstr "相关节目"
+
+msgctxt "#32307"
+msgid "More"
+msgstr "更多"
+
+msgctxt "#32308"
+msgid "Available"
+msgstr "可用的"
+
+msgctxt "#32309"
+msgid "None"
+msgstr "无"
+
+msgctxt "#32310"
+msgid "S"
+msgstr ""
+
+msgctxt "#32311"
+msgid "E"
+msgstr ""
+
+msgctxt "#32312"
+msgid "Unavailable"
+msgstr "不可用"
+
+msgctxt "#32313"
+msgid "This item is currently unavailable."
+msgstr "这个项目现在不可用."
+
+msgctxt "#32314"
+msgid "In Progress"
+msgstr "进行中"
+
+msgctxt "#32315"
+msgid "Resume playback?"
+msgstr "恢复播放?"
+
+msgctxt "#32316"
+msgid "Resume"
+msgstr "恢复"
+
+msgctxt "#32317"
+msgid "Play from beginning"
+msgstr "从头播放"
+
+msgctxt "#32318"
+msgid "Mark Unplayed"
+msgstr "标记为未播放"
+
+msgctxt "#32319"
+msgid "Mark Played"
+msgstr "标记为已播放"
+
+msgctxt "#32320"
+msgid "Mark Season Unplayed"
+msgstr "标记整季未播放"
+
+msgctxt "#32321"
+msgid "Mark Season Played"
+msgstr "标记整季已播放"
+
+msgctxt "#32322"
+msgid "Delete"
+msgstr "删除"
+
+msgctxt "#32323"
+msgid "Go To Show"
+msgstr ""
+
+msgctxt "#32324"
+msgid "Go To {0}"
+msgstr "跳转到 {0}"
+
+msgctxt "#32325"
+msgid "Play Next"
+msgstr "播放下一个"
+
+msgctxt "#32326"
+msgid "Really Delete?"
+msgstr "确定删除?"
+
+msgctxt "#32327"
+msgid "Are you sure you really want to delete this media?"
+msgstr "你确定你要删除这个媒体么?"
+
+msgctxt "#32328"
+msgid "Yes"
+msgstr "是"
+
+msgctxt "#32329"
+msgid "No"
+msgstr "否"
+
+msgctxt "#32330"
+msgid "Message"
+msgstr "消息"
+
+msgctxt "#32331"
+msgid "There was a problem while attempting to delete the media."
+msgstr "尝试删除媒体时出现问题."
+
+msgctxt "#32332"
+msgid "Home"
+msgstr "主页"
+
+msgctxt "#32333"
+msgid "Playlists"
+msgstr "播放列表"
+
+msgctxt "#32334"
+msgid "Confirm Exit"
+msgstr "确定离开"
+
+msgctxt "#32335"
+msgid "Are you ready to exit Plex?"
+msgstr "你确定要离开PLEX么?"
+
+msgctxt "#32336"
+msgid "Exit"
+msgstr "离开"
+
+msgctxt "#32337"
+msgid "Cancel"
+msgstr "不离开"
+
+msgctxt "#32338"
+msgid "No Servers Found"
+msgstr "没有找到服务器"
+
+msgctxt "#32339"
+msgid "Server is not accessible"
+msgstr "服务器不能访问"
+
+msgctxt "#32340"
+msgid "Connection tests are in progress. Please wait."
+msgstr "连接测试正在进行中.请耐心等待."
+
+msgctxt "#32341"
+msgid "Server is not accessible. Please sign into your server and check your connection."
+msgstr "服务器不可访问.请登录您的服务器并检查您的连接."
+
+msgctxt "#32342"
+msgid "Switch User"
+msgstr "切换用户"
+
+msgctxt "#32343"
+msgid "Settings"
+msgstr "设置"
+
+msgctxt "#32344"
+msgid "Sign Out"
+msgstr "登出"
+
+msgctxt "#32345"
+msgid "All"
+msgstr "所有"
+
+msgctxt "#32346"
+msgid "By Name"
+msgstr "按名称排序"
+
+msgctxt "#32347"
+msgid "Artists"
+msgstr "艺人"
+
+msgctxt "#32348"
+msgid "Movies"
+msgstr "电影"
+
+msgctxt "#32349"
+msgid "photos"
+msgstr "相片"
+
+msgctxt "#32350"
+msgid "Shows"
+msgstr "演出"
+
+msgctxt "#32351"
+msgid "By Date Added"
+msgstr "按添加日期排序"
+
+msgctxt "#32352"
+msgid "Date Added"
+msgstr "添加日期"
+
+msgctxt "#32353"
+msgid "By Release Date"
+msgstr "按发布日期排序"
+
+msgctxt "#32354"
+msgid "Release Date"
+msgstr "发布日期"
+
+msgctxt "#32355"
+msgid "By Date Viewed"
+msgstr "按观看日期排序"
+
+msgctxt "#32356"
+msgid "Date Viewed"
+msgstr "观看日期"
+
+msgctxt "#32357"
+msgid "By Name"
+msgstr "按名称排序"
+
+msgctxt "#32358"
+msgid "Name"
+msgstr "名称"
+
+msgctxt "#32359"
+msgid "By Rating"
+msgstr "按热度排序"
+
+msgctxt "#32360"
+msgid "Rating"
+msgstr "热度"
+
+msgctxt "#32361"
+msgid "By Resolution"
+msgstr "按分辨率排序"
+
+msgctxt "#32362"
+msgid "Resolution"
+msgstr "分辨率"
+
+msgctxt "#32363"
+msgid "By Duration"
+msgstr "按时长排序"
+
+msgctxt "#32364"
+msgid "Duration"
+msgstr "时长"
+
+msgctxt "#32365"
+msgid "By First Aired"
+msgstr "按首次播出排序"
+
+msgctxt "#32366"
+msgid "First Aired"
+msgstr "首次播出"
+
+msgctxt "#32367"
+msgid "By Unplayed"
+msgstr "按未播放排序"
+
+msgctxt "#32368"
+msgid "Unplayed"
+msgstr "未播放"
+
+msgctxt "#32369"
+msgid "By Date Played"
+msgstr "按播放日期排序"
+
+msgctxt "#32370"
+msgid "Date Played"
+msgstr "播放日期"
+
+msgctxt "#32371"
+msgid "By Play Count"
+msgstr "按播放次数排序"
+
+msgctxt "#32372"
+msgid "Play Count"
+msgstr "播放次数"
+
+msgctxt "#32373"
+msgid "By Date Taken"
+msgstr "按拍摄日期排序"
+
+msgctxt "#32374"
+msgid "Date Taken"
+msgstr "拍摄日期"
+
+msgctxt "#32375"
+msgid "No filters available"
+msgstr "没找到相关内容"
+
+msgctxt "#32376"
+msgid "Clear Filter"
+msgstr "清空内容"
+
+msgctxt "#32377"
+msgid "Year"
+msgstr "年"
+
+msgctxt "#32378"
+msgid "Decade"
+msgstr "年代"
+
+msgctxt "#32379"
+msgid "Genre"
+msgstr "类型"
+
+msgctxt "#32380"
+msgid "Content Rating"
+msgstr "内容分级"
+
+msgctxt "#32381"
+msgid "Network"
+msgstr "网络"
+
+msgctxt "#32382"
+msgid "Collection"
+msgstr ""
+
+msgctxt "#32383"
+msgid "Director"
+msgstr "导演"
+
+msgctxt "#32384"
+msgid "Actor"
+msgstr "演员"
+
+msgctxt "#32385"
+msgid "Country"
+msgstr "国家"
+
+msgctxt "#32386"
+msgid "Studio"
+msgstr "工作室"
+
+msgctxt "#32387"
+msgid "Labels"
+msgstr "标签"
+
+msgctxt "#32388"
+msgid "Camera Make"
+msgstr "相机品牌"
+
+msgctxt "#32389"
+msgid "Camera Model"
+msgstr "相机型号"
+
+msgctxt "#32390"
+msgid "Aperture"
+msgstr "光圈"
+
+msgctxt "#32391"
+msgid "Shutter Speed"
+msgstr "快门速度"
+
+msgctxt "#32392"
+msgid "Lens"
+msgstr "镜头"
+
+msgctxt "#32393"
+msgid "TV Shows"
+msgstr "剧集"
+
+msgctxt "#32394"
+msgid "Music"
+msgstr "音乐"
+
+msgctxt "#32395"
+msgid "Audio"
+msgstr "音频"
+
+msgctxt "#32396"
+msgid "Subtitles"
+msgstr "字幕"
+
+msgctxt "#32397"
+msgid "Quality"
+msgstr "质量"
+
+msgctxt "#32398"
+msgid "Kodi Video Settings"
+msgstr "KODI视频设置"
+
+msgctxt "#32399"
+msgid "Kodi Audio Settings"
+msgstr "KODI音频设置"
+
+msgctxt "#32400"
+msgid "Go To Season"
+msgstr "跳转到季"
+
+msgctxt "#32401"
+msgid "Directors"
+msgstr ""
+
+msgctxt "#32402"
+msgid "Writer"
+msgstr ""
+
+msgctxt "#32403"
+msgid "Writers"
+msgstr ""
+
+msgctxt "#32404"
+msgid "Related Movies"
+msgstr "相关电影"
+
+msgctxt "#32405"
+msgid "Download Subtitles"
+msgstr "下载字幕"
+
+msgctxt "#32406"
+msgid "Subtitle Delay"
+msgstr "字幕延迟"
+
+msgctxt "#32407"
+msgid "Next Subtitle"
+msgstr "下一个字幕"
+
+msgctxt "#32408"
+msgid "Disable Subtitles"
+msgstr "禁用字幕"
+
+msgctxt "#32409"
+msgid "Enable Subtitles"
+msgstr "允许字幕"
+
+msgctxt "#32410"
+msgid "Platform Version"
+msgstr "平台版本"
+
+msgctxt "#32411"
+msgid "Unknown"
+msgstr "未知"
+
+msgctxt "#32412"
+msgid "Edit Or Clear"
+msgstr "编辑或清除"
+
+msgctxt "#32413"
+msgid "Edit IP address or clear the current setting?"
+msgstr "编辑IP地址或清除当前设置?"
+
+msgctxt "#32414"
+msgid "Clear"
+msgstr "清楚"
+
+msgctxt "#32415"
+msgid "Edit"
+msgstr "编辑"
+
+msgctxt "#32416"
+msgid "Enter IP Address"
+msgstr "填写IP地址"
+
+msgctxt "#32417"
+msgid "Enter Port Number"
+msgstr "填写端口"
+
+msgctxt "#32418"
+msgid "Creator"
+msgstr "创作者"
+
+msgctxt "#32419"
+msgid "Cast"
+msgstr "阵容"
+
+msgctxt "#32420"
+msgid "Disc"
+msgstr "碟片"
+
+msgctxt "#32421"
+msgid "Sign Out"
+msgstr "登出"
+
+msgctxt "#32422"
+msgid "Exit"
+msgstr "离开"
+
+msgctxt "#32423"
+msgid "Shutdown"
+msgstr "关机"
+
+msgctxt "#32424"
+msgid "Suspend"
+msgstr "暂停"
+
+msgctxt "#32425"
+msgid "Hibernate"
+msgstr "休眠"
+
+msgctxt "#32426"
+msgid "Reboot"
+msgstr "重启"
+
+msgctxt "#32427"
+msgid "Failed"
+msgstr "失败"
+
+msgctxt "#32428"
+msgid "Login failed!"
+msgstr "登陆失败！"
+
+msgctxt "#32429"
+msgid "Resume from {0}"
+msgstr "从{0}恢复"
+
+msgctxt "#32430"
+msgid "Discovery"
+msgstr "发现"
+
+msgctxt "#32431"
+msgid "Search"
+msgstr "搜索"
+
+msgctxt "#32432"
+msgid "Space"
+msgstr ""
+
+msgctxt "#32433"
+msgid "Clear"
+msgstr ""
+
+msgctxt "#32434"
+msgid "Searching..."
+msgstr "搜索中..."
+
+msgctxt "#32435"
+msgid "No Results"
+msgstr "没结果"
+
+msgctxt "#32436"
+msgid "Paused"
+msgstr "暂停"
+
+msgctxt "#32437"
+msgid "Welcome"
+msgstr "欢迎"
+
+msgctxt "#32438"
+msgid "Previous"
+msgstr "重播"
+
+msgctxt "#32439"
+msgid "Playing Next"
+msgstr "播放下一集"
+
+msgctxt "#32440"
+msgid "On Deck"
+msgstr "已播项目"
+
+msgctxt "#32441"
+msgid "Unknown"
+msgstr "未知"
+
+msgctxt "#32442"
+msgid "Embedded"
+msgstr "内嵌"
+
+msgctxt "#32443"
+msgid "Forced"
+msgstr "强制"
+
+msgctxt "#32444"
+msgid "Lyrics"
+msgstr "歌词"
+
+msgctxt "#32445"
+msgid "Mono"
+msgstr ""
+
+msgctxt "#32446"
+msgid "Stereo"
+msgstr "立体声"
+
+msgctxt "#32447"
+msgid "None"
+msgstr "无"
+
+msgctxt "#32448"
+msgid "Playback Failed!"
+msgstr "播放失败!"
+
+msgctxt "#32449"
+msgid "Can't connect to plex.tv[CR]Check your internet connection and try again."
+msgstr "无法连接至plex.tv[CR]检查您的互联网连接,然后重试."
+
+msgctxt "#32450"
+msgid "Choose Version"
+msgstr "选择版本"
+
+msgctxt "#32451"
+msgid "Play Version..."
+msgstr ""
+
+msgctxt "#32452"
+msgid "No Content available in this library"
+msgstr "库里没有可播放的内容"
+
+msgctxt "#32453"
+msgid "Please add content and/or check that 'Include in dashboard' is enabled."
+msgstr ""
+
+msgctxt "#32454"
+msgid "No Content available for this filter"
+msgstr "没有可用于此过滤器的内容"
+
+msgctxt "#32455"
+msgid "Please change change or remove the current filter"
+msgstr "请更改或删除当前过滤器"
+
+msgctxt "#32456"
+msgid "Show"
+msgstr "节目"
+
+msgctxt "#32457"
+msgid "By Show"
+msgstr "按节目排序"
+
+msgctxt "#32458"
+msgid "Episodes"
+msgstr "集数"
+
+msgctxt "#32459"
+msgid "Offline Mode"
+msgstr "离线模式"
+
+msgctxt "#32460"
+msgid "Sign In"
+msgstr "登录"
+
+msgctxt "#32461"
+msgid "Albums"
+msgstr "专辑"
+
+msgctxt "#32462"
+msgid "Artist"
+msgstr "艺人"
+
+msgctxt "#32463"
+msgid "By Artist"
+msgstr "按艺人排序"
+
+msgctxt "#32464"
+msgid "Player"
+msgstr ""
+
+msgctxt "#32465"
+msgid "Use skip step settings from Kodi"
+msgstr "使用Kodi中的跳过步骤设置"
+
+msgctxt "#32466"
+msgid "Automatically seek selected position after a delay"
+msgstr "延迟后自动寻找所选位置"
+
+msgctxt "#32467"
+msgid "User Interface"
+msgstr "用户界面"
+
+msgctxt "#32471"
+msgid "Use Plex/Kodi steps for timeline"
+msgstr ""
+
+msgctxt "#32485"
+msgid "Go back instantly with the previous menu action in scrolled views"
+msgstr "滚动视图中的上一个菜单操作立即返回"
+
+msgctxt "#32492"
+msgid "Kodi Subtitle Settings"
+msgstr "KODI字幕设置"
+
+msgctxt "#32495"
+msgid "Skip intro"
+msgstr "跳过片头"
+

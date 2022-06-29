@@ -256,7 +256,7 @@ class Timer(object):
     def reset(self):
         self._reset = True
         self.cancel()
-        if self.thread and self.thread.isAlive():
+        if self.thread and self.thread.is_alive():
             self.thread.join()
         self.start()
 
@@ -264,7 +264,7 @@ class Timer(object):
         return False
 
     def join(self):
-        if self.thread.isAlive():
+        if self.thread.is_alive():
             self.thread.join()
 
     def isExpired(self):

@@ -942,7 +942,7 @@ class PropertyTimer():
         self._onTimeout()
 
     def _stopped(self):
-        return not self._thread or not self._thread.isAlive()
+        return not self._thread or not self._thread.is_alive()
 
     def _reset(self):
         self._endTime = time.time() + self._timeout

@@ -235,7 +235,7 @@ class SearchDialog(kodigui.BaseDialog, windowutils.UtilMixin):
 
     def updateResults(self):
         self.updateResultsTimeout = time.time() + 1
-        if not self.resultsThread or not self.resultsThread.isAlive():
+        if not self.resultsThread or not self.resultsThread.is_alive():
             self.resultsThread = threading.Thread(target=self._updateResults, name='search.update')
             self.resultsThread.start()
 

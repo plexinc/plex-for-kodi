@@ -128,18 +128,19 @@ class PlatformSetting(InfoSetting):
         self.label = T(32410, 'Platform Version')
 
     def valueLabel(self):
+        plat = None
         try:
             import platform
-            dist = platform. dist()
-            if dist and len(dist) > 1:
-                plat = u'{0} {1}'.format(dist[0], dist[1])
+            release = platform.freedesktop_os_release()
+            if release and release.get("PRETTY_NAME"):
+                plat = release["PRETTY_NAME"]
             else:
                 plat = platform.platform()
                 plat = u'{0} {1}'.format(plat[0], '.'.join(plat[1].split('.', 2)[:2]))
+
+            plat = plat.strip()
         except:
             util.ERROR()
-
-        plat = plat.strip()
 
         if not plat:
             if xbmc.getCondVisibility('System.Platform.Android'):

@@ -1,6 +1,11 @@
 [- 0.2.4 -]
 
 Add Simplified Chinese translations (thanks to lsl330)
+Replace progressive jpg files (thanks to shyzus)
+Fix deprecated calls to thread.isAlive() with thread.is_alive() (thanks to mliudev)
+Work around https://github.com/python/cpython/issues/71587 (thanks to garymm)
+Fix error preventing music playback (thanks to markojaadam)
+Settings: Fix error when displaying About
 
 [- 0.2.3 -]
 

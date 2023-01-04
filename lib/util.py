@@ -30,8 +30,8 @@ PROFILE = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
 
 SETTINGS_LOCK = threading.Lock()
 
-_splitver = xbmc.getInfoLabel('System.BuildVersion').split()[0].split(".")
-KODI_VERSION_MAJOR, KODI_VERSION_MINOR = int(_splitver[0].split("-")[0]), int(_splitver[1].split("-")[0])
+#_splitver = xbmc.getInfoLabel('System.BuildVersion').split()[0].split(".")
+#KODI_VERSION_MAJOR, KODI_VERSION_MINOR = int(_splitver[0].split("-")[0]), int(_splitver[1].split("-")[0])
 
 
 class UtilityMonitor(xbmc.Monitor, signalsmixin.SignalsMixin):
@@ -312,7 +312,7 @@ class TextBox:
 
     def __init__(self, *args, **kwargs):
         # activate the text viewer window
-        xbmc.executebuiltin("ActivateWindow(%d)" % (self.WINDOW, ))
+        xbmc.executebuiltin("ActivateWindow(%d)" % (self.WINDOW,))
         # get window
         self.win = xbmcgui.Window(self.WINDOW)
         # give window time to initialize
@@ -381,7 +381,6 @@ def getKodiSkipSteps():
 
 
 kodiSkipSteps = getKodiSkipSteps()
-
 
 CRON = None
 
@@ -497,7 +496,6 @@ class Cron(threading.Thread):
             self._receivers.pop(self._receivers.index(receiver))
 
 
-
 def getTimeFormat():
     """
     Get global time format.
@@ -527,7 +525,7 @@ def getTimeFormat():
     return fmt, padHour
 
 
-timeFormat, padHour = getTimeFormat()
+#timeFormat, padHour = getTimeFormat()
 
 
 def populateTimeFormat():
@@ -560,16 +558,17 @@ def getProgressImage(obj):
 
 
 def trackIsPlaying(track):
-    return xbmc.getCondVisibility('String.StartsWith(MusicPlayer.Comment,{0})'.format('PLEX-{0}:'.format(track.ratingKey)))
+    return xbmc.getCondVisibility(
+        'String.StartsWith(MusicPlayer.Comment,{0})'.format('PLEX-{0}:'.format(track.ratingKey)))
 
 
 def addURLParams(url, params):
-        if '?' in url:
-            url += '&'
-        else:
-            url += '?'
-        url += six.moves.urllib.parse.urlencode(params)
-        return url
+    if '?' in url:
+        url += '&'
+    else:
+        url += '?'
+    url += six.moves.urllib.parse.urlencode(params)
+    return url
 
 
 def garbageCollect():
@@ -582,3 +581,18 @@ def shutdown():
     del MONITOR
     del T
     del ADDON
+
+
+def getAttributes():
+    # TODO replace source
+    return {
+        "title": "Kodi",
+        "machineIdentifier": "plex-kodi-plex-xxxxxx",
+        "product": "Plex for Kodi",
+        "version": "0.0.1",
+        "platform": "RaspberryPi",
+        "platformVersion": "18.0.0",
+        "protocolVersion": "3",
+        "protocolCapabilities": "timeline,playback,navigation,mirror,playqueues", # "timeline,playback",
+        "deviceClass": "stb"
+    }

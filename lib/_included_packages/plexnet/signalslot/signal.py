@@ -93,10 +93,10 @@ class Signal(object):
         """
         if not isinstance(slot, BaseSlot):
             try:
-                if inspect.getargspec(slot).keywords is None:
+                if inspect.getfullargspec(slot).kwonlyargs is None:
                     raise exceptions.SlotMustAcceptKeywords(self, slot)
             except TypeError:
-                if inspect.getargspec(slot.__call__).keywords is None:
+                if inspect.getfullargspec(slot.__call__).kwonlyargs is None:
                     raise exceptions.SlotMustAcceptKeywords(self, slot)
 
         with self._slots_lk:

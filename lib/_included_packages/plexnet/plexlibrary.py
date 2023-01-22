@@ -136,7 +136,7 @@ class LibrarySection(plexobjects.PlexObject):
         else:
             path = '/library/sections/{0}/all'.format(self.key)
 
-        args = {"includeCollections" : "1"}
+        args = {"includeCollections" : "0"}
 
         if size is not None:
             args['X-Plex-Container-Start'] = start

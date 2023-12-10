@@ -13,6 +13,9 @@ class UtilMixin():
     def __init__(self):
         self.exitCommand = None
 
+    def updateBackgroundFrom(self, obj):
+        return
+
     def goHome(self, section=None):
         HOME.show()
         if section:
